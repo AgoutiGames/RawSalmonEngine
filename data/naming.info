@@ -1,0 +1,13 @@
+tileset/image layer options:
+
+BLEND_MODE
+- NONE
+- ALPHA
+- ADD
+- COLOR
+
+tile options:
+
+SPEED
+- float
+

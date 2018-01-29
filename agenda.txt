@@ -1,0 +1,6 @@
+- .tsx support (DONE!)
+- tile class revamp to support multiple tileset objects (DONE!)
+- actor animations are linked to a symbolic tile which is used as object (DONE!)
+- object/actor class (DONE!)
+- object layers which can render and sort its objects in tiles (Somewhat done)
+- grouped layers with intertwined rendering (so objects can be masked by the environment)
