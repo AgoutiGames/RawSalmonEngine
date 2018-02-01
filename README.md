@@ -36,6 +36,10 @@ For Linux run:
     $ cmake ..
     $ make
     
+## Usage
+* ./Salmon
+* Loads /data/example.tmx
+* Move the camera via arrow keys and wasd.
 ## Contact
 * [Agouti Games (EN)](http://game.moonlighthiker.de/index.php/en/)
 * [Agouti Games (DE)](http://game.moonlighthiker.de/index.php/de/)
