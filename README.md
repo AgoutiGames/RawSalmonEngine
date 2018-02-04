@@ -45,7 +45,7 @@ For Linux run:
 ## Contact
 * [Agouti Games (EN)](http://game.moonlighthiker.de/index.php/en/)
 * [Agouti Games (DE)](http://game.moonlighthiker.de/index.php/de/)
-* Discord Server *Soon!*
+* [Discord Server](https://discord.gg/thAaD9e)
 ## Why Salmon?
 We needed some kind of animal mascot and we thought about the main protagonists 
 of our future game. Since they are tribal anthropomorphic big cats we were sure
