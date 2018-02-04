@@ -1,4 +1,6 @@
 # The RawSalmonEngine ![Salmon Logo](/icons/RawSalmonLogo_Ver2_128px.png)
+[![Build Status](https://travis-ci.org/VectorWolf/RawSalmonEngine.svg?branch=master)](https://travis-ci.org/VectorWolf/RawSalmonEngine)
+
 A game engine utilising *"[Tiled](http://www.mapeditor.org)" map files*.
 
 This was originally meant to be the foundation of a game somewhat in between
