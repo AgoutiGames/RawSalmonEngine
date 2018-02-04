@@ -1,11 +1,11 @@
 # The RawSalmonEngine ![Salmon Logo](/icons/RawSalmonLogo_Ver2_128px.png)
-A game engine utilising *"Tiled" map files*.
+A game engine utilising *"[Tiled](http://www.mapeditor.org)" map files*.
 
 This was originally meant to be the foundation of a game somewhat in between
 Baldur's Gate, Planescape Torment and Divine Divinity. The current state of 
 the project is fairly universal and resembles a **basic map renderer for tmx 
 files**. The ultimate goal of this project is to implement a full fledged
-game development environment via *Tiled*. The currently used **Tiled Version** is **1.0.2**
+game development environment via *[Tiled](http://www.mapeditor.org)*. The currently used **[Tiled](http://www.mapeditor.org) Version** is **1.0.2**
 ## Features ![Salmon Jump](/icons/RawSalmonLogo_Ver1_128px.png)
 * Supported map orientations
   - [x] Orthogonal
