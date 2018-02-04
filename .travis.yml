@@ -1,0 +1,28 @@
+dist: xenial
+sudo: required
+
+language: cpp
+
+compiler: gcc
+
+addons:
+    apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - sourceline: 'ppa:zoogie/sdl2-snapshots'
+        packages:
+        - cmake
+        - libsdl2-dev
+        - libsdl2-image-dev
+        - libsdl2-ttf-dev
+        - libsdl2-mixer-dev
+
+install:
+    - sudo apt update
+    - sudo apt upgrade
+
+script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
