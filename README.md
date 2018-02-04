@@ -25,6 +25,8 @@ game development environment via *Tiled*. The currently used **Tiled Version** i
 * Oversized tiles which can reach from borders into the screen
 * Tilesets can have *Alpha*, *Add* or *Color Modulate* Blend Mode
 * Image Layers
+* It actually works!
+![demonstration](icons/lossyput.gif)
 ## Dependencies
 * **[SDL](http://www.libsdl.org/)** **2.0.0**+
 
