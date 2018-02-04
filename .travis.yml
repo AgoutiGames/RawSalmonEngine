@@ -19,7 +19,7 @@ addons:
 
 install:
     - sudo apt update
-    - sudo apt upgrade
+    - sudo apt install libsdl2-dev
 
 script:
     - mkdir build
