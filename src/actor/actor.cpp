@@ -16,12 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "actor/actor.hpp"
+
 #include <string>
 #include <iostream>
 #include <map>
-#include "actor.hpp"
-#include "game_types.hpp"
-#include "tinyxml2.h"
+
+#include "util/game_types.hpp"
+#include "util/tinyxml2.h"
 
 std::map<std::string, ActorTemplate> Actor::m_templates;
 std::map<Uint16, std::string> Actor::m_gid_to_temp_name;

@@ -16,14 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "map/mapdata.hpp"
+
+#include <SDL2/SDL.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "SDL2/SDL.h"
-#include "mapdata.hpp"
-#include "tile.hpp"
+
+#include "map/tile.hpp"
 
 MapData::MapData() {
 

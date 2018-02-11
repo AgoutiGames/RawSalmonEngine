@@ -18,12 +18,14 @@
  */
 #ifndef MAPDATA_HPP_INCLUDED
 #define MAPDATA_HPP_INCLUDED
+
+#include <SDL2/SDL.h>
 #include <vector>
 #include <string>
-#include "SDL2/SDL.h"
-#include "tileset.hpp"
-#include "layer.hpp"
-#include "tinyxml2.h"
+
+#include "map/layer.hpp"
+#include "map/tileset.hpp"
+#include "util/tinyxml2.h"
 
 /**
  * @brief Contain, render and update all game map layers

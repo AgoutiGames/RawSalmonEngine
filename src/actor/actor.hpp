@@ -18,16 +18,19 @@
  */
 #ifndef ACTOR_HPP_INCLUDED
 #define ACTOR_HPP_INCLUDED
+
 #include <string>
 #include <vector>
 #include <map>
-#include "game_types.hpp"
-#include "tinyxml2.h"
+
+#include "util/game_types.hpp"
+#include "util/tinyxml2.h"
 
 /**
  * @brief Parse, store and manage all actors
  *
  * @note Actors can only be constructed from parsed @c ActorTemplate
+ * @warning @todo Reset @c m_templates and @c m_gid_to_temp_name on map loading
  */
 
 class Actor{

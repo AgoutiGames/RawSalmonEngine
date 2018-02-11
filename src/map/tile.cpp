@@ -16,16 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "map/tile.hpp"
+
+#include <SDL2/SDL.h>
 #include <vector>
 #include <string>
 #include <iostream>
-#include "SDL2/SDL.h"
-#include "tinyxml2.h"
-#include "tile.hpp"
-#include "texture.hpp"
-#include "tileset.hpp"
-#include "game_types.hpp"
-#include "actor.hpp"
+
+#include "actor/actor.hpp"
+#include "graphics/texture.hpp"
+#include "map/tileset.hpp"
+#include "util/game_types.hpp"
+#include "util/tinyxml2.h"
 
 std::vector<Tile*> Tile::mp_tiles;
 std::vector<Uint16> Tile::m_anim_tiles;

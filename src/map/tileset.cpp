@@ -16,16 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "map/tileset.hpp"
+
+#include <SDL2/SDL.h>
 #include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "tileset.hpp"
-#include "texture.hpp"
-#include "SDL2/SDL.h"
-#include "tile.hpp"
-#include "tinyxml2.h"
+
+#include "graphics/texture.hpp"
+#include "map/tile.hpp"
+#include "util/tinyxml2.h"
 
 std::string Tileset::m_base_path = "../data/";
 unsigned Tileset::m_base_tile_w = 0;

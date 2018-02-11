@@ -18,14 +18,17 @@
  */
 #ifndef LAYER_HPP_INCLUDED
 #define LAYER_HPP_INCLUDED
+
+#include <SDL2/SDL.h>
 #include <vector>
 #include <string>
-#include "tileset.hpp"
-#include "texture.hpp"
-#include "SDL2/SDL.h"
-#include "game_types.hpp"
-#include "tinyxml2.h"
-#include "actor.hpp"
+
+#include "actor/actor.hpp"
+#include "graphics/texture.hpp"
+#include "map/tileset.hpp"
+#include "util/game_types.hpp"
+#include "util/tinyxml2.h"
+
 
 /**
  * @brief Parse, store and draw individual layers of the game map

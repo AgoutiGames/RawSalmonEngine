@@ -18,11 +18,13 @@
  */
 #ifndef TILESET_HPP_INCLUDED
 #define TILESET_HPP_INCLUDED
+
+#include <SDL2/SDL.h>
 #include <vector>
 #include <string>
-#include "texture.hpp"
-#include "SDL2/SDL.h"
-#include "tinyxml2.h"
+
+#include "graphics/texture.hpp"
+#include "util/tinyxml2.h"
 
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 

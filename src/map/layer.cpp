@@ -16,13 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "map/layer.hpp"
+
 #include <string>
 #include <sstream>
 #include <iostream>
-#include "base64.h"
-#include "layer.hpp"
-#include "tinyxml2.h"
-#include "tile.hpp"
+
+#include "map/tile.hpp"
+#include "util/base64.h"
+#include "util/tinyxml2.h"
 
 /**
  * Path to folder which holds the .tmx map files.

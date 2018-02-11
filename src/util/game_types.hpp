@@ -18,11 +18,14 @@
  */
 #ifndef GAME_TYPES_HPP_INCLUDED
 #define GAME_TYPES_HPP_INCLUDED
+
+#include <SDL2/SDL.h>
 #include <string>
 #include <vector>
 #include <map>
-#include "tile.hpp"
-#include "SDL2/SDL.h"
+
+#include "map/tile.hpp"
+
 
 /**
  * @brief A collection of various enums

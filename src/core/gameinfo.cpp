@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "core/gameinfo.hpp"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
-#include "gameinfo.hpp"
-#include "tinyxml2.h"
+
+#include "util/tinyxml2.h"
 
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)

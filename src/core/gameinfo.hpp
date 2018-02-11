@@ -18,9 +18,11 @@
  */
 #ifndef GAMEINFO_HPP_INCLUDED
 #define GAMEINFO_HPP_INCLUDED
+
 #include <SDL2/SDL.h>
 #include <string>
-#include "mapdata.hpp"
+
+#include "map/mapdata.hpp"
 
 /**
  * @brief This class manages interaction between player and game modules
@@ -42,7 +44,7 @@ public:
 
 private:
     SDL_Window* m_window = nullptr;
-    std::string m_window_title = "Buya Game";
+    std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
     unsigned m_screen_w;
     unsigned m_screen_h;

@@ -17,14 +17,15 @@
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <iostream>
-#include "gameinfo.hpp"
+
+#include "core/gameinfo.hpp"
 
 using namespace std;
 
 /// The game Loop!
 int main()
 {
-    GameInfo game(1024, 768);
+    GameInfo game(800, 600);
     if(!game.load_map("example.tmx")) {
         std::cerr << "Map couldn't load\n";
     }

@@ -18,10 +18,12 @@
  */
 #ifndef TILE_HPP_INCLUDED
 #define TILE_HPP_INCLUDED
+
 #include <SDL2/SDL.h>
 #include <vector>
 #include <map>
-#include "tinyxml2.h"
+
+#include "util/tinyxml2.h"
 
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 
