@@ -10,19 +10,47 @@ set(CMAKE_BUILD_TYPE DEBUG)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wfatal-errors")
 
-add_executable(${PROJECT_NAME} source/main.cpp
-                    source/actor.cpp
-                    source/base64.cpp
-                    source/gameinfo.cpp
-                    source/game_types.cpp
-                    source/layer.cpp
-                    source/main.cpp
-                    source/mapdata.cpp
-                    source/texture.cpp
-                    source/tile.cpp
-                    source/tileset.cpp
-                    source/tinyxml2.cpp)
-                    
+include_directories(src)
+
+set(ACTOR_SOURCES
+    src/actor/actor.cpp
+    )
+
+set(CORE_SOURCES
+    src/core/main.cpp
+    src/core/gameinfo.cpp
+    )
+
+set(EVENT_SOURCES)
+
+set(GRAPHICS_SOURCES
+    src/graphics/texture.cpp
+    )
+
+set(MAP_SOURCES
+    src/map/mapdata.cpp
+    src/map/layer.cpp
+    src/map/tileset.cpp
+    src/map/tile.cpp
+    )
+
+set(UTIL_SOURCES
+    src/util/base64.cpp
+    src/util/game_types.cpp
+    src/util/tinyxml2.cpp
+    )
+
+set(SALMON_SOURCES
+    ${ACTOR_SOURCES}
+    ${CORE_SOURCES}
+    ${EVENT_SOURCES}
+    ${GRAPHICS_SOURCES}
+    ${MAP_SOURCES}
+    ${UTIL_SOURCES}
+)
+
+add_executable(${PROJECT_NAME} ${SALMON_SOURCES})
+
 INCLUDE(FindPkgConfig)
 
 PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)

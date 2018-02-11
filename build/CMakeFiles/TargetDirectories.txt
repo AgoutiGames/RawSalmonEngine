@@ -1,0 +1,3 @@
+/home/linuxwolf/Programme/C++-Programme/Buya_Game/0.1.7/build/CMakeFiles/edit_cache.dir
+/home/linuxwolf/Programme/C++-Programme/Buya_Game/0.1.7/build/CMakeFiles/Salmon.dir
+/home/linuxwolf/Programme/C++-Programme/Buya_Game/0.1.7/build/CMakeFiles/rebuild_cache.dir
