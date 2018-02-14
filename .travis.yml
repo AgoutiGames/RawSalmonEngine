@@ -1,24 +1,22 @@
 dist: trusty
-sudo: false
-
+sudo: required
 language: cpp
-
 compiler: gcc
 
-addons:
-    apt:
-        packages:
-        - libsdl2-dev
-        - libsdl2-image-dev
-        - libsdl2-ttf-dev
-        - libsdl2-mixer-dev
+before_install:
+    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    - sudo apt-get update -qq
 
 install:
-    - sudo apt update
-    - sudo apt install libsdl2-dev
-    - sudo apt install libsdl2-image-dev
-    - sudo apt install libsdl2-ttf-dev
-    - sudo apt install libsdl2-mixer-dev
+# Install newest g++
+    - sudo apt-get install g++-7
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
+# Install SDL 2.0
+    - sudo apt-get install libegl1-mesa-dev libgles2-mesa-dev
+    - sudo apt-get install libsdl2-dev
+    - sudo apt-get install libsdl2-image-dev
+    - sudo apt-get install libsdl2-ttf-dev
+    - sudo apt-get install libsdl2-mixer-dev
 
 script:
     - mkdir build
