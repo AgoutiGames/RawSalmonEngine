@@ -9,7 +9,7 @@ before_install:
 
 install:
 # Install newest g++
-    - sudo apt-get install -qq g++-7
+    - sudo apt-get install g++-7
     - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
 # Install SDL 2.0
     - sudo apt-get install libegl1-mesa-dev libgles2-mesa-dev
