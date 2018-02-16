@@ -22,6 +22,7 @@
 #include <iostream>
 #include <map>
 
+#include "event/ae_move_direction.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
@@ -41,6 +42,16 @@ Actor::Actor(ActorTemplate& templ) :
  m_animations {templ.animations}
 {
 
+}
+
+/**
+ * @brief Initialize the whole actor class
+ */
+void Actor::initialize() {
+    m_templates.clear();
+    m_gid_to_temp_name.clear();
+    // Initialize all actor events
+    AeMoveDirection::initialize_all();
 }
 
 /**

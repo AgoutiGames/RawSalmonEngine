@@ -23,16 +23,20 @@
 
 #include <vector>
 
+#include "util/game_types.hpp"
+
 class AeMoveDirection : public ActorEvent<AeMoveDirection>{
 
     public:
-        AeMoveDirection();
-        AeMoveDirection* create();
+        AeMoveDirection(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
         virtual bool process(Actor& actor) override;
         virtual ~AeMoveDirection() override;
 
+        static AeMoveDirection* create(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
+
     private:
-        static std::vector<AeMoveDirection> m_event_list;
+        Direction m_direction;
+        unsigned m_duration; ///< How many frames the movement persists
 
 };
 

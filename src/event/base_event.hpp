@@ -19,16 +19,54 @@
 #ifndef BASE_EVENT_HPP_INCLUDED
 #define BASE_EVENT_HPP_INCLUDED
 
+#include <vector>
+
+#include "util/game_types.hpp"
+
 template <class T>
 
 class BaseEvent {
-
     public:
-        bool kill();
-        T* duplicate();
+        BaseEvent(Priority prio) : m_priority{prio} {}
+
+        bool kill(T* event) {
+            for(unsigned i = 0; i < m_event_list.size(); i++) {
+            if(&(m_event_list[i]) == this) {
+                m_event_list.erase(m_event_list.begin() + i);
+                return true;
+                }
+            }
+            return false;
+        }
+
+        static T* duplicate(T* event);
+        static T* duplicate(T& event);
         virtual ~BaseEvent() = 0;
 
+        Priority m_priority;
+
+        static void initialize();
+
     private:
+        static std::vector<T> m_event_list;
 };
+
+template <class T> std::vector<T> BaseEvent<T>::m_event_list;
+
+template <class T> void BaseEvent<T>::initialize() {
+    m_event_list.clear();
+}
+
+template <class T> T* BaseEvent<T>::duplicate(T* event) {
+            m_event_list.push_back(T(*event));
+            return &m_event_list.back();
+        }
+
+template <class T> T* BaseEvent<T>::duplicate(T& event) {
+            m_event_list.push_back(T(event));
+            return &m_event_list.back();
+        }
+
+template <class T> BaseEvent<T>::~BaseEvent() {}
 
 #endif // BASE_EVENT_HPP_INCLUDED

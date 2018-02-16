@@ -45,6 +45,7 @@ class Actor{
 
         static tinyxml2::XMLError add_template(tinyxml2::XMLElement* source, Uint16 tile_id);
         static void add_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
+        static void initialize();
 
 
     private:

@@ -19,20 +19,31 @@
 #ifndef ACTOR_EVENT_HPP_INCLUDED
 #define ACTOR_EVENT_HPP_INCLUDED
 
-#include "event/base_event.hpp"
-
 #include "actor/actor.hpp"
+#include "event/base_event.hpp"
+#include "util/game_types.hpp"
+
+//forward declare all Actor Events (for initialize_all method)
+class AeMoveDirection;
 
 template <class T>
 
 class ActorEvent : public BaseEvent<T>{
 
     public:
-        ActorEvent();
+        ActorEvent(Priority prio) : BaseEvent<T>(prio) {}
         virtual bool process(Actor& actor) = 0;
         virtual ~ActorEvent() = 0;
 
+        static void initialize_all();
+
     private:
 };
+
+template <class T> void ActorEvent<T>::initialize_all() {
+    BaseEvent<AeMoveDirection>::initialize();
+}
+
+template <class T> ActorEvent<T>::~ActorEvent() {}
 
 #endif // ACTOR_EVENT_HPP_INCLUDED

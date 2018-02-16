@@ -16,4 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
- #include "event/ae_move_direction.hpp"
+#include "event/ae_move_direction.hpp"
+
+#include "event/actor_event.hpp"
+#include "util/game_types.hpp"
+
+AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration, Priority prio) :
+ActorEvent(prio),
+m_direction{dir},
+m_duration{duration}
+{
+
+}
+
+bool AeMoveDirection::process(Actor& actor) {
+    // process stuff
+    m_duration--;
+    if (m_duration < 1) return true;
+    else return false;
+}
+
+AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Priority prio) {
+    AeMoveDirection temp(dir, duration, prio);
+    return duplicate(temp);
+}
+
+AeMoveDirection::~AeMoveDirection() {
+
+}

@@ -51,6 +51,13 @@ enum class AnimationType {
     invalid,
 };
 
+enum class Priority{
+    low,
+    medium,
+    high,
+    clear_all,
+};
+
 struct ActorTemplate {
     std::string template_name = "_";
     float speed = 250.0f;
