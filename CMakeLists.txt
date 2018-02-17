@@ -22,6 +22,7 @@ set(CORE_SOURCES
     )
 
 set(EVENT_SOURCES
+    src/event/actor_event.cpp
     src/event/ae_move_direction.cpp)
 
 set(GRAPHICS_SOURCES

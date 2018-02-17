@@ -20,17 +20,20 @@
 #define AE_MOVE_DIRECTION_HPP_INCLUDED
 
 #include "event/actor_event.hpp"
+#include "event/event_container.hpp"
 
 #include <vector>
 
 #include "util/game_types.hpp"
 
-class AeMoveDirection : public ActorEvent<AeMoveDirection>{
+class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
     public:
         AeMoveDirection(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
         virtual bool process(Actor& actor) override;
         virtual ~AeMoveDirection() override;
+
+        using EventContainer::kill;
         void kill() {kill(this);}
 
         static AeMoveDirection* create(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);

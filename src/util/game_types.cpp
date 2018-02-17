@@ -44,8 +44,8 @@ Behaviour str_to_behaviour(const std::string& name) {
 /// Converts a @c Direction to x and y factors
 std::vector<float> dir_to_mov(const Direction dir) {
     if(dir == Direction::up)    return std::vector<float>{0,-1};
-    if(dir == Direction::right) return std::vector<float>{1,0}
-    if(dir == Direction::down)  return std::vector<float>{0,1}
-    if(dir == Direction::left)  return std::vector<float>{-1,0}
-    else return std::vector<float>{0,0}
+    if(dir == Direction::right) return std::vector<float>{1,0};
+    if(dir == Direction::down)  return std::vector<float>{0,1};
+    if(dir == Direction::left)  return std::vector<float>{-1,0};
+    else return std::vector<float>{0,0};
 }

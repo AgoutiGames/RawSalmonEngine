@@ -16,57 +16,57 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef BASE_EVENT_HPP_INCLUDED
-#define BASE_EVENT_HPP_INCLUDED
+#ifndef EVENT_CONTAINER_HPP_INCLUDED
+#define EVENT_CONTAINER_HPP_INCLUDED
 
 #include <vector>
 
 #include "util/game_types.hpp"
 
-template <class T>
+template <class T, class U>
 
-class BaseEvent {
+class EventContainer : public T{
     public:
-        BaseEvent(Priority prio) : m_priority{prio} {}
+        EventContainer(Priority prio) : m_priority{prio} {}
 
-        bool kill(T* event) {
+        static bool kill(U* event) {
             for(unsigned i = 0; i < m_event_list.size(); i++) {
-            if(&(m_event_list[i]) == this) {
-                m_event_list.erase(m_event_list.begin() + i);
-                return true;
+                if(&(m_event_list[i]) == event) {
+                    m_event_list.erase(m_event_list.begin() + i);
+                    return true;
                 }
             }
             return false;
         }
 
-        static T* duplicate(T* event);
-        static T* duplicate(T& event);
-        virtual ~BaseEvent() = 0;
+        static U* duplicate(U* event);
+        static U* duplicate(U& event);
+        virtual ~EventContainer() = 0;
 
         Priority m_priority;
 
         static void initialize();
 
     private:
-        static std::vector<T> m_event_list;
+        static std::vector<U> m_event_list;
 };
 
-template <class T> std::vector<T> BaseEvent<T>::m_event_list;
+template <class T, class U> std::vector<U> EventContainer<T, U>::m_event_list;
 
-template <class T> void BaseEvent<T>::initialize() {
+template <class T, class U> void EventContainer<T, U>::initialize() {
     m_event_list.clear();
 }
 
-template <class T> T* BaseEvent<T>::duplicate(T* event) {
-            m_event_list.push_back(T(*event));
+template <class T, class U> U* EventContainer<T, U>::duplicate(U* event) {
+            m_event_list.push_back(U(*event));
             return &m_event_list.back();
         }
 
-template <class T> T* BaseEvent<T>::duplicate(T& event) {
-            m_event_list.push_back(T(event));
+template <class T, class U> U* EventContainer<T, U>::duplicate(U& event) {
+            m_event_list.push_back(U(event));
             return &m_event_list.back();
         }
 
-template <class T> BaseEvent<T>::~BaseEvent() {}
+template <class T, class U> EventContainer<T, U>::~EventContainer() {}
 
-#endif // BASE_EVENT_HPP_INCLUDED
+#endif // EVENT_CONTAINER_HPP_INCLUDED

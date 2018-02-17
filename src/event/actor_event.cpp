@@ -16,35 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_move_direction.hpp"
-
-#include "actor/actor.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
-#include "util/game_types.hpp"
+#include "event/ae_move_direction.hpp"
 
-AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration, Priority prio) :
-EventContainer(prio),
-m_direction{dir},
-m_duration{duration}
-{
-
+void ActorEvent::initialize_all() {
+    EventContainer<ActorEvent, AeMoveDirection>::initialize();
 }
 
-bool AeMoveDirection::process(Actor& actor) {
-    // process stuff
-    std::vector<float> mov_factors = dir_to_mov(m_direction);
-    actor.move(mov_factors[0], mov_factors[1]);
-    m_duration--;
-    if (m_duration < 1) return true;
-    else return false;
-}
-
-AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Priority prio) {
-    AeMoveDirection temp(dir, duration, prio);
-    return duplicate(temp);
-}
-
-AeMoveDirection::~AeMoveDirection() {
-
-}
+ActorEvent::~ActorEvent() {}

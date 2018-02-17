@@ -329,8 +329,10 @@ tinyxml2::XMLError Actor::add_template(tinyxml2::XMLElement* source, Uint16 tile
  */
 bool Actor::move(float x_factor, float y_factor) {
     /// @todo Check for collision
+    bool success = true;
     m_x += x_factor * m_base_speed;
     m_y += y_factor * m_base_speed;
+    return success;
 }
 
 /**
@@ -338,11 +340,15 @@ bool Actor::move(float x_factor, float y_factor) {
  * @return a @c bool which indicates if the actor "died"
  */
 bool Actor::process_events() {
-    bool processed = m_event_pipeline.front()->process(*this);
-    if(processed) {
-        m_event_pipeline.front()->kill();
-        m_event_pipeline.erase(m_event_pipeline.begin());
+    bool alive = true;
+    while(!m_event_pipeline.empty()) {
+        bool processed = m_event_pipeline.front()->process(*this);
+        if(processed) {
+    //        m_event_pipeline.front()->kill();
+            m_event_pipeline.erase(m_event_pipeline.begin());
+        }
     }
+    return alive;
 }
 
 /**
@@ -367,8 +373,7 @@ void Actor::sort_events() {
  * @note Currently only pushes the animation
  */
 bool Actor::update() {
-    bool alive = true;
-    alive = process_events();
+    bool alive = process_events();
     m_animations[m_anim_state][m_direction].push_anim();
     return alive;
 }

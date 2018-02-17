@@ -23,7 +23,7 @@
 #include <vector>
 #include <map>
 
-//#include "event/actor_event.hpp"
+#include "event/actor_event.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
