@@ -31,6 +31,8 @@ m_duration{duration}
 
 bool AeMoveDirection::process(Actor& actor) {
     // process stuff
+    std::vector<float> mov_factors = dir_to_mov(m_direction);
+    actor.move(mov_factors[0], mov_factors[1]);
     m_duration--;
     if (m_duration < 1) return true;
     else return false;

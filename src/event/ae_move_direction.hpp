@@ -31,6 +31,7 @@ class AeMoveDirection : public ActorEvent<AeMoveDirection>{
         AeMoveDirection(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
         virtual bool process(Actor& actor) override;
         virtual ~AeMoveDirection() override;
+        void kill() {kill(this);}
 
         static AeMoveDirection* create(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
 

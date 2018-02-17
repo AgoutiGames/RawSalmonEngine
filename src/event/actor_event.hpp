@@ -19,10 +19,11 @@
 #ifndef ACTOR_EVENT_HPP_INCLUDED
 #define ACTOR_EVENT_HPP_INCLUDED
 
-#include "actor/actor.hpp"
+//#include "actor/actor.hpp"
 #include "event/base_event.hpp"
 #include "util/game_types.hpp"
 
+class Actor;
 //forward declare all Actor Events (for initialize_all method)
 class AeMoveDirection;
 

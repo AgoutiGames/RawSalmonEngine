@@ -71,6 +71,6 @@ AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
 Behaviour str_to_behaviour(const std::string& name);
 
-
+std::vector<float> dir_to_mov(const Direction dir);
 
 #endif // GAME_TYPES_HPP_INCLUDED

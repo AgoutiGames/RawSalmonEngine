@@ -157,18 +157,6 @@ void Actor::render(int x_cam, int y_cam) const {
 }
 
 /**
- * @brief Update the actor state
- * @return @c bool which returns true if actor is alive
- * @note Currently only pushes the animation
- */
-bool Actor::update() {
-    bool alive = true;
-
-    m_animations[m_anim_state][m_direction].push_anim();
-    return alive;
-}
-
-/**
  * @brief Adds a copy of an animation tile to an actor template
  * @param name Name of the @c ActorTemplate
  * @param anim The @c AnimationType of the tile
@@ -331,4 +319,56 @@ tinyxml2::XMLError Actor::add_template(tinyxml2::XMLElement* source, Uint16 tile
     }
 
     return XML_SUCCESS;
+}
+
+/**
+ * @brief Add an @c ActorTemplate to the static vector @c m_templates from an @c XMLElement
+ * @param x_factor, y_factor Which indicate direction and extent of movement
+ * @return a @c bool which indicates collision
+ * @todo Check for collision!!!
+ */
+bool Actor::move(float x_factor, float y_factor) {
+    /// @todo Check for collision
+    m_x += x_factor * m_base_speed;
+    m_y += y_factor * m_base_speed;
+}
+
+/**
+ * @brief Process the event pipeline
+ * @return a @c bool which indicates if the actor "died"
+ */
+bool Actor::process_events() {
+    bool processed = m_event_pipeline.front()->process(*this);
+    if(processed) {
+        m_event_pipeline.front()->kill();
+        m_event_pipeline.erase(m_event_pipeline.begin());
+    }
+}
+
+/**
+ * @brief Adds the event to the actors pipeline and sorts
+ * @param event The event to be added
+ */
+void Actor::add_event(ActorEvent* event) {
+    m_event_pipeline.push_back(event);
+}
+
+/**
+ * @brief Sorts the event pipeline by priority values
+ */
+void Actor::sort_events() {
+
+}
+
+
+/**
+ * @brief Update the actor state
+ * @return @c bool which returns true if actor is alive
+ * @note Currently only pushes the animation
+ */
+bool Actor::update() {
+    bool alive = true;
+    alive = process_events();
+    m_animations[m_anim_state][m_direction].push_anim();
+    return alive;
 }
