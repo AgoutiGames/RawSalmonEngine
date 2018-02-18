@@ -60,7 +60,7 @@ enum class Priority{
 
 struct ActorTemplate {
     std::string template_name = "_";
-    float speed = 250.0f;
+    float speed = 5.0f;
     Behaviour AI = Behaviour::idle;
     Direction direction = Direction::down;
     SDL_Rect hitbox = {0,0,0,0};

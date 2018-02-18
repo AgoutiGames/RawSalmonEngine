@@ -34,7 +34,7 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
         virtual ~AeMoveDirection() override;
 
         using EventContainer::kill;
-        void kill() {kill(this);}
+        virtual void kill() {kill(this);}
 
         static AeMoveDirection* create(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
 

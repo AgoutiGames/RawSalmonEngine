@@ -19,7 +19,7 @@
 #ifndef EVENT_CONTAINER_HPP_INCLUDED
 #define EVENT_CONTAINER_HPP_INCLUDED
 
-#include <vector>
+#include <list>
 
 #include "util/game_types.hpp"
 
@@ -30,14 +30,16 @@ class EventContainer : public T{
         EventContainer(Priority prio) : m_priority{prio} {}
 
         static bool kill(U* event) {
-            for(unsigned i = 0; i < m_event_list.size(); i++) {
-                if(&(m_event_list[i]) == event) {
-                    m_event_list.erase(m_event_list.begin() + i);
+            for(auto it=m_event_list.begin(); it != m_event_list.end(); ++it) {
+                if(&*it == event) {
+                    m_event_list.erase(it);
                     return true;
                 }
             }
             return false;
         }
+
+        virtual Priority priority() {return m_priority;}
 
         static U* duplicate(U* event);
         static U* duplicate(U& event);
@@ -48,10 +50,10 @@ class EventContainer : public T{
         static void initialize();
 
     private:
-        static std::vector<U> m_event_list;
+        static std::list<U> m_event_list;
 };
 
-template <class T, class U> std::vector<U> EventContainer<T, U>::m_event_list;
+template <class T, class U> std::list<U> EventContainer<T, U>::m_event_list;
 
 template <class T, class U> void EventContainer<T, U>::initialize() {
     m_event_list.clear();

@@ -28,6 +28,8 @@ class ActorEvent{
     public:
         ActorEvent() {}
         virtual bool process(Actor& actor) = 0;
+        virtual void kill() = 0;
+        virtual Priority priority() = 0;
         virtual ~ActorEvent() = 0;
 
         static void initialize_all();

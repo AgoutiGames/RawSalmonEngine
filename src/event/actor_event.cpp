@@ -24,4 +24,8 @@ void ActorEvent::initialize_all() {
     EventContainer<ActorEvent, AeMoveDirection>::initialize();
 }
 
+Priority ActorEvent::priority() {
+
+}
+
 ActorEvent::~ActorEvent() {}

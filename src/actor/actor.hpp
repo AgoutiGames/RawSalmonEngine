@@ -44,11 +44,11 @@ class Actor{
 
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         bool update();
+        bool animate(AnimationType anim, Direction dir);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor);
         bool process_events();
         void add_event(ActorEvent* event);
-        void sort_events();
 
         static tinyxml2::XMLError add_template(tinyxml2::XMLElement* source, Uint16 tile_id);
         static void add_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);

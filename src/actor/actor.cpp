@@ -31,7 +31,11 @@ std::map<Uint16, std::string> Actor::m_gid_to_temp_name;
 
 Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at(tile_id)))
 {
-
+    // DELETE: This is only for the purpose of illustration
+    add_event(AeMoveDirection::create(Direction::right, 120));
+    add_event(AeMoveDirection::create(Direction::down, 60, Priority::high));
+    add_event(AeMoveDirection::create(Direction::left, 120, Priority::low));
+    add_event(AeMoveDirection::create(Direction::up, 60));
 }
 
 Actor::Actor(ActorTemplate& templ) :
@@ -341,12 +345,17 @@ bool Actor::move(float x_factor, float y_factor) {
  */
 bool Actor::process_events() {
     bool alive = true;
-    while(!m_event_pipeline.empty()) {
-        bool processed = m_event_pipeline.front()->process(*this);
+    if(!m_event_pipeline.empty()) {
+        ActorEvent* event = m_event_pipeline.front();
+        bool processed = event->process(*this);
         if(processed) {
-    //        m_event_pipeline.front()->kill();
+            m_event_pipeline.front()->kill();
             m_event_pipeline.erase(m_event_pipeline.begin());
         }
+    }
+    else {
+        animate(AnimationType::idle, Direction::down);
+        // AI and Player behaviour stuff
     }
     return alive;
 }
@@ -356,16 +365,20 @@ bool Actor::process_events() {
  * @param event The event to be added
  */
 void Actor::add_event(ActorEvent* event) {
-    m_event_pipeline.push_back(event);
+    if(event->priority() == Priority::clear_all) m_event_pipeline.clear();
+    if(!m_event_pipeline.empty()) {
+        auto it = m_event_pipeline.end();
+        do {
+            --it;
+            if((*it)->priority() >= event->priority()) {
+                ++it;
+                m_event_pipeline.insert(it, event);
+                return;
+            }
+        } while(it != m_event_pipeline.begin());
+    }
+    m_event_pipeline.insert(m_event_pipeline.begin(), event);
 }
-
-/**
- * @brief Sorts the event pipeline by priority values
- */
-void Actor::sort_events() {
-
-}
-
 
 /**
  * @brief Update the actor state
@@ -374,6 +387,14 @@ void Actor::sort_events() {
  */
 bool Actor::update() {
     bool alive = process_events();
-    m_animations[m_anim_state][m_direction].push_anim();
     return alive;
+}
+
+bool Actor::animate(AnimationType anim, Direction dir) {
+    if(m_anim_state != anim || m_direction != dir) {
+        m_anim_state = anim;
+        m_direction = dir;
+        m_animations[m_anim_state][m_direction].init_anim();
+    }
+    return m_animations[m_anim_state][m_direction].push_anim();
 }
