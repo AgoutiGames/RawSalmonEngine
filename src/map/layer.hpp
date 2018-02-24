@@ -52,6 +52,8 @@ class Layer{
 
         bool render(SDL_Rect* camera) const;
         void update();
+        std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
+                                      AnimationType animation = AnimationType::invalid);
 
     private:
         LayerType m_type = undefinied;

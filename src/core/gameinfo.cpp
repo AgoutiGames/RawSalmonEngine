@@ -107,13 +107,37 @@ bool GameInfo::load_map(std::string mapfile) {
     else return false;
 }
 
+bool GameInfo::fetch_player() {
+    Behaviour B = Behaviour::player;
+    std::vector<Actor*> actor_list = m_map.get_actors(std::string(""),B);
+    if(actor_list.size() > 1) {
+        std::cerr << "Error: More than one actor with player behaviour!\n";
+        return false;
+    }
+    else if(actor_list.size() == 0) {
+        std::cerr << "Error: No actor with player behaviour found!\n";
+        return false;
+    }
+    else {
+        m_player = actor_list[0];
+        return true;
+    }
+}
+
+/**
+ * @brief Updates the map
+ */
+
+ void GameInfo::update() {
+    m_map.update();
+ }
+
 /**
  * @brief Draws the current map in correlation to the camera to screen
  */
 void GameInfo::render() {
     SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF ); // White Background
     SDL_RenderClear(m_renderer);
-    m_map.update();
     m_map.render(&m_camera);
     SDL_RenderPresent(m_renderer);
 }

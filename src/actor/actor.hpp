@@ -54,6 +54,11 @@ class Actor{
         static void add_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
         static void initialize();
 
+        Behaviour get_behaviour() const {return m_AI;}
+        AnimationType get_animation() const {return m_anim_state;}
+        Direction get_direction() const {return m_direction;}
+        std::string get_name() const {return m_name;}
+
 
     private:
         float m_x;

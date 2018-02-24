@@ -31,11 +31,7 @@ std::map<Uint16, std::string> Actor::m_gid_to_temp_name;
 
 Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at(tile_id)))
 {
-    // DELETE: This is only for the purpose of illustration
-    add_event(AeMoveDirection::create(Direction::right, 120));
-    add_event(AeMoveDirection::create(Direction::down, 60, Priority::high));
-    add_event(AeMoveDirection::create(Direction::left, 120, Priority::low));
-    add_event(AeMoveDirection::create(Direction::up, 60));
+
 }
 
 Actor::Actor(ActorTemplate& templ) :
@@ -158,6 +154,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 void Actor::render(int x_cam, int y_cam) const {
     SDL_Rect dest {static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), static_cast<int>(m_width), static_cast<int>(m_height)};
     m_animations.at(m_anim_state).at(m_direction).render(dest);
+    //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height));
 }
 
 /**
@@ -334,8 +331,10 @@ tinyxml2::XMLError Actor::add_template(tinyxml2::XMLElement* source, Uint16 tile
 bool Actor::move(float x_factor, float y_factor) {
     /// @todo Check for collision
     bool success = true;
-    m_x += x_factor * m_base_speed;
-    m_y += y_factor * m_base_speed;
+    const float FPS = 60;
+    /// @todo Apply tile speed modifiers
+    m_x += x_factor * m_base_speed / FPS;
+    m_y += y_factor * m_base_speed / FPS;
     return success;
 }
 

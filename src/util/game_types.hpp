@@ -32,6 +32,7 @@
  */
 
 enum class Behaviour {
+    player,
     idle,
     walk_around,
     invalid,
@@ -60,7 +61,7 @@ enum class Priority{
 
 struct ActorTemplate {
     std::string template_name = "_";
-    float speed = 5.0f;
+    float speed = 250.0f; // Pixel per second
     Behaviour AI = Behaviour::idle;
     Direction direction = Direction::down;
     SDL_Rect hitbox = {0,0,0,0};

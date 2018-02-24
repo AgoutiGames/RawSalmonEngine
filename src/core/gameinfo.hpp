@@ -22,6 +22,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 
+#include "actor/actor.hpp"
 #include "map/mapdata.hpp"
 
 /**
@@ -37,10 +38,13 @@ public:
     void close();
 
     void render();
+    void update();
 
     bool load_map(std::string mapfile);
+    bool fetch_player();
 
     SDL_Rect m_camera;
+    Actor* m_player;
 
 private:
     SDL_Window* m_window = nullptr;

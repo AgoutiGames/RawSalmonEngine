@@ -171,3 +171,12 @@ void MapData::update() {
         m_layers[i_layer].update();
     }
 }
+
+std::vector<Actor*> MapData::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
+    std::vector<Actor*> actor_list;
+    for(Layer& layer : m_layers) {
+        std::vector<Actor*> sublist = layer.get_actors(name, behaviour, direction, animation);
+        actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
+    }
+    return actor_list;
+}

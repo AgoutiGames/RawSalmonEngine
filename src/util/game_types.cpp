@@ -36,6 +36,7 @@ Direction str_to_direction(const std::string& name) {
 
 /// Converts a @c string to an @c enum of @c Behaviour
 Behaviour str_to_behaviour(const std::string& name) {
+    if(name == "PLAYER") return Behaviour::player;
     if(name == "IDLE") return Behaviour::idle;
     if(name == "WALK_AROUND") return Behaviour::walk_around;
     else return Behaviour::invalid;

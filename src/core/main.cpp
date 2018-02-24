@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "core/gameinfo.hpp"
+#include "event/ae_move_direction.hpp"
 
 using namespace std;
 
@@ -30,6 +31,9 @@ int main()
         std::cerr << "Map couldn't load\n";
     }
     else {
+        if(!game.fetch_player()) {
+            std::cerr << "Could not fetch player. Input deactivated!\n";
+        }
         //Event handler
         SDL_Event e;
 
@@ -56,7 +60,7 @@ int main()
                         break;
 
                         case SDLK_w:
-                        game.m_camera.y -= 1;
+                        game.m_player->add_event(AeMoveDirection::create(Direction::up, 60));
                         break;
 
                         case SDLK_DOWN:
@@ -64,7 +68,7 @@ int main()
                         break;
 
                         case SDLK_s:
-                        game.m_camera.y += 1;
+                        game.m_player->add_event(AeMoveDirection::create(Direction::down, 60));
                         break;
 
                         case SDLK_LEFT:
@@ -72,7 +76,7 @@ int main()
                         break;
 
                         case SDLK_a:
-                        game.m_camera.x -= 1;
+                        game.m_player->add_event(AeMoveDirection::create(Direction::left, 60));
                         break;
 
                         case SDLK_RIGHT:
@@ -80,11 +84,12 @@ int main()
                         break;
 
                         case SDLK_d:
-                        game.m_camera.x += 1;
+                        game.m_player->add_event(AeMoveDirection::create(Direction::right, 60));
                         break;
                     }
                 }
             }
+            game.update();
             game.render();
         }
     }
