@@ -159,6 +159,10 @@
   </data>
  </layer>
  <objectgroup name="Objektebene 1">
-  <object id="1" name="Actor_1" gid="63" x="118.667" y="270.667" width="128" height="128"/>
+  <object id="1" name="Actor_1" gid="63" x="118.667" y="270.667" width="128" height="128">
+   <properties>
+    <property name="BEHAVIOUR" value="PLAYER"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
