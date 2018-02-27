@@ -16,44 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef GAMEINFO_HPP_INCLUDED
-#define GAMEINFO_HPP_INCLUDED
+#ifndef ACTOR_EVENT_HPP_INCLUDED
+#define ACTOR_EVENT_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
-#include <string>
+#include "util/game_types.hpp"
 
-#include "actor/actor.hpp"
-#include "map/mapdata.hpp"
+class Actor;
 
-/**
- * @brief This class manages interaction between player and game modules
- */
+/// Category via which all actor events can be handled
+/// @warning Always add new actor events to the initialize_all method!
+class ActorEvent{
 
-class GameInfo {
-public:
-    GameInfo(unsigned screen_w, unsigned screen_h);
-    ~GameInfo();
+    public:
+        ActorEvent() {}
+        virtual bool process(Actor& actor) = 0;
+        virtual void kill() = 0;
+        virtual Priority priority() = 0;
+        virtual ~ActorEvent() = 0;
 
-    bool init();
-    void close();
+        static void initialize_all();
 
-    void render();
-    void update();
-
-    bool load_map(std::string mapfile);
-    bool fetch_player();
-
-    SDL_Rect m_camera;
-    Actor* m_player = nullptr;
-
-private:
-    SDL_Window* m_window = nullptr;
-    std::string m_window_title = "Salmon";
-    SDL_Renderer* m_renderer = nullptr;
-    unsigned m_screen_w;
-    unsigned m_screen_h;
-
-    MapData m_map; ///< Stores the currently active game map
+    private:
 };
 
-#endif // GAMEINFO_HPP_INCLUDED
+
+#endif // ACTOR_EVENT_HPP_INCLUDED

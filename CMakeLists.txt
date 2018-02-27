@@ -21,7 +21,9 @@ set(CORE_SOURCES
     src/core/gameinfo.cpp
     )
 
-set(EVENT_SOURCES)
+set(EVENT_SOURCES
+    src/event/actor_event.cpp
+    src/event/ae_move_direction.cpp)
 
 set(GRAPHICS_SOURCES
     src/graphics/texture.cpp

@@ -32,6 +32,7 @@
  */
 
 enum class Behaviour {
+    player,
     idle,
     walk_around,
     invalid,
@@ -51,9 +52,16 @@ enum class AnimationType {
     invalid,
 };
 
+enum class Priority{
+    low,
+    medium,
+    high,
+    clear_all,
+};
+
 struct ActorTemplate {
     std::string template_name = "_";
-    float speed = 250.0f;
+    float speed = 250.0f; // Pixel per second
     Behaviour AI = Behaviour::idle;
     Direction direction = Direction::down;
     SDL_Rect hitbox = {0,0,0,0};
@@ -64,6 +72,6 @@ AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
 Behaviour str_to_behaviour(const std::string& name);
 
-
+std::vector<float> dir_to_mov(const Direction dir);
 
 #endif // GAME_TYPES_HPP_INCLUDED

@@ -60,8 +60,8 @@ class Tileset{
 
         static void set_opacity(float opacity = 1.0f);
 
-
-        static void write_overhang(); // sets the 4 values below vv
+                                      //                         | |
+        static void write_overhang(); // sets the 4 values below v v
 
         // These have to be static and public so layer objects can see them
         static unsigned m_up_overhang;

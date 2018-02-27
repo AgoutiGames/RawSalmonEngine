@@ -44,6 +44,9 @@ class MapData {
         bool render(SDL_Rect* camera);
         void update();
 
+        std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
+                                      AnimationType animation = AnimationType::invalid);
+
     private:
         tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file
         std::string m_base_path = "../data/"; ///< Path to folder where .tmx map files are

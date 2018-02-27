@@ -85,6 +85,9 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
     if(eResult != XML_SUCCESS) return eResult;
 
     // If attribute "source" is set, load external .tsx tileset file
+    // Pass the new full path to the parsing!!
+    // If tsx file is in a different folder, image files referenced from
+    // there can't be found, because the refer to the tsx files base path
     const char* p_source;
     p_source = ts_file->Attribute("source");
     XMLDocument tsx_tileset{true, tinyxml2::COLLAPSE_WHITESPACE};
@@ -245,6 +248,8 @@ void Tileset::set_opacity(float opacity) {
  * margin around the actual screen to display an extra tree for example, which protrudes
  * from the lower screen boundary into the screen. This is easier than checking each tile
  * seperately while having a better performance than without offcreen tile culling.
+ *
+ * @todo Use pixel margin instead of tile margin for possibly slightly better performance
  */
 void Tileset::write_overhang() {
     // Reset the overhang values
