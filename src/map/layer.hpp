@@ -48,7 +48,7 @@ class Layer{
     public:
         Layer(unsigned tile_w, unsigned tile_h);
 
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source);
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, std::string& base_path);
 
         bool render(SDL_Rect* camera) const;
         void update();
@@ -75,9 +75,6 @@ class Layer{
 
         // members for m_type object
         std::vector<Actor> m_obj_grid;
-
-        static std::string m_base_path;
-
 };
 
 

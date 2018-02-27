@@ -130,7 +130,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     // Actually parse each layer of the vector of pointers
     for(unsigned i_layer = 0; i_layer < p_layers.size(); i_layer++) {
-        XMLError eResult = m_layers[i_layer].init(p_layers[i_layer]);
+        XMLError eResult = m_layers[i_layer].init(p_layers[i_layer], m_base_path);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing layer: " << i_layer << "\n";
             return eResult;

@@ -27,11 +27,6 @@
 #include "util/tinyxml2.h"
 
 /**
- * Path to folder which holds the .tmx map files.
- * Possible image file paths are relative to this. */
-std::string Layer::m_base_path = "../data/";
-
-/**
  * @brief Constructs empty uninitialized Layer
  * @param tile_w, tile_h Dimensions of a standard tile
  */
@@ -43,10 +38,11 @@ m_tile_w{tile_w}, m_tile_h{tile_h}
 
 /**
  * @brief Parse the layer information from @c XMLElement*
- * @param source The @c XMLElement* whicht stores the layer info
+ * @param source The @c XMLElement* which stores the layer info
+ * @param base_path Possible image file paths are relative to this
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
+tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, std::string& base_path) {
     using namespace tinyxml2;
 
     XMLError eResult;
@@ -184,7 +180,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
         if(p_image == nullptr) return XML_ERROR_PARSING_ELEMENT;
         const char* p_source = p_image->Attribute("source");
         if(p_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-        m_img_src = m_base_path + std::string(p_source);
+        m_img_src = base_path + std::string(p_source);
 
         // Parse the actual image data
         if(!m_img.loadFromFile(Tile::get_renderer(), m_img_src)) return XML_ERROR_PARSING;
