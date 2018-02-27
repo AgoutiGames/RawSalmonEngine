@@ -27,8 +27,6 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-//class ActorEvent;
-
 /**
  * @brief Parse, store and manage all actors
  *

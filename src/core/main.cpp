@@ -31,8 +31,10 @@ int main()
         std::cerr << "Map couldn't load\n";
     }
     else {
+        bool player_input = true;
         if(!game.fetch_player()) {
             std::cerr << "Could not fetch player. Input deactivated!\n";
+            player_input = false;
         }
         //Event handler
         SDL_Event e;
@@ -49,10 +51,10 @@ int main()
                 {
                     quit = true;
                 }
-                					//User presses a key
+                //User presses a key
                 else if( e.type == SDL_KEYDOWN )
                 {
-                    //Select surfaces based on key press
+                    //Move player or camera based on key press
                     switch( e.key.keysym.sym )
                     {
                         case SDLK_UP:
@@ -60,7 +62,7 @@ int main()
                         break;
 
                         case SDLK_w:
-                        game.m_player->add_event(AeMoveDirection::create(Direction::up, 60));
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::up, 60));}
                         break;
 
                         case SDLK_DOWN:
@@ -68,7 +70,7 @@ int main()
                         break;
 
                         case SDLK_s:
-                        game.m_player->add_event(AeMoveDirection::create(Direction::down, 60));
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::down, 60));}
                         break;
 
                         case SDLK_LEFT:
@@ -76,7 +78,7 @@ int main()
                         break;
 
                         case SDLK_a:
-                        game.m_player->add_event(AeMoveDirection::create(Direction::left, 60));
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::left, 60));}
                         break;
 
                         case SDLK_RIGHT:
@@ -84,7 +86,7 @@ int main()
                         break;
 
                         case SDLK_d:
-                        game.m_player->add_event(AeMoveDirection::create(Direction::right, 60));
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::right, 60));}
                         break;
                     }
                 }

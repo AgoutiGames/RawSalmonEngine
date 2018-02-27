@@ -44,7 +44,7 @@ public:
     bool fetch_player();
 
     SDL_Rect m_camera;
-    Actor* m_player;
+    Actor* m_player = nullptr;
 
 private:
     SDL_Window* m_window = nullptr;

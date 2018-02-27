@@ -19,13 +19,15 @@
 #ifndef AE_MOVE_DIRECTION_HPP_INCLUDED
 #define AE_MOVE_DIRECTION_HPP_INCLUDED
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
-
 #include <vector>
 
+#include "event/actor_event.hpp"
+#include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
+/**
+ * @brief Move the actor to the supplied direction for x frames
+ */
 class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
     public:

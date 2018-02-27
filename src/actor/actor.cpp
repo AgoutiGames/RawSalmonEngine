@@ -154,6 +154,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 void Actor::render(int x_cam, int y_cam) const {
     SDL_Rect dest {static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), static_cast<int>(m_width), static_cast<int>(m_height)};
     m_animations.at(m_anim_state).at(m_direction).render(dest);
+    // Alternative which doesnt do any resizing
     //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height));
 }
 
@@ -389,6 +390,14 @@ bool Actor::update() {
     return alive;
 }
 
+/**
+ * @brief Animate the actor
+ * @param anim The type of the animation
+ * @param dir The direction of the animation
+ * @return @c bool which indicates if the animation finished a cycle/wrapped around
+ * @warning Currently there is no checking if anim or dir are valid for the actor!!
+ *          Segmentation fault possible for not properly parsed actor!!!
+ */
 bool Actor::animate(AnimationType anim, Direction dir) {
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;

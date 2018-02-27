@@ -172,6 +172,7 @@ void MapData::update() {
     }
 }
 
+/// Fetch all actors which conform the supplied parameters
 std::vector<Actor*> MapData::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
     for(Layer& layer : m_layers) {

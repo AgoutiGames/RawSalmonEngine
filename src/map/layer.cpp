@@ -367,10 +367,7 @@ void Layer::update() {
     }
 }
 
-/**
- * @brief Returns a pointer to the first actor with "player" behaviour
- */
-
+/// Fetch all actors which conform the supplied parameters
 std::vector<Actor*> Layer::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
     if(m_type == LayerType::object) {

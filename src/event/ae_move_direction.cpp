@@ -31,6 +31,11 @@ m_duration{duration}
 
 }
 
+/**
+ * @brief Move the actor to the supplied direction for x frames
+ * @param actor The actor which should move
+ * @return @c bool which indicates if the event is fully processed
+ */
 bool AeMoveDirection::process(Actor& actor) {
     // process stuff
     if (m_duration != 0) {
@@ -43,6 +48,7 @@ bool AeMoveDirection::process(Actor& actor) {
     else return false;
 }
 
+/// Create event and return pointer to it
 AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Priority prio) {
     AeMoveDirection temp(dir, duration, prio);
     return duplicate(temp);

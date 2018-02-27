@@ -20,6 +20,7 @@
 #include "event/event_container.hpp"
 #include "event/ae_move_direction.hpp"
 
+/// Delete all currently stored actor events
 void ActorEvent::initialize_all() {
     EventContainer<ActorEvent, AeMoveDirection>::initialize();
 }

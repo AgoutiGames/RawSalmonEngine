@@ -23,6 +23,8 @@
 
 class Actor;
 
+/// Category via which all actor events can be handled
+/// @warning Always add new actor events to the initialize_all method!
 class ActorEvent{
 
     public:

@@ -23,12 +23,25 @@
 
 #include "util/game_types.hpp"
 
+/**
+ * @brief Manage all constructed events of supplied type U to prevent memory leaks
+ * @note This class also enables the inheritance from a base class category to manage
+ *       the events via a pointer of this type
+ *       class T -> event category
+ *       class U -> actual event type
+ */
+
 template <class T, class U>
 
 class EventContainer : public T{
     public:
         EventContainer(Priority prio) : m_priority{prio} {}
 
+        /**
+         * @brief Deletes the data of the event in the @c event_list
+         * @param event Pointer to the event
+         * @return @c bool which indicates if the event data could be found
+         */
         static bool kill(U* event) {
             for(auto it=m_event_list.begin(); it != m_event_list.end(); ++it) {
                 if(&*it == event) {
@@ -39,14 +52,29 @@ class EventContainer : public T{
             return false;
         }
 
+        /// Returns the priority value of the event
         virtual Priority priority() {return m_priority;}
 
+        /**
+         * @brief duplicates given event
+         * @param event The event which should be duplicated
+         * @return Pointer to the duplicate of the event
+         */
         static U* duplicate(U* event);
+
+        /**
+         * @brief duplicates given event
+         * @param event The event which should be duplicated
+         * @return Pointer to the duplicate of the event
+         */
         static U* duplicate(U& event);
+
+
         virtual ~EventContainer() = 0;
 
         Priority m_priority;
 
+        /// Deletes the @c event_list variable
         static void initialize();
 
     private:
