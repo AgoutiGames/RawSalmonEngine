@@ -24,20 +24,16 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <map>
 
 #include "graphics/texture.hpp"
 #include "map/tile.hpp"
+#include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
 std::string Tileset::m_base_path = "../data/";
-unsigned Tileset::m_base_tile_w = 0;
-unsigned Tileset::m_base_tile_h = 0;
 SDL_Renderer** Tileset::mpp_renderer = nullptr;
 std::vector<Tileset*> Tileset::mp_tilesets;
-unsigned Tileset::m_left_overhang = 0;
-unsigned Tileset::m_right_overhang = 0;
-unsigned Tileset::m_up_overhang = 0;
-unsigned Tileset::m_down_overhang = 0;
 
 /**
  * @brief Constructs an empty tileset object and adds it's pointer to @c mp_tilesets
@@ -64,11 +60,9 @@ Tileset::~Tileset() {
  * @param base_tile_w, base_tile_h Size of the base tile
  * @param renderer The @c SDL_Renderer used to render to screen
  */
-void Tileset::initialize(SDL_Renderer** renderer, unsigned base_tile_w, unsigned base_tile_h) {
+void Tileset::initialize(SDL_Renderer** renderer) {
     mp_tilesets.clear();
     mpp_renderer = renderer;
-    m_base_tile_w = base_tile_w;
-    m_base_tile_h = base_tile_h;
 }
 
 /**
@@ -242,7 +236,7 @@ void Tileset::set_opacity(float opacity) {
 }
 
 /**
- * @brief Write the required render margin to the static overhang variables
+ * @brief Return the required render margin for this tileset
  *
  * Since we support oversized tiles and tileset offsets, we have to render an additional
  * margin around the actual screen to display an extra tree for example, which protrudes
@@ -251,58 +245,50 @@ void Tileset::set_opacity(float opacity) {
  *
  * @todo Use pixel margin instead of tile margin for possibly slightly better performance
  */
-void Tileset::write_overhang() {
-    // Reset the overhang values
-    m_up_overhang = 0;
-    m_down_overhang = 0;
-    m_left_overhang = 0;
-    m_right_overhang = 0;
+std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsigned tile_h) {
+    unsigned pix_up = 0;
+    unsigned pix_down = 0;
+    unsigned pix_left = 0;
+    unsigned pix_right = 0;
 
-    // Check all registeres tileset objects
-    for(Tileset* ts: mp_tilesets) {
-        unsigned pix_up = 0;
-        unsigned pix_down = 0;
-        unsigned pix_left = 0;
-        unsigned pix_right = 0;
-
-        // Translate offset into required margin sizes
-        if (ts->m_x_offset > 0) {
-            pix_left += ts->m_x_offset;
-        }
-        else if (ts->m_x_offset < 0) {
-            pix_right -= ts->m_x_offset;
-        }
-        if (ts->m_y_offset > 0) {
-            pix_up += ts->m_y_offset;
-        }
-        else if(ts->m_y_offset < 0) {
-            pix_down -= ts->m_y_offset;
-        }
-
-        // Take oversized tiles into account
-        pix_left += ts->m_tile_width - m_base_tile_w;
-        pix_down += ts->m_tile_height - m_base_tile_h;
-
-        // Translate the pixel margin into a tile margin
-        // @todo? Using the pixel values, the rendering could
-        // be slightly faster if there are many oversized tiles
-        // which are not divisible by the base tile size
-        unsigned loc_up = pix_up / m_base_tile_h;
-        if(pix_up % m_base_tile_h > 0) loc_up++;
-        unsigned loc_down = pix_down / m_base_tile_h;
-        if(pix_down % m_base_tile_h > 0) loc_down++;
-        unsigned loc_left = pix_left / m_base_tile_w;
-        if(pix_left % m_base_tile_w > 0) loc_left++;
-        unsigned loc_right = pix_right / m_base_tile_w;
-        if(pix_right % m_base_tile_w > 0) loc_right++;
-
-        // Update the overhang if it's the new maximum
-        if(loc_up > m_up_overhang) m_up_overhang = loc_up;
-        if(loc_down > m_down_overhang) m_down_overhang = loc_down;
-        if(loc_left > m_left_overhang) m_left_overhang = loc_left;
-        if(loc_right > m_right_overhang) m_right_overhang = loc_right;
+    // Translate offset into required margin sizes
+    if (m_x_offset > 0) {
+        pix_left += m_x_offset;
     }
-    return;
+    else if (m_x_offset < 0) {
+        pix_right -= m_x_offset;
+    }
+    if (m_y_offset > 0) {
+        pix_up += m_y_offset;
+    }
+    else if(m_y_offset < 0) {
+        pix_down -= m_y_offset;
+    }
+
+    // Take oversized tiles into account
+    pix_left += m_tile_width - tile_w;
+    pix_down += m_tile_height - tile_h;
+
+    // Translate the pixel margin into a tile margin
+    // @todo? Using the pixel values, the rendering could
+    // be slightly faster if there are many oversized tiles
+    // which are not divisible by the base tile size
+    unsigned loc_up = pix_up / tile_h;
+    if(pix_up % tile_h > 0) loc_up++;
+    unsigned loc_down = pix_down / tile_h;
+    if(pix_down % tile_h > 0) loc_down++;
+    unsigned loc_left = pix_left / tile_w;
+    if(pix_left % tile_w > 0) loc_left++;
+    unsigned loc_right = pix_right / tile_w;
+    if(pix_right % tile_w > 0) loc_right++;
+
+    std::map<Direction, unsigned> oh_map;
+    oh_map[Direction::up] = loc_up;
+    oh_map[Direction::down] = loc_down;
+    oh_map[Direction::left] = loc_left;
+    oh_map[Direction::right] = loc_right;
+
+    return oh_map;
 }
 
 SDL_Renderer* Tileset::get_renderer(){

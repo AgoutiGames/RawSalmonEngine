@@ -44,6 +44,8 @@ class MapData {
         bool render(SDL_Rect* camera);
         void update();
 
+        unsigned get_overhang(Direction dir) const;
+
         std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
 
@@ -54,6 +56,13 @@ class MapData {
         unsigned m_tile_h;
         unsigned m_width;  // The map dimensions
         unsigned m_height;
+
+                               //                         | |
+        void write_overhang(); // sets the 4 values below v v
+        unsigned m_up_overhang = 0;
+        unsigned m_down_overhang = 0;
+        unsigned m_left_overhang = 0;
+        unsigned m_right_overhang = 0;
 
         std::vector<Tileset> m_tilesets; ///< Contains all used Tilesets
         std::vector<Layer> m_layers; ///< Contains all used layers

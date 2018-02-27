@@ -93,13 +93,14 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     }while(pTs != nullptr );
     std::cout << "Tileset files: " << p_tilesets.size() << "\n";
 
-    // Clear tileset vector member of possible old data
-    m_tilesets.clear();
-    m_tilesets.resize(p_tilesets.size());
-
+    // Clear tileset vector member of possible old data and
     // (Re)init the Tile and Tileset classes with current info
+    // The order is important!
+    m_tilesets.clear();
+    Tileset::initialize(renderer);
+    m_tilesets.resize(p_tilesets.size());
     Tile::initialize(renderer, m_tile_w, m_tile_h);
-    Tileset::initialize(renderer, m_tile_w, m_tile_h);
+
 
     // Actually parse each tileset of the vector of pointers
     for(unsigned i = 0; i < p_tilesets.size(); i++) {
@@ -112,7 +113,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     // This must be called after the parsing of all tilesets!
     // It calculates the minimum rendering overhang due to big tiles and tileset offsets
-    Tileset::write_overhang();
+    write_overhang();
 
     // Collect all layers to a vector of pointers
     std::vector<XMLElement*> p_layers;
@@ -156,7 +157,7 @@ bool MapData::render(SDL_Rect* camera){
 
     // Renders all layers
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
-        if(!m_layers[i_layer].render(camera)) {
+        if(!m_layers[i_layer].render(camera, *this)) {
             std::cerr << "Failed at rendering layer " << i_layer << " !\n";
             success = false;
         }
@@ -180,4 +181,42 @@ std::vector<Actor*> MapData::get_actors(std::string name, Behaviour behaviour, D
         actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
     }
     return actor_list;
+}
+
+/// Returns tile overhang values for the specified direction (up, down, left, right)
+unsigned MapData::get_overhang(Direction dir) const{
+    switch(dir) {
+        case Direction::up:
+            return m_up_overhang;
+            break;
+        case Direction::down:
+            return m_down_overhang;
+            break;
+        case Direction::left:
+            return m_left_overhang;
+            break;
+        case Direction::right:
+            return m_right_overhang;
+            break;
+        default:
+            std::cout << "Invalid overhang value requested!\n";
+            return 0;
+            break;
+    }
+}
+
+void MapData::write_overhang() {
+    std::map<Direction, unsigned> oh;
+    for(Tileset& ts : m_tilesets) {
+        std::map<Direction, unsigned> temp;
+        temp = ts.determine_overhang(m_tile_w, m_tile_h);
+        if(temp[Direction::up] > oh[Direction::up]) {oh[Direction::up] = temp[Direction::up];}
+        if(temp[Direction::down] > oh[Direction::down]) {oh[Direction::down] = temp[Direction::down];}
+        if(temp[Direction::left] > oh[Direction::left]) {oh[Direction::left] = temp[Direction::left];}
+        if(temp[Direction::right] > oh[Direction::right]) {oh[Direction::right] = temp[Direction::right];}
+    }
+    m_up_overhang = oh[Direction::up];
+    m_down_overhang = oh[Direction::down];
+    m_left_overhang = oh[Direction::left];
+    m_right_overhang = oh[Direction::right];
 }

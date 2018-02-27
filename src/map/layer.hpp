@@ -29,6 +29,7 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
+class MapData;
 
 /**
  * @brief Parse, store and draw individual layers of the game map
@@ -50,7 +51,7 @@ class Layer{
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, std::string& base_path);
 
-        bool render(SDL_Rect* camera) const;
+        bool render(SDL_Rect* camera, const MapData& base_map) const;
         void update();
         std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
@@ -65,7 +66,7 @@ class Layer{
         unsigned m_tile_w;
         unsigned m_tile_h;
         std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information
-        float m_opacity = 1.0f; ///< @warning value has no effect yet!
+        float m_opacity = 1.0f; ///< @warning value only works with image layers!
         int m_offset_x = 0;
         int m_offset_y = 0;
 

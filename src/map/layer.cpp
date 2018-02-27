@@ -22,6 +22,7 @@
 #include <sstream>
 #include <iostream>
 
+#include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/base64.h"
 #include "util/tinyxml2.h"
@@ -243,7 +244,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, std::string& base_p
  * @warning The layer opacity value is ignored except for @c image type layers
  */
 
-bool Layer::render(SDL_Rect* camera) const {
+bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
     bool success = true;
 
     // Render map type "map"
@@ -271,14 +272,14 @@ bool Layer::render(SDL_Rect* camera) const {
         int y_tile_offset = y_camera % tile_h;
 
         // Apply the margin which makes up for oversized tiles and tileset offset
-        x_tile_from -= Tileset::m_left_overhang;
-        x_tile_to += Tileset::m_right_overhang;
-        y_tile_from -= Tileset::m_up_overhang;
-        y_tile_to += Tileset::m_down_overhang;
+        x_tile_from -= base_map.get_overhang(Direction::left);
+        x_tile_to += base_map.get_overhang(Direction::right);
+        y_tile_from -= base_map.get_overhang(Direction::up);
+        y_tile_to += base_map.get_overhang(Direction::down);
 
         // Pixel perfect position of the first upper left tile
-        int x = -x_tile_offset - (Tileset::m_left_overhang * m_tile_w);
-        int y = -y_tile_offset - (Tileset::m_up_overhang * m_tile_h);
+        int x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
+        int y = -y_tile_offset - (base_map.get_overhang(Direction::up) * m_tile_h);
 
         // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
 
@@ -305,7 +306,7 @@ bool Layer::render(SDL_Rect* camera) const {
                 }
             }
             // Reset horizontal tile position
-            x = -x_tile_offset - (Tileset::m_left_overhang * m_tile_w);
+            x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
 
             // Move to next vertical tile position
             y += tile_h;

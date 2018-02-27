@@ -22,8 +22,10 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
+#include <map>
 
 #include "graphics/texture.hpp"
+#include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
@@ -53,21 +55,14 @@ class Tileset{
 
         bool render(Uint16 local_tile_id, int x, int y) const;
 
+        std::map<Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h);
+
         // Initialize the whole tileset class
-        static void initialize(SDL_Renderer** renderer, unsigned base_tile_w, unsigned base_tile_h);
+        static void initialize(SDL_Renderer** renderer);
 
         static SDL_Renderer* get_renderer();
 
         static void set_opacity(float opacity = 1.0f);
-
-                                      //                         | |
-        static void write_overhang(); // sets the 4 values below v v
-
-        // These have to be static and public so layer objects can see them
-        static unsigned m_up_overhang;
-        static unsigned m_down_overhang;
-        static unsigned m_left_overhang;
-        static unsigned m_right_overhang;
 
     private:
         unsigned m_tileset_id;
@@ -88,8 +83,6 @@ class Tileset{
         std::vector<Tile> m_tiles;
 
         static std::string m_base_path;
-        static unsigned m_base_tile_w;
-        static unsigned m_base_tile_h;
         static SDL_Renderer** mpp_renderer;
 
         static std::vector<Tileset*> mp_tilesets; // Contains a pointer to all tileset objects
