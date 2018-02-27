@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 
+#include "event/actor_event.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
@@ -41,10 +42,20 @@ class Actor{
 
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         bool update();
+        bool animate(AnimationType anim, Direction dir);
         void render(int x_cam, int y_cam) const;
+        bool move(float x_factor, float y_factor);
+        bool process_events();
+        void add_event(ActorEvent* event);
 
         static tinyxml2::XMLError add_template(tinyxml2::XMLElement* source, Uint16 tile_id);
         static void add_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
+        static void initialize();
+
+        Behaviour get_behaviour() const {return m_AI;}
+        AnimationType get_animation() const {return m_anim_state;}
+        Direction get_direction() const {return m_direction;}
+        std::string get_name() const {return m_name;}
 
 
     private:
@@ -61,6 +72,8 @@ class Actor{
         Direction m_direction; ///< Current direction facing
         SDL_Rect m_hitbox;
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
+
+        std::vector<ActorEvent*> m_event_pipeline;
 
         static std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
         static std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by globa tile id

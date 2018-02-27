@@ -44,6 +44,10 @@ void Tile::initialize(SDL_Renderer** renderer, unsigned base_tile_w, unsigned ba
     mpp_renderer = renderer;
     m_base_tile_w = base_tile_w;
     m_base_tile_h = base_tile_h;
+
+    // Since actor information is linked with individual tiles
+    // we also have to (re)init the actor class
+    Actor::initialize();
 }
 
 /**

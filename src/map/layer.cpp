@@ -366,3 +366,21 @@ void Layer::update() {
 
     }
 }
+
+/// Fetch all actors which conform the supplied parameters
+std::vector<Actor*> Layer::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
+    std::vector<Actor*> actor_list;
+    if(m_type == LayerType::object) {
+        for(Actor& actor : m_obj_grid) {
+            bool match = true;
+
+            if(name != "" && actor.get_name() != name) {match = false;}
+            if(behaviour != Behaviour::invalid && actor.get_behaviour() != behaviour) {match = false;}
+            if(direction != Direction::invalid && actor.get_direction() != direction) {match = false;}
+            if(animation != AnimationType::invalid && actor.get_animation() != animation) {match = false;}
+
+            if(match) {actor_list.push_back(&actor);}
+        }
+    }
+    return actor_list;
+}

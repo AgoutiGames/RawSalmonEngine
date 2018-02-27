@@ -34,9 +34,19 @@ Direction str_to_direction(const std::string& name) {
     else return Direction::invalid;
 }
 
-/// Converts a @p string to an @p enum of @c Behaviour
+/// Converts a @c string to an @c enum of @c Behaviour
 Behaviour str_to_behaviour(const std::string& name) {
+    if(name == "PLAYER") return Behaviour::player;
     if(name == "IDLE") return Behaviour::idle;
     if(name == "WALK_AROUND") return Behaviour::walk_around;
     else return Behaviour::invalid;
+}
+
+/// Converts a @c Direction to x and y factors
+std::vector<float> dir_to_mov(const Direction dir) {
+    if(dir == Direction::up)    return std::vector<float>{0,-1};
+    if(dir == Direction::right) return std::vector<float>{1,0};
+    if(dir == Direction::down)  return std::vector<float>{0,1};
+    if(dir == Direction::left)  return std::vector<float>{-1,0};
+    else return std::vector<float>{0,0};
 }

@@ -22,6 +22,7 @@
 #include <iostream>
 #include <map>
 
+#include "event/ae_move_direction.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
@@ -41,6 +42,16 @@ Actor::Actor(ActorTemplate& templ) :
  m_animations {templ.animations}
 {
 
+}
+
+/**
+ * @brief Initialize the whole actor class
+ */
+void Actor::initialize() {
+    m_templates.clear();
+    m_gid_to_temp_name.clear();
+    // Initialize all actor events
+    AeMoveDirection::initialize_all();
 }
 
 /**
@@ -143,18 +154,8 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 void Actor::render(int x_cam, int y_cam) const {
     SDL_Rect dest {static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), static_cast<int>(m_width), static_cast<int>(m_height)};
     m_animations.at(m_anim_state).at(m_direction).render(dest);
-}
-
-/**
- * @brief Update the actor state
- * @return @c bool which returns true if actor is alive
- * @note Currently only pushes the animation
- */
-bool Actor::update() {
-    bool alive = true;
-
-    m_animations[m_anim_state][m_direction].push_anim();
-    return alive;
+    // Alternative which doesnt do any resizing
+    //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height));
 }
 
 /**
@@ -320,4 +321,88 @@ tinyxml2::XMLError Actor::add_template(tinyxml2::XMLElement* source, Uint16 tile
     }
 
     return XML_SUCCESS;
+}
+
+/**
+ * @brief Add an @c ActorTemplate to the static vector @c m_templates from an @c XMLElement
+ * @param x_factor, y_factor Which indicate direction and extent of movement
+ * @return a @c bool which indicates collision
+ * @todo Check for collision!!!
+ */
+bool Actor::move(float x_factor, float y_factor) {
+    /// @todo Check for collision
+    bool success = true;
+    const float FPS = 60;
+    /// @todo Apply tile speed modifiers
+    m_x += x_factor * m_base_speed / FPS;
+    m_y += y_factor * m_base_speed / FPS;
+    return success;
+}
+
+/**
+ * @brief Process the event pipeline
+ * @return a @c bool which indicates if the actor "died"
+ */
+bool Actor::process_events() {
+    bool alive = true;
+    if(!m_event_pipeline.empty()) {
+        ActorEvent* event = m_event_pipeline.front();
+        bool processed = event->process(*this);
+        if(processed) {
+            m_event_pipeline.front()->kill();
+            m_event_pipeline.erase(m_event_pipeline.begin());
+        }
+    }
+    else {
+        animate(AnimationType::idle, Direction::down);
+        // AI and Player behaviour stuff
+    }
+    return alive;
+}
+
+/**
+ * @brief Adds the event to the actors pipeline and sorts
+ * @param event The event to be added
+ */
+void Actor::add_event(ActorEvent* event) {
+    if(event->priority() == Priority::clear_all) m_event_pipeline.clear();
+    if(!m_event_pipeline.empty()) {
+        auto it = m_event_pipeline.end();
+        do {
+            --it;
+            if((*it)->priority() >= event->priority()) {
+                ++it;
+                m_event_pipeline.insert(it, event);
+                return;
+            }
+        } while(it != m_event_pipeline.begin());
+    }
+    m_event_pipeline.insert(m_event_pipeline.begin(), event);
+}
+
+/**
+ * @brief Update the actor state
+ * @return @c bool which returns true if actor is alive
+ * @note Currently only pushes the animation
+ */
+bool Actor::update() {
+    bool alive = process_events();
+    return alive;
+}
+
+/**
+ * @brief Animate the actor
+ * @param anim The type of the animation
+ * @param dir The direction of the animation
+ * @return @c bool which indicates if the animation finished a cycle/wrapped around
+ * @warning Currently there is no checking if anim or dir are valid for the actor!!
+ *          Segmentation fault possible for not properly parsed actor!!!
+ */
+bool Actor::animate(AnimationType anim, Direction dir) {
+    if(m_anim_state != anim || m_direction != dir) {
+        m_anim_state = anim;
+        m_direction = dir;
+        m_animations[m_anim_state][m_direction].init_anim();
+    }
+    return m_animations[m_anim_state][m_direction].push_anim();
 }
