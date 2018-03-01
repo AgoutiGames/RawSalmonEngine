@@ -27,28 +27,16 @@
 #include <map>
 
 #include "graphics/texture.hpp"
+#include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-std::string Tileset::m_base_path = "../data/";
-SDL_Renderer** Tileset::mpp_renderer = nullptr;
-std::vector<Tileset*> Tileset::mp_tilesets;
-
 /**
- * @brief Constructs an empty tileset object and adds it's pointer to @c mp_tilesets
+ * @brief Constructs an empty tileset object
  */
 Tileset::Tileset() {
-    mp_tilesets.push_back(this);
-    m_tileset_id = mp_tilesets.size() - 1;
-}
 
-/**
- * @brief Copies nothing, only overwrites old pointer with new one in @c mp_tilesets
- */
-Tileset::Tileset(const Tileset& other) :
-m_tileset_id{other.m_tileset_id} {
-    mp_tilesets[m_tileset_id] = this;
 }
 
 Tileset::~Tileset() {
@@ -56,21 +44,11 @@ Tileset::~Tileset() {
 }
 
 /**
- * @brief Initializes the tileset class with map info
- * @param base_tile_w, base_tile_h Size of the base tile
- * @param renderer The @c SDL_Renderer used to render to screen
- */
-void Tileset::initialize(SDL_Renderer** renderer) {
-    mp_tilesets.clear();
-    mpp_renderer = renderer;
-}
-
-/**
  * @brief Initialize a tileset from XML info
  * @param ts_file The @c XMLElement which storest the tileset information
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
+tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_map) {
 
     using namespace tinyxml2;
 
@@ -79,14 +57,16 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
     if(eResult != XML_SUCCESS) return eResult;
 
     // If attribute "source" is set, load external .tsx tileset file
-    // Pass the new full path to the parsing!!
+    // Pass the new full path to the parsing
     // If tsx file is in a different folder, image files referenced from
-    // there can't be found, because the refer to the tsx files base path
+    // there can't be found, because they refer to the tsx files base path
+    std::string full_path = base_map.get_file_path();
+
     const char* p_source;
     p_source = ts_file->Attribute("source");
     XMLDocument tsx_tileset{true, tinyxml2::COLLAPSE_WHITESPACE};
     if(p_source != nullptr) {
-        std::string full_path = m_base_path + std::string(p_source);
+        full_path += std::string(p_source);
 
         XMLError eResult = tsx_tileset.LoadFile(full_path.c_str());
         if(eResult != XML_SUCCESS) return eResult;
@@ -124,7 +104,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
     const char* p_ts_source;
     p_ts_source = p_image->Attribute("source");
     if (p_ts_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-    m_image.loadFromFile(*mpp_renderer, m_base_path + std::string(p_ts_source));
+    m_image.loadFromFile(base_map.get_renderer(), full_path + std::string(p_ts_source));
     eResult = p_image->QueryUnsignedAttribute("width", &m_width);
     if(eResult != XML_SUCCESS) return eResult;
     eResult = p_image->QueryUnsignedAttribute("height", &m_height);
@@ -145,8 +125,11 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
         return XML_ERROR_PARSING;
     }
 
-    // Set the clip rect of each tile in the tileset
+    // Set reserve to keep pointers to tile stable!
+    m_tiles.reserve(m_tile_count);
+
     for(unsigned i_tile = 0; i_tile < m_tile_count; i_tile++) {
+        // Set the clip rect of each tile in the tileset
         SDL_Rect temp;
         temp.x = i_tile % (m_width / m_tile_width) * m_tile_width;
         temp.y = i_tile / (m_width / m_tile_width) * m_tile_height;
@@ -155,6 +138,10 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
 
         // Construct each tile of the tilset and store in m_tiles
         m_tiles.push_back(Tile(this, temp));
+        if(!base_map.register_tile(&m_tiles.back(), i_tile + m_first_gid)) {
+            std::cerr << "Failed to register Tile, abort parsing process!\n";
+            return XML_ERROR_PARSING;
+        }
     }
 
     // Parse user specified properties of the tileset (only blend mode right now)
@@ -196,8 +183,8 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
     XMLElement* p_tile = ts_file->FirstChildElement("tile");
     if(p_tile != nullptr) {
 
-        // Static method of Tile class deals with the parsing of all tiles
-        eResult = Tile::parse_from_tileset(p_tile, m_first_gid);
+        // Method of MapData object deals with the parsing of all tiles
+        eResult = base_map.parse_tiles_from_tileset(p_tile, m_first_gid);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at loading tile info of tileset: " << m_name << " \n";
             return eResult;
@@ -212,27 +199,16 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file) {
  * @param local_tile_id The ID of the tile corresponding to it's tileset
  * @return @c bool which indicates success or failure
  */
-bool Tileset::render(Uint16 local_tile_id, int x, int y) const {
+bool Tileset::render(Uint16 local_tile_id, int x, int y, const MapData& base_map) const {
     bool success = true;
     if(local_tile_id >= m_tiles.size()) {
         std::cerr << "Local tileset tile id " << local_tile_id << " is out of bounds\n";
         success = false;
     }
     else {
-        m_tiles[local_tile_id].render(x, y);
+        m_tiles[local_tile_id].render(x, y, base_map);
     }
     return success;
-}
-
-/**
- * @brief Sets the opacity of all tileset images
- * @param opacity The float value specifying the opacity value
- */
-void Tileset::set_opacity(float opacity) {
-    Uint8 alpha = static_cast<Uint8>(opacity * 255);
-    for(Tileset* ts : mp_tilesets) {
-        ts->m_image.setAlpha(alpha);
-    }
 }
 
 /**
@@ -245,7 +221,7 @@ void Tileset::set_opacity(float opacity) {
  *
  * @todo Use pixel margin instead of tile margin for possibly slightly better performance
  */
-std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsigned tile_h) {
+std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsigned tile_h) const{
     unsigned pix_up = 0;
     unsigned pix_down = 0;
     unsigned pix_left = 0;
@@ -289,24 +265,4 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     oh_map[Direction::right] = loc_right;
 
     return oh_map;
-}
-
-SDL_Renderer* Tileset::get_renderer(){
-    return *mpp_renderer;
-}
-
-const Texture* Tileset::get_image_pointer() const {
-    return &m_image;
-}
-
-unsigned Tileset::get_tile_height() const {
-    return m_tile_height;
-}
-
-int Tileset::get_x_offset() const {
-    return m_x_offset;
-}
-
-int Tileset::get_y_offset() const {
-    return m_y_offset;
 }

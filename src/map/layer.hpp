@@ -49,7 +49,7 @@ class Layer{
     public:
         Layer(unsigned tile_w, unsigned tile_h);
 
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source, std::string& base_path);
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, const MapData& base_map);
 
         bool render(SDL_Rect* camera, const MapData& base_map) const;
         void update();
@@ -66,13 +66,13 @@ class Layer{
         unsigned m_tile_w;
         unsigned m_tile_h;
         std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information
-        float m_opacity = 1.0f; ///< @warning value only works with image layers!
         int m_offset_x = 0;
         int m_offset_y = 0;
 
         // members for m_type image
         std::string m_img_src;
         Texture m_img;
+        float m_opacity = 1.0f; ///< @warning value only works with image layers!
 
         // members for m_type object
         std::vector<Actor> m_obj_grid;
