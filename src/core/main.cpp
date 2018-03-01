@@ -21,8 +21,6 @@
 #include "core/gameinfo.hpp"
 #include "event/ae_move_direction.hpp"
 
-using namespace std;
-
 /// The game Loop!
 int main()
 {

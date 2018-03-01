@@ -32,7 +32,7 @@
  *
  * This class is the starting point of parsing the Tiled mapfile.
  * It parses the used tilesets and map layers and stores them.
- * It mostly passes the instructions to the corresponding classes.
+ * It renders layers and tiles.
  */
 
 class MapData {
@@ -44,8 +44,30 @@ class MapData {
         bool render(SDL_Rect* camera);
         void update();
 
+        unsigned get_overhang(Direction dir) const;
+        SDL_Renderer* get_renderer() const {return *mpp_renderer;}
+        std::string get_file_path() const {return m_base_path;}
+        Uint16 get_gid(Tile* tile)  const;
+        Tile* get_tile(Uint16 tile_id) const;
+        unsigned get_tile_h() const {return m_tile_h;}
+        unsigned get_tile_w() const {return m_tile_w;}
+        const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
-                                      AnimationType animation = AnimationType::invalid);
+                                       AnimationType animation = AnimationType::invalid);
+
+        tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
+        void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
+
+        tinyxml2::XMLError parse_tiles_from_tileset(tinyxml2::XMLElement* source, unsigned first_gid);
+        bool register_tile(Tile* tile, unsigned gid);
+        void set_tile_animated(unsigned gid);
+        void set_tile_animated(Tile* tile);
+
+        void init_anim_tiles();
+        void push_all_anim();
+
+        bool render(Uint16 tile_id, int x, int y) const;
+        bool render(Uint16 tile_id, SDL_Rect& dest) const;
 
     private:
         tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file
@@ -54,9 +76,24 @@ class MapData {
         unsigned m_tile_h;
         unsigned m_width;  // The map dimensions
         unsigned m_height;
+                               //                         | |
+        void write_overhang(); // sets the 4 values below v v
+        unsigned m_up_overhang = 0;
+        unsigned m_down_overhang = 0;
+        unsigned m_left_overhang = 0;
+        unsigned m_right_overhang = 0;
 
         std::vector<Tileset> m_tilesets; ///< Contains all used Tilesets
         std::vector<Layer> m_layers; ///< Contains all used layers
+
+        std::vector<Tile*> mp_tiles;      ///< List of pointers to all tiles in order
+        std::vector<Uint16> m_anim_tiles; ///< List of ids of all animated tiles
+        Tile m_empty_tile; ///< A placeholder which currently has no use except matching gids (this is tile 0)
+
+        std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
+        std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
+
+        SDL_Renderer** mpp_renderer = nullptr;
 };
 
 

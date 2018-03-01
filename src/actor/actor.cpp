@@ -26,15 +26,14 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-std::map<std::string, ActorTemplate> Actor::m_templates;
-std::map<Uint16, std::string> Actor::m_gid_to_temp_name;
-
+/*
 Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at(tile_id)))
 {
 
 }
+*/
 
-Actor::Actor(ActorTemplate& templ) :
+Actor::Actor(const ActorTemplate& templ) :
  m_base_speed {templ.speed},
  m_AI {templ.AI},
  m_direction {templ.direction},
@@ -42,16 +41,6 @@ Actor::Actor(ActorTemplate& templ) :
  m_animations {templ.animations}
 {
 
-}
-
-/**
- * @brief Initialize the whole actor class
- */
-void Actor::initialize() {
-    m_templates.clear();
-    m_gid_to_temp_name.clear();
-    // Initialize all actor events
-    AeMoveDirection::initialize_all();
 }
 
 /**
@@ -151,180 +140,16 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 /**
  * @brief Render the actor at it's position relative to the camera position
  */
-void Actor::render(int x_cam, int y_cam) const {
+void Actor::render(int x_cam, int y_cam, const MapData& base_map) const {
     SDL_Rect dest {static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), static_cast<int>(m_width), static_cast<int>(m_height)};
-    m_animations.at(m_anim_state).at(m_direction).render(dest);
+    m_animations.at(m_anim_state).at(m_direction).render(dest, base_map);
+
     // Alternative which doesnt do any resizing
-    //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height));
+    //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), base_map);
 }
 
 /**
- * @brief Adds a copy of an animation tile to an actor template
- * @param name Name of the @c ActorTemplate
- * @param anim The @c AnimationType of the tile
- * @param dir The @c Direction of the tile
- * @param tile A pointer to the corresponding animation tile
- */
-void Actor::add_animation(std::string name, AnimationType anim, Direction dir, Tile* tile) {
-    // Get a reference to the ActorTemplate from its name
-    ActorTemplate& templ = m_templates[name];
-
-    // Add a copy of the tile to the ActorTemplate
-    templ.animations[anim][dir] = *tile;
-
-    // Initialize the animation state of the copied tile
-    templ.animations[anim][dir].init_anim();
-}
-
-/**
- * @brief Add an @c ActorTemplate to the static vector @c m_templates from an @c XMLElement
- * @param source The @c XMLElement which contains the information
- * @param tile_id The corresponding tile_id to the @c ActorTemplate
- * @return an @c XMLError object which indicates success or error type
- */
-tinyxml2::XMLError Actor::add_template(tinyxml2::XMLElement* source, Uint16 tile_id) {
-    using namespace tinyxml2;
-    XMLError eResult;
-
-    std::string actor_name = "_";
-
-
-    // Parse user specified properties of the ActorTemplate
-    XMLElement* p_tile_properties = source->FirstChildElement("properties");
-    if(p_tile_properties != nullptr) {
-        XMLElement* p_property = p_tile_properties->FirstChildElement("property");
-
-        // First check for name because this is a prequisite for parsing the remaining information
-        while(p_property != nullptr) {
-            const char* p_name;
-            p_name = p_property->Attribute("name");
-            std::string name(p_name);
-            if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-            // Parse name of the ActorTemplate
-            else if(name == "ACTOR_NAME") {
-                const char* p_actor_name = p_property->Attribute("value");
-                if(p_actor_name != nullptr) {
-
-                    // Register the ActorTemplate
-                    actor_name = p_actor_name;
-                    m_templates[actor_name].template_name = actor_name;
-                    m_gid_to_temp_name[tile_id] = actor_name;
-                }
-                else {
-                    std::cerr << "Invalid actor name in actor template\n";
-                    return XML_ERROR_PARSING_ATTRIBUTE;
-                }
-            }
-            p_property = p_property->NextSiblingElement("property");
-        }
-
-        if(actor_name == "_") {
-            std::cerr << "Missing actor name in actor template \n";
-            return XML_NO_ATTRIBUTE;
-        }
-
-        // Parse user specified properties of the ActorTemplate
-        p_property = p_tile_properties->FirstChildElement("property");
-        while(p_property != nullptr) {
-            const char* p_name;
-            p_name = p_property->Attribute("name");
-            std::string name(p_name);
-            if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-            //Skip because name was already parsed
-            else if(name == "ACTOR_NAME") {}
-
-            // Parse default base speed
-            else if(name == "BASE_SPEED") {
-                float speed;
-                eResult = p_property->QueryFloatAttribute("value", &speed);
-                if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed at loading speed value for actor template: " << actor_name << "\n";
-                    return eResult;
-                }
-                m_templates[actor_name].speed = speed;
-            }
-
-            //Parse default direction facing
-            else if(name == "DIRECTION") {
-                const char* p_direction = p_property->Attribute("value");
-                if(p_direction != nullptr) {
-                    Direction dir;
-                    dir = str_to_direction(std::string(p_direction));
-                    if(dir == Direction::invalid) {
-                        std::cerr << "Invalid direction type \"" << p_direction << "\" in actor template for " << actor_name << "\n";
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
-                    m_templates[actor_name].direction = dir;
-                }
-                else {
-                    std::cerr << "Empty direction in actor template for " << actor_name << "\n";
-                    return XML_NO_ATTRIBUTE;
-                }
-
-            }
-
-            // Parse default AI type
-            else if(name == "BEHAVIOUR") {
-                const char* p_behaviour = p_property->Attribute("value");
-                if(p_behaviour != nullptr) {
-                    Behaviour beh;
-                    beh = str_to_behaviour(std::string(p_behaviour));
-                    if(beh == Behaviour::invalid) {
-                        std::cerr << "Invalid behaviour type \"" << p_behaviour << "\" in actor template for " << actor_name << "\n";
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
-                    m_templates[actor_name].AI = beh;
-                }
-                else {
-                    std::cerr << "Empty behaviour in actor template for " << actor_name << "\n";
-                    return XML_NO_ATTRIBUTE;
-                }
-            }
-
-            else {
-                std::cerr << "Unknown actor template property \""<< p_name << "\" specified\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-            // Move to next property
-            p_property = p_property->NextSiblingElement("property");
-        }
-    }
-
-    else {
-        std::cerr << "Missing properties on actor_animation tile\n";
-        return XML_NO_ATTRIBUTE;
-    }
-
-    // Parse the default hitbox
-    XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
-    if(p_objgroup != nullptr) {
-        XMLElement* p_object = p_objgroup->FirstChildElement("object");
-        if(p_object != nullptr) {
-            SDL_Rect temp_rec;
-            float temp;
-            eResult = p_object->QueryFloatAttribute("x", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.x = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("y", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.y = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("width", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.w = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("height", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.h = static_cast<int>(temp);
-            m_templates[actor_name].hitbox = temp_rec;
-        }
-    }
-
-    return XML_SUCCESS;
-}
-
-/**
- * @brief Add an @c ActorTemplate to the static vector @c m_templates from an @c XMLElement
+ * @brief Move actor to a direction by float factors
  * @param x_factor, y_factor Which indicate direction and extent of movement
  * @return a @c bool which indicates collision
  * @todo Check for collision!!!
@@ -332,7 +157,7 @@ tinyxml2::XMLError Actor::add_template(tinyxml2::XMLElement* source, Uint16 tile
 bool Actor::move(float x_factor, float y_factor) {
     /// @todo Check for collision
     bool success = true;
-    const float FPS = 60;
+    constexpr float FPS = 60;
     /// @todo Apply tile speed modifiers
     m_x += x_factor * m_base_speed / FPS;
     m_y += y_factor * m_base_speed / FPS;
@@ -342,6 +167,7 @@ bool Actor::move(float x_factor, float y_factor) {
 /**
  * @brief Process the event pipeline
  * @return a @c bool which indicates if the actor "died"
+ * @todo Implement AI and Player behaviour when event_pipeline is empty
  */
 bool Actor::process_events() {
     bool alive = true;

@@ -22,14 +22,10 @@
 #include <sstream>
 #include <iostream>
 
+#include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/base64.h"
 #include "util/tinyxml2.h"
-
-/**
- * Path to folder which holds the .tmx map files.
- * Possible image file paths are relative to this. */
-std::string Layer::m_base_path = "../data/";
 
 /**
  * @brief Constructs empty uninitialized Layer
@@ -43,10 +39,11 @@ m_tile_w{tile_w}, m_tile_h{tile_h}
 
 /**
  * @brief Parse the layer information from @c XMLElement*
- * @param source The @c XMLElement* whicht stores the layer info
+ * @param source The @c XMLElement* which stores the layer info
+ * @param base_map To get file path or renderer for img parsing
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
+tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base_map) {
     using namespace tinyxml2;
 
     XMLError eResult;
@@ -73,10 +70,10 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
         eResult = source->QueryIntAttribute("offsety", &offsety);
         if(eResult == XML_SUCCESS) m_offset_y = offsety;
 
-        // Parse opacity which is currently DEFUNCT!
-        float opacity;
-        eResult = source->QueryFloatAttribute("opacity", &opacity);
-        if(eResult == XML_SUCCESS) m_opacity = opacity;
+        // Parse opacity which is currently only working for image layers
+        //float opacity;
+        //eResult = source->QueryFloatAttribute("opacity", &opacity);
+        //if(eResult == XML_SUCCESS) m_opacity = opacity;
 
         // Parse actual map data
         XMLElement* p_data = source->FirstChildElement("data");
@@ -145,11 +142,11 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
                 return eResult;
             }
 
-            // Construct actor from its global tile id (gid)
-            m_obj_grid.push_back(Actor(static_cast<Uint16>(gid)));
+            // Construct actor from template corresponding to gid
+            m_obj_grid.push_back(Actor(base_map.get_actor_template(static_cast<Uint16>(gid))));
 
             // Initialize actor from the XMLElement*
-            eResult = m_obj_grid[m_obj_grid.size()-1].init_actor(p_object);
+            eResult = m_obj_grid.back().init_actor(p_object);
             if(eResult != XML_SUCCESS) {
                 std::cerr << "Failed at loading object in layer: " << m_name << " with gid: " << gid << "\n";
                 return eResult;
@@ -184,10 +181,10 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
         if(p_image == nullptr) return XML_ERROR_PARSING_ELEMENT;
         const char* p_source = p_image->Attribute("source");
         if(p_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-        m_img_src = m_base_path + std::string(p_source);
+        m_img_src = base_map.get_file_path() + std::string(p_source);
 
         // Parse the actual image data
-        if(!m_img.loadFromFile(Tile::get_renderer(), m_img_src)) return XML_ERROR_PARSING;
+        if(!m_img.loadFromFile(base_map.get_renderer(), m_img_src)) return XML_ERROR_PARSING;
         m_img.setAlpha(static_cast<Uint8>(m_opacity * 255));
         m_width = static_cast<unsigned>(m_img.getWidth());
         m_height = static_cast<unsigned>(m_img.getHeight());
@@ -247,7 +244,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source) {
  * @warning The layer opacity value is ignored except for @c image type layers
  */
 
-bool Layer::render(SDL_Rect* camera) const {
+bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
     bool success = true;
 
     // Render map type "map"
@@ -275,14 +272,14 @@ bool Layer::render(SDL_Rect* camera) const {
         int y_tile_offset = y_camera % tile_h;
 
         // Apply the margin which makes up for oversized tiles and tileset offset
-        x_tile_from -= Tileset::m_left_overhang;
-        x_tile_to += Tileset::m_right_overhang;
-        y_tile_from -= Tileset::m_up_overhang;
-        y_tile_to += Tileset::m_down_overhang;
+        x_tile_from -= base_map.get_overhang(Direction::left);
+        x_tile_to += base_map.get_overhang(Direction::right);
+        y_tile_from -= base_map.get_overhang(Direction::up);
+        y_tile_to += base_map.get_overhang(Direction::down);
 
         // Pixel perfect position of the first upper left tile
-        int x = -x_tile_offset - (Tileset::m_left_overhang * m_tile_w);
-        int y = -y_tile_offset - (Tileset::m_up_overhang * m_tile_h);
+        int x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
+        int y = -y_tile_offset - (base_map.get_overhang(Direction::up) * m_tile_h);
 
         // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
 
@@ -301,7 +298,7 @@ bool Layer::render(SDL_Rect* camera) const {
                         // Get tile id from map layer data and draw at current position if tile_id is not 0
                         Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
                         if(tile_id != 0) {
-                            if(!Tile::render(tile_id,x,y)) success = false;
+                            if(!base_map.render(tile_id,x,y)) success = false;
                         }
                     }
                     // Move to next horizontal tile position
@@ -309,7 +306,7 @@ bool Layer::render(SDL_Rect* camera) const {
                 }
             }
             // Reset horizontal tile position
-            x = -x_tile_offset - (Tileset::m_left_overhang * m_tile_w);
+            x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
 
             // Move to next vertical tile position
             y += tile_h;
@@ -323,7 +320,7 @@ bool Layer::render(SDL_Rect* camera) const {
         int y = m_offset_y - camera->y;
         // Warning! No offscreen object culling
         for (unsigned i = 0; i < m_obj_grid.size(); i++) {
-            m_obj_grid[i].render(x,y);
+            m_obj_grid[i].render(x,y, base_map);
         }
 
     }
@@ -335,7 +332,7 @@ bool Layer::render(SDL_Rect* camera) const {
         if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
             return success;
         }
-        else m_img.render(Tile::get_renderer(), x, y);
+        else m_img.render(base_map.get_renderer(), x, y);
     }
 
     else {
