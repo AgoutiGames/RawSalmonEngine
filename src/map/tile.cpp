@@ -25,43 +25,16 @@
 
 #include "actor/actor.hpp"
 #include "graphics/texture.hpp"
+#include "map/mapdata.hpp"
 #include "map/tileset.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-std::vector<Tile*> Tile::mp_tiles;
-std::vector<Uint16> Tile::m_anim_tiles;
-SDL_Renderer** Tile::mpp_renderer = nullptr;
-unsigned Tile::m_base_tile_w = 0;
-unsigned Tile::m_base_tile_h = 0;
-Tile Tile::empty_tile;
-
-/// Initialize the whole Tile class
-void Tile::initialize(SDL_Renderer** renderer, unsigned base_tile_w, unsigned base_tile_h) {
-    mp_tiles.clear();
-    m_anim_tiles.clear();
-    empty_tile = Tile(true);
-    mpp_renderer = renderer;
-    m_base_tile_w = base_tile_w;
-    m_base_tile_h = base_tile_h;
-
-    // Since actor information is linked with individual tiles
-    // we also have to (re)init the actor class
-    Actor::initialize();
-}
-
 /**
  * @brief Construct an empty tile
- * @param append Determines if the Tile should be appended to @c mp_tiles
  */
-Tile::Tile(bool append) {
-    if(append == true) {
-        mp_tiles.push_back(this);
-        m_gid = mp_tiles.size() - 1;
-    }
-    else {
-        m_gid = 0;
-    }
+Tile::Tile() {
+
 }
 
 /**
@@ -72,110 +45,19 @@ Tile::Tile(bool append) {
 Tile::Tile(Tileset* ts, SDL_Rect& clp) :
 mp_tileset{ts}, m_clip{clp}
 {
-    mp_tiles.push_back(this);
-    m_gid = mp_tiles.size() - 1;
-}
 
-/*Tile::Tile(const Tile& other) :
-m_gid{other.m_gid}, mp_tileset{other.mp_tileset}, m_clip{other.m_clip},
-m_hitbox{other.m_hitbox}, m_speed{other.m_speed}, m_animated{other.m_animated},
-m_current_id{other.m_current_id}, m_anim_ids{other.m_anim_ids},
-m_durations{other.m_durations}, m_anim_timestamp{other.m_anim_timestamp}
-
-{
-        mp_tiles[m_gid] = this;
-}*/
-
-/// See @c operator=
-Tile::Tile(const Tile& other) {
-    *this = other;
-}
-
-/**
- * @brief Assigns the values of a tile to another tile
- *
- * The most recent tile is always the active one referred in @c mp_tiles
- * this means, if several copies of a tile exist on screen, only the
- * newest one will be animated
- */
-Tile& Tile::operator=(const Tile& other) {
-    if(this != &other) {
-        m_gid = other.m_gid;
-        mp_tileset = other.mp_tileset;
-        m_clip = other.m_clip;
-        m_hitbox = other.m_hitbox;
-        m_speed = other.m_speed;
-        m_animated = other.m_animated;
-        m_current_id = other.m_current_id;
-        m_anim_ids = other.m_anim_ids;
-        m_durations = other.m_durations;
-        m_anim_timestamp = other.m_anim_timestamp;
-
-        mp_tiles[m_gid] = this;
-    }
-
-    return *this;
-}
-
-/**
- * @brief Parse tile information from tileset
- * @param source The @c XMLElement from the tileset
- * @param first_gid The first global tile id of the tileset
- * @return an @c XMLError object which indicates success or error type
- *
- * Determines the tile type and calls the corresponding tile parsers
- */
-tinyxml2::XMLError Tile::parse_from_tileset(tinyxml2::XMLElement* source, unsigned first_gid) {
-    using namespace tinyxml2;
-
-    XMLError eResult;
-
-    while(source != nullptr) {
-        unsigned tile_id;
-        eResult = source->QueryUnsignedAttribute("id", &tile_id);
-        if(eResult != XML_SUCCESS) return eResult;
-        tile_id += first_gid;
-
-        Tile* T = mp_tiles[tile_id];
-        const char* p_type;
-        p_type = source->Attribute("type");
-
-        std::string tile_type;
-        if(p_type != nullptr) tile_type = p_type;
-
-        if(p_type == nullptr) {
-            eResult = T->parse_tile(source, first_gid);
-        }
-        else if(tile_type == "ACTOR_ANIMATION") {
-            eResult = T->parse_actor_anim(source, first_gid);
-        }
-        else if(tile_type == "ACTOR_TEMPLATE") {
-            eResult = T->parse_actor_templ(source);
-        }
-        else {
-            std::cerr << "Unknown tile type: " << tile_type << "\n";
-            return XML_WRONG_ATTRIBUTE_TYPE;
-        }
-
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading tile: " << tile_id << "\n";
-            return eResult;
-        }
-
-        source = source->NextSiblingElement();
-    }
-    return XML_SUCCESS;
 }
 
 /**
  * @brief Parse tile information of standard tiles
  * @param source The @c XMLElement from the tileset
  * @param first_gid The first global tile id of the tileset
+ * @param base_map Reference to map object to register possible animated status
  * @return an @c XMLError object which indicates success or error type
  *
  * Determines the tile type and calls the corresponding tile parsers
  */
-tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first_gid) {
+tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map) {
     using namespace tinyxml2;
 
     XMLError eResult;
@@ -229,8 +111,9 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
     XMLElement* p_animation = source->FirstChildElement("animation");
     if(p_animation != nullptr) {
         XMLElement* p_frame = p_animation->FirstChildElement("frame");
+
         m_animated = true;
-        m_anim_tiles.push_back(m_gid);
+        base_map.set_tile_animated(this);
 
         // Parse each animation frame
         while(p_frame != nullptr) {
@@ -263,7 +146,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
  *
  * Determines the tile type and calls the corresponding tile parsers
  */
-tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid) {
+tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map) {
     using namespace tinyxml2;
     XMLError eResult;
 
@@ -344,10 +227,9 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
     XMLElement* p_animation = source->FirstChildElement("animation");
     if(p_animation != nullptr) {
         XMLElement* p_frame = p_animation->FirstChildElement("frame");
-        m_animated = true;
 
+        m_animated = true;
         // Animation of actor tiles are externally handled
-        // m_anim_tiles.push_back(m_gid); // Animation of actor tiles are
 
         // Parse each animation frame
         while(p_frame != nullptr) {
@@ -391,7 +273,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
 
     else {
         // Add this animated tile to the actor template
-        Actor::add_animation(actor_name, anim, dir, this);
+        base_map.add_actor_animation(actor_name, anim, dir, this);
     }
 
     return XML_SUCCESS;
@@ -404,11 +286,11 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
  *
  * Parse the tile via the static Actor method @c add_template
  */
-tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source) {
+tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
     XMLError eResult;
 
-    eResult = Actor::add_template(source, m_gid);
+    eResult = base_map.add_actor_template(source, this);
     if(eResult != XML_SUCCESS) {
         std::cerr << "Failed at adding actor template\n";
         return XML_ERROR_PARSING_ELEMENT;
@@ -420,21 +302,13 @@ Tile::~Tile() {
 
 }
 
-const SDL_Rect& Tile::get_clip() const {
+const SDL_Rect& Tile::get_clip(const MapData& base_map) const {
     if(m_animated) {
-        return mp_tiles[m_anim_ids[m_current_id]]->m_clip;
+        // Avoids daisy chaining of animated tiles
+        return base_map.get_tile(m_anim_ids[m_current_id])->get_clip_self();
     }
     else {
         return m_clip;
-    }
-}
-
-/// Initializes all registered animated tiles to the current timestamp and first frame
-void Tile::init_anim_tiles() {
-    Uint32 time = SDL_GetTicks();
-    for(unsigned tile : m_anim_tiles) {
-        mp_tiles[tile]->m_current_id = 0;
-        mp_tiles[tile]->m_anim_timestamp = time;
     }
 }
 
@@ -444,23 +318,10 @@ void Tile::init_anim() {
     m_anim_timestamp = SDL_GetTicks();
 }
 
-/**
- * @brief Animates all tiles
- *
- * Checks if next frame of animated tile is due, changes to next frame
- * and wraps around if required.
- */
-void Tile::push_all_anim() {
-    Uint32 time = SDL_GetTicks();
-    for(unsigned tile : m_anim_tiles) {
-        Tile* t = mp_tiles[tile];
-        if(time - t->m_anim_timestamp >= t->m_durations[t->m_current_id]) {
-            t->m_current_id++;
-            t->m_anim_timestamp = time;
-
-            if(t->m_current_id >= t->m_anim_ids.size()) t->m_current_id = 0;
-        }
-    }
+/// Initialize the tile to the supplied timestamp and first frame
+void Tile::init_anim(Uint32 time) {
+    m_current_id = 0;
+    m_anim_timestamp = time;
 }
 
 /**
@@ -484,68 +345,32 @@ bool Tile::push_anim() {
     return wrap_around;
 }
 
-/// Returns the pointer to a tile from it's tile id
-Tile* Tile::get_tile(Uint16 tile_id) {
-    if(tile_id >= mp_tiles.size()) {
-        std::cerr << "Tile id " << tile_id << " is out of bounds\n";
-        return nullptr;
-    }
-    else return mp_tiles[tile_id];
-}
-
 /**
- * @brief Renders a tile by it's id at a coordinate
- * @param x, y The rendering coordinates
- * @param tile_id The id of the tile which will be rendered
- * @return @c bool which indicates success or failure
+ * @brief Animates a tile with supplied timestamp
  *
- * Before rendering it checks if the tile id is valid
+ * Checks if next frame of animated tile is due, changes to next frame
+ * and wraps around if required.
  */
-bool Tile::render(Uint16 tile_id, int x, int y) {
-    bool success = true;
-
-    // Check if id is valid
-    if(tile_id >= mp_tiles.size()) {
-        std::cerr << "Tile id " << tile_id << " is out of bounds\n";
-        success = false;
+void Tile::push_anim(Uint32 time) {
+    if(time - m_anim_timestamp >= m_durations[m_current_id]) {
+        m_current_id++;
+        m_anim_timestamp = time;
+        if(m_current_id >= m_anim_ids.size()) {
+            m_current_id = 0;
+        }
     }
-    else {
-        mp_tiles[tile_id]->render(x,y);
-    }
-    return success;
-}
-
-/**
- * @brief Renders a tile by it's id to a rect
- * @param dest The rendering rectangle
- * @param tile_id The id of the tile which will be rendered
- * @return @c bool which indicates success or failure
- *
- * Before rendering it checks if the tile id is valid.
- * This function can resize the tile image
- */
-bool Tile::render(Uint16 tile_id, SDL_Rect& dest) {
-    bool success = true;
-    if(tile_id >= mp_tiles.size()) {
-        std::cerr << "Tile id " << tile_id << " is out of bounds\n";
-        success = false;
-    }
-    else {
-        mp_tiles[tile_id]->render(dest);
-    }
-    return success;
 }
 
 /**
  * @brief Render a tile object to a coordinate
  * @param x, y The specified coordinates
  */
-void Tile::render(int x, int y) const {
+void Tile::render(int x, int y, const MapData& base_map) const {
     x += mp_tileset->get_x_offset();
-    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - m_base_tile_h);
+    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - base_map.get_tile_h());
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render(*mpp_renderer, x, y, &get_clip());
+    image->render(base_map.get_renderer(), x, y, &get_clip(base_map));
     return;
 }
 
@@ -555,24 +380,12 @@ void Tile::render(int x, int y) const {
  *
  * This function can resize the tile image
  */
-void Tile::render(SDL_Rect& dest) const {
+void Tile::render(SDL_Rect& dest, const MapData& base_map) const {
     dest.x += mp_tileset->get_x_offset();
     dest.y += mp_tileset->get_y_offset();
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render_resize(*mpp_renderer, &get_clip(), &dest);
+    image->render_resize(base_map.get_renderer(), &get_clip(base_map), &dest);
     return;
 }
-
-SDL_Renderer* Tile::get_renderer(){
-    return *mpp_renderer;
-}
-
-/// Check if the position of the tiles in mp_tiles correspond to their gid
-void Tile::diagnose() {
-    for(unsigned i = 0; i < mp_tiles.size(); i++) {
-        std::cerr << "mp_tiles " << i << ":  gid: " << mp_tiles[i]->m_gid << "\n";
-    }
-}
-
 
