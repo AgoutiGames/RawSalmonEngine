@@ -24,7 +24,9 @@
 #include <vector>
 #include <map>
 
+#include "graphics/texture.hpp"
 #include "map/tile.hpp"
+#include "util/tinyxml2.h"
 
 
 /**
@@ -71,6 +73,9 @@ struct ActorTemplate {
 AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
 Behaviour str_to_behaviour(const std::string& name);
+tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
+tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img);
+tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Behaviour& beh, Direction& dir);
 
 std::vector<float> dir_to_mov(const Direction dir);
 

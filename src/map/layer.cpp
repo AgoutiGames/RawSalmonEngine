@@ -48,14 +48,14 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
 
     XMLError eResult;
 
+    // Parse layer name
+    const char* p_name = source->Attribute("name");
+    if (p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    m_name = std::string(p_name);
+
     // Parse map type "map"
     if(std::string("layer") == source->Name()) {
         m_type = map;
-
-        // Parse layer name
-        const char* p_name = source->Attribute("name");
-        if (p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-        m_name = std::string(p_name);
 
         // Parse layer dimensions
         eResult = source->QueryUnsignedAttribute("width", &m_width);
@@ -69,11 +69,6 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
         if(eResult == XML_SUCCESS) m_offset_x = offsetx;
         eResult = source->QueryIntAttribute("offsety", &offsety);
         if(eResult == XML_SUCCESS) m_offset_y = offsety;
-
-        // Parse opacity which is currently only working for image layers
-        //float opacity;
-        //eResult = source->QueryFloatAttribute("opacity", &opacity);
-        //if(eResult == XML_SUCCESS) m_opacity = opacity;
 
         // Parse actual map data
         XMLElement* p_data = source->FirstChildElement("data");
@@ -126,11 +121,6 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
     else if(std::string("objectgroup") == source->Name()) {
         m_type = object;
 
-        // Parse layer name
-        const char* p_name = source->Attribute("name");
-        if (p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-        m_name = std::string(p_name);
-
         // Parse individual objects/actors
         XMLElement* p_object = source->FirstChildElement("object");
         while(p_object != nullptr) {
@@ -159,11 +149,6 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
     // Parse map type "image"
     else if(std::string("imagelayer") == source->Name()) {
         m_type = image;
-
-        // Parse layer name
-        const char* p_name = source->Attribute("name");
-        if (p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-        m_name = std::string(p_name);
 
         // Parse image position
         eResult = source->QueryIntAttribute("offsetx", &m_offset_x);
@@ -199,17 +184,10 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
                 std::string name(p_name);
                 if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
                 if(name == "BLEND_MODE") {
-                    const char* p_mode;
-                    p_mode = p_property->Attribute("value");
-                    std::string mode(p_mode);
-                    if(p_mode == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-                    else if(mode == "NONE") m_img.setBlendMode(SDL_BLENDMODE_NONE);
-                    else if(mode == "ALPHA") m_img.setBlendMode(SDL_BLENDMODE_BLEND);
-                    else if(mode == "ADD") m_img.setBlendMode(SDL_BLENDMODE_ADD);
-                    else if(mode == "COLOR") m_img.setBlendMode(SDL_BLENDMODE_MOD);
-                    else {
-                    std::cerr << "Unknown blend mode specified\n";
-                    return XML_ERROR_PARSING_ATTRIBUTE;
+                    eResult = parse_blendmode(p_property, m_img);
+                    if(eResult != XML_SUCCESS) {
+                        std::cerr << "Failed at parsing blend mode for layer: " << m_name << "\n";
+                        return eResult;
                     }
                 }
                 else{
@@ -246,99 +224,96 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
 
 bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
     bool success = true;
+    switch(m_type) {
+        // Render map type "map"
+        case map:{
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
 
-    // Render map type "map"
-    if(m_type == map) {
-        // Cast tile_w and h to int to simplify calculations
-        int tile_w = static_cast<int>(m_tile_w);
-        int tile_h = static_cast<int>(m_tile_h);
+            // Apply the layer offset
+            int x_camera = camera->x - m_offset_x;
+            int y_camera = camera->y - m_offset_y;
 
-        // Apply the layer offset
-        int x_camera = camera->x - m_offset_x;
-        int y_camera = camera->y - m_offset_y;
+            // Horizontal range of tiles to render
+            int x_tile_from = x_camera / tile_w;
+            int x_tile_to = (x_camera + camera->w) / tile_w;
 
-        // Horizontal range of tiles to render
-        int x_tile_from = x_camera / tile_w;
-        int x_tile_to = (x_camera + camera->w) / tile_w;
+            // Horizontal pixel offset to full tile
+            int x_tile_offset = x_camera % tile_w;
 
-        // Horizontal pixel offset to full tile
-        int x_tile_offset = x_camera % tile_w;
+            // Vertical range of tiles to render
+            int y_tile_from = y_camera / tile_h;
+            int y_tile_to = (y_camera + camera->h) / tile_h;
 
-        // Vertical range of tiles to render
-        int y_tile_from = y_camera / tile_h;
-        int y_tile_to = (y_camera + camera->h) / tile_h;
+            // Vertical pixel offset to full tile
+            int y_tile_offset = y_camera % tile_h;
 
-        // Vertical pixel offset to full tile
-        int y_tile_offset = y_camera % tile_h;
+            // Apply the margin which makes up for oversized tiles and tileset offset
+            x_tile_from -= base_map.get_overhang(Direction::left);
+            x_tile_to += base_map.get_overhang(Direction::right);
+            y_tile_from -= base_map.get_overhang(Direction::up);
+            y_tile_to += base_map.get_overhang(Direction::down);
 
-        // Apply the margin which makes up for oversized tiles and tileset offset
-        x_tile_from -= base_map.get_overhang(Direction::left);
-        x_tile_to += base_map.get_overhang(Direction::right);
-        y_tile_from -= base_map.get_overhang(Direction::up);
-        y_tile_to += base_map.get_overhang(Direction::down);
+            // Pixel perfect position of the first upper left tile
+            int x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
+            int y = -y_tile_offset - (base_map.get_overhang(Direction::up) * m_tile_h);
 
-        // Pixel perfect position of the first upper left tile
-        int x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
-        int y = -y_tile_offset - (base_map.get_overhang(Direction::up) * m_tile_h);
+            // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
 
-        // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
+            // Iterates through vertical rows tile by tile
+            for(int i_y_tile = y_tile_from; i_y_tile <= y_tile_to; i_y_tile++) {
 
-        // Iterates through vertical rows tile by tile
-        for(int i_y_tile = y_tile_from; i_y_tile <= y_tile_to; i_y_tile++) {
+                // Skips vertical rows if position is off map/layer
+                if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
 
-            // Skips vertical rows if position is off map/layer
-            if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
+                    // Iterates through horizontal rows tile by tile
+                    for(int i_x_tile = x_tile_from; i_x_tile <= x_tile_to; i_x_tile++) {
 
-                // Iterates through horizontal rows tile by tile
-                for(int i_x_tile = x_tile_from; i_x_tile <= x_tile_to; i_x_tile++) {
+                        // Skips horizontal rows if position is off map/layer
+                        if(i_x_tile >= 0 && i_x_tile < static_cast<int>(m_width)) {
 
-                    // Skips horizontal rows if position is off map/layer
-                    if(i_x_tile >= 0 && i_x_tile < static_cast<int>(m_width)) {
-
-                        // Get tile id from map layer data and draw at current position if tile_id is not 0
-                        Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
-                        if(tile_id != 0) {
-                            if(!base_map.render(tile_id,x,y)) success = false;
+                            // Get tile id from map layer data and draw at current position if tile_id is not 0
+                            Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
+                            if(tile_id != 0) {
+                                if(!base_map.render(tile_id,x,y)) success = false;
+                            }
                         }
+                        // Move to next horizontal tile position
+                        x += tile_w;
                     }
-                    // Move to next horizontal tile position
-                    x += tile_w;
                 }
+                // Reset horizontal tile position
+                x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
+
+                // Move to next vertical tile position
+                y += tile_h;
             }
-            // Reset horizontal tile position
-            x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
-
-            // Move to next vertical tile position
-            y += tile_h;
-        }
-        // if(m_opacity < 1.0f) Tileset::set_opacity();
+            break;}
+        // Render map type "object"
+        case object:{
+            int x = m_offset_x - camera->x;
+            int y = m_offset_y - camera->y;
+            // Warning! No offscreen object culling
+            for (unsigned i = 0; i < m_obj_grid.size(); i++) {
+                m_obj_grid[i].render(x,y, base_map);
+            }
+            break;}
+        // Render map type "image"
+        case image:{
+            int x = m_offset_x - camera->x;
+            int y = m_offset_y - camera->y;
+            if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
+                return success;
+            }
+            else {m_img.render(base_map.get_renderer(), x, y);}
+            break;}
+        // Don't render unknown type
+        default:{
+            std::cerr << "Could not render layer " << m_name << "because of invalid layer type\n";
+            success = false;
+            break;}
     }
-
-    // Render map type "object"
-    else if(m_type == object) {
-        int x = m_offset_x - camera->x;
-        int y = m_offset_y - camera->y;
-        // Warning! No offscreen object culling
-        for (unsigned i = 0; i < m_obj_grid.size(); i++) {
-            m_obj_grid[i].render(x,y, base_map);
-        }
-
-    }
-
-    // Render map type "image"
-    else if(m_type == image) {
-        int x = m_offset_x - camera->x;
-        int y = m_offset_y - camera->y;
-        if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
-            return success;
-        }
-        else m_img.render(base_map.get_renderer(), x, y);
-    }
-
-    else {
-
-    }
-
     return success;
 }
 
