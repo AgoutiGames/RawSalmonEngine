@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "map/tile.hpp"
+#include "util/game_types.hpp"
 
 MapData::MapData() {
 
@@ -366,7 +367,7 @@ tinyxml2::XMLError MapData::parse_tiles_from_tileset(tinyxml2::XMLElement* sourc
         }
 
         if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading tile: " << tile_id << "\n";
+            std::cerr << "Failed at loading tile gid: " << tile_id << " local id: " << tile_id - first_gid << "\n";
             return eResult;
         }
 
@@ -403,8 +404,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     using namespace tinyxml2;
     XMLError eResult;
 
-    std::string actor_name = "_";
-
+    std::string actor_name;
 
     // Parse user specified properties of the ActorTemplate
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
@@ -412,105 +412,42 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
 
         // First check for name because this is a prequisite for parsing the remaining information
-        while(p_property != nullptr) {
-            const char* p_name;
-            p_name = p_property->Attribute("name");
-            std::string name(p_name);
-            if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+        const char* p_name;
+        p_name = p_property->Attribute("name");
+        std::string name(p_name);
+        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-            // Parse name of the ActorTemplate
-            else if(name == "ACTOR_NAME") {
-                const char* p_actor_name = p_property->Attribute("value");
-                if(p_actor_name != nullptr) {
+        // Parse name of the ActorTemplate
+        else if(name == "ACTOR_NAME") {
+            const char* p_actor_name = p_property->Attribute("value");
+            if(p_actor_name != nullptr) {
 
-                    // Register the ActorTemplate
-                    actor_name = p_actor_name;
-                    m_templates[actor_name].template_name = actor_name;
-                    m_gid_to_temp_name[get_gid(tile)] = actor_name;
-                }
-                else {
-                    std::cerr << "Invalid actor name in actor template\n";
-                    return XML_ERROR_PARSING_ATTRIBUTE;
-                }
+                // Register the ActorTemplate
+                actor_name = p_actor_name;
+                m_templates[actor_name].template_name = actor_name;
+                m_gid_to_temp_name[get_gid(tile)] = actor_name;
             }
-            p_property = p_property->NextSiblingElement("property");
-        }
-
-        if(actor_name == "_") {
-            std::cerr << "Missing actor name in actor template \n";
-            return XML_NO_ATTRIBUTE;
-        }
-
-        // Parse user specified properties of the ActorTemplate
-        p_property = p_tile_properties->FirstChildElement("property");
-        while(p_property != nullptr) {
-            const char* p_name;
-            p_name = p_property->Attribute("name");
-            std::string name(p_name);
-            if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-            //Skip because name was already parsed
-            else if(name == "ACTOR_NAME") {}
-
-            // Parse default base speed
-            else if(name == "BASE_SPEED") {
-                float speed;
-                eResult = p_property->QueryFloatAttribute("value", &speed);
-                if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed at loading speed value for actor template: " << actor_name << "\n";
-                    return eResult;
-                }
-                m_templates[actor_name].speed = speed;
-            }
-
-            //Parse default direction facing
-            else if(name == "DIRECTION") {
-                const char* p_direction = p_property->Attribute("value");
-                if(p_direction != nullptr) {
-                    Direction dir;
-                    dir = str_to_direction(std::string(p_direction));
-                    if(dir == Direction::invalid) {
-                        std::cerr << "Invalid direction type \"" << p_direction << "\" in actor template for " << actor_name << "\n";
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
-                    m_templates[actor_name].direction = dir;
-                }
-                else {
-                    std::cerr << "Empty direction in actor template for " << actor_name << "\n";
-                    return XML_NO_ATTRIBUTE;
-                }
-
-            }
-
-            // Parse default AI type
-            else if(name == "BEHAVIOUR") {
-                const char* p_behaviour = p_property->Attribute("value");
-                if(p_behaviour != nullptr) {
-                    Behaviour beh;
-                    beh = str_to_behaviour(std::string(p_behaviour));
-                    if(beh == Behaviour::invalid) {
-                        std::cerr << "Invalid behaviour type \"" << p_behaviour << "\" in actor template for " << actor_name << "\n";
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
-                    m_templates[actor_name].AI = beh;
-                }
-                else {
-                    std::cerr << "Empty behaviour in actor template for " << actor_name << "\n";
-                    return XML_NO_ATTRIBUTE;
-                }
-            }
-
             else {
-                std::cerr << "Unknown actor template property \""<< p_name << "\" specified\n";
+                std::cerr << "Invalid actor name in actor template\n";
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
-            // Move to next property
-            p_property = p_property->NextSiblingElement("property");
+        }
+        else {
+            std::cerr << "Actor name isn't first property of actor template\n";
+            return XML_NO_ATTRIBUTE;
+        }
+        p_property = p_property->NextSiblingElement("property");
+
+        // Parse user specified properties of the ActorTemplate
+        ActorTemplate& a = m_templates[actor_name];
+        eResult = parse_actor_properties(p_property, a.speed, a.AI, a.direction);
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at parsing actor properties for actor template of actor: " << actor_name << "\n";
+            return eResult;
         }
     }
-
     else {
-        std::cerr << "Missing properties on actor_animation tile\n";
+        std::cerr << "Missing properties on actor template\n";
         return XML_NO_ATTRIBUTE;
     }
 
@@ -519,24 +456,13 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     if(p_objgroup != nullptr) {
         XMLElement* p_object = p_objgroup->FirstChildElement("object");
         if(p_object != nullptr) {
-            SDL_Rect temp_rec;
-            float temp;
-            eResult = p_object->QueryFloatAttribute("x", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.x = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("y", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.y = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("width", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.w = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("height", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.h = static_cast<int>(temp);
-            m_templates[actor_name].hitbox = temp_rec;
+            eResult = parse_hitbox(p_object, m_templates[actor_name].hitbox);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at parsing hitbox for actor template: " << actor_name << "\n";
+                return eResult;
+            }
         }
     }
-
     return XML_SUCCESS;
 }
 

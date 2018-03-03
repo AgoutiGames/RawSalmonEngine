@@ -57,9 +57,6 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
     if(eResult != XML_SUCCESS) return eResult;
 
     // If attribute "source" is set, load external .tsx tileset file
-    // Pass the new full path to the parsing
-    // If tsx file is in a different folder, image files referenced from
-    // there can't be found, because they refer to the tsx files base path
     std::string full_path = base_map.get_file_path();
 
     const char* p_source;
@@ -154,17 +151,10 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
             std::string name(p_name);
             if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
             if(name == "BLEND_MODE") {
-                const char* p_mode;
-                p_mode = p_property->Attribute("value");
-                std::string mode(p_mode);
-                if(p_mode == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-                else if(mode == "NONE") m_image.setBlendMode(SDL_BLENDMODE_NONE);
-                else if(mode == "ALPHA") m_image.setBlendMode(SDL_BLENDMODE_BLEND);
-                else if(mode == "ADD") m_image.setBlendMode(SDL_BLENDMODE_ADD);
-                else if(mode == "COLOR") m_image.setBlendMode(SDL_BLENDMODE_MOD);
-                else {
-                std::cerr << "Unknown blend mode \""<< mode << "\" specified in tileset: "<< m_name<< "\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
+                eResult = parse_blendmode(p_property, m_image);
+                if(eResult != XML_SUCCESS) {
+                    std::cerr << "Failed at parsing blend mode for tileset: " << m_name << "\n";
+                    return eResult;
                 }
             }
             else{
@@ -175,9 +165,6 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
             p_property = p_property->NextSiblingElement("property");
         }
     }
-
-    // Tile::diagnose();
-    //std::cerr << "\n\n";
 
     // Check if there is specific tile info
     XMLElement* p_tile = ts_file->FirstChildElement("tile");

@@ -88,22 +88,11 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
     if(p_objgroup != nullptr) {
         XMLElement* p_object = p_objgroup->FirstChildElement("object");
         if(p_object != nullptr) {
-            SDL_Rect temp_rec;
-            float temp;
-            eResult = p_object->QueryFloatAttribute("x", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.x = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("y", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.y = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("width", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.w = static_cast<int>(temp);
-            eResult = p_object->QueryFloatAttribute("height", &temp);
-            if(eResult != XML_SUCCESS) return eResult;
-            temp_rec.h = static_cast<int>(temp);
-
-            m_hitbox = temp_rec;
+            eResult = parse_hitbox(p_object, m_hitbox);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at parsing hitbox for tile\n";
+                return eResult;
+            }
         }
     }
 
@@ -229,7 +218,6 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
         XMLElement* p_frame = p_animation->FirstChildElement("frame");
 
         m_animated = true;
-        // Animation of actor tiles are externally handled
 
         // Parse each animation frame
         while(p_frame != nullptr) {

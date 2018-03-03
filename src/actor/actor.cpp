@@ -76,62 +76,10 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
     if(p_tile_properties != nullptr) {
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
-
-        p_property = p_tile_properties->FirstChildElement("property");
-        while(p_property != nullptr) {
-            const char* p_name;
-            p_name = p_property->Attribute("name");
-            std::string name(p_name);
-            if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-            // Parse base speed
-            else if(name == "BASE_SPEED") {
-                eResult = p_property->QueryFloatAttribute("value", &m_base_speed);
-                if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed at loading speed value for actor : " << m_name << "\n";
-                    return eResult;
-                }
-            }
-
-            //Parse current direction facing
-            else if(name == "DIRECTION") {
-                const char* p_direction = p_property->Attribute("value");
-                if(p_direction != nullptr) {
-                    m_direction = str_to_direction(std::string(p_direction));
-                    if(m_direction == Direction::invalid) {
-                        std::cerr << "Invalid direction type \"" << p_direction << "\" in actor " << m_name << "\n";
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
-                }
-                else {
-                    std::cerr << "Empty direction for actor " << m_name << "\n";
-                    return XML_NO_ATTRIBUTE;
-                }
-
-            }
-
-            // Parse the AI type
-            else if(name == "BEHAVIOUR") {
-                const char* p_behaviour = p_property->Attribute("value");
-                if(p_behaviour != nullptr) {
-                    m_AI = str_to_behaviour(std::string(p_behaviour));
-                    if(m_AI == Behaviour::invalid) {
-                        std::cerr << "Invalid behaviour type \"" << p_behaviour << "\" in actor " << m_name << "\n";
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
-                }
-                else {
-                    std::cerr << "Empty behaviour for actor " << m_name << "\n";
-                    return XML_NO_ATTRIBUTE;
-                }
-            }
-
-            else {
-                std::cerr << "Unknown actor property \""<< p_name << "\" specified\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-            // Move to next property
-            p_property = p_property->NextSiblingElement("property");
+        eResult = parse_actor_properties(p_property, m_base_speed, m_AI, m_direction);
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at parsing actor properties for actor: " << m_name << "\n";
+            return eResult;
         }
     }
     return XML_SUCCESS;

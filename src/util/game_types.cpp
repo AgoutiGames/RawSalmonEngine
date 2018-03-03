@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+ #include <iostream>
+
 #include "game_types.hpp"
 
 /// Converts a @c string to an @c enum of @c AnimationType
@@ -49,4 +51,125 @@ std::vector<float> dir_to_mov(const Direction dir) {
     if(dir == Direction::down)  return std::vector<float>{0,1};
     if(dir == Direction::left)  return std::vector<float>{-1,0};
     else return std::vector<float>{0,0};
+}
+
+tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
+    using namespace tinyxml2;
+    XMLError eResult;
+
+    if(source->FirstChildElement("ellipse") != nullptr) {
+        std::cerr << "Hitbox can't be an ellipse!\n";
+        return XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    if(source->FirstChildElement("polygon") != nullptr) {
+        std::cerr << "Hitbox can't be a polygon!\n";
+        return XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    if(source->FirstChildElement("polyline") != nullptr) {
+        std::cerr << "Hitbox can't be a polyline!\n";
+        return XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    if(source->NextSiblingElement("object") != nullptr) {
+        std::cerr << "Multiple hitboxes are not supported!\n";
+        return XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    SDL_Rect temp_rec;
+    float temp;
+
+    eResult = source->QueryFloatAttribute("x", &temp);
+    if(eResult != XML_SUCCESS) return eResult;
+    temp_rec.x = static_cast<int>(temp);
+
+    eResult = source->QueryFloatAttribute("y", &temp);
+    if(eResult != XML_SUCCESS) return eResult;
+    temp_rec.y = static_cast<int>(temp);
+
+    eResult = source->QueryFloatAttribute("width", &temp);
+    if(eResult != XML_SUCCESS) return eResult;
+    temp_rec.w = static_cast<int>(temp);
+
+    eResult = source->QueryFloatAttribute("height", &temp);
+    if(eResult != XML_SUCCESS) return eResult;
+    temp_rec.h = static_cast<int>(temp);
+
+    rect = temp_rec;
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img) {
+    using namespace tinyxml2;
+    const char* p_mode;
+    p_mode = source->Attribute("value");
+    std::string mode(p_mode);
+    if(p_mode == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    else if(mode == "NONE") img.setBlendMode(SDL_BLENDMODE_NONE);
+    else if(mode == "ALPHA") img.setBlendMode(SDL_BLENDMODE_BLEND);
+    else if(mode == "ADD") img.setBlendMode(SDL_BLENDMODE_ADD);
+    else if(mode == "COLOR") img.setBlendMode(SDL_BLENDMODE_MOD);
+    else {
+        std::cerr << "Unknown blend mode specified\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Behaviour& beh, Direction& dir) {
+    using namespace tinyxml2;
+    XMLError eResult;
+    while(source != nullptr) {
+        const char* p_name;
+        p_name = source->Attribute("name");
+        std::string name(p_name);
+        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+        // Parse base speed
+        else if(name == "BASE_SPEED") {
+            eResult = source->QueryFloatAttribute("value", &speed);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at loading speed value\n";
+                return eResult;
+            }
+        }
+
+        //Parse current direction facing
+        else if(name == "DIRECTION") {
+            const char* p_direction = source->Attribute("value");
+            if(p_direction != nullptr) {
+                dir = str_to_direction(std::string(p_direction));
+                if(dir == Direction::invalid) {
+                    std::cerr << "Invalid direction type \"" << p_direction << "\"specified\n";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+            }
+            else {
+                std::cerr << "Empty direction value specified\n";
+                return XML_NO_ATTRIBUTE;
+            }
+
+        }
+
+        // Parse the AI type
+        else if(name == "BEHAVIOUR") {
+            const char* p_behaviour = source->Attribute("value");
+            if(p_behaviour != nullptr) {
+                beh = str_to_behaviour(std::string(p_behaviour));
+                if(beh == Behaviour::invalid) {
+                    std::cerr << "Invalid behaviour type \"" << p_behaviour << "\"specified\n";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+            }
+            else {
+                std::cerr << "Empty behaviour value specified\n";
+                return XML_NO_ATTRIBUTE;
+            }
+        }
+
+        else {
+            std::cerr << "Unknown actor property \"" << p_name << "\" specified\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        // Move to next property
+        source = source->NextSiblingElement("property");
+    }
+    return XML_SUCCESS;
 }
