@@ -160,6 +160,9 @@
  </layer>
  <imagelayer name="Logo" opacity="0.58" offsetx="578" offsety="265">
   <image source="../icons/TouchIt.png" width="256" height="256"/>
+  <properties>
+   <property name="BLEND_MODE" value="ADD"/>
+  </properties>
  </imagelayer>
  <objectgroup name="Objektebene 1">
   <object id="1" name="Actor_1" gid="63" x="118.667" y="270.667" width="128" height="128">
