@@ -476,3 +476,18 @@ Uint16 MapData::get_gid(Tile* tile)  const{
     std::cerr << "Could not find Tile to get its gid, not in global list!\n";
     return 0;
 }
+
+/// Returns true if rect collides with any layer
+bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max) const{
+    bool collide = false;
+    int x_depth = 0;
+    int y_depth = 0;
+    for(const Layer& layer : m_layers) {
+        if(layer.collide(rect, x_depth, y_depth, *this)) {
+            if(x_depth > x_max) {x_max = x_depth;}
+            if(y_depth > y_max) {y_max = y_depth;}
+            collide = true;
+        }
+    }
+    return collide;
+}

@@ -23,6 +23,7 @@
 #include <map>
 
 #include "event/ae_move_direction.hpp"
+#include "map/mapdata.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
@@ -33,7 +34,8 @@ Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at
 }
 */
 
-Actor::Actor(const ActorTemplate& templ) :
+Actor::Actor(const ActorTemplate& templ, const MapData* map) :
+ m_map {map},
  m_base_speed {templ.speed},
  m_AI {templ.AI},
  m_direction {templ.direction},
@@ -100,16 +102,48 @@ void Actor::render(int x_cam, int y_cam, const MapData& base_map) const {
  * @brief Move actor to a direction by float factors
  * @param x_factor, y_factor Which indicate direction and extent of movement
  * @return a @c bool which indicates collision
- * @todo Check for collision!!!
+ * @todo Apply tile speed modifiers
  */
 bool Actor::move(float x_factor, float y_factor) {
-    /// @todo Check for collision
-    bool success = true;
+    bool moved = true;
+    // Move the Actor
     constexpr float FPS = 60;
-    /// @todo Apply tile speed modifiers
-    m_x += x_factor * m_base_speed / FPS;
-    m_y += y_factor * m_base_speed / FPS;
-    return success;
+    // Determine if it can collide/ has gitbox
+    if(!SDL_RectEmpty(&m_hitbox)) {
+        // Apply position of actor to hitbox
+        SDL_Rect temp = m_hitbox;
+        m_x += x_factor * m_base_speed / FPS;
+        temp.x += static_cast<int>(m_x);
+        if(x_factor != 0) {
+            temp.y += static_cast<int>(m_y) - m_height;
+            // Check for x-axis collision
+            int x_inter_depth = 0;
+            int y_inter_depth = 0;
+            if(m_map->collide(&temp, x_inter_depth, y_inter_depth)) {
+                // Do stuff with the intersection depth
+                if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
+                m_x -= x_inter_depth;
+                temp.x -= x_inter_depth;
+                moved = false;
+            }
+            temp.y -= static_cast<int>(m_y) - m_height;
+        }
+
+        if(y_factor != 0){
+            m_y += y_factor * m_base_speed / FPS;
+            temp.y += static_cast<int>(m_y) - m_height;
+            // Check for y-axis collision
+            int x_inter_depth = 0;
+            int y_inter_depth = 0;
+            if(m_map->collide(&temp, x_inter_depth, y_inter_depth)) {
+                // Do stuff with the intersection depth
+                if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
+                m_y -= y_inter_depth;
+                moved = false;
+            }
+        }
+    }
+    return moved;
 }
 
 /**
@@ -179,4 +213,30 @@ bool Actor::animate(AnimationType anim, Direction dir) {
         m_animations[m_anim_state][m_direction].init_anim();
     }
     return m_animations[m_anim_state][m_direction].push_anim();
+}
+
+/**
+ * @brief Returns true if actor collides with rect
+ * @note Hitbox width and height should be at least 10px
+ *       when max actor speed is 500px per second
+ * Returns minimum x and y values to go back to not intersect anymore
+ */
+bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
+    if(SDL_RectEmpty(&m_hitbox)) {return false;}
+    SDL_Rect temp = m_hitbox;
+    temp.x += static_cast<int>(m_x);
+    temp.y += static_cast<int>(m_y) - m_height;
+    SDL_Rect inter;
+    if(SDL_IntersectRect(&temp, rect, &inter) && !SDL_RectEquals(&temp, rect)) {
+        x_depth = inter.w;
+        y_depth = inter.h;
+        /*
+        std::cerr << "check " << temp.x << " " << temp.y << " " << temp.w << " " << temp.h << "\n";
+        std::cerr << "check " << rect->x << " " << rect->y << " " << rect->w << " " << rect->h << "\n";
+        std::cerr << "x depth: " << x_depth << "\n";
+        std::cerr << "y_depth: " << y_depth << "\n";
+        */
+        return true;
+    }
+    return false;
 }

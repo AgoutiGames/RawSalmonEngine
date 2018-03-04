@@ -45,6 +45,7 @@ public:
 
     // Avoids daisy chaining of animated tiles
     const SDL_Rect& get_clip_self() const {return m_clip;}
+    const SDL_Rect& get_hitbox() const {return m_hitbox;}
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map);

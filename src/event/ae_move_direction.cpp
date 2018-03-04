@@ -39,10 +39,12 @@ m_duration{duration}
 bool AeMoveDirection::process(Actor& actor) {
     // process stuff
     if (m_duration != 0) {
-        actor.animate(AnimationType::walk, m_direction);
         std::vector<float> mov_factors = dir_to_mov(m_direction);
-        actor.move(mov_factors[0], mov_factors[1]);
-        m_duration--;
+        if(actor.move(mov_factors[0], mov_factors[1])) {
+            actor.animate(AnimationType::walk, m_direction);
+            m_duration--;
+        }
+        else {m_duration = 0;}
     }
     if (m_duration == 0) return true;
     else return false;

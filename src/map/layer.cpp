@@ -133,7 +133,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base
             }
 
             // Construct actor from template corresponding to gid
-            m_obj_grid.push_back(Actor(base_map.get_actor_template(static_cast<Uint16>(gid))));
+            m_obj_grid.push_back(Actor(base_map.get_actor_template(static_cast<Uint16>(gid)), &base_map));
 
             // Initialize actor from the XMLElement*
             eResult = m_obj_grid.back().init_actor(p_object);
@@ -355,4 +355,55 @@ std::vector<Actor*> Layer::get_actors(std::string name, Behaviour behaviour, Dir
         }
     }
     return actor_list;
+}
+
+/// Returns true if rect collides layer
+bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map) const {
+    bool collide = false;
+    int x_depth = 0;
+    int y_depth = 0;
+    switch (m_type) {
+        case map:{
+            int x_from = (rect->x + m_offset_x) / m_tile_w;
+            int y_from = (rect->y + m_offset_y) / m_tile_h;
+            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
+            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
+                for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
+                    Uint16 tile_id = m_map_grid[y][x];
+                    if(tile_id != 0) {
+                        Tile* tile = base_map.get_tile(tile_id);
+                        SDL_Rect tile_rect = tile->get_hitbox();
+                        if(!SDL_RectEmpty(&tile_rect)) {
+                            tile_rect.x += m_offset_x + x * m_tile_w;
+                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            SDL_Rect intersect;
+                            if(SDL_IntersectRect(rect, &tile_rect, &intersect)) {
+                                if(intersect.w > x_max) {x_max = intersect.w;}
+                                if(intersect.h > y_max) {y_max = intersect.h;}
+                                std::cerr << "check " << tile_rect.x << " " << tile_rect.y << " " << tile_rect.w << " " << tile_rect.h << "\n";
+                                std::cerr << "check " << rect->x << " " << rect->y << " " << rect->w << " " << rect->h << "\n";
+                                std::cerr << "x depth: " << intersect.w << "\n";
+                                std::cerr << "y_depth: " << intersect.h << "\n";
+                                collide = true;
+                            }
+                        }
+                    }
+                }
+            }
+            break;}
+        case object:
+            for(const Actor& actor : m_obj_grid) {
+                if(actor.collide(rect, x_depth, y_depth)) {
+                    if(x_depth > x_max) {x_max = x_depth;}
+                    if(y_depth > y_max) {y_max = y_depth;}
+                    collide = true;
+                }
+            }
+            break;
+        default:
+
+            break;
+    }
+    return collide;
 }
