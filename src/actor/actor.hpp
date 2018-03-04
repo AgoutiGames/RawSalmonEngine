@@ -40,7 +40,7 @@ class Actor{
 
     public:
         //Actor(Uint16 tile_id);          ///< Construct actor from tile_id corresponding to an ActorTemplate
-        Actor(const ActorTemplate& templ);    ///< Construct actor from an ActorTemplate
+        Actor(const ActorTemplate& templ, const MapData* m_map);    ///< Construct actor from an ActorTemplate
 
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         bool update();
@@ -49,6 +49,7 @@ class Actor{
         bool move(float x_factor, float y_factor);
         bool process_events();
         void add_event(ActorEvent* event);
+        bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const;
 
         Behaviour get_behaviour() const {return m_AI;}
         AnimationType get_animation() const {return m_anim_state;}
@@ -57,6 +58,8 @@ class Actor{
 
 
     private:
+        const MapData* m_map;
+
         float m_x;
         float m_y;
         unsigned m_width;

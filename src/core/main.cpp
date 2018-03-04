@@ -60,7 +60,7 @@ int main()
                         break;
 
                         case SDLK_w:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::up, 60));}
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::up, 10));}
                         break;
 
                         case SDLK_DOWN:
@@ -68,7 +68,7 @@ int main()
                         break;
 
                         case SDLK_s:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::down, 60));}
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::down, 10));}
                         break;
 
                         case SDLK_LEFT:
@@ -76,7 +76,7 @@ int main()
                         break;
 
                         case SDLK_a:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::left, 60));}
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::left, 10));}
                         break;
 
                         case SDLK_RIGHT:
@@ -84,7 +84,7 @@ int main()
                         break;
 
                         case SDLK_d:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::right, 60));}
+                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::right, 10));}
                         break;
                     }
                 }
