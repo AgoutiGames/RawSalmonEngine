@@ -55,6 +55,7 @@ class Actor{
         AnimationType get_animation() const {return m_anim_state;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
+        std::string get_type() const {return m_type;}
 
 
     private:
@@ -65,6 +66,7 @@ class Actor{
         unsigned m_width;
         unsigned m_height;
         std::string m_name;
+        std::string m_type;
         float m_base_speed;
 
         Behaviour m_AI;
