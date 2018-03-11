@@ -36,6 +36,7 @@ Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at
 
 Actor::Actor(const ActorTemplate& templ, const MapData* map) :
  m_map {map},
+ m_type {templ.template_name},
  m_base_speed {templ.speed},
  m_AI {templ.AI},
  m_direction {templ.direction},
