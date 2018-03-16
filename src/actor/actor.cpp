@@ -22,7 +22,6 @@
 #include <iostream>
 #include <map>
 
-#include "event/ae_move_direction.hpp"
 #include "map/mapdata.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
@@ -155,15 +154,21 @@ bool Actor::move(float x_factor, float y_factor) {
 bool Actor::process_events() {
     bool alive = true;
     if(!m_event_pipeline.empty()) {
-        ActorEvent* event = m_event_pipeline.front();
-        bool processed = event->process(*this);
-        if(processed) {
-            m_event_pipeline.front()->kill();
-            m_event_pipeline.erase(m_event_pipeline.begin());
+        for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
+            ActorEvent* event = m_event_pipeline[i];
+            EventSignal signal = event->process(*this);
+            if(signal == EventSignal::stop) {
+                break;
+            }
+            else if(signal == EventSignal::end) {
+                m_event_pipeline[i]->kill();
+                m_event_pipeline.erase(m_event_pipeline.begin() + i);
+                i--;
+            }
         }
     }
     else {
-        animate(AnimationType::idle, Direction::down);
+        animate(AnimationType::idle, m_direction);
         // AI and Player behaviour stuff
     }
     return alive;

@@ -19,7 +19,7 @@
 #include <iostream>
 
 #include "core/gameinfo.hpp"
-#include "event/ae_move_direction.hpp"
+#include "event/ae_move_sustained.hpp"
 
 /// The game Loop!
 int main()
@@ -50,7 +50,7 @@ int main()
                     quit = true;
                 }
                 //User presses a key
-                else if( e.type == SDL_KEYDOWN )
+                else if( e.type == SDL_KEYDOWN && e.key.repeat == 0)
                 {
                     //Move player or camera based on key press
                     switch( e.key.keysym.sym )
@@ -60,7 +60,7 @@ int main()
                         break;
 
                         case SDLK_w:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::up, 10));}
+                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::up, e.key.keysym));}
                         break;
 
                         case SDLK_DOWN:
@@ -68,7 +68,7 @@ int main()
                         break;
 
                         case SDLK_s:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::down, 10));}
+                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::down, e.key.keysym));}
                         break;
 
                         case SDLK_LEFT:
@@ -76,7 +76,7 @@ int main()
                         break;
 
                         case SDLK_a:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::left, 10));}
+                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::left, e.key.keysym));}
                         break;
 
                         case SDLK_RIGHT:
@@ -84,7 +84,7 @@ int main()
                         break;
 
                         case SDLK_d:
-                        if(player_input){game.m_player->add_event(AeMoveDirection::create(Direction::right, 10));}
+                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::right, e.key.keysym));}
                         break;
                     }
                 }

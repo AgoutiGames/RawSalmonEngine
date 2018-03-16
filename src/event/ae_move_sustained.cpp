@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_move_direction.hpp"
+#include "event/ae_move_sustained.hpp"
 
 #include <string>
 
@@ -25,41 +25,46 @@
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMoveDirection::m_alias = "AeMoveDirection";
+std::string AeMoveSustained::m_alias = "AeMoveSustained";
 
-AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration, Priority prio) :
+AeMoveSustained::AeMoveSustained(Direction dir, SDL_Keysym key, Priority prio) :
 EventContainer(prio, EventSignal::stop),
 m_direction{dir},
-m_duration{duration}
+m_key{key}
 {
 
 }
 
 /**
- * @brief Move the actor to the supplied direction for x frames
+ * @brief Move the actor to the supplied direction until key is released
  * @param actor The actor which should move
  * @return @c bool which indicates if the event is fully processed
  */
-EventSignal AeMoveDirection::process(Actor& actor) {
+EventSignal AeMoveSustained::process(Actor& actor) {
     // process stuff
-    if (m_duration != 0) {
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+    if (keys[m_key.scancode]) {
         std::vector<float> mov_factors = dir_to_mov(m_direction);
         if(actor.move(mov_factors[0], mov_factors[1])) {
             actor.animate(AnimationType::walk, m_direction);
-            m_duration--;
         }
-        else {m_duration = 0;}
+        else {
+            actor.animate(AnimationType::idle, m_direction);
+        }
+        return signal();
     }
-    if (m_duration == 0) return EventSignal::end;
-    else return signal();
+    else {
+
+        return EventSignal::end;
+    }
 }
 
 /// Create event and return pointer to it
-AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Priority prio) {
-    AeMoveDirection temp(dir, duration, prio);
+AeMoveSustained* AeMoveSustained::create(Direction dir, SDL_Keysym key, Priority prio) {
+    AeMoveSustained temp(dir, key, prio);
     return duplicate(temp);
 }
 
-AeMoveDirection::~AeMoveDirection() {
+AeMoveSustained::~AeMoveSustained() {
 
 }
