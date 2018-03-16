@@ -61,6 +61,12 @@ enum class Priority{
     clear_all,
 };
 
+enum class EventSignal{
+    next,
+    stop,
+    end,
+};
+
 struct ActorTemplate {
     std::string template_name = "_";
     float speed = 250.0f; // Pixel per second

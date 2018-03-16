@@ -16,13 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+ #include <string>
+
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
-#include "event/ae_move_direction.hpp"
 
-/// Delete all currently stored actor events
+#include "event/ae_move_direction.hpp"
+#include "event/ae_move_sustained.hpp"
+
+std::map<std::string, ActorEvent*> ActorEvent::m_event_dict;
+
+/// Fetch all viable actor events and delete all currently stored actor event instances
 void ActorEvent::initialize_all() {
-    EventContainer<ActorEvent, AeMoveDirection>::initialize();
+    m_event_dict.clear();
+
+    register_class<AeMoveDirection>();
+    register_class<AeMoveSustained>();
 }
 
 ActorEvent::~ActorEvent() {}

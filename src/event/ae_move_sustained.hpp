@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_MOVE_DIRECTION_HPP_INCLUDED
-#define AE_MOVE_DIRECTION_HPP_INCLUDED
+#ifndef AE_MOVE_SUSTAINED_HPP_INCLUDED
+#define AE_MOVE_SUSTAINED_HPP_INCLUDED
 
 #include <vector>
 #include <string>
@@ -31,13 +31,13 @@ class Actor;
 /**
  * @brief Move the actor to the supplied direction for x frames
  */
-class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
+class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
 
     public:
-        AeMoveDirection(Direction dir = Direction::up, unsigned duration = 1, Priority prio = Priority::medium);
+        AeMoveSustained(Direction dir = Direction::up, SDL_Keysym key = SDL_Keysym(), Priority prio = Priority::medium);
 
         virtual EventSignal process(Actor& actor) override;
-        virtual ~AeMoveDirection() override;
+        virtual ~AeMoveSustained() override;
         virtual std::string get_type() override{return m_alias;}
 
         using EventContainer::kill;
@@ -45,14 +45,13 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
         static std::string get_type_static() {return m_alias;}
 
-        static AeMoveDirection* create(Direction dir = Direction::up, unsigned duration = 1, Priority prio = Priority::medium);
+        static AeMoveSustained* create(Direction dir = Direction::up, SDL_Keysym key = SDL_Keysym(), Priority prio = Priority::medium);
 
     private:
         static std::string m_alias;
 
         Direction m_direction = Direction::up;
-        unsigned m_duration = 1; ///< How many frames the movement persists
-
+        SDL_Keysym m_key;
 };
 
-#endif // AE_MOVE_DIRECTION_HPP_INCLUDED
+#endif // AE_MOVE_SUSTAINED_HPP_INCLUDED

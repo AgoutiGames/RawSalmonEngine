@@ -35,7 +35,7 @@ template <class T, class U>
 
 class EventContainer : public T{
     public:
-        EventContainer(Priority prio) : m_priority{prio} {}
+        EventContainer(Priority prio = Priority::medium, EventSignal signal = EventSignal::next) : m_priority{prio}, m_signal{signal} {}
 
         /**
          * @brief Deletes the data of the event in the @c event_list
@@ -55,6 +55,15 @@ class EventContainer : public T{
         /// Returns the priority value of the event
         virtual Priority priority() {return m_priority;}
 
+        /// Sets the priority value of the event
+        virtual void set_priority(Priority x) {m_priority = x;}
+
+        /// Returns the default signal of the event
+        virtual EventSignal signal() {return m_signal;}
+
+        /// Sets the signal value of the event
+        virtual void set_signal(EventSignal x) {m_signal = x;}
+
         /**
          * @brief duplicates given event
          * @param event The event which should be duplicated
@@ -73,6 +82,7 @@ class EventContainer : public T{
         virtual ~EventContainer() = 0;
 
         Priority m_priority;
+        EventSignal m_signal;
 
         /// Deletes the @c event_list variable
         static void initialize();

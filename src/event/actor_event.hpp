@@ -19,6 +19,10 @@
 #ifndef ACTOR_EVENT_HPP_INCLUDED
 #define ACTOR_EVENT_HPP_INCLUDED
 
+#include <map>
+#include <string>
+
+#include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -29,15 +33,30 @@ class ActorEvent{
 
     public:
         ActorEvent() {}
-        virtual bool process(Actor& actor) = 0;
+        virtual EventSignal process(Actor& actor) = 0;
         virtual void kill() = 0;
         virtual Priority priority() = 0;
+        virtual void set_priority(Priority x) = 0;
+        virtual EventSignal signal() = 0;
+        virtual void set_signal(EventSignal x) = 0;
         virtual ~ActorEvent() = 0;
+        virtual std::string get_type() = 0;
 
         static void initialize_all();
 
+        template <class T>
+        static void register_class();
+
     private:
+
+        static std::map<std::string, ActorEvent*> m_event_dict;
+
 };
 
+template <class T>
+void ActorEvent::register_class() {
+    EventContainer<ActorEvent, T>::initialize();
+    m_event_dict[T::get_type_static()] = T::create();
+}
 
 #endif // ACTOR_EVENT_HPP_INCLUDED
