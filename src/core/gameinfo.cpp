@@ -132,6 +132,10 @@ bool GameInfo::fetch_player() {
  */
 
  void GameInfo::update() {
+    if(m_cam_bound) {
+        m_camera.x = m_player->get_x_center() - (m_camera.w / 2);
+        m_camera.y = m_player->get_y_center() - (m_camera.h / 2);
+    }
     m_map.update();
  }
 

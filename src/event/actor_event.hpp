@@ -35,12 +35,18 @@ class ActorEvent{
         ActorEvent() {}
         virtual EventSignal process(Actor& actor) = 0;
         virtual void kill() = 0;
-        virtual Priority priority() = 0;
+        virtual Priority priority() const = 0;
         virtual void set_priority(Priority x) = 0;
-        virtual EventSignal signal() = 0;
+        virtual EventSignal signal() const = 0;
         virtual void set_signal(EventSignal x) = 0;
         virtual ~ActorEvent() = 0;
-        virtual std::string get_type() = 0;
+        virtual std::string get_type() const = 0;
+        virtual ActorEvent* copy() const = 0;
+
+        void set_cause(Actor* x) {m_cause = x;}
+        Actor* get_cause() const {return m_cause;}
+        void set_key(SDL_Keysym x) {m_key = x;}
+        const SDL_Keysym& get_key() const {return m_key;}
 
         static void initialize_all();
 
@@ -48,6 +54,8 @@ class ActorEvent{
         static void register_class();
 
     private:
+        Actor* m_cause = nullptr;
+        SDL_Keysym m_key;
 
         static std::map<std::string, ActorEvent*> m_event_dict;
 

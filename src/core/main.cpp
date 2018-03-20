@@ -86,6 +86,11 @@ int main()
                         case SDLK_d:
                         if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::right, e.key.keysym));}
                         break;
+
+                        case SDLK_SPACE:
+                        if(game.m_cam_bound) {game.m_cam_bound = false;}
+                        else {game.m_cam_bound = true;}
+                        break;
                     }
                 }
             }

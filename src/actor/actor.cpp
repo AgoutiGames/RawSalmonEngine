@@ -33,7 +33,7 @@ Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at
 }
 */
 
-Actor::Actor(const ActorTemplate& templ, const MapData* map) :
+Actor::Actor(const ActorTemplate& templ, MapData* map) :
  m_map {map},
  m_type {templ.template_name},
  m_base_speed {templ.speed},
@@ -108,8 +108,11 @@ bool Actor::move(float x_factor, float y_factor) {
     bool moved = true;
     // Move the Actor
     constexpr float FPS = 60;
-    // Determine if it can collide/ has gitbox
+    // Determine if it can collide/ has hitbox
     if(!SDL_RectEmpty(&m_hitbox)) {
+
+        std::vector<Actor*> collided;
+
         // Apply position of actor to hitbox
         SDL_Rect temp = m_hitbox;
         m_x += x_factor * m_base_speed / FPS;
@@ -119,7 +122,7 @@ bool Actor::move(float x_factor, float y_factor) {
             // Check for x-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->collide(&temp, x_inter_depth, y_inter_depth)) {
+            if(m_map->collide(&temp, x_inter_depth, y_inter_depth, collided)) {
                 // Do stuff with the intersection depth
                 if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
                 m_x -= x_inter_depth;
@@ -135,12 +138,16 @@ bool Actor::move(float x_factor, float y_factor) {
             // Check for y-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->collide(&temp, x_inter_depth, y_inter_depth)) {
+            if(m_map->collide(&temp, x_inter_depth, y_inter_depth, collided)) {
                 // Do stuff with the intersection depth
                 if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
                 m_y -= y_inter_depth;
                 moved = false;
             }
+        }
+        for(Actor* a : collided) {
+            a->respond(Response::on_collision, this);
+            respond(Response::on_collision, a);
         }
     }
     return moved;
@@ -179,7 +186,6 @@ bool Actor::process_events() {
  * @param event The event to be added
  */
 void Actor::add_event(ActorEvent* event) {
-    if(event->priority() == Priority::clear_all) m_event_pipeline.clear();
     if(!m_event_pipeline.empty()) {
         auto it = m_event_pipeline.end();
         do {
@@ -245,4 +251,17 @@ bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
         return true;
     }
     return false;
+}
+
+bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
+        if(cause != nullptr) {event->set_cause(cause);}
+        if(key.sym != SDLK_UNKNOWN) {event->set_key(key);}
+        add_event(event);
+        return true;
+    }
 }

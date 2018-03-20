@@ -53,30 +53,30 @@ class EventContainer : public T{
         }
 
         /// Returns the priority value of the event
-        virtual Priority priority() {return m_priority;}
+        virtual Priority priority() const override {return m_priority;}
 
         /// Sets the priority value of the event
-        virtual void set_priority(Priority x) {m_priority = x;}
+        virtual void set_priority(Priority x) override {m_priority = x;}
 
         /// Returns the default signal of the event
-        virtual EventSignal signal() {return m_signal;}
+        virtual EventSignal signal() const override {return m_signal;}
 
         /// Sets the signal value of the event
-        virtual void set_signal(EventSignal x) {m_signal = x;}
+        virtual void set_signal(EventSignal x) override {m_signal = x;}
 
         /**
          * @brief duplicates given event
          * @param event The event which should be duplicated
          * @return Pointer to the duplicate of the event
          */
-        static U* duplicate(U* event);
+        static U* duplicate(const U* event);
 
         /**
          * @brief duplicates given event
          * @param event The event which should be duplicated
          * @return Pointer to the duplicate of the event
          */
-        static U* duplicate(U& event);
+        static U* duplicate(const U& event);
 
 
         virtual ~EventContainer() = 0;
@@ -97,12 +97,12 @@ template <class T, class U> void EventContainer<T, U>::initialize() {
     m_event_list.clear();
 }
 
-template <class T, class U> U* EventContainer<T, U>::duplicate(U* event) {
+template <class T, class U> U* EventContainer<T, U>::duplicate(const U* event) {
             m_event_list.push_back(U(*event));
             return &m_event_list.back();
         }
 
-template <class T, class U> U* EventContainer<T, U>::duplicate(U& event) {
+template <class T, class U> U* EventContainer<T, U>::duplicate(const U& event) {
             m_event_list.push_back(U(event));
             return &m_event_list.back();
         }

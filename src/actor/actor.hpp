@@ -40,7 +40,7 @@ class Actor{
 
     public:
         //Actor(Uint16 tile_id);          ///< Construct actor from tile_id corresponding to an ActorTemplate
-        Actor(const ActorTemplate& templ, const MapData* m_map);    ///< Construct actor from an ActorTemplate
+        Actor(const ActorTemplate& templ, MapData* m_map);    ///< Construct actor from an ActorTemplate
 
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         bool update();
@@ -50,16 +50,24 @@ class Actor{
         bool process_events();
         void add_event(ActorEvent* event);
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const;
+        bool respond(Response r, Actor* cause = nullptr, SDL_Keysym key = SDL_Keysym());
 
         Behaviour get_behaviour() const {return m_AI;}
         AnimationType get_animation() const {return m_anim_state;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
         std::string get_type() const {return m_type;}
-
+        float get_x() const {return m_x;}
+        float get_y() const {return m_y;}
+        unsigned get_w() const {return m_width;}
+        unsigned get_h() const {return m_width;}
+        int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
+        int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
+        void set_cooldown(std::string event_type) {m_timestamp[event_type] = SDL_GetTicks();}
+        Uint32 get_cooldown(std::string event_type) const {return m_timestamp.at(event_type);}
 
     private:
-        const MapData* m_map;
+        MapData* m_map;
 
         float m_x;
         float m_y;
@@ -74,7 +82,8 @@ class Actor{
         Direction m_direction; ///< Current direction facing
         SDL_Rect m_hitbox;
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
-
+        std::map<Response, ActorEvent*> m_response; ///<< Map which yields events for response values
+        std::map<std::string, Uint32> m_timestamp;
         std::vector<ActorEvent*> m_event_pipeline;
 };
 

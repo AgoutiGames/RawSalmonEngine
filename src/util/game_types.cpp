@@ -36,12 +36,37 @@ Direction str_to_direction(const std::string& name) {
     else return Direction::invalid;
 }
 
+/// Converts a @c string to an @c enum of @c Priority
+Priority str_to_priority(const std::string& name) {
+    if(name == "LOW") return Priority::low;
+    if(name == "MEDIUM") return Priority::medium;
+    if(name == "HIGH") return Priority::high;
+    else return Priority::invalid;
+}
+
+/// Converts a @c string to an @c enum of @c EventSignal
+EventSignal str_to_event_signal(const std::string& name) {
+    if(name == "NEXT") return EventSignal::next;
+    if(name == "STOP") return EventSignal::stop;
+    if(name == "END") return EventSignal::end;
+    else return EventSignal::invalid;
+}
+
 /// Converts a @c string to an @c enum of @c Behaviour
 Behaviour str_to_behaviour(const std::string& name) {
     if(name == "PLAYER") return Behaviour::player;
     if(name == "IDLE") return Behaviour::idle;
     if(name == "WALK_AROUND") return Behaviour::walk_around;
     else return Behaviour::invalid;
+}
+
+/// Converts a @c string to an @c enum of @c Response
+Response str_to_response(const std::string& name) {
+    if(name == "ON_HIT") return Response::on_hit;
+    if(name == "ON_COLLISION") return Response::on_collision;
+    if(name == "ON_ACTIVATION") return Response::on_activation;
+    if(name == "ON_DEATH") return Response::on_death;
+    else return Response::invalid;
 }
 
 /// Converts a @c Direction to x and y factors
