@@ -43,7 +43,7 @@ m_tile_w{tile_w}, m_tile_h{tile_h}
  * @param base_map To get file path or renderer for img parsing
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, const MapData& base_map) {
+tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
     XMLError eResult;
@@ -358,7 +358,7 @@ std::vector<Actor*> Layer::get_actors(std::string name, Behaviour behaviour, Dir
 }
 
 /// Returns true if rect collides layer
-bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map) const {
+bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided){
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
@@ -393,10 +393,11 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
             }
             break;}
         case object:
-            for(const Actor& actor : m_obj_grid) {
+            for(Actor& actor : m_obj_grid) {
                 if(actor.collide(rect, x_depth, y_depth)) {
                     if(x_depth > x_max) {x_max = x_depth;}
                     if(y_depth > y_max) {y_max = y_depth;}
+                    collided.push_back(&actor);
                     collide = true;
                 }
             }

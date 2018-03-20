@@ -32,27 +32,27 @@ class Actor;
  * @brief Move the actor to the supplied direction for x frames
  */
 class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
-
+    // The default interface block (copy this!)
     public:
-        AeMoveDirection(Direction dir = Direction::up, unsigned duration = 1, Priority prio = Priority::medium);
-
-        virtual EventSignal process(Actor& actor) override;
-        virtual ~AeMoveDirection() override;
-        virtual std::string get_type() override{return m_alias;}
-
+        AeMoveDirection() {}
+        static AeMoveDirection* create() {return duplicate(AeMoveDirection());}
+        virtual EventSignal process(Actor& actor) override;     //< Define this!
+        virtual ~AeMoveDirection() override {}
+        virtual std::string get_type() const override {return m_alias;}
+        static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
         virtual void kill() {kill(this);}
-
-        static std::string get_type_static() {return m_alias;}
-
-        static AeMoveDirection* create(Direction dir = Direction::up, unsigned duration = 1, Priority prio = Priority::medium);
-
+        virtual ActorEvent* copy() const override {return duplicate(this);}
     private:
-        static std::string m_alias;
+        static std::string m_alias; //< Define this!
 
+    // The specialized block
+    public:
+        AeMoveDirection(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
+        static AeMoveDirection* create(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
+    private:
         Direction m_direction = Direction::up;
         unsigned m_duration = 1; ///< How many frames the movement persists
-
 };
 
 #endif // AE_MOVE_DIRECTION_HPP_INCLUDED

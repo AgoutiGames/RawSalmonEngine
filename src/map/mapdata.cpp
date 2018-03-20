@@ -478,12 +478,12 @@ Uint16 MapData::get_gid(Tile* tile)  const{
 }
 
 /// Returns true if rect collides with any layer
-bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max) const{
+bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided) {
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
-    for(const Layer& layer : m_layers) {
-        if(layer.collide(rect, x_depth, y_depth, *this)) {
+    for(Layer& layer : m_layers) {
+        if(layer.collide(rect, x_depth, y_depth, *this, collided)) {
             if(x_depth > x_max) {x_max = x_depth;}
             if(y_depth > y_max) {y_max = y_depth;}
             collide = true;

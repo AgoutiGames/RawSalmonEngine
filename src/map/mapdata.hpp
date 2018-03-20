@@ -51,10 +51,13 @@ class MapData {
         Tile* get_tile(Uint16 tile_id) const;
         unsigned get_tile_h() const {return m_tile_h;}
         unsigned get_tile_w() const {return m_tile_w;}
+        void register_event(std::string name, ActorEvent* event) {m_events[name] = event;}
+        ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Returns copy of named event
+
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
                                        AnimationType animation = AnimationType::invalid);
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max) const;
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided);
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
@@ -93,6 +96,8 @@ class MapData {
 
         std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
         std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
+
+        std::map<std::string, ActorEvent*> m_events; ///< List of all parsed events by name
 
         SDL_Renderer** mpp_renderer = nullptr;
 };

@@ -49,13 +49,13 @@ class Layer{
     public:
         Layer(unsigned tile_w, unsigned tile_h);
 
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source, const MapData& base_map);
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
         bool render(SDL_Rect* camera, const MapData& base_map) const;
         void update();
         std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map) const;
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided);
 
 
     private:

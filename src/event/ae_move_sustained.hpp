@@ -29,29 +29,29 @@
 class Actor;
 
 /**
- * @brief Move the actor to the supplied direction for x frames
+ * @brief Move the actor to the supplied direction as long as key is held
  */
 class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
-
+    // The default interface block (copy this!)
     public:
-        AeMoveSustained(Direction dir = Direction::up, SDL_Keysym key = SDL_Keysym(), Priority prio = Priority::medium);
-
-        virtual EventSignal process(Actor& actor) override;
-        virtual ~AeMoveSustained() override;
-        virtual std::string get_type() override{return m_alias;}
-
+        AeMoveSustained() {}
+        static AeMoveSustained* create() {return duplicate(AeMoveSustained());}
+        virtual EventSignal process(Actor& actor) override;     //< Define this!
+        virtual ~AeMoveSustained() override {}
+        virtual std::string get_type() const override {return m_alias;}
+        static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
         virtual void kill() {kill(this);}
-
-        static std::string get_type_static() {return m_alias;}
-
-        static AeMoveSustained* create(Direction dir = Direction::up, SDL_Keysym key = SDL_Keysym(), Priority prio = Priority::medium);
-
+        virtual ActorEvent* copy() const override {return duplicate(this);}
     private:
-        static std::string m_alias;
+        static std::string m_alias; //< Define this!
 
+    // The specialized block
+    public:
+        AeMoveSustained(Direction dir, SDL_Keysym key, Priority prio = Priority::medium);
+        static AeMoveSustained* create(Direction dir, SDL_Keysym key, Priority prio = Priority::medium);
+    private:
         Direction m_direction = Direction::up;
-        SDL_Keysym m_key;
 };
 
 #endif // AE_MOVE_SUSTAINED_HPP_INCLUDED

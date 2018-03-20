@@ -29,10 +29,9 @@ std::string AeMoveSustained::m_alias = "AeMoveSustained";
 
 AeMoveSustained::AeMoveSustained(Direction dir, SDL_Keysym key, Priority prio) :
 EventContainer(prio, EventSignal::stop),
-m_direction{dir},
-m_key{key}
+m_direction{dir}
 {
-
+    set_key(key);
 }
 
 /**
@@ -43,7 +42,7 @@ m_key{key}
 EventSignal AeMoveSustained::process(Actor& actor) {
     // process stuff
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    if (keys[m_key.scancode]) {
+    if (keys[get_key().scancode]) {
         std::vector<float> mov_factors = dir_to_mov(m_direction);
         if(actor.move(mov_factors[0], mov_factors[1])) {
             actor.animate(AnimationType::walk, m_direction);
@@ -65,6 +64,3 @@ AeMoveSustained* AeMoveSustained::create(Direction dir, SDL_Keysym key, Priority
     return duplicate(temp);
 }
 
-AeMoveSustained::~AeMoveSustained() {
-
-}

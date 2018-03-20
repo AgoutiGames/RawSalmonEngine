@@ -59,7 +59,3 @@ AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Prior
     AeMoveDirection temp(dir, duration, prio);
     return duplicate(temp);
 }
-
-AeMoveDirection::~AeMoveDirection() {
-
-}
