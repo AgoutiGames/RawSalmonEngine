@@ -28,14 +28,6 @@
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 
-MapData::MapData() {
-
-}
-
-MapData::~MapData() {
-
-}
-
 /**
  * @brief Parse the supplied .tmx file
  *
@@ -47,7 +39,6 @@ MapData::~MapData() {
  * @param renderer Pointer to SDL2 renderer for loading tileset image files
  * @return an @c XMLError object which indicates success or error type
  */
-
 tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** renderer) {
 
     using namespace tinyxml2;
@@ -174,7 +165,11 @@ void MapData::update() {
     }
 }
 
-/// Fetch all actors which conform the supplied parameters
+/**
+ * @brief Fetch all actors which conform the supplied parameters
+ * @return Vector of conforming actors
+ * @note "invalid" value indicates that a parameter is ignored
+ */
 std::vector<Actor*> MapData::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
     for(Layer& layer : m_layers) {
@@ -209,14 +204,17 @@ unsigned MapData::get_overhang(Direction dir) const{
 /// Checks for minimum of overhang values for each tileset and saves the corresponding maximum
 void MapData::write_overhang() {
     std::map<Direction, unsigned> oh;
+    // Check each tileset for maximum overhang values for each direction
     for(Tileset& ts : m_tilesets) {
         std::map<Direction, unsigned> temp;
         temp = ts.determine_overhang(m_tile_w, m_tile_h);
+        // Check and write possible new maximum
         if(temp[Direction::up] > oh[Direction::up]) {oh[Direction::up] = temp[Direction::up];}
         if(temp[Direction::down] > oh[Direction::down]) {oh[Direction::down] = temp[Direction::down];}
         if(temp[Direction::left] > oh[Direction::left]) {oh[Direction::left] = temp[Direction::left];}
         if(temp[Direction::right] > oh[Direction::right]) {oh[Direction::right] = temp[Direction::right];}
     }
+    // Write the final maximums to the members
     m_up_overhang = oh[Direction::up];
     m_down_overhang = oh[Direction::down];
     m_left_overhang = oh[Direction::left];
@@ -320,7 +318,7 @@ void MapData::set_tile_animated(Tile* tile) {
             return;
         }
     }
-    std::cerr << "Could not find Tile to set it to animated, not in global list!\n";
+    std::cerr << "Could not find Tile to set it to animated, not in global tile list! (has no gid)\n";
 }
 
 /**
@@ -477,11 +475,19 @@ Uint16 MapData::get_gid(Tile* tile)  const{
     return 0;
 }
 
-/// Returns true if rect collides with any layer
+/**
+ * @brief Checks if given rect collides with any layer present in this map
+ * @param rect The rect to check against
+ * @param x_max, y_max The maximum depth of intersection by axis
+ * @param base_map Reference on map instance used for looking up tiles by their gid
+ * @param collided A container to which colliding actors are added
+ * @return @c bool which indicates collision
+ */
 bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided) {
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
+    // Iterate through all layers
     for(Layer& layer : m_layers) {
         if(layer.collide(rect, x_depth, y_depth, *this, collided)) {
             if(x_depth > x_max) {x_max = x_depth;}

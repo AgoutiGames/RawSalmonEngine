@@ -26,12 +26,12 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-/*
-Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at(tile_id)))
+
+Actor::Actor(Uint16 tile_id, MapData* map) : Actor::Actor(map->get_actor_template(tile_id), map)
 {
 
 }
-*/
+
 
 Actor::Actor(const ActorTemplate& templ, MapData* map) :
  m_map {map},
@@ -89,10 +89,11 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 
 /**
  * @brief Render the actor at it's position relative to the camera position
+ * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
  */
-void Actor::render(int x_cam, int y_cam, const MapData& base_map) const {
-    SDL_Rect dest {static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), static_cast<int>(m_width), static_cast<int>(m_height)};
-    m_animations.at(m_anim_state).at(m_direction).render(dest, base_map);
+void Actor::render(int x_cam, int y_cam) const {
+    SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
+    m_animations.at(m_anim_state).at(m_direction).render(dest, *m_map);
 
     // Alternative which doesnt do any resizing
     //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), base_map);
@@ -116,8 +117,11 @@ bool Actor::move(float x_factor, float y_factor) {
         // Apply position of actor to hitbox
         SDL_Rect temp = m_hitbox;
         m_x += x_factor * m_base_speed / FPS;
+        // Apply x movement
         temp.x += static_cast<int>(m_x);
+        // Check for x_axis collision
         if(x_factor != 0) {
+            // Apply y movement
             temp.y += static_cast<int>(m_y) - m_height;
             // Check for x-axis collision
             int x_inter_depth = 0;
@@ -129,10 +133,12 @@ bool Actor::move(float x_factor, float y_factor) {
                 temp.x -= x_inter_depth;
                 moved = false;
             }
+            // Undo y movement
             temp.y -= static_cast<int>(m_y) - m_height;
         }
-
+        // Check for y_axis collision
         if(y_factor != 0){
+            // Apply y movement
             m_y += y_factor * m_base_speed / FPS;
             temp.y += static_cast<int>(m_y) - m_height;
             // Check for y-axis collision
@@ -145,6 +151,7 @@ bool Actor::move(float x_factor, float y_factor) {
                 moved = false;
             }
         }
+        // Trigger collision events for each colliding actor, including this one
         for(Actor* a : collided) {
             a->respond(Response::on_collision, this);
             respond(Response::on_collision, a);
@@ -203,7 +210,6 @@ void Actor::add_event(ActorEvent* event) {
 /**
  * @brief Update the actor state
  * @return @c bool which returns true if actor is alive
- * @note Currently only pushes the animation
  */
 bool Actor::update() {
     bool alive = process_events();
@@ -215,10 +221,16 @@ bool Actor::update() {
  * @param anim The type of the animation
  * @param dir The direction of the animation
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
- * @warning Currently there is no checking if anim or dir are valid for the actor!!
- *          Segmentation fault possible for not properly parsed actor!!!
  */
 bool Actor::animate(AnimationType anim, Direction dir) {
+    if(m_animations.find(anim) == m_animations.end()) {
+        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << "is not defined!\n";
+        return false;
+    }
+    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
+        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << "is not defined!\n";
+        return false;
+    }
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;
         m_direction = dir;
@@ -231,7 +243,9 @@ bool Actor::animate(AnimationType anim, Direction dir) {
  * @brief Returns true if actor collides with rect
  * @note Hitbox width and height should be at least 10px
  *       when max actor speed is 500px per second
- * Returns minimum x and y values to go back to not intersect anymore
+ * @param rect The rect against which collision gets checked
+ * @param x_depth, y_depth The minimum x and y values to go back to not intersect anymore
+ * @return @c bool which indicates collision
  */
 bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
     if(SDL_RectEmpty(&m_hitbox)) {return false;}
@@ -253,6 +267,13 @@ bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
     return false;
 }
 
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param cause Pointer to the Actor which may caused this event
+ * @param key Keypress which may caused this event
+ * @return @c bool indication if response is defined/gets triggered
+ */
 bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
     if(m_response.find(r) == m_response.end()) {
         return false;

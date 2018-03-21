@@ -37,8 +37,8 @@
 
 class MapData {
     public:
-        MapData();
-        ~MapData();
+        MapData() {}
+        ~MapData() {}
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
         bool render(SDL_Rect* camera);

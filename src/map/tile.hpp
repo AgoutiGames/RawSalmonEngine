@@ -36,9 +36,9 @@ class MapData;
 
 class Tile{
 public:
-    Tile();
+    Tile() {}
     Tile(Tileset* ts, SDL_Rect& clp); // The initializing constructor
-    ~Tile();
+    ~Tile() {}
 
     void render(int x, int y, const MapData& base_map) const;
     void render(SDL_Rect& dest, const MapData& base_map) const; // Resizable render

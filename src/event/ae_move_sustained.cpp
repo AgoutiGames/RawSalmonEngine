@@ -53,7 +53,6 @@ EventSignal AeMoveSustained::process(Actor& actor) {
         return signal();
     }
     else {
-
         return EventSignal::end;
     }
 }

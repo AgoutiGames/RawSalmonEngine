@@ -31,13 +31,6 @@
 #include "util/tinyxml2.h"
 
 /**
- * @brief Construct an empty tile
- */
-Tile::Tile() {
-
-}
-
-/**
  * @brief Construct and registers a fully functional tile
  * @param ts Pointer to the corresponding tileset
  * @param clp @c SDL_Rect which determines the snippet of the whole tileset image
@@ -286,10 +279,16 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData
     return XML_SUCCESS;
 }
 
-Tile::~Tile() {
-
-}
-
+/**
+ * @brief Returns area of tileset image corresponding to tile
+ * @param base_map Required for looking up other tiles
+ *
+ * For animated tiles the clip is the one of the current animation tile id,
+ * instead of recursively calling this function again, get_clip_self is used which
+ * always yields the normal clip value of the tile.
+ *
+ * If not animated the normal clip value is returned
+ */
 const SDL_Rect& Tile::get_clip(const MapData& base_map) const {
     if(m_animated) {
         // Avoids daisy chaining of animated tiles
