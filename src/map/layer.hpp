@@ -35,6 +35,7 @@ class MapData;
  * @brief Parse, store and draw individual layers of the game map
  *
  * Can store all possible layer types
+ * @note ADD ACTOR SORTING FUNCTION ALREADY!! (And reimplement m_obj_grid as doubly linked list for pointer stability)
  */
 
 class Layer{

@@ -133,7 +133,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
             }
 
             // Construct actor from template corresponding to gid
-            m_obj_grid.push_back(Actor(base_map.get_actor_template(static_cast<Uint16>(gid)), &base_map));
+            m_obj_grid.push_back(Actor(gid, &base_map));
 
             // Initialize actor from the XMLElement*
             eResult = m_obj_grid.back().init_actor(p_object);
@@ -292,11 +292,11 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             break;}
         // Render map type "object"
         case object:{
-            int x = m_offset_x - camera->x;
-            int y = m_offset_y - camera->y;
+            int x = camera->x - m_offset_x;
+            int y = camera->y - m_offset_y;
             // Warning! No offscreen object culling
             for (unsigned i = 0; i < m_obj_grid.size(); i++) {
-                m_obj_grid[i].render(x,y, base_map);
+                m_obj_grid[i].render(x,y);
             }
             break;}
         // Render map type "image"
@@ -339,7 +339,11 @@ void Layer::update() {
     }
 }
 
-/// Fetch all actors which conform the supplied parameters
+/**
+ * @brief Fetch all actors which conform the supplied parameters
+ * @return Vector of conforming actors
+ * @note "invalid" value indicates that a parameter is ignored
+ */
 std::vector<Actor*> Layer::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
     if(m_type == LayerType::object) {
@@ -357,34 +361,50 @@ std::vector<Actor*> Layer::get_actors(std::string name, Behaviour behaviour, Dir
     return actor_list;
 }
 
-/// Returns true if rect collides layer
+/**
+ * @brief Checks if given rect collides with any entity present in this layer
+ * @param rect The rect to check against
+ * @param x_max, y_max The maximum depth of intersection by axis
+ * @param base_map Reference on map instance used for looking up tiles by their gid
+ * @param collided A container to which colliding actors are added
+ * @return @c bool which indicates collision
+ */
 bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided){
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
     switch (m_type) {
         case map:{
+            // Calculate possible chunk of tiles which could possibly collide with the rect
             int x_from = (rect->x + m_offset_x) / m_tile_w;
             int y_from = (rect->y + m_offset_y) / m_tile_h;
             int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
             int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
                     Uint16 tile_id = m_map_grid[y][x];
+                    // Exclude invalid tiles from check
                     if(tile_id != 0) {
                         Tile* tile = base_map.get_tile(tile_id);
                         SDL_Rect tile_rect = tile->get_hitbox();
+                        // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
+                            // Move tile hitbox to tile coordinates
                             tile_rect.x += m_offset_x + x * m_tile_w;
                             tile_rect.y += m_offset_y + y * m_tile_h;
                             SDL_Rect intersect;
+                            // Get intersection from supplied rect and tile rect
                             if(SDL_IntersectRect(rect, &tile_rect, &intersect)) {
+                                // Possibly overwrite maximum collision depth value
                                 if(intersect.w > x_max) {x_max = intersect.w;}
                                 if(intersect.h > y_max) {y_max = intersect.h;}
+                                /*
                                 std::cerr << "check " << tile_rect.x << " " << tile_rect.y << " " << tile_rect.w << " " << tile_rect.h << "\n";
                                 std::cerr << "check " << rect->x << " " << rect->y << " " << rect->w << " " << rect->h << "\n";
                                 std::cerr << "x depth: " << intersect.w << "\n";
                                 std::cerr << "y_depth: " << intersect.h << "\n";
+                                */
                                 collide = true;
                             }
                         }
@@ -393,10 +413,14 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
             }
             break;}
         case object:
+            // Iterate through all actors
             for(Actor& actor : m_obj_grid) {
+                // Check collision against each
                 if(actor.collide(rect, x_depth, y_depth)) {
+                    // Possibly overwrite maximum collision depth value
                     if(x_depth > x_max) {x_max = x_depth;}
                     if(y_depth > y_max) {y_max = y_depth;}
+                    // Add actor as collided
                     collided.push_back(&actor);
                     collide = true;
                 }
