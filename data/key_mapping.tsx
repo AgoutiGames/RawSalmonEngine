@@ -171,7 +171,11 @@
    <property name="KEYPRESS" value="L"/>
   </properties>
  </tile>
- <tile id="34" type="KEY_MAPPING"/>
+ <tile id="34" type="KEY_MAPPING">
+  <properties>
+   <property name="KEYPRESS" value=":"/>
+  </properties>
+ </tile>
  <tile id="35" type="KEY_MAPPING">
   <properties>
    <property name="KEYPRESS" value="Return"/>

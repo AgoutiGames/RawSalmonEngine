@@ -60,7 +60,11 @@ int main()
                         break;
 
                         case SDLK_w:
-                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::up, e.key.keysym));}
+                        if(player_input){
+                            ActorEvent* event = AeMoveSustained::create(Direction::up);
+                            event->set_key(e.key.keysym);
+                            game.m_player->add_event(event);
+                        }
                         break;
 
                         case SDLK_DOWN:
@@ -68,7 +72,11 @@ int main()
                         break;
 
                         case SDLK_s:
-                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::down, e.key.keysym));}
+                        if(player_input){
+                            ActorEvent* event = AeMoveSustained::create(Direction::down);
+                            event->set_key(e.key.keysym);
+                            game.m_player->add_event(event);
+                        }
                         break;
 
                         case SDLK_LEFT:
@@ -76,7 +84,11 @@ int main()
                         break;
 
                         case SDLK_a:
-                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::left, e.key.keysym));}
+                        if(player_input){
+                            ActorEvent* event = AeMoveSustained::create(Direction::left);
+                            event->set_key(e.key.keysym);
+                            game.m_player->add_event(event);
+                        }
                         break;
 
                         case SDLK_RIGHT:
@@ -84,7 +96,11 @@ int main()
                         break;
 
                         case SDLK_d:
-                        if(player_input){game.m_player->add_event(AeMoveSustained::create(Direction::right, e.key.keysym));}
+                        if(player_input){
+                            ActorEvent* event = AeMoveSustained::create(Direction::right);
+                            event->set_key(e.key.keysym);
+                            game.m_player->add_event(event);
+                        }
                         break;
 
                         case SDLK_SPACE:

@@ -19,12 +19,14 @@
 #ifndef AE_MOVE_DIRECTION_HPP_INCLUDED
 #define AE_MOVE_DIRECTION_HPP_INCLUDED
 
+#include <map>
 #include <vector>
 #include <string>
 
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
+#include "util/tinyxml2.h"
 
 class Actor;
 
@@ -36,6 +38,7 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
     public:
         AeMoveDirection() {}
         static AeMoveDirection* create() {return duplicate(AeMoveDirection());}
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
         virtual ~AeMoveDirection() override {}
         virtual std::string get_type() const override {return m_alias;}
@@ -48,11 +51,11 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
     // The specialized block
     public:
-        AeMoveDirection(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
-        static AeMoveDirection* create(Direction dir, unsigned duration = 1, Priority prio = Priority::medium);
+        AeMoveDirection(Direction dir, unsigned duration = 1);
+        static AeMoveDirection* create(Direction dir, unsigned duration = 1);
     private:
-        Direction m_direction = Direction::up;
-        unsigned m_duration = 1; ///< How many frames the movement persists
+        Direction m_direction;
+        unsigned m_duration; ///< How many frames the movement persists
 };
 
 #endif // AE_MOVE_DIRECTION_HPP_INCLUDED

@@ -47,6 +47,7 @@ class Tileset{
         ~Tileset();
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* ts_file, MapData& base_map); // Initialize single object
+        static tinyxml2::XMLError parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map);
 
         const Texture* get_image_pointer() const {return &m_image;}
         unsigned get_tile_height() const {return m_tile_height;}
