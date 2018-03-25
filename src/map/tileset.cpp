@@ -26,6 +26,7 @@
 #include <sstream>
 #include <map>
 
+#include "event/actor_event.hpp"
 #include "graphics/texture.hpp"
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
@@ -252,4 +253,26 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     oh_map[Direction::right] = loc_right;
 
     return oh_map;
+}
+
+tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map) {
+    using namespace tinyxml2;
+    XMLError eResult;
+    XMLElement* p_tile = source->FirstChildElement("tile");
+    while(p_tile != nullptr) {
+        std::pair<std::string, ActorEvent*> event;
+        eResult = ActorEvent::parse_multi(p_tile, event);
+        if(eResult == XML_SUCCESS) {
+            base_map.register_event(event);
+        }
+        else if(eResult == XML_NO_ATTRIBUTE) {
+
+        }
+        else {
+            std::cerr << "Failed at parsing symbolic tile yielding an event\n";
+            return eResult;
+        }
+        p_tile = p_tile->NextSiblingElement("tile");
+    }
+    return XML_SUCCESS;
 }

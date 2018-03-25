@@ -36,6 +36,7 @@ class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
     public:
         AeMoveSustained() {}
         static AeMoveSustained* create() {return duplicate(AeMoveSustained());}
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
         virtual ~AeMoveSustained() override {}
         virtual std::string get_type() const override {return m_alias;}
@@ -48,10 +49,10 @@ class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
 
     // The specialized block
     public:
-        AeMoveSustained(Direction dir, SDL_Keysym key, Priority prio = Priority::medium);
-        static AeMoveSustained* create(Direction dir, SDL_Keysym key, Priority prio = Priority::medium);
+        AeMoveSustained(Direction dir);
+        static AeMoveSustained* create(Direction dir);
     private:
-        Direction m_direction = Direction::up;
+        Direction m_direction;
 };
 
 #endif // AE_MOVE_SUSTAINED_HPP_INCLUDED

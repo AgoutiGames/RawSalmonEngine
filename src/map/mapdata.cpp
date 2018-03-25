@@ -45,9 +45,28 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     mpp_renderer = renderer;
 
+    // First parse possible events
+    XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
+    std::string full_path = m_base_path + "events.tsx";
+    XMLError eResult = sym_ts.LoadFile(full_path.c_str());
+    if(eResult != XML_SUCCESS) {
+        std::cout << "Can't find events.tsx at relative path: " << full_path << "\n";
+        return eResult;
+    }
+    XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
+    if (pSymTs == nullptr) return XML_ERROR_PARSING_ELEMENT;
+    eResult = Tileset::parse_symbolic(pSymTs, *this);
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed at parsing symbolic tileset events.tsx\n";
+        return eResult;
+    }
+
+    // Now parse key mapping
+
+
     // This saves the .tmx file to the member m_mapfile
-    std::string full_path = m_base_path + filename;
-    XMLError eResult = m_mapfile.LoadFile(full_path.c_str());
+    full_path = m_base_path + filename;
+    eResult = m_mapfile.LoadFile(full_path.c_str());
     if(eResult != XML_SUCCESS) {
         std::cout << "Can't find map at relative path: " << full_path << "\n";
         return eResult;

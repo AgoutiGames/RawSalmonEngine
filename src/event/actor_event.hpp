@@ -42,6 +42,7 @@ class ActorEvent{
         virtual ~ActorEvent() = 0;
         virtual std::string get_type() const = 0;
         virtual ActorEvent* copy() const = 0;
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const = 0;
 
         void set_cause(Actor* x) {m_cause = x;}
         Actor* get_cause() const {return m_cause;}
@@ -53,6 +54,8 @@ class ActorEvent{
         template <class T>
         static void register_class();
 
+        static tinyxml2::XMLError parse_multi(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry);
+
     private:
         Actor* m_cause = nullptr;
         SDL_Keysym m_key;
@@ -61,6 +64,7 @@ class ActorEvent{
 
 };
 
+/// Registers the type of event as an actor event
 template <class T>
 void ActorEvent::register_class() {
     EventContainer<ActorEvent, T>::initialize();

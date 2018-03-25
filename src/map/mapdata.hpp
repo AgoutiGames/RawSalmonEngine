@@ -51,7 +51,7 @@ class MapData {
         Tile* get_tile(Uint16 tile_id) const;
         unsigned get_tile_h() const {return m_tile_h;}
         unsigned get_tile_w() const {return m_tile_w;}
-        void register_event(std::string name, ActorEvent* event) {m_events[name] = event;}
+        void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);}
         ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Returns copy of named event
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
