@@ -21,6 +21,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <list>
 #include <string>
 
 #include "actor/actor.hpp"
@@ -78,7 +79,7 @@ class Layer{
         float m_opacity = 1.0f; ///< @warning value only works with image layers!
 
         // members for m_type object
-        std::vector<Actor> m_obj_grid;
+        std::list<Actor> m_obj_grid;
 };
 
 
