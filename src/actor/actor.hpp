@@ -86,5 +86,8 @@ class Actor{
         std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
 };
 
+/// Overloading of comparision operator to enable the sort() functionality in a std::list
+inline bool operator< (const Actor& lhs, const Actor& rhs) {return lhs.get_y() < rhs.get_y();}
+
 
 #endif // ACTOR_HPP_INCLUDED

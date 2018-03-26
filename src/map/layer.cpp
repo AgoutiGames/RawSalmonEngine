@@ -18,10 +18,12 @@
  */
 #include "map/layer.hpp"
 
+#include <list>
 #include <string>
 #include <sstream>
 #include <iostream>
 
+#include "actor/actor.hpp"
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/base64.h"
@@ -295,9 +297,13 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
         case object:{
             int x = camera->x - m_offset_x;
             int y = camera->y - m_offset_y;
+            int from = y - base_map.get_overhang(Direction::up);
+            int to = y + camera->h + base_map.get_overhang(Direction::down);
             // Warning! No offscreen object culling
-            for (unsigned i = 0; i < m_obj_grid.size(); i++) {
-                m_obj_grid[i].render(x,y);
+            for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
+                int feet = it->get_y();
+                int head = feet - it->get_h();
+                if(feet > from && head < to) {it->render(x,y);}
             }
             break;}
         // Render map type "image"
@@ -327,12 +333,14 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
  */
 void Layer::update() {
     if(m_type == object) {
-        for (unsigned i = 0; i < m_obj_grid.size(); i++) {
-            if (m_obj_grid[i].update() == false) {
-                m_obj_grid.erase(m_obj_grid.begin() + i);
-                i--;
+        for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
+            if(it->update() == false) {
+                it--;
+                m_obj_grid.erase(++it);
             }
         }
+        // Establish correct rendering order
+        m_obj_grid.sort();
     }
 
     else {
