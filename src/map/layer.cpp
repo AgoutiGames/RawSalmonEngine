@@ -299,7 +299,7 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             int y = camera->y - m_offset_y;
             int from = y - base_map.get_overhang(Direction::up);
             int to = y + camera->h + base_map.get_overhang(Direction::down);
-            // Warning! No offscreen object culling
+            // Has y-axis offscreen culling
             for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
                 int feet = it->get_y();
                 int head = feet - it->get_h();
