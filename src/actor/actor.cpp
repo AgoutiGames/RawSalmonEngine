@@ -193,18 +193,21 @@ bool Actor::process_events() {
  * @param event The event to be added
  */
 void Actor::add_event(ActorEvent* event) {
-    if(!m_event_pipeline.empty()) {
-        auto it = m_event_pipeline.end();
-        do {
-            --it;
-            if((*it)->priority() >= event->priority()) {
-                ++it;
-                m_event_pipeline.insert(it, event);
-                return;
-            }
-        } while(it != m_event_pipeline.begin());
+    if(!is_blocked(event->get_type()) && !in_cooldown(event->get_type())) {
+        if(!m_event_pipeline.empty()) {
+            auto it = m_event_pipeline.end();
+            do {
+                --it;
+                if((*it)->priority() >= event->priority()) {
+                    ++it;
+                    m_event_pipeline.insert(it, event);
+                    return;
+                }
+            } while(it != m_event_pipeline.begin());
+        }
+        m_event_pipeline.insert(m_event_pipeline.begin(), event);
+        return;
     }
-    m_event_pipeline.insert(m_event_pipeline.begin(), event);
 }
 
 /**
@@ -285,4 +288,33 @@ bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
         add_event(event);
         return true;
     }
+}
+
+/**
+ * @brief Return if actors event pipeline is blocked for a specific event
+ * @param event_type Name of the event type
+ * @return @c bool indicating if event type is currently blocked
+ */
+bool Actor::is_blocked(std::string event_type) const {
+    if(m_block.find(event_type) == m_block.end()) {
+        return false;
+    }
+    else {
+        return m_block.at(event_type);
+    }
+}
+
+/**
+ * @brief Return if actors event pipeline is on cooldown for a specific event
+ * @param event_type Name of the event type
+ * @return @c bool indicating if event type is currently on cooldown
+ */
+bool Actor::in_cooldown(std::string event_type) const {
+    if(m_timestamp.find(event_type) == m_timestamp.end()) {
+        return false;
+    }
+    if(m_timestamp.at(event_type) > SDL_GetTicks()) {
+        return true;
+    }
+    else {return false;}
 }
