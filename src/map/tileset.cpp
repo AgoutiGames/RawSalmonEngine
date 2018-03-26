@@ -47,6 +47,7 @@ Tileset::~Tileset() {
 /**
  * @brief Initialize a tileset from XML info
  * @param ts_file The @c XMLElement which storest the tileset information
+ * @param base_map Reference to map object to get renderer, file path, register tiles, etc.
  * @return an @c XMLError object which indicates success or error type
  */
 tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_map) {
@@ -183,8 +184,9 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
 
 /**
  * @brief Renders a tile of the tileset at a coordinate
- * @param x, y, The specified coordinate
+ * @param x, y The specified coordinate
  * @param local_tile_id The ID of the tile corresponding to it's tileset
+ * @param base_map Reference to map object for rendering
  * @return @c bool which indicates success or failure
  */
 bool Tileset::render(Uint16 local_tile_id, int x, int y, const MapData& base_map) const {
@@ -255,6 +257,12 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     return oh_map;
 }
 
+/**
+ * @brief Parse symbolic tiles to register them as events callable by name
+ * @param source The XMLElement pointing to the tileset
+ * @param base_map Reference to map object to register each event
+ * @return @c XMLElement indication sucess of parsing
+ */
 tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
     XMLError eResult;

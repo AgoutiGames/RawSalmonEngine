@@ -7,7 +7,7 @@
    <property name="NAME" value="Moveleft"/>
   </properties>
  </tile>
- <tile id="1" type="AeMoveSustained">
+ <tile id="1" type="AeMoveDirection">
   <properties>
    <property name="NAME" value="Moveup"/>
   </properties>

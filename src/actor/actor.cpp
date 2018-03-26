@@ -166,7 +166,6 @@ bool Actor::move(float x_factor, float y_factor) {
  * @todo Implement AI and Player behaviour when event_pipeline is empty
  */
 bool Actor::process_events() {
-    bool alive = true;
     if(!m_event_pipeline.empty()) {
         for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
             ActorEvent* event = m_event_pipeline[i];
@@ -179,13 +178,14 @@ bool Actor::process_events() {
                 m_event_pipeline.erase(m_event_pipeline.begin() + i);
                 i--;
             }
+            else if(signal == EventSignal::die) {return false;}
         }
     }
     else {
         animate(AnimationType::idle, m_direction);
         // AI and Player behaviour stuff
     }
-    return alive;
+    return true;
 }
 
 /**
