@@ -124,6 +124,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
  * @brief Parse tile information of actor animation tiles
  * @param source The @c XMLElement from the tileset
  * @param first_gid The first global tile id of the tileset
+ * @param base_map Reference to map object to register as actor animation
  * @return an @c XMLError object which indicates success or error type
  *
  * Determines the tile type and calls the corresponding tile parsers
@@ -263,6 +264,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
 /**
  * @brief Parse tile information of actor template tiles
  * @param source The @c XMLElement from the tileset
+ * @param base_map Reference to map object to register as actor template
  * @return an @c XMLError object which indicates success or error type
  *
  * Parse the tile via the static Actor method @c add_template
@@ -317,6 +319,7 @@ void Tile::init_anim(Uint32 time) {
  *
  * Checks if next frame of animated tile is due, changes to next frame
  * and wraps around if required.
+ * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
 bool Tile::push_anim() {
     bool wrap_around = false;
@@ -337,6 +340,7 @@ bool Tile::push_anim() {
  *
  * Checks if next frame of animated tile is due, changes to next frame
  * and wraps around if required.
+ * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
 void Tile::push_anim(Uint32 time) {
     if(time - m_anim_timestamp >= m_durations[m_current_id]) {
@@ -351,6 +355,7 @@ void Tile::push_anim(Uint32 time) {
 /**
  * @brief Render a tile object to a coordinate
  * @param x, y The specified coordinates
+ * @param base_map Reference to map for getting clip and renderer
  */
 void Tile::render(int x, int y, const MapData& base_map) const {
     x += mp_tileset->get_x_offset();
@@ -364,6 +369,7 @@ void Tile::render(int x, int y, const MapData& base_map) const {
 /**
  * @brief Render a tile object to a rect
  * @param dest The rendering rect
+ * @param base_map Reference to map for getting clip and renderer
  *
  * This function can resize the tile image
  */

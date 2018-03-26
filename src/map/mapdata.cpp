@@ -414,7 +414,7 @@ void MapData::add_actor_animation(std::string name, AnimationType anim, Directio
 /**
  * @brief Add an @c ActorTemplate to the vector @c m_templates from an @c XMLElement
  * @param source The @c XMLElement which contains the information
- * @param Tile The pointer to the @c ActorTemplate tile
+ * @param tile The pointer to the @c ActorTemplate tile
  * @return an @c XMLError object which indicates success or error type
  */
 tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Tile* tile) {
@@ -498,7 +498,6 @@ Uint16 MapData::get_gid(Tile* tile)  const{
  * @brief Checks if given rect collides with any layer present in this map
  * @param rect The rect to check against
  * @param x_max, y_max The maximum depth of intersection by axis
- * @param base_map Reference on map instance used for looking up tiles by their gid
  * @param collided A container to which colliding actors are added
  * @return @c bool which indicates collision
  */

@@ -217,6 +217,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
  * to make up for oversized tiles and tilset offset values.
  *
  * @param camera The rectangular area of the map to be rendered
+ * @param base_map A reference to the map for getting tiles, overhang, renderer, etc.
  * @return @c bool which indicates success or failure
 
  * @warning The layer opacity value is ignored except for @c image type layers

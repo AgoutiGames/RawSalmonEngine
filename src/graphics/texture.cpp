@@ -183,8 +183,6 @@ void Texture::render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip
 /**
  * @brief Renders the texture to screen with resizing abilities
  * @param renderer Supplied renderer to use
- * @param x The x-coordinate of the render position
- * @param y The y-coordinate of the render position
  * @param clip The area of the image which gets drawn
  * @param dest Destination area to draw to (including stretch or shrink)
  */

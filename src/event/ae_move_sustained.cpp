@@ -39,7 +39,7 @@ m_direction{dir}
 /**
  * @brief Move the actor to the supplied direction until key is released
  * @param actor The actor which should move
- * @return @c bool which indicates if the event is fully processed
+ * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeMoveSustained::process(Actor& actor) {
     // process stuff

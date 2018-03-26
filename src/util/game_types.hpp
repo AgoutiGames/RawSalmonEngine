@@ -65,6 +65,7 @@ enum class EventSignal{
     next,
     stop,
     end,
+    die,
     invalid,
 };
 
