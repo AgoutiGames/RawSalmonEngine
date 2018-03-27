@@ -28,17 +28,11 @@
 #include "map/tile.hpp"
 #include "util/tinyxml2.h"
 
+class ActorEvent;
 
 /**
  * @brief A collection of various enums
  */
-
-enum class Behaviour {
-    player,
-    idle,
-    walk_around,
-    invalid,
-};
 
 enum class Direction {
     up,
@@ -74,27 +68,26 @@ enum class Response{
     on_collision,
     on_activation,
     on_death,
+    on_idle,
     invalid,
 };
 
 struct ActorTemplate {
     std::string template_name = "_";
     float speed = 250.0f; // Pixel per second
-    Behaviour AI = Behaviour::idle;
     Direction direction = Direction::down;
     SDL_Rect hitbox = {0,0,0,0};
     std::map<AnimationType, std::map<Direction, Tile>> animations;
+    std::map<Response, ActorEvent*> response; ///< Map which yields events for response values
 };
 
 AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
-Behaviour str_to_behaviour(const std::string& name);
 Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
 tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
 tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img);
-tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Behaviour& beh, Direction& dir);
 
 std::vector<float> dir_to_mov(const Direction dir);
 

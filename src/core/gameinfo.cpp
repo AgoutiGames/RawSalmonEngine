@@ -111,14 +111,13 @@ bool GameInfo::load_map(std::string mapfile) {
 }
 
 bool GameInfo::fetch_player() {
-    Behaviour B = Behaviour::player;
-    std::vector<Actor*> actor_list = m_map.get_actors(std::string(""),B);
+    std::vector<Actor*> actor_list = m_map.get_actors(std::string("PLAYER"));
     if(actor_list.size() > 1) {
-        std::cerr << "Error: More than one actor with player behaviour!\n";
+        std::cerr << "Error: More than one actor called PLAYER!\n";
         return false;
     }
     else if(actor_list.size() == 0) {
-        std::cerr << "Error: No actor with player behaviour found!\n";
+        std::cerr << "Error: No actor called PLAYER found!\n";
         return false;
     }
     else {

@@ -55,7 +55,7 @@ class Layer{
 
         bool render(SDL_Rect* camera, const MapData& base_map) const;
         void update();
-        std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
+        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
         bool collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided);
 

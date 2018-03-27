@@ -52,20 +52,13 @@ EventSignal str_to_event_signal(const std::string& name) {
     else return EventSignal::invalid;
 }
 
-/// Converts a @c string to an @c enum of @c Behaviour
-Behaviour str_to_behaviour(const std::string& name) {
-    if(name == "PLAYER") return Behaviour::player;
-    if(name == "IDLE") return Behaviour::idle;
-    if(name == "WALK_AROUND") return Behaviour::walk_around;
-    else return Behaviour::invalid;
-}
-
 /// Converts a @c string to an @c enum of @c Response
 Response str_to_response(const std::string& name) {
     if(name == "ON_HIT") return Response::on_hit;
     if(name == "ON_COLLISION") return Response::on_collision;
     if(name == "ON_ACTIVATION") return Response::on_activation;
     if(name == "ON_DEATH") return Response::on_death;
+    if(name == "ON_IDLE") return Response::on_idle;
     else return Response::invalid;
 }
 
@@ -134,67 +127,6 @@ tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img) {
     else {
         std::cerr << "Unknown blend mode specified\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-    return XML_SUCCESS;
-}
-
-tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Behaviour& beh, Direction& dir) {
-    using namespace tinyxml2;
-    XMLError eResult;
-    while(source != nullptr) {
-        const char* p_name;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-        // Parse base speed
-        else if(name == "BASE_SPEED") {
-            eResult = source->QueryFloatAttribute("value", &speed);
-            if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed at loading speed value\n";
-                return eResult;
-            }
-        }
-
-        //Parse current direction facing
-        else if(name == "DIRECTION") {
-            const char* p_direction = source->Attribute("value");
-            if(p_direction != nullptr) {
-                dir = str_to_direction(std::string(p_direction));
-                if(dir == Direction::invalid) {
-                    std::cerr << "Invalid direction type \"" << p_direction << "\"specified\n";
-                    return XML_WRONG_ATTRIBUTE_TYPE;
-                }
-            }
-            else {
-                std::cerr << "Empty direction value specified\n";
-                return XML_NO_ATTRIBUTE;
-            }
-
-        }
-
-        // Parse the AI type
-        else if(name == "BEHAVIOUR") {
-            const char* p_behaviour = source->Attribute("value");
-            if(p_behaviour != nullptr) {
-                beh = str_to_behaviour(std::string(p_behaviour));
-                if(beh == Behaviour::invalid) {
-                    std::cerr << "Invalid behaviour type \"" << p_behaviour << "\"specified\n";
-                    return XML_WRONG_ATTRIBUTE_TYPE;
-                }
-            }
-            else {
-                std::cerr << "Empty behaviour value specified\n";
-                return XML_NO_ATTRIBUTE;
-            }
-        }
-
-        else {
-            std::cerr << "Unknown actor property \"" << p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        // Move to next property
-        source = source->NextSiblingElement("property");
     }
     return XML_SUCCESS;
 }

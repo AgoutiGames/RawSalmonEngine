@@ -9,7 +9,8 @@
  </tile>
  <tile id="1" type="AeMoveDirection">
   <properties>
-   <property name="NAME" value="Moveup"/>
+   <property name="DIRECTION" value="DOWN"/>
+   <property name="NAME" value="Movedown"/>
   </properties>
  </tile>
 </tileset>
