@@ -37,7 +37,6 @@ Actor::Actor(const ActorTemplate& templ, MapData* map) :
  m_map {map},
  m_type {templ.template_name},
  m_base_speed {templ.speed},
- m_AI {templ.AI},
  m_direction {templ.direction},
  m_hitbox {templ.hitbox},
  m_animations {templ.animations}
@@ -78,7 +77,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
     if(p_tile_properties != nullptr) {
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
-        eResult = parse_actor_properties(p_property, m_base_speed, m_AI, m_direction);
+        eResult = m_map->parse_actor_properties(p_property, m_base_speed, m_direction, m_response);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing actor properties for actor: " << m_name << "\n";
             return eResult;
@@ -181,8 +180,9 @@ bool Actor::process_events() {
             else if(signal == EventSignal::die) {return false;}
         }
     }
-    else {
-        animate(AnimationType::idle, m_direction);
+    if(m_event_pipeline.empty()) {
+        respond(Response::on_idle);
+        //animate(AnimationType::idle, m_direction);
         // AI and Player behaviour stuff
     }
     return true;

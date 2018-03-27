@@ -53,9 +53,10 @@ class MapData {
         unsigned get_tile_w() const {return m_tile_w;}
         void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);}
         ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Returns copy of named event
+        bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}}
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
-        std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
+        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                        AnimationType animation = AnimationType::invalid);
         bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided);
 
@@ -72,6 +73,8 @@ class MapData {
 
         bool render(Uint16 tile_id, int x, int y) const;
         bool render(Uint16 tile_id, SDL_Rect& dest) const;
+
+        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp);
 
     private:
         tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file

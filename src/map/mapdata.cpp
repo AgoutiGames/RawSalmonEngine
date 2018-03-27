@@ -189,10 +189,10 @@ void MapData::update() {
  * @return Vector of conforming actors
  * @note "invalid" value indicates that a parameter is ignored
  */
-std::vector<Actor*> MapData::get_actors(std::string name, Behaviour behaviour, Direction direction, AnimationType animation) {
+std::vector<Actor*> MapData::get_actors(std::string name, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
     for(Layer& layer : m_layers) {
-        std::vector<Actor*> sublist = layer.get_actors(name, behaviour, direction, animation);
+        std::vector<Actor*> sublist = layer.get_actors(name, direction, animation);
         actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
     }
     return actor_list;
@@ -457,7 +457,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
 
         // Parse user specified properties of the ActorTemplate
         ActorTemplate& a = m_templates[actor_name];
-        eResult = parse_actor_properties(p_property, a.speed, a.AI, a.direction);
+        eResult = parse_actor_properties(p_property, a.speed, a.direction, a.response);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing actor properties for actor template of actor: " << actor_name << "\n";
             return eResult;
@@ -515,3 +515,68 @@ bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<
     }
     return collide;
 }
+
+tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp) {
+    using namespace tinyxml2;
+    XMLError eResult;
+    while(source != nullptr) {
+        const char* p_name;
+        p_name = source->Attribute("name");
+        std::string name(p_name);
+        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+        // Parse base speed
+        else if(name == "BASE_SPEED") {
+            eResult = source->QueryFloatAttribute("value", &speed);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at loading speed value\n";
+                return eResult;
+            }
+        }
+
+        // Parse current direction facing
+        else if(name == "DIRECTION") {
+            const char* p_direction = source->Attribute("value");
+            if(p_direction != nullptr) {
+                dir = str_to_direction(std::string(p_direction));
+                if(dir == Direction::invalid) {
+                    std::cerr << "Invalid direction type \"" << p_direction << "\"specified\n";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+            }
+            else {
+                std::cerr << "Empty direction value specified\n";
+                return XML_NO_ATTRIBUTE;
+            }
+
+        }
+
+        // Parse response values
+        else if(str_to_response(name) != Response::invalid) {
+            const char* p_event = source->Attribute("value");
+            if(p_event != nullptr) {
+                std::string event(p_event);
+                if(check_event(event)) {
+                    resp[str_to_response(name)] = get_event(event);
+                }
+                else {
+                    std::cerr << "An event called: " << event << " does not exist/ never got parsed!";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+            }
+            else {
+                std::cerr << "Empty response event specified\n";
+                return XML_NO_ATTRIBUTE;
+            }
+        }
+
+        else {
+            std::cerr << "Unknown actor property \"" << p_name << "\" specified\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        // Move to next property
+        source = source->NextSiblingElement("property");
+    }
+    return XML_SUCCESS;
+}
+

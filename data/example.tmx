@@ -48,6 +48,7 @@
   <tile id="0" type="ACTOR_TEMPLATE">
    <properties>
     <property name="ACTOR_NAME" value="DEF_BLOCK"/>
+    <property name="DIRECTION" value="RIGHT"/>
    </properties>
    <objectgroup draworder="index">
     <object id="1" x="0" y="48" width="80" height="80"/>
@@ -178,9 +179,10 @@
   </properties>
  </imagelayer>
  <objectgroup name="Objektebene 1">
-  <object id="1" name="Actor_1" gid="63" x="122.667" y="128.667" width="128" height="128">
+  <object id="1" name="PLAYER" gid="63" x="122.667" y="128.667" width="128" height="128">
    <properties>
-    <property name="BEHAVIOUR" value="PLAYER"/>
+    <property name="DIRECTION" value="DOWN"/>
+    <property name="ON_IDLE" value="Movedown"/>
    </properties>
   </object>
   <object id="2" name="Billy" gid="63" x="451" y="249" width="128" height="128"/>

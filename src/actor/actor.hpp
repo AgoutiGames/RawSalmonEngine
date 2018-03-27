@@ -51,7 +51,6 @@ class Actor{
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const;
         bool respond(Response r, Actor* cause = nullptr, SDL_Keysym key = SDL_Keysym());
 
-        Behaviour get_behaviour() const {return m_AI;}
         AnimationType get_animation() const {return m_anim_state;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
@@ -69,6 +68,8 @@ class Actor{
         bool is_blocked(std::string event_type) const;
         bool in_cooldown(std::string event_type) const;
 
+
+
     private:
         MapData* m_map;
 
@@ -80,12 +81,12 @@ class Actor{
         std::string m_type;
         float m_base_speed;
 
-        Behaviour m_AI;
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
         Direction m_direction; ///< Current direction facing
         SDL_Rect m_hitbox;
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         std::map<Response, ActorEvent*> m_response; ///< Map which yields events for response values
+
         std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
         std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event type
         std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
