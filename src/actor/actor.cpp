@@ -193,7 +193,7 @@ bool Actor::process_events() {
  * @param event The event to be added
  */
 void Actor::add_event(ActorEvent* event) {
-    if(!is_blocked(event->get_type()) && !in_cooldown(event->get_type())) {
+    if(!is_blocked(event->get_type()) && !is_blocked(event->get_key()) && !in_cooldown(event->get_type())) {
         if(!m_event_pipeline.empty()) {
             auto it = m_event_pipeline.end();
             do {
@@ -328,6 +328,20 @@ bool Actor::is_blocked(std::string event_type) const {
     }
     else {
         return m_block.at(event_type);
+    }
+}
+
+/**
+ * @brief Return if actors event pipeline is blocked for a specific key
+ * @param key The key which gets checkes
+ * @return @c bool indicating if key is currently blocked
+ */
+bool Actor::is_blocked(const SDL_Keysym& key) const {
+    if(m_block_key.find(key.sym) == m_block_key.end()) {
+        return false;
+    }
+    else {
+        return m_block_key.at(key.sym);
     }
 }
 
