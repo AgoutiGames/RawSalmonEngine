@@ -297,8 +297,8 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
         case object:{
             int x = camera->x - m_offset_x;
             int y = camera->y - m_offset_y;
-            int from = y - base_map.get_overhang(Direction::up);
-            int to = y + camera->h + base_map.get_overhang(Direction::down);
+            int from = y - base_map.get_overhang(Direction::up) * m_tile_h;
+            int to = y + camera->h + base_map.get_overhang(Direction::down) * m_tile_h;
             // Has y-axis offscreen culling
             for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
                 int feet = it->get_y();

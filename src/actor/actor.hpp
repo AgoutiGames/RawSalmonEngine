@@ -65,8 +65,11 @@ class Actor{
         void set_cooldown(std::string event_type, float dur_sec) {m_timestamp[event_type] = SDL_GetTicks() + dur_sec * 1000;}
         Uint32 get_cooldown(std::string event_type) const {return m_timestamp.at(event_type);}
         void block_event(std::string event_type) {m_block[event_type] = true;}
+        void block_event(SDL_Keycode key) {m_block_key[key] = true;}
         void unblock_event(std::string event_type) {m_block[event_type] = false;}
+        void unblock_event(SDL_Keycode key) {m_block_key[key] = false;}
         bool is_blocked(std::string event_type) const;
+        bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string event_type) const;
 
 
@@ -90,6 +93,7 @@ class Actor{
 
         std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
         std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event type
+        std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
         std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
 };
 
