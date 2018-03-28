@@ -44,7 +44,9 @@ m_duration{duration}
 EventSignal AeMoveDirection::process(Actor& actor) {
     // process stuff
     if (m_duration != 0) {
-        std::vector<float> mov_factors = dir_to_mov(m_direction);
+        std::vector<float> mov_factors;
+        if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
+        else {mov_factors = dir_to_mov(m_direction);}
         if(actor.move(mov_factors[0], mov_factors[1])) {
             actor.animate(AnimationType::walk, m_direction);
             m_duration--;

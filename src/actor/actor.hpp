@@ -43,7 +43,8 @@ class Actor{
 
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         bool update();
-        bool animate(AnimationType anim, Direction dir);
+        bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
+        AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor);
         bool process_events();

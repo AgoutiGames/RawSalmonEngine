@@ -24,6 +24,7 @@
 AnimationType str_to_anim_type(const std::string& name) {
     if(name == "IDLE") return AnimationType::idle;
     if(name == "WALK") return AnimationType::walk;
+    if(name == "CURRENT") return AnimationType::current;
     else return AnimationType::invalid;
 }
 
@@ -33,6 +34,7 @@ Direction str_to_direction(const std::string& name) {
     if(name == "DOWN") return Direction::down;
     if(name == "LEFT") return Direction::left;
     if(name == "RIGHT") return Direction::right;
+    if(name == "CURRENT") return Direction::current;
     else return Direction::invalid;
 }
 

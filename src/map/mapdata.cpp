@@ -543,6 +543,11 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
                     std::cerr << "Invalid direction type \"" << p_direction << "\"specified\n";
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
+
+                if(dir == Direction::current) {
+                    std::cerr << "There is no current direction upon actor initialization\n";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
             }
             else {
                 std::cerr << "Empty direction value specified\n";

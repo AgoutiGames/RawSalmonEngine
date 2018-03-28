@@ -61,7 +61,7 @@ int main()
 
                         case SDLK_w:
                         if(player_input){
-                            ActorEvent* event = AeMoveSustained::create(Direction::up);
+                            ActorEvent* event = AeMoveSustained::create(Direction::current);
                             event->set_key(e.key.keysym);
                             game.m_player->add_event(event);
                         }

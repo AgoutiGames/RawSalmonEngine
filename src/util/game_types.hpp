@@ -25,10 +25,10 @@
 #include <map>
 
 #include "graphics/texture.hpp"
-#include "map/tile.hpp"
 #include "util/tinyxml2.h"
 
 class ActorEvent;
+class Tile;
 
 /**
  * @brief A collection of various enums
@@ -39,12 +39,14 @@ enum class Direction {
     down,
     left,
     right,
+    current,
     invalid,
 };
 
 enum class AnimationType {
     idle,
     walk,
+    current,
     invalid,
 };
 
@@ -70,6 +72,13 @@ enum class Response{
     on_death,
     on_idle,
     invalid,
+};
+
+enum class AnimSignal{
+    trigger,
+    wrap,
+    next,
+    none,
 };
 
 struct ActorTemplate {
