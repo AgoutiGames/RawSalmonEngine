@@ -133,6 +133,9 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
     using namespace tinyxml2;
     XMLError eResult;
 
+    // Initalize default trigger frame to 0
+    m_speed = 0;
+
     // Initialize temporary variables
     std::string actor_name = "_";
     AnimationType anim = AnimationType::invalid;
@@ -169,6 +172,11 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                         std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
+                    if(anim == AnimationType::current) {
+                        std::cerr << "You can't define a specific animation type as the current one\n";
+                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        return XML_WRONG_ATTRIBUTE_TYPE;
+                    }
                 }
                 else {
                     std::cerr << "Missing animation type in actor animation for " << actor_name << "\n";
@@ -182,7 +190,12 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                 if(p_direction != nullptr) {
                     dir = str_to_direction(std::string(p_direction));
                     if(dir == Direction::invalid) {
-                        std::cerr << "Invalid animation type \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
+                        std::cerr << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
+                        return XML_WRONG_ATTRIBUTE_TYPE;
+                    }
+                    if(dir == Direction::current) {
+                        std::cerr << "You can't define a specific direction as the current one\n";
+                        std::cerr << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                 }
@@ -192,6 +205,18 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                 }
 
             }
+
+            else if(name == "TRIGGER_FRAME") {
+                int frame;
+                eResult = p_property->QueryIntAttribute("value", &frame);
+                if(eResult != XML_SUCCESS) return eResult;
+                if(frame < 0) {
+                    std::cerr << "Trigger frame can't be a negative value!\n";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+                m_speed = frame;
+            }
+
             else {
                 std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
                 return XML_ERROR_PARSING_ATTRIBUTE;
@@ -251,6 +276,11 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
     else if(dir == Direction::invalid) {
         std::cerr << "Missing direction in actor animation for " << actor_name << "\n";
         return XML_NO_ATTRIBUTE;
+    }
+
+    else if(m_speed >= m_anim_ids.size()) {
+        std::cerr << "The trigger frame " << m_speed << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << "\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     else {
@@ -333,6 +363,33 @@ bool Tile::push_anim() {
         }
     }
     return wrap_around;
+}
+
+/**
+ * @brief Animates a tile
+ * @return a @c AnimSignal which indicates if the animation reached it's starting point/ frame 0
+ *         or if it reached its trigger frame
+ *
+ * Checks if next frame of animated tile is due, changes to next frame
+ * and wraps around if required.
+ * @note This code effectively quantizes animation to 1000ms/FPS steps
+ * @note The wrap around signal has precedence over the trigger signal
+ */
+AnimSignal Tile::push_anim_trigger() {
+    Uint32 time = SDL_GetTicks();
+    if(time - m_anim_timestamp >= m_durations[m_current_id]) {
+        m_current_id++;
+        m_anim_timestamp = time;
+        if(m_current_id >= m_anim_ids.size()) {
+            m_current_id = 0;
+            return AnimSignal::wrap;
+        }
+        if(m_current_id == static_cast<int>(m_speed)) {
+            return AnimSignal::trigger;
+        }
+        return AnimSignal::next;
+    }
+    return AnimSignal::none;
 }
 
 /**

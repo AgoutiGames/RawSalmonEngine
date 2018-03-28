@@ -45,12 +45,16 @@ EventSignal AeMoveSustained::process(Actor& actor) {
     // process stuff
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     if (keys[get_key().scancode]) {
-        std::vector<float> mov_factors = dir_to_mov(m_direction);
+        std::vector<float> mov_factors;
+        if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
+        else {mov_factors = dir_to_mov(m_direction);}
         if(actor.move(mov_factors[0], mov_factors[1])) {
             actor.animate(AnimationType::walk, m_direction);
         }
         else {
-            actor.animate(AnimationType::idle, m_direction);
+            //actor.animate(AnimationType::idle, m_direction);
+            actor.unblock_event(m_alias);
+            return EventSignal::end;
         }
         actor.block_event(m_alias);
         //actor.set_cooldown(m_alias, 0.5);

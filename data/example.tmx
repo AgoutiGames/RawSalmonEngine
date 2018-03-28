@@ -182,7 +182,6 @@
   <object id="1" name="PLAYER" gid="63" x="122.667" y="128.667" width="128" height="128">
    <properties>
     <property name="DIRECTION" value="DOWN"/>
-    <property name="ON_IDLE" value="Movedown"/>
    </properties>
   </object>
   <object id="2" name="Billy" gid="63" x="451" y="249" width="128" height="128"/>

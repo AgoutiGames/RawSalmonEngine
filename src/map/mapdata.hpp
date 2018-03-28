@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 
+#include "map/tile.hpp"
 #include "map/layer.hpp"
 #include "map/tileset.hpp"
 #include "util/tinyxml2.h"

@@ -24,6 +24,7 @@
 #include <map>
 
 #include "util/tinyxml2.h"
+#include "util/game_types.hpp"
 
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 
@@ -55,6 +56,7 @@ public:
     void init_anim(Uint32 time);
 
     bool push_anim();
+    AnimSignal push_anim_trigger();
     void push_anim(Uint32 time);
 
 private:

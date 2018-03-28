@@ -4,11 +4,34 @@
   <property name="ACTOR_NAME" type="string"/>
   <property name="ANIMATION_TYPE" type="string" default=""/>
   <property name="DIRECTION" type="string"/>
+  <property name="TRIGGER_FRAME" type="int" default="0"/>
  </objecttype>
  <objecttype name="ACTOR_TEMPLATE" color="#00007f">
   <property name="ACTOR_NAME" type="string"/>
   <property name="BASE_SPEED" type="float" default="250"/>
-  <property name="BEHAVIOUR" type="string" default="IDLE"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="ON_ACTIVATION" type="string"/>
+  <property name="ON_COLLISION" type="string"/>
+  <property name="ON_DEATH" type="string"/>
+  <property name="ON_HIT" type="string"/>
+  <property name="ON_IDLE" type="string"/>
+ </objecttype>
+ <objecttype name="KEY_MAPPING" color="#a0a0a4">
+  <property name="CONTINUOUS" type="bool" default="false"/>
+  <property name="EVENT" type="string"/>
+  <property name="KEYPRESS" type="string"/>
+ </objecttype>
+ <objecttype name="AeMoveSustained" color="#a0a0a4">
+  <property name="DIRECTION" type="string" default="UP"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
+ <objecttype name="AeMoveDirection" color="#a0a0a4">
+  <property name="DIRECTION" type="string" default="UP"/>
+  <property name="DURATION" type="string" default="1"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
 </objecttypes>
