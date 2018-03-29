@@ -85,7 +85,7 @@ struct ActorTemplate {
     std::string template_name = "_";
     float speed = 250.0f; // Pixel per second
     Direction direction = Direction::down;
-    SDL_Rect hitbox = {0,0,0,0};
+    std::map<std::string, SDL_Rect> hitbox;
     std::map<AnimationType, std::map<Direction, Tile>> animations;
     std::map<Response, ActorEvent*> response; ///< Map which yields events for response values
 };
@@ -96,6 +96,7 @@ Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
 tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
+tinyxml2::XMLError parse_hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects);
 tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img);
 
 std::vector<float> dir_to_mov(const Direction dir);

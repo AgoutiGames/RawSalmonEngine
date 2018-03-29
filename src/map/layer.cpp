@@ -377,12 +377,13 @@ std::vector<Actor*> Layer::get_actors(std::string name, Direction direction, Ani
  * @param collided A container to which colliding actors are added
  * @return @c bool which indicates collision
  */
-bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided){
+bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided, std::string type){
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
     switch (m_type) {
         case map:{
+            if(type != "COLLIDE") {break;}
             // Calculate possible chunk of tiles which could possibly collide with the rect
             int x_from = (rect->x + m_offset_x) / m_tile_w;
             int y_from = (rect->y + m_offset_y) / m_tile_h;
@@ -424,7 +425,7 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
             // Iterate through all actors
             for(Actor& actor : m_obj_grid) {
                 // Check collision against each
-                if(actor.collide(rect, x_depth, y_depth)) {
+                if(actor.collide(rect, x_depth, y_depth, type)) {
                     // Possibly overwrite maximum collision depth value
                     if(x_depth > x_max) {x_max = x_depth;}
                     if(y_depth > y_max) {y_max = y_depth;}

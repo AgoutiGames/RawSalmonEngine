@@ -49,7 +49,7 @@ class Actor{
         bool move(float x_factor, float y_factor);
         bool process_events();
         void add_event(ActorEvent* event);
-        bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const;
+        bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool respond(Response r, Actor* cause = nullptr, SDL_Keysym key = SDL_Keysym());
 
         AnimationType get_animation() const {return m_anim_state;}
@@ -71,6 +71,7 @@ class Actor{
         bool is_blocked(std::string event_type) const;
         bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string event_type) const;
+        SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
 
 
 
@@ -87,7 +88,7 @@ class Actor{
 
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
         Direction m_direction; ///< Current direction facing
-        SDL_Rect m_hitbox;
+        std::map<std::string, SDL_Rect> m_hitbox;
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         std::map<Response, ActorEvent*> m_response; ///< Map which yields events for response values
 

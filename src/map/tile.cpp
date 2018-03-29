@@ -286,6 +286,20 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
     else {
         // Add this animated tile to the actor template
         base_map.add_actor_animation(actor_name, anim, dir, this);
+
+        // Parse the hitboxes of the actor animation
+        XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
+        if(p_objgroup != nullptr) {
+            XMLElement* p_object = p_objgroup->FirstChildElement("object");
+            if(p_object != nullptr) {
+                ActorTemplate& temp = base_map.get_actor_template(actor_name);
+                eResult = parse_hitboxes(p_object, temp.hitbox);
+                if(eResult != XML_SUCCESS) {
+                    std::cerr << "Failed at parsing hitboxes of actor animation for actor " << actor_name << "\n";
+                    return eResult;
+                }
+            }
+        }
     }
 
     return XML_SUCCESS;

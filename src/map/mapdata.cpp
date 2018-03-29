@@ -412,6 +412,26 @@ void MapData::add_actor_animation(std::string name, AnimationType anim, Directio
 }
 
 /**
+ * @brief Add the hitbox by its name to the actor template
+ * @param actor The name of the actor
+ * @param hitbox The name of the hitbox
+ * @param rect The data of the hitbox
+ * @return @c bool which indicates multiple definition of the same hitbox/ error
+ */
+bool MapData::add_actor_hitbox(std::string actor, std::string hitbox, const SDL_Rect& rect) {
+    // Get a reference to the ActorTemplate from its name
+    ActorTemplate& templ = m_templates[actor];
+    if(templ.hitbox.find(hitbox) != templ.hitbox.end()) {
+        std::cerr << "Multiple definition of the hitbox " << hitbox << " of the actor " << actor << "\n";
+        return false;
+    }
+    else {
+        templ.hitbox[hitbox] = rect;
+        return true;
+    }
+}
+
+/**
  * @brief Add an @c ActorTemplate to the vector @c m_templates from an @c XMLElement
  * @param source The @c XMLElement which contains the information
  * @param tile The pointer to the @c ActorTemplate tile
@@ -473,7 +493,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     if(p_objgroup != nullptr) {
         XMLElement* p_object = p_objgroup->FirstChildElement("object");
         if(p_object != nullptr) {
-            eResult = parse_hitbox(p_object, m_templates[actor_name].hitbox);
+            eResult = parse_hitboxes(p_object, m_templates[actor_name].hitbox);
             if(eResult != XML_SUCCESS) {
                 std::cerr << "Failed at parsing hitbox for actor template: " << actor_name << "\n";
                 return eResult;
@@ -501,13 +521,13 @@ Uint16 MapData::get_gid(Tile* tile)  const{
  * @param collided A container to which colliding actors are added
  * @return @c bool which indicates collision
  */
-bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided) {
+bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
     // Iterate through all layers
     for(Layer& layer : m_layers) {
-        if(layer.collide(rect, x_depth, y_depth, *this, collided)) {
+        if(layer.collide(rect, x_depth, y_depth, *this, collided, type)) {
             if(x_depth > x_max) {x_max = x_depth;}
             if(y_depth > y_max) {y_max = y_depth;}
             collide = true;

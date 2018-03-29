@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="right-down" width="40" height="80" tilewidth="64" tileheight="32" nextobjectid="6">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="40" height="80" tilewidth="64" tileheight="32" infinite="0" nextobjectid="6">
  <tileset firstgid="1" name="Grass" tilewidth="64" tileheight="32" tilecount="32" columns="4">
   <image source="tilesets/pathgrass.png" width="256" height="256"/>
   <tile id="4">
@@ -51,7 +51,7 @@
     <property name="DIRECTION" value="RIGHT"/>
    </properties>
    <objectgroup draworder="index">
-    <object id="1" x="0" y="48" width="80" height="80"/>
+    <object id="2" x="0" y="48" width="80" height="80"/>
    </objectgroup>
   </tile>
  </tileset>
@@ -63,6 +63,7 @@
     <property name="ANIMATION_TYPE" value="IDLE"/>
     <property name="DIRECTION" value="UP"/>
    </properties>
+   <objectgroup draworder="index"/>
    <animation>
     <frame tileid="0" duration="100"/>
     <frame tileid="1" duration="100"/>

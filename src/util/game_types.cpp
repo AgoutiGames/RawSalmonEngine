@@ -116,6 +116,59 @@ tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
     return XML_SUCCESS;
 }
 
+tinyxml2::XMLError parse_hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects) {
+    using namespace tinyxml2;
+    XMLError eResult;
+
+    while(source != nullptr) {
+        if(source->FirstChildElement("ellipse") != nullptr) {
+            std::cerr << "Hitbox can't be an ellipse!\n";
+            return XML_WRONG_ATTRIBUTE_TYPE;
+        }
+        if(source->FirstChildElement("polygon") != nullptr) {
+            std::cerr << "Hitbox can't be a polygon!\n";
+            return XML_WRONG_ATTRIBUTE_TYPE;
+        }
+        if(source->FirstChildElement("polyline") != nullptr) {
+            std::cerr << "Hitbox can't be a polyline!\n";
+            return XML_WRONG_ATTRIBUTE_TYPE;
+        }
+
+        SDL_Rect temp_rec;
+        float temp;
+        std::string name;
+        const char* p_name = source->Attribute("name");
+        if(p_name == nullptr) {name = "COLLIDE";}
+        else{name = p_name;}
+
+        eResult = source->QueryFloatAttribute("x", &temp);
+        if(eResult != XML_SUCCESS) return eResult;
+        temp_rec.x = static_cast<int>(temp);
+
+        eResult = source->QueryFloatAttribute("y", &temp);
+        if(eResult != XML_SUCCESS) return eResult;
+        temp_rec.y = static_cast<int>(temp);
+
+        eResult = source->QueryFloatAttribute("width", &temp);
+        if(eResult != XML_SUCCESS) return eResult;
+        temp_rec.w = static_cast<int>(temp);
+
+        eResult = source->QueryFloatAttribute("height", &temp);
+        if(eResult != XML_SUCCESS) return eResult;
+        temp_rec.h = static_cast<int>(temp);
+
+        if(rects.find(name) != rects.end()) {
+            std::cerr << "Possible multiple definition of hitbox: " << name << " !\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+
+        rects[name] = temp_rec;
+
+        source = source->NextSiblingElement("object");
+    }
+    return XML_SUCCESS;
+}
+
 tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img) {
     using namespace tinyxml2;
     const char* p_mode;
