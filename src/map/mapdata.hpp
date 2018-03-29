@@ -57,12 +57,14 @@ class MapData {
         bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}}
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
+        ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
         std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                        AnimationType animation = AnimationType::invalid);
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided);
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE");
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
+        bool add_actor_hitbox(std::string actor, std::string hitbox, const SDL_Rect& rect);
 
         tinyxml2::XMLError parse_tiles_from_tileset(tinyxml2::XMLElement* source, unsigned first_gid);
         bool register_tile(Tile* tile, unsigned gid);

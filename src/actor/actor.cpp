@@ -108,13 +108,13 @@ bool Actor::move(float x_factor, float y_factor) {
     bool moved = true;
     // Move the Actor
     constexpr float FPS = 60;
+    SDL_Rect temp = get_hitbox();
     // Determine if it can collide/ has hitbox
-    if(!SDL_RectEmpty(&m_hitbox)) {
+    if(!SDL_RectEmpty(&temp)) {
 
         std::vector<Actor*> collided;
 
         // Apply position of actor to hitbox
-        SDL_Rect temp = m_hitbox;
         m_x += x_factor * m_base_speed / FPS;
         // Apply x movement
         temp.x += static_cast<int>(m_x);
@@ -155,6 +155,10 @@ bool Actor::move(float x_factor, float y_factor) {
             a->respond(Response::on_collision, this);
             respond(Response::on_collision, a);
         }
+    }
+    else {
+        m_x += x_factor * m_base_speed / FPS;
+        m_y += y_factor * m_base_speed / FPS;
     }
     return moved;
 }
@@ -275,11 +279,12 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
  *       when max actor speed is 500px per second
  * @param rect The rect against which collision gets checked
  * @param x_depth, y_depth The minimum x and y values to go back to not intersect anymore
+ * @param type The type of the hitbox
  * @return @c bool which indicates collision
  */
-bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
-    if(SDL_RectEmpty(&m_hitbox)) {return false;}
-    SDL_Rect temp = m_hitbox;
+bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type) const{
+    SDL_Rect temp = get_hitbox(type);
+    if(SDL_RectEmpty(&temp)) {return false;}
     temp.x += static_cast<int>(m_x);
     temp.y += static_cast<int>(m_y) - m_height;
     SDL_Rect inter;
@@ -358,4 +363,20 @@ bool Actor::in_cooldown(std::string event_type) const {
         return true;
     }
     else {return false;}
+}
+
+/**
+ * @brief Returns the hitbox of the supplied type
+ * @param type The supplied type
+ * @return @c SDL_Rect The hitbox
+ * @note If there is no valid hitbox an empty one gets returned
+ */
+SDL_Rect Actor::get_hitbox(std::string type) const {
+    if(m_hitbox.find(type) == m_hitbox.end()) {
+        std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
+        return SDL_Rect{0,0,0,0};
+    }
+    else{
+        return m_hitbox.at(type);
+    }
 }
