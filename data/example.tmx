@@ -129,6 +129,7 @@
     <property name="ANIMATION_TYPE" value="WALK"/>
     <property name="DIRECTION" value="RIGHT"/>
    </properties>
+   <objectgroup draworder="index"/>
    <animation>
     <frame tileid="5" duration="100"/>
     <frame tileid="6" duration="100"/>

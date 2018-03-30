@@ -160,12 +160,8 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
  * @param camera The rectangular area of the map to be rendered
  * @return @c bool which indicates success or failure
  */
-bool MapData::render(SDL_Rect* camera){
+bool MapData::render(SDL_Rect* camera) const{
     bool success = true;
-
-    // Checks and changes animated tiles
-    push_all_anim();
-
     // Renders all layers
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         if(!m_layers[i_layer].render(camera, *this)) {
@@ -176,12 +172,14 @@ bool MapData::render(SDL_Rect* camera){
     return success;
 }
 /**
- * @brief Calls update function of all map layers
+ * @brief Calls update function of all map layers and animates tiles
  */
 void MapData::update() {
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         m_layers[i_layer].update();
     }
+    // Checks and changes animated tiles
+    push_all_anim();
 }
 
 /**
