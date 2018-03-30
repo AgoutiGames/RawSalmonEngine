@@ -42,7 +42,7 @@ class MapData {
         ~MapData() {}
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
-        bool render(SDL_Rect* camera);
+        bool render(SDL_Rect* camera) const;
         void update();
 
         unsigned get_overhang(Direction dir) const;
