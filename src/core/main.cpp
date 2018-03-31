@@ -29,19 +29,21 @@ int main()
         std::cerr << "Map couldn't load\n";
     }
     else {
-        bool player_input = true;
+
         if(!game.fetch_player()) {
             std::cerr << "Could not fetch player. Input deactivated!\n";
-            player_input = false;
+            game.m_cam_bound = false;
         }
         //Event handler
-        SDL_Event e;
+        //SDL_Event e;
 
         //Main loop flag
-        bool quit = false;
+        //bool quit = false;
 
         //While application is running
-        while( !quit ){
+        while(game.update()) {
+            game.render();
+            /*
             //Handle events on queue
             while( SDL_PollEvent( &e ) != 0 ) {
                 //User requests quit
@@ -109,9 +111,9 @@ int main()
                         break;
                     }
                 }
-            }
-            game.update();
-            game.render();
+            }*/
+            //game.update();
+            //game.render();
         }
     }
     return 0;

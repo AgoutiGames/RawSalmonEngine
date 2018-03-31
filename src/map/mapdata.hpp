@@ -52,9 +52,9 @@ class MapData {
         Tile* get_tile(Uint16 tile_id) const;
         unsigned get_tile_h() const {return m_tile_h;}
         unsigned get_tile_w() const {return m_tile_w;}
-        void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);}
-        ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Returns copy of named event
-        bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}}
+        void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);} ///< Link event name with @c ActorEvent*
+        ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event
+        bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
@@ -78,6 +78,11 @@ class MapData {
         bool render(Uint16 tile_id, SDL_Rect& dest) const;
 
         tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp);
+
+        bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
+        bool process_key_up(SDL_Event e);
+        bool process_key_down(SDL_Event e);
+        void process_keys_sustained();
 
     private:
         tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file
@@ -104,6 +109,11 @@ class MapData {
         std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
         std::map<std::string, ActorEvent*> m_events; ///< List of all parsed events by name
+        Actor* m_player = nullptr;
+
+        std::map<SDL_Keycode, ActorEvent*> m_key_up;
+        std::map<SDL_Keycode, ActorEvent*> m_key_down;
+        std::map<SDL_Scancode, ActorEvent*> m_key_sustained;
 
         SDL_Renderer** mpp_renderer = nullptr;
 };

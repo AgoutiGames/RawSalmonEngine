@@ -44,7 +44,29 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     using namespace tinyxml2;
 
     mpp_renderer = renderer;
+    XMLError eResult;
+    std::string full_path;
 
+    std::vector<std::string> symbolic_tilesets{"events.tsx", "key_mapping.tsx"};
+
+    for(std::string name : symbolic_tilesets) {
+        XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
+        full_path = m_base_path + name;
+        eResult = sym_ts.LoadFile(full_path.c_str());
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Can't find" << name << " at relative path: " << full_path << "\n";
+            return eResult;
+        }
+        XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
+        if (pSymTs == nullptr) {return XML_ERROR_PARSING_ELEMENT;}
+        eResult = Tileset::parse_symbolic(pSymTs, *this);
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at parsing symbolic tileset " << name << "\n";
+            return eResult;
+        }
+    }
+
+    /*
     // First parse possible events
     XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
     std::string full_path = m_base_path + "events.tsx";
@@ -60,8 +82,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         std::cerr << "Failed at parsing symbolic tileset events.tsx\n";
         return eResult;
     }
-
-    // Now parse key mapping
+    */
 
 
     // This saves the .tmx file to the member m_mapfile
@@ -148,6 +169,18 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
             return eResult;
         }
     }
+    // Fetch player
+    std::vector<Actor*> actor_list = get_actors(std::string("PLAYER"));
+    if(actor_list.size() > 1) {
+        std::cerr << "Error: More than one actor called PLAYER!\n";
+    }
+    else if(actor_list.size() == 0) {
+        std::cerr << "Error: No actor called PLAYER found!\n";
+    }
+    else {
+        m_player = actor_list[0];
+    }
+
     // This must be called after the parsing of all tilesets!
     // It sets all animated tiles to their starting positions
     // and passes the current timestamp
@@ -517,6 +550,7 @@ Uint16 MapData::get_gid(Tile* tile)  const{
  * @param rect The rect to check against
  * @param x_max, y_max The maximum depth of intersection by axis
  * @param collided A container to which colliding actors are added
+ * @param type The type of the hitbox
  * @return @c bool which indicates collision
  */
 bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
@@ -534,6 +568,12 @@ bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<
     return collide;
 }
 
+/**
+ * @brief Parse the properties of an actor via @c XMLElement
+ * @param source The first property element
+ * @param speed, dir, resp The possible actor member vars which can be defined via properties
+ * @return @c XMLError which indicates success or failure
+ */
 tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp) {
     using namespace tinyxml2;
     XMLError eResult;
@@ -583,7 +623,7 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
                     resp[str_to_response(name)] = get_event(event);
                 }
                 else {
-                    std::cerr << "An event called: " << event << " does not exist/ never got parsed!";
+                    std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
             }
@@ -603,3 +643,84 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Links key with event which is sent to player upon press/release
+ * @param key The keypress which triggers the event
+ * @param event The event which gets triggered by a key
+ * @param sustained, up, down Booleans which indicate when the event should be sent
+ */
+bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down) {
+    if(m_events.find(event) == m_events.end()) {
+        std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
+        return false;
+    }
+    if( (sustained && up) || (sustained && down) ) {
+        std::cerr << "Cant parse key event as sustained AND up or down\n";
+        return false;
+    }
+    else {
+        if(sustained) {
+            SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
+            if(scancode == SDL_SCANCODE_UNKNOWN) {
+                std::cerr << "No corresponding scancode to key " << key <<" which is required for checking sustained\n";
+                return false;
+            }
+            m_key_sustained[scancode] = get_event(event);
+            SDL_Keysym temp;
+            temp.sym = key;
+            temp.scancode = scancode;
+            m_key_sustained[scancode]->set_key(temp);
+        }
+        if(up) {
+            m_key_up[key] = get_event(event);
+        }
+        if(down) {
+            m_key_down[key] = get_event(event);
+        }
+        return true;
+    }
+}
+
+/**
+ * @brief Add event to player if key is pressed
+ * @param e The keypress
+ * @return @c bool which indicates if key triggered event
+ */
+bool MapData::process_key_down(SDL_Event  e) {
+    if(m_player != nullptr && m_key_down.find(e.key.keysym.sym) != m_key_down.end()) {
+        ActorEvent* event = m_key_down.at(e.key.keysym.sym)->copy();
+        event->set_key(e.key.keysym);
+        m_player->add_event(event);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Add event to player if key is released
+ * @param e The keypress
+ * @return @c bool which indicates if key triggered event
+ */
+bool MapData::process_key_up(SDL_Event  e) {
+    if(m_player != nullptr && m_key_up.find(e.key.keysym.sym) != m_key_up.end()) {
+        ActorEvent* event = m_key_up.at(e.key.keysym.sym)->copy();
+        event->set_key(e.key.keysym);
+        m_player->add_event(event);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Checks if key is down and sends associated event to player
+ */
+void MapData::process_keys_sustained() {
+    if(m_player != nullptr) {
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+        for(std::pair<SDL_Scancode, ActorEvent*> x : m_key_sustained) {
+            if(keys[x.first]) {
+                m_player->add_event(x.second->copy());
+            }
+        }
+    }
+}

@@ -53,15 +53,15 @@ EventSignal AeMoveSustained::process(Actor& actor) {
         }
         else {
             //actor.animate(AnimationType::idle, m_direction);
-            actor.unblock_event(m_alias);
+            //actor.unblock_event(m_alias);
             return EventSignal::end;
         }
-        actor.block_event(m_alias);
+        //actor.block_event(m_alias);
         //actor.set_cooldown(m_alias, 0.5);
         return signal();
     }
     else {
-        actor.unblock_event(m_alias);
+        //actor.unblock_event(m_alias);
         return EventSignal::end;
     }
 }

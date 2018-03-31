@@ -38,7 +38,7 @@ public:
     void close();
 
     void render();
-    void update();
+    bool update();
 
     bool load_map(std::string mapfile);
     bool fetch_player();
@@ -47,6 +47,7 @@ public:
     Actor* m_player = nullptr;
 
     bool m_cam_bound = true;
+    bool m_key_repeat = false;
 
 private:
     SDL_Window* m_window = nullptr;
