@@ -128,15 +128,38 @@ bool GameInfo::fetch_player() {
 
 /**
  * @brief Updates the map
+ * @return @c bool false if quit
  */
 
- void GameInfo::update() {
+bool GameInfo::update() {
+
+    //Event handler
+    SDL_Event e;
+    while( SDL_PollEvent( &e ) != 0 ) {
+        //User requests quit
+        if( e.type == SDL_QUIT )
+        {
+            return false;
+        }
+        //User presses a key
+        else if( e.type == SDL_KEYDOWN && e.key.repeat == m_key_repeat) {
+            m_map.process_key_down(e);
+        }
+        else if( e.type == SDL_KEYUP && e.key.repeat == m_key_repeat) {
+            m_map.process_key_up(e);
+        }
+    }
+
+    m_map.process_keys_sustained();
+
     if(m_cam_bound) {
         m_camera.x = m_player->get_x_center() - (m_camera.w / 2);
         m_camera.y = m_player->get_y_center() - (m_camera.h / 2);
     }
+
     m_map.update();
- }
+    return true;
+}
 
 /**
  * @brief Draws the current map in correlation to the camera to screen

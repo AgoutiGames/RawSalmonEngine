@@ -375,6 +375,7 @@ std::vector<Actor*> Layer::get_actors(std::string name, Direction direction, Ani
  * @param x_max, y_max The maximum depth of intersection by axis
  * @param base_map Reference on map instance used for looking up tiles by their gid
  * @param collided A container to which colliding actors are added
+ * @param type The type of the hitbox
  * @return @c bool which indicates collision
  */
 bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided, std::string type){

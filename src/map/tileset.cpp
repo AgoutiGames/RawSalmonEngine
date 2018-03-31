@@ -258,27 +258,117 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
 }
 
 /**
- * @brief Parse symbolic tiles to register them as events callable by name
+ * @brief Parse symbolic tiles to register them as events or keys
  * @param source The XMLElement pointing to the tileset
- * @param base_map Reference to map object to register each event
+ * @param base_map Reference to map object to register each event or key
  * @return @c XMLElement indication sucess of parsing
+ *
+ * @todo Somehow refactor this ugly ugly key mapping parsing
  */
 tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
     XMLError eResult;
     XMLElement* p_tile = source->FirstChildElement("tile");
     while(p_tile != nullptr) {
-        std::pair<std::string, ActorEvent*> event;
-        eResult = ActorEvent::parse_multi(p_tile, event);
-        if(eResult == XML_SUCCESS) {
-            base_map.register_event(event);
-        }
-        else if(eResult == XML_NO_ATTRIBUTE) {
+        // Parse key mapping
+        if(std::string(p_tile->Attribute("type")) == "KEY_MAPPING"){
+            bool up = false;
+            bool down = false;
+            bool sustained = false;
+            std::string event = "";
+            SDL_Keycode key = SDLK_UNKNOWN;
 
+            XMLElement* p_property = nullptr;
+            XMLElement* p_properties = p_tile->FirstChildElement("properties");
+            if(p_properties != nullptr) {
+                p_property = p_properties->FirstChildElement("property");
+                if(p_property == nullptr) {
+                    std::cerr << "Error: Missing first property in key mapping: " << p_tile->Attribute("id") << "\n";
+                    return XML_ERROR_PARSING_ELEMENT;
+                }
+            }
+            else {
+                std::cerr << "Error: Missing properties in key mapping: " << p_tile->Attribute("id") << "\n";
+                return XML_ERROR_PARSING_ELEMENT;
+            }
+            while(p_property != nullptr) {
+                const char* p_name;
+                p_name = p_property->Attribute("name");
+                std::string name(p_name);
+                if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+                if(name == "UP") {
+                    eResult = p_property->QueryBoolAttribute("value", &up);
+                    if(eResult != XML_SUCCESS) return eResult;
+                }
+                else if(name == "DOWN") {
+                    eResult = p_property->QueryBoolAttribute("value", &down);
+                    if(eResult != XML_SUCCESS) return eResult;
+                }
+                else if(name == "SUSTAINED") {
+                    eResult = p_property->QueryBoolAttribute("value", &sustained);
+                    if(eResult != XML_SUCCESS) return eResult;
+                }
+                else if(name == "KEYPRESS") {
+                    const char* p_key_name = p_property->Attribute("value");
+                    if(p_key_name == nullptr) {
+                        std::cerr << "Missing keypress value!\n";
+                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        return XML_ERROR_PARSING_ATTRIBUTE;
+                    }
+                    key = SDL_GetKeyFromName(p_key_name);
+                    if(key == SDLK_UNKNOWN) {
+                        std::cerr << "Unknown key value " << p_key_name << " \n";
+                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        return XML_ERROR_PARSING_ATTRIBUTE;
+                    }
+
+                }
+                // If the event value is missing, instead of throwing an error the key is skipped
+                else if(name == "EVENT") {
+                    const char* p_event_name = p_property->Attribute("value");
+                    if(p_event_name != nullptr) {
+                        event.assign(p_event_name);
+                    }
+                }
+
+                else {
+                    std::cerr << "Unknown property " << name << " for keypress\n";
+                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+
+                p_property = p_property->NextSiblingElement("property");
+            }
+
+            if(event != "") {
+                if(key == SDLK_UNKNOWN) {
+                    std::cerr << "Missing keypress value after parsing properties!\n";
+                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+                if(!base_map.register_key(key, event, sustained, up, down)) {
+                    std::cerr << "Failed registering key " << SDL_GetKeyName(key) << " with event " << event << "\n";
+                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+            }
         }
+
+        // Parse events
         else {
-            std::cerr << "Failed at parsing symbolic tile yielding an event\n";
-            return eResult;
+            std::pair<std::string, ActorEvent*> event;
+            eResult = ActorEvent::parse_multi(p_tile, event);
+            if(eResult == XML_SUCCESS) {
+                base_map.register_event(event);
+            }
+            else if(eResult == XML_NO_ATTRIBUTE) {
+
+            }
+            else {
+                std::cerr << "Failed at parsing symbolic tile yielding an event\n";
+                std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                return eResult;
+            }
         }
         p_tile = p_tile->NextSiblingElement("tile");
     }

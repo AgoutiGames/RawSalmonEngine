@@ -73,7 +73,11 @@
  </tile>
  <tile id="14" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="MoveUp"/>
    <property name="KEYPRESS" value="W"/>
+   <property name="SUSTAINED" type="bool" value="false"/>
+   <property name="UP" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="15" type="KEY_MAPPING">
@@ -128,17 +132,25 @@
  </tile>
  <tile id="25" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="MoveLeft"/>
    <property name="KEYPRESS" value="A"/>
   </properties>
  </tile>
  <tile id="26" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="MoveDown"/>
    <property name="KEYPRESS" value="S"/>
   </properties>
  </tile>
  <tile id="27" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="MoveRight"/>
    <property name="KEYPRESS" value="D"/>
+   <property name="SUSTAINED" type="bool" value="false"/>
+   <property name="UP" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="28" type="KEY_MAPPING">
@@ -238,7 +250,9 @@
  </tile>
  <tile id="47" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="false"/>
    <property name="KEYPRESS" value="?"/>
+   <property name="UP" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="48" type="KEY_MAPPING">
@@ -258,6 +272,8 @@
  </tile>
  <tile id="51" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="MoveLast"/>
    <property name="KEYPRESS" value="Space"/>
   </properties>
  </tile>
@@ -298,6 +314,7 @@
  </tile>
  <tile id="59" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="false"/>
    <property name="KEYPRESS" value="Right"/>
   </properties>
  </tile>
