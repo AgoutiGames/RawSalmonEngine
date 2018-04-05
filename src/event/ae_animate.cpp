@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_move_sustained.hpp"
+#include "event/ae_animate.hpp" //< Change this!
 
 #include <string>
 #include <map>
@@ -27,44 +27,48 @@
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMoveSustained::m_alias = "AeMoveSustained";
+std::string AeAnimate::m_alias = "AeAnimate";
 
-AeMoveSustained::AeMoveSustained(Direction dir, AnimationType anim) :
+AeAnimate::AeAnimate(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f) :
 EventContainer(),
+m_animation{anim},
 m_direction{dir},
-m_animation{anim}
+m_cycles{cyc},
+m_anim_frames{a_f},
+m_game_frames{g_f}
 {
 
 }
 
 /**
- * @brief Move the actor to the supplied direction until key is released
- * @param actor The actor which should move
+ * @brief Animate the actor
+ * @param actor The actor
  * @return @c EventSignal which can halt event processing, delete this event, etc.
+ * @note Adds up cycles, anim frames and game frames
  */
-EventSignal AeMoveSustained::process(Actor& actor) {
-    // process stuff
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    if (keys[get_key().scancode]) {
-        std::vector<float> mov_factors;
-        if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
-        else {mov_factors = dir_to_mov(m_direction);}
-        if(actor.move(mov_factors[0], mov_factors[1])) {
-            actor.animate(m_animation, m_direction);
+EventSignal AeAnimate::process(Actor& actor) {
+    AnimSignal sig = actor.animate_trigger(m_animation, m_direction);
+    if(m_cycles > 0) {
+        if(sig == AnimSignal::wrap) {
+            m_cycles--;
         }
-        else {
-            return EventSignal::end;
+    }
+    else if(m_anim_frames > 0) {
+        if(sig != AnimSignal::none) {
+            m_anim_frames --;
         }
-        return signal();
     }
-    else {
-        return EventSignal::end;
+    else if(m_game_frames > 0) {
+        m_game_frames--;
     }
+    else {return EventSignal::end;}
+
+    return signal();
 }
 
 /// Create event and return pointer to it
-AeMoveSustained* AeMoveSustained::create(Direction dir, AnimationType anim) {
-    AeMoveSustained temp(dir, anim);
+AeAnimate* AeAnimate::create(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f) {
+    AeAnimate temp(anim, dir, cyc, a_f, g_f);
     return duplicate(temp);
 }
 
@@ -74,12 +78,16 @@ AeMoveSustained* AeMoveSustained::create(Direction dir, AnimationType anim) {
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeAnimate::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
-    //XMLError eResult;
+    XMLError eResult;
 
-    Direction dir = Direction::up;
-    AnimationType anim = AnimationType::walk;
+    // Additional members
+    AnimationType anim = AnimationType::idle;
+    Direction dir = Direction::current;
+    unsigned cycles = 0;
+    unsigned anim_frames = 0;
+    unsigned game_frames = 0;
     std::string event_name("");
     Priority prio = Priority::medium;
     EventSignal sig = EventSignal::next;
@@ -91,12 +99,12 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pai
         std::string name(p_name);
         if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-        else if(name == "DIRECTION") {
+        // Parse additional members
+
+        else if(name == "NAME") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            dir = str_to_direction(value);
-            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+            event_name = std::string(p_value);
         }
 
         else if(name == "ANIMATION_TYPE") {
@@ -105,12 +113,33 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pai
             std::string value(p_value);
             anim = str_to_anim_type(value);
             if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+            if(anim == AnimationType::none) {
+                std::cerr << "Cant count cycles or frames with Animation Type none!\n";
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
         }
 
-        else if(name == "NAME") {
+        else if(name == "DIRECTION") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
+            std::string value(p_value);
+            dir = str_to_direction(value);
+            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+        }
+
+        else if(name == "CYCLES") {
+            eResult = source->QueryUnsignedAttribute("value", &cycles);
+            if(eResult != XML_SUCCESS) return eResult;
+        }
+
+        else if(name == "ANIMATION_FRAMES") {
+            eResult = source->QueryUnsignedAttribute("value", &anim_frames);
+            if(eResult != XML_SUCCESS) return eResult;
+        }
+
+        else if(name == "GAME_FRAMES") {
+            eResult = source->QueryUnsignedAttribute("value", &game_frames);
+            if(eResult != XML_SUCCESS) return eResult;
         }
 
         else if(name == "PRIORITY") {
@@ -139,7 +168,7 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pai
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(dir, anim);
+    ActorEvent* event = create(anim, dir, cycles, anim_frames, game_frames);
     event->set_priority(prio);
     event->set_signal(sig);
     entry = std::make_pair(event_name, event);

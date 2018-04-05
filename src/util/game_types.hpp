@@ -46,7 +46,11 @@ enum class Direction {
 enum class AnimationType {
     idle,
     walk,
+    run,
+    jump,
+    fall,
     current,
+    none,
     invalid,
 };
 
@@ -61,7 +65,7 @@ enum class EventSignal{
     next,
     stop,
     end,
-    die,
+    erase,
     invalid,
 };
 
@@ -71,6 +75,7 @@ enum class Response{
     on_activation,
     on_death,
     on_idle,
+    on_always,
     invalid,
 };
 

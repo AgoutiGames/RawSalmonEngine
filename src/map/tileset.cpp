@@ -70,6 +70,9 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
         XMLError eResult = tsx_tileset.LoadFile(full_path.c_str());
         if(eResult != XML_SUCCESS) return eResult;
 
+        // Trim string
+        full_path.erase(full_path.find_last_of('/') + 1);
+
         XMLElement* pTileset = tsx_tileset.FirstChildElement("tileset");
         if (pTileset == nullptr) return XML_ERROR_PARSING_ELEMENT;
 

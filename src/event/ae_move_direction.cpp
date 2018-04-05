@@ -28,10 +28,11 @@
 
 std::string AeMoveDirection::m_alias = "AeMoveDirection";
 
-AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration) :
+AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration, AnimationType anim) :
 EventContainer(),
 m_direction{dir},
-m_duration{duration}
+m_duration{duration},
+m_animation{anim}
 {
 
 }
@@ -48,7 +49,7 @@ EventSignal AeMoveDirection::process(Actor& actor) {
         if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
         else {mov_factors = dir_to_mov(m_direction);}
         if(actor.move(mov_factors[0], mov_factors[1])) {
-            actor.animate(AnimationType::walk, m_direction);
+            actor.animate(m_animation, m_direction);
             m_duration--;
         }
         else {m_duration = 0;}
@@ -58,8 +59,8 @@ EventSignal AeMoveDirection::process(Actor& actor) {
 }
 
 /// Create event and return pointer to it
-AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration) {
-    AeMoveDirection temp(dir, duration);
+AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, AnimationType anim) {
+    AeMoveDirection temp(dir, duration, anim);
     return duplicate(temp);
 }
 
@@ -75,6 +76,7 @@ tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, std::pai
 
     Direction dir = Direction::up;
     unsigned duration = 1;
+    AnimationType anim = AnimationType::walk;
     std::string event_name("");
     Priority prio = Priority::medium;
     EventSignal sig = EventSignal::next;
@@ -97,6 +99,14 @@ tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, std::pai
         else if(name == "DURATION") {
             eResult = source->QueryUnsignedAttribute("value", &duration);
             if(eResult != XML_SUCCESS) return eResult;
+        }
+
+        else if(name == "ANIMATION_TYPE") {
+            p_value = source->Attribute("value");
+            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+            std::string value(p_value);
+            anim = str_to_anim_type(value);
+            if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
         }
 
         else if(name == "NAME") {
@@ -131,7 +141,7 @@ tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, std::pai
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(dir, duration);
+    ActorEvent* event = create(dir, duration, anim);
     event->set_priority(prio);
     event->set_signal(sig);
     entry = std::make_pair(event_name, event);

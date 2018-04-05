@@ -46,16 +46,19 @@ class Actor{
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         void render(int x_cam, int y_cam) const;
-        bool move(float x_factor, float y_factor);
+        bool move(float x_factor, float y_factor, bool absolute = false);
         bool process_events();
         void add_event(ActorEvent* event);
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
+        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
+        bool on_ground(Direction dir) const;
         bool respond(Response r, Actor* cause = nullptr, SDL_Keysym key = SDL_Keysym());
 
         AnimationType get_animation() const {return m_anim_state;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
         std::string get_type() const {return m_type;}
+        MapData& get_map() {return *m_map;}
         float get_x() const {return m_x;}
         float get_y() const {return m_y;}
         unsigned get_w() const {return m_width;}

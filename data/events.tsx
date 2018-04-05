@@ -42,6 +42,7 @@
  </tile>
  <tile id="5" type="AeMoveDirection">
   <properties>
+   <property name="ANIMATION_TYPE" value="IDLE"/>
    <property name="DIRECTION" value="DOWN"/>
    <property name="DURATION" value="150"/>
    <property name="NAME" value="WalkDown"/>
@@ -49,10 +50,25 @@
    <property name="SIGNAL" value="STOP"/>
   </properties>
  </tile>
- <tile id="10" type="AeMoveDirection">
+ <tile id="6" type="AeFall">
   <properties>
-   <property name="DIRECTION" value="RIGHT"/>
-   <property name="NAME" value="Rights"/>
+   <property name="ANIMATION_TYPE" value="IDLE"/>
+   <property name="NAME" value="Fall"/>
+  </properties>
+ </tile>
+ <tile id="7" type="AeAnimate">
+  <properties>
+   <property name="DIRECTION" value="CURRENT"/>
+   <property name="GAME_FRAMES" type="int" value="1"/>
+   <property name="NAME" value="IdleLast"/>
+  </properties>
+ </tile>
+ <tile id="8" type="AeJump">
+  <properties>
+   <property name="JUMP_DURATION" type="float" value="0.8"/>
+   <property name="JUMP_HEIGHT" type="float" value="300"/>
+   <property name="NAME" value="Jump1"/>
+   <property name="SLOW_FACTOR" type="float" value="0.1"/>
   </properties>
  </tile>
 </tileset>

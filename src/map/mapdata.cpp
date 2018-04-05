@@ -554,6 +554,7 @@ Uint16 MapData::get_gid(Tile* tile)  const{
  * @return @c bool which indicates collision
  */
 bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
+    if(SDL_RectEmpty(rect)) {return false;}
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
@@ -562,6 +563,43 @@ bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<
         if(layer.collide(rect, x_depth, y_depth, *this, collided, type)) {
             if(x_depth > x_max) {x_max = x_depth;}
             if(y_depth > y_max) {y_max = y_depth;}
+            collide = true;
+        }
+    }
+    return collide;
+}
+
+/**
+ * @brief Checks if given rect collides with any layer present in this map
+ * @param rect The rect to check against
+ * @param collided A container to which colliding actors are added
+ * @param type The type of the hitbox
+ * @return @c bool which indicates collision
+ */
+bool MapData::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
+    if(SDL_RectEmpty(rect)) {return false;}
+    bool collide = false;
+    // Iterate through all layers
+    for(Layer& layer : m_layers) {
+        if(layer.collide(rect, *this, collided, type)) {
+            collide = true;
+        }
+    }
+    return collide;
+}
+
+/**
+ * @brief Checks if given rect collides with any layer present in this map
+ * @param rect The rect to check against
+ * @param type The type of the hitbox
+ * @return @c bool which indicates collision
+ */
+bool MapData::collide(const SDL_Rect* rect, std::string type) {
+    if(SDL_RectEmpty(rect)) {return false;}
+    bool collide = false;
+    // Iterate through all layers
+    for(Layer& layer : m_layers) {
+        if(layer.collide(rect, *this, type)) {
             collide = true;
         }
     }

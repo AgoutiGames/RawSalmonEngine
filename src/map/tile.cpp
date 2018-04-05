@@ -177,6 +177,11 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                         std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
+                    if(anim == AnimationType::none) {
+                        std::cerr << "You can't define a specific animation type as no animation\n";
+                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        return XML_WRONG_ATTRIBUTE_TYPE;
+                    }
                 }
                 else {
                     std::cerr << "Missing animation type in actor animation for " << actor_name << "\n";

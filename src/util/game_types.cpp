@@ -24,7 +24,11 @@
 AnimationType str_to_anim_type(const std::string& name) {
     if(name == "IDLE") return AnimationType::idle;
     if(name == "WALK") return AnimationType::walk;
+    if(name == "RUN") return AnimationType::run;
+    if(name == "JUMP") return AnimationType::jump;
+    if(name == "FALL") return AnimationType::fall;
     if(name == "CURRENT") return AnimationType::current;
+    if(name == "NONE") return AnimationType::none;
     else return AnimationType::invalid;
 }
 
@@ -51,6 +55,7 @@ EventSignal str_to_event_signal(const std::string& name) {
     if(name == "NEXT") return EventSignal::next;
     if(name == "STOP") return EventSignal::stop;
     if(name == "END") return EventSignal::end;
+    if(name == "ERASE") return EventSignal::erase;
     else return EventSignal::invalid;
 }
 
@@ -61,6 +66,7 @@ Response str_to_response(const std::string& name) {
     if(name == "ON_ACTIVATION") return Response::on_activation;
     if(name == "ON_DEATH") return Response::on_death;
     if(name == "ON_IDLE") return Response::on_idle;
+    if(name == "ON_ALWAYS") return Response::on_always;
     else return Response::invalid;
 }
 

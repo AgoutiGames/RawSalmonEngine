@@ -104,18 +104,29 @@ void Actor::render(int x_cam, int y_cam) const {
  * @return a @c bool which indicates collision
  * @todo Apply tile speed modifiers
  */
-bool Actor::move(float x_factor, float y_factor) {
+bool Actor::move(float x_factor, float y_factor, bool absolute) {
     bool moved = true;
     // Move the Actor
     constexpr float FPS = 60;
     SDL_Rect temp = get_hitbox();
+    float x_step;
+    float y_step;
+    if(absolute) {
+        x_step = x_factor;
+        y_step = y_factor;
+    }
+    else {
+        x_step = x_factor * m_base_speed / FPS;
+        y_step = y_factor * m_base_speed / FPS;
+    }
+
     // Determine if it can collide/ has hitbox
     if(!SDL_RectEmpty(&temp)) {
 
         std::vector<Actor*> collided;
 
         // Apply position of actor to hitbox
-        m_x += x_factor * m_base_speed / FPS;
+        m_x += x_step;
         // Apply x movement
         temp.x += static_cast<int>(m_x);
         // Check for x_axis collision
@@ -138,7 +149,7 @@ bool Actor::move(float x_factor, float y_factor) {
         // Check for y_axis collision
         if(y_factor != 0){
             // Apply y movement
-            m_y += y_factor * m_base_speed / FPS;
+            m_y += y_step;
             temp.y += static_cast<int>(m_y) - m_height;
             // Check for y-axis collision
             int x_inter_depth = 0;
@@ -157,16 +168,15 @@ bool Actor::move(float x_factor, float y_factor) {
         }
     }
     else {
-        m_x += x_factor * m_base_speed / FPS;
-        m_y += y_factor * m_base_speed / FPS;
+        m_x += x_step;
+        m_y += y_step;
     }
     return moved;
 }
 
 /**
  * @brief Process the event pipeline
- * @return a @c bool which indicates if the actor "died"
- * @todo Implement AI and Player behaviour when event_pipeline is empty
+ * @return a @c bool which indicates if the actor should be erased
  */
 bool Actor::process_events() {
     if(!m_event_pipeline.empty()) {
@@ -181,13 +191,11 @@ bool Actor::process_events() {
                 m_event_pipeline.erase(m_event_pipeline.begin() + i);
                 i--;
             }
-            else if(signal == EventSignal::die) {return false;}
+            else if(signal == EventSignal::erase) {return false;}
         }
     }
     if(m_event_pipeline.empty()) {
         respond(Response::on_idle);
-        //animate(AnimationType::idle, m_direction);
-        // AI and Player behaviour stuff
     }
     return true;
 }
@@ -219,6 +227,7 @@ void Actor::add_event(ActorEvent* event) {
  * @return @c bool which returns true if actor is alive
  */
 bool Actor::update() {
+    respond(Response::on_always);
     bool alive = process_events();
     return alive;
 }
@@ -230,6 +239,7 @@ bool Actor::update() {
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
  */
 bool Actor::animate(AnimationType anim, Direction dir) {
+    if(anim == AnimationType::none) {return false;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
@@ -255,6 +265,7 @@ bool Actor::animate(AnimationType anim, Direction dir) {
  * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger
  */
 AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
+    if(anim == AnimationType::none) {return AnimSignal::none;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
@@ -297,6 +308,25 @@ bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::strin
         std::cerr << "x depth: " << x_depth << "\n";
         std::cerr << "y_depth: " << y_depth << "\n";
         */
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Returns true if actor collides with rect
+ * @note Hitbox width and height should be at least 10px
+ *       when max actor speed is 500px per second
+ * @param rect The rect against which collision gets checked
+ * @param type The type of the hitbox
+ * @return @c bool which indicates collision
+ */
+bool Actor::collide(const SDL_Rect* rect, std::string type) const{
+    SDL_Rect temp = get_hitbox(type);
+    if(SDL_RectEmpty(&temp)) {return false;}
+    temp.x += static_cast<int>(m_x);
+    temp.y += static_cast<int>(m_y) - m_height;
+    if(SDL_HasIntersection(&temp, rect) && !SDL_RectEquals(&temp, rect)) {
         return true;
     }
     return false;
@@ -379,4 +409,39 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     else{
         return m_hitbox.at(type);
     }
+}
+
+bool Actor::on_ground(Direction dir) const {
+    SDL_Rect pos = get_hitbox();
+    pos.x += get_x();
+    pos.y += get_y() - get_h();
+    SDL_Rect temp;
+    if(dir == Direction::up) {
+        temp.x = pos.x;
+        temp.y =pos.y - 1;
+        temp.w = pos.w;
+        temp.h = 1;
+    }
+    else if(dir == Direction::down) {
+        temp.x = pos.x;
+        temp.y =pos.y + pos.h + 1;
+        temp.w = pos.w;
+        temp.h = 1;
+    }
+    else if(dir == Direction::left) {
+        temp.x = pos.x - 1;
+        temp.y =pos.y - pos.h;
+        temp.w = 1;
+        temp.h = pos.h;
+    }
+    else if(dir == Direction::right) {
+        temp.x = pos.x + pos.w + 1;
+        temp.y =pos.y - pos.h;
+        temp.w = 1;
+        temp.h = pos.h;
+    }
+    else {
+        return false;
+    }
+    return m_map->collide(&temp);
 }
