@@ -74,6 +74,7 @@ class Actor{
         bool is_blocked(std::string event_type) const;
         bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string event_type) const;
+        unsigned scrap_event(std::string event_type, ActorEvent* except = nullptr);
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
 
 

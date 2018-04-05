@@ -144,7 +144,7 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
                 moved = false;
             }
             // Undo y movement
-            temp.y -= static_cast<int>(m_y) - m_height;
+            temp.y = get_hitbox().y;
         }
         // Check for y_axis collision
         if(y_factor != 0){
@@ -243,11 +243,11 @@ bool Actor::animate(AnimationType anim, Direction dir) {
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << "is not defined!\n";
+        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
         return false;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << "is not defined!\n";
+        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
         return false;
     }
     if(m_anim_state != anim || m_direction != dir) {
@@ -269,11 +269,11 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << "is not defined!\n";
+        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
         return AnimSignal::none;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << "is not defined!\n";
+        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
         return AnimSignal::none;
     }
     if(m_anim_state != anim || m_direction != dir) {
@@ -424,19 +424,19 @@ bool Actor::on_ground(Direction dir) const {
     }
     else if(dir == Direction::down) {
         temp.x = pos.x;
-        temp.y =pos.y + pos.h + 1;
+        temp.y =pos.y + pos.h;
         temp.w = pos.w;
         temp.h = 1;
     }
     else if(dir == Direction::left) {
         temp.x = pos.x - 1;
-        temp.y =pos.y - pos.h;
+        temp.y =pos.y;
         temp.w = 1;
         temp.h = pos.h;
     }
     else if(dir == Direction::right) {
-        temp.x = pos.x + pos.w + 1;
-        temp.y =pos.y - pos.h;
+        temp.x = pos.x + pos.w;
+        temp.y =pos.y;
         temp.w = 1;
         temp.h = pos.h;
     }
@@ -444,4 +444,8 @@ bool Actor::on_ground(Direction dir) const {
         return false;
     }
     return m_map->collide(&temp);
+}
+
+unsigned Actor::scrap_event(std::string event_type, ActorEvent* except) {
+
 }

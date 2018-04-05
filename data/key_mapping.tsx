@@ -209,6 +209,8 @@
  </tile>
  <tile id="38" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="Test"/>
    <property name="KEYPRESS" value="X"/>
   </properties>
  </tile>

@@ -56,6 +56,7 @@ EventSignal AeFall::process(Actor& actor) {
         actor.move(way[0] * m_speed / FPS, way[1] * m_speed / FPS, true);
         actor.block_event(m_alias);
         actor.animate(m_animation, m_anim_dir);
+        std::cerr << "Fall: " << actor.get_y() - pos << " Actor pos x: "<< actor.get_x() << " y: " << actor.get_y() << "\n";
         m_height += abs(actor.get_y() - pos);
         return signal();
     }
