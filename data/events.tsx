@@ -52,6 +52,7 @@
  </tile>
  <tile id="6" type="AeFall">
   <properties>
+   <property name="ACCELERATION" type="float" value="1200"/>
    <property name="ANIMATION_TYPE" value="IDLE"/>
    <property name="NAME" value="Fall"/>
   </properties>
@@ -69,6 +70,14 @@
    <property name="JUMP_HEIGHT" type="float" value="300"/>
    <property name="NAME" value="Jump1"/>
    <property name="SLOW_FACTOR" type="float" value="0.1"/>
+  </properties>
+ </tile>
+ <tile id="9" type="AeAnimate">
+  <properties>
+   <property name="ANIMATION_TYPE" value="WALK"/>
+   <property name="CYCLES" type="int" value="5"/>
+   <property name="DIRECTION" value="RIGHT"/>
+   <property name="NAME" value="Test"/>
   </properties>
  </tile>
 </tileset>
