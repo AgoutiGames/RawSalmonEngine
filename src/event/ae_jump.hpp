@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_MOVE_SUSTAINED_HPP_INCLUDED
-#define AE_MOVE_SUSTAINED_HPP_INCLUDED
+#ifndef AE_JUMP_HPP_INCLUDED //< Change this
+#define AE_JUMP_HPP_INCLUDED //< Change this
 
 #include <vector>
 #include <string>
@@ -29,16 +29,16 @@
 class Actor;
 
 /**
- * @brief Move the actor to the supplied direction as long as key is held
+ * @brief Perform a jump
  */
-class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
+class AeJump : public EventContainer<ActorEvent, AeJump>{
     // The default interface block (copy this!)
     public:
-        AeMoveSustained() {}
-        static AeMoveSustained* create() {return duplicate(AeMoveSustained());}
+        AeJump() {}
+        static AeJump* create() {return duplicate(AeJump());}
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMoveSustained() override {}
+        virtual ~AeJump() override {}
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
@@ -49,11 +49,21 @@ class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
 
     // The specialized block
     public:
-        AeMoveSustained(Direction dir, AnimationType anim);
-        static AeMoveSustained* create(Direction dir, AnimationType anim);
+        AeJump(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir);
+        static AeJump* create(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir);
     private:
-        Direction m_direction;
+        float m_duration;
+        float m_jump_height;
+
+        bool m_slow_on_release;
+        float m_slow_factor;
+
         AnimationType m_animation;
+        Direction m_anim_dir;
+
+        float m_speed = 0;
+        float m_deceleration = 0;
+        // Members
 };
 
-#endif // AE_MOVE_SUSTAINED_HPP_INCLUDED
+#endif // AE_JUMP_HPP_INCLUDED

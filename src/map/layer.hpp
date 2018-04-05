@@ -57,6 +57,8 @@ class Layer{
         std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
         bool collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, const MapData& base_map, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, const MapData& base_map, std::string type = "COLLIDE");
 
 
     private:

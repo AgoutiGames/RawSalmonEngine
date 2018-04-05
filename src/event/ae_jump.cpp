@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_move_sustained.hpp"
+#include "event/ae_jump.hpp" //< Change this!
 
 #include <string>
 #include <map>
@@ -27,44 +27,52 @@
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMoveSustained::m_alias = "AeMoveSustained";
+std::string AeJump::m_alias = "AeJump";
 
-AeMoveSustained::AeMoveSustained(Direction dir, AnimationType anim) :
+AeJump::AeJump(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir) :
 EventContainer(),
-m_direction{dir},
-m_animation{anim}
+m_duration{dur},
+m_jump_height{j_h},
+m_slow_on_release{slow_r},
+m_slow_factor{slow_f},
+m_animation{anim},
+m_anim_dir{anim_dir}
 {
 
 }
 
 /**
- * @brief Move the actor to the supplied direction until key is released
- * @param actor The actor which should move
+ * @brief Perform a jump
+ * @param actor The actor
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeMoveSustained::process(Actor& actor) {
-    // process stuff
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    if (keys[get_key().scancode]) {
-        std::vector<float> mov_factors;
-        if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
-        else {mov_factors = dir_to_mov(m_direction);}
-        if(actor.move(mov_factors[0], mov_factors[1])) {
-            actor.animate(m_animation, m_direction);
-        }
-        else {
-            return EventSignal::end;
-        }
-        return signal();
+EventSignal AeJump::process(Actor& actor) {
+    constexpr float FPS = 60;
+    if(m_deceleration == 0) {
+        float steps = FPS * m_duration;
+        steps = m_jump_height / steps;
+        m_speed = steps * 2;
+        m_deceleration = m_speed / (FPS * m_duration);
     }
-    else {
-        return EventSignal::end;
+    if(!actor.move(0, -m_speed, true)) {return EventSignal::end;}
+    actor.animate(m_animation, m_anim_dir);
+
+    if(m_slow_on_release) {
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+        if ( !(keys[get_key().scancode]) ) {
+            m_deceleration = m_speed * m_slow_factor + m_deceleration;
+            m_slow_on_release = false;
+        }
     }
+
+    m_speed -= m_deceleration;
+    if(m_speed <= 0) {return EventSignal::end;}
+    else {return signal();}
 }
 
 /// Create event and return pointer to it
-AeMoveSustained* AeMoveSustained::create(Direction dir, AnimationType anim) {
-    AeMoveSustained temp(dir, anim);
+AeJump* AeJump::create(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir) {
+    AeJump temp(dur, j_h, slow_r, slow_f, anim, anim_dir);
     return duplicate(temp);
 }
 
@@ -74,13 +82,21 @@ AeMoveSustained* AeMoveSustained::create(Direction dir, AnimationType anim) {
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeJump::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
-    //XMLError eResult;
+    XMLError eResult;
 
-    Direction dir = Direction::up;
-    AnimationType anim = AnimationType::walk;
+    // Additional members
     std::string event_name("");
+
+    float duration = 0.5f;
+    float jump_height = 400.0f;
+    bool slow_on_release = true;
+    float slow_factor = 0.5f;
+
+    AnimationType animation = AnimationType::jump;
+    Direction anim_dir = Direction::current;
+
     Priority prio = Priority::medium;
     EventSignal sig = EventSignal::next;
 
@@ -91,26 +107,48 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pai
         std::string name(p_name);
         if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-        else if(name == "DIRECTION") {
+        // Parse additional members
+
+        else if(name == "NAME") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            dir = str_to_direction(value);
-            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+            event_name = std::string(p_value);
+        }
+
+        else if(name == "JUMP_DURATION") {
+            eResult = source->QueryFloatAttribute("value", &duration);
+            if(eResult != XML_SUCCESS) return eResult;
+        }
+
+        else if(name == "JUMP_HEIGHT") {
+            eResult = source->QueryFloatAttribute("value", &jump_height);
+            if(eResult != XML_SUCCESS) return eResult;
+        }
+
+        else if(name == "SLOW_ON_RELEASE") {
+            eResult = source->QueryBoolAttribute("value", &slow_on_release);
+            if(eResult != XML_SUCCESS) return eResult;
+        }
+
+        else if(name == "SLOW_FACTOR") {
+            eResult = source->QueryFloatAttribute("value", &slow_factor);
+            if(eResult != XML_SUCCESS) return eResult;
         }
 
         else if(name == "ANIMATION_TYPE") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
             std::string value(p_value);
-            anim = str_to_anim_type(value);
-            if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+            animation = str_to_anim_type(value);
+            if(animation == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
         }
 
-        else if(name == "NAME") {
+        else if(name == "ANIMATION_DIRECTION") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
+            std::string value(p_value);
+            anim_dir = str_to_direction(value);
+            if(anim_dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
         }
 
         else if(name == "PRIORITY") {
@@ -139,7 +177,7 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, std::pai
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(dir, anim);
+    ActorEvent* event = create(duration,jump_height,slow_on_release,slow_factor,animation,anim_dir);
     event->set_priority(prio);
     event->set_signal(sig);
     entry = std::make_pair(event_name, event);

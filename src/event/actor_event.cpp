@@ -24,6 +24,9 @@
 #include "event/event_container.hpp"
 #include "event/ae_move_direction.hpp"
 #include "event/ae_move_sustained.hpp"
+#include "event/ae_animate.hpp"
+#include "event/ae_jump.hpp"
+#include "event/ae_fall.hpp"
 
 std::map<std::string, ActorEvent*> ActorEvent::m_event_dict;
 
@@ -33,6 +36,9 @@ void ActorEvent::initialize_all() {
 
     register_class<AeMoveDirection>();
     register_class<AeMoveSustained>();
+    register_class<AeAnimate>();
+    register_class<AeJump>();
+    register_class<AeFall>();
 }
 
 /**

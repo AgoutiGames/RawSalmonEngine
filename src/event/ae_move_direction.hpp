@@ -51,11 +51,12 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
     // The specialized block
     public:
-        AeMoveDirection(Direction dir, unsigned duration = 1);
-        static AeMoveDirection* create(Direction dir, unsigned duration = 1);
+        AeMoveDirection(Direction dir, unsigned duration, AnimationType anim);
+        static AeMoveDirection* create(Direction dir, unsigned duration, AnimationType anim);
     private:
         Direction m_direction;
         unsigned m_duration; ///< How many frames the movement persists
+        AnimationType m_animation;
 };
 
 #endif // AE_MOVE_DIRECTION_HPP_INCLUDED

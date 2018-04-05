@@ -61,6 +61,8 @@ class MapData {
         std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                        AnimationType animation = AnimationType::invalid);
         bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE");
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);

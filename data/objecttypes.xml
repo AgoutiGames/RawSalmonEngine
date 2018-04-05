@@ -11,27 +11,64 @@
   <property name="BASE_SPEED" type="float" default="250"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
   <property name="ON_ACTIVATION" type="string"/>
+  <property name="ON_ALWAYS" type="string"/>
   <property name="ON_COLLISION" type="string"/>
   <property name="ON_DEATH" type="string"/>
   <property name="ON_HIT" type="string"/>
   <property name="ON_IDLE" type="string"/>
  </objecttype>
- <objecttype name="KEY_MAPPING" color="#a0a0a4">
-  <property name="CONTINUOUS" type="bool" default="false"/>
-  <property name="EVENT" type="string"/>
-  <property name="KEYPRESS" type="string"/>
- </objecttype>
- <objecttype name="AeMoveSustained" color="#a0a0a4">
-  <property name="DIRECTION" type="string" default="UP"/>
+ <objecttype name="AeAnimate" color="#a0a0a4">
+  <property name="ANIMATION_FRAMES" type="int" default="0"/>
+  <property name="ANIMATION_TYPE" type="string" default="IDLE"/>
+  <property name="CYCLES" type="int" default="0"/>
+  <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="GAME_FRAMES" type="int" default="0"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeFall" color="#a0a0a4">
+  <property name="ACCELERATION" type="float" default="500"/>
+  <property name="ANIMATION_DIRECTION" type="string" default="CURRENT"/>
+  <property name="ANIMATION_TYPE" type="string" default="FALL"/>
+  <property name="DEATH_HEIGHT" type="int" default="0"/>
+  <property name="FALL_DIRECTION" type="string" default="DOWN"/>
+  <property name="MAX_VELOCITY" type="float" default="1000"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
+ <objecttype name="AeJump" color="#a0a0a4">
+  <property name="ANIMATION_DIRECTION" type="string" default="CURRENT"/>
+  <property name="ANIMATION_TYPE" type="string" default="JUMP"/>
+  <property name="JUMP_DURATION" type="float" default="0.5"/>
+  <property name="JUMP_HEIGHT" type="float" default="400"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SLOW_FACTOR" type="float" default="0.5"/>
+  <property name="SLOW_ON_RELEASE" type="bool" default="true"/>
+ </objecttype>
  <objecttype name="AeMoveDirection" color="#a0a0a4">
+  <property name="ANIMATION_TYPE" type="string" default="WALK"/>
   <property name="DIRECTION" type="string" default="UP"/>
   <property name="DURATION" type="string" default="1"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
+ <objecttype name="AeMoveSustained" color="#a0a0a4">
+  <property name="ANIMATION_TYPE" type="string" default="WALK"/>
+  <property name="DIRECTION" type="string" default="UP"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
+ <objecttype name="KEY_MAPPING" color="#a0a0a4">
+  <property name="DOWN" type="bool" default="false"/>
+  <property name="EVENT" type="string"/>
+  <property name="KEYPRESS" type="string"/>
+  <property name="SUSTAINED" type="bool" default="false"/>
+  <property name="UP" type="bool" default="false"/>
  </objecttype>
 </objecttypes>

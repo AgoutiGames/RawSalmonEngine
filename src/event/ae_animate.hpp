@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_MOVE_SUSTAINED_HPP_INCLUDED
-#define AE_MOVE_SUSTAINED_HPP_INCLUDED
+#ifndef AE_ANIMATE_HPP_INCLUDED //< Change this
+#define AE_ANIMATE_HPP_INCLUDED //< Change this
 
 #include <vector>
 #include <string>
@@ -29,16 +29,16 @@
 class Actor;
 
 /**
- * @brief Move the actor to the supplied direction as long as key is held
+ * @brief Animate the actor
  */
-class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
+class AeAnimate : public EventContainer<ActorEvent, AeAnimate>{
     // The default interface block (copy this!)
     public:
-        AeMoveSustained() {}
-        static AeMoveSustained* create() {return duplicate(AeMoveSustained());}
+        AeAnimate() {}
+        static AeAnimate* create() {return duplicate(AeAnimate());}
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMoveSustained() override {}
+        virtual ~AeAnimate() override {}
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
@@ -49,11 +49,15 @@ class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
 
     // The specialized block
     public:
-        AeMoveSustained(Direction dir, AnimationType anim);
-        static AeMoveSustained* create(Direction dir, AnimationType anim);
+        AeAnimate(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f);
+        static AeAnimate* create(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f);
     private:
-        Direction m_direction;
         AnimationType m_animation;
+        Direction m_direction;
+        unsigned m_cycles;
+        unsigned m_anim_frames;
+        unsigned m_game_frames;
+        // Members
 };
 
-#endif // AE_MOVE_SUSTAINED_HPP_INCLUDED
+#endif // AE_ANIMATE_HPP_INCLUDED
