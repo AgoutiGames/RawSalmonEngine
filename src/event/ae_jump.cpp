@@ -25,6 +25,7 @@
 #include "actor/actor.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
+#include "event/ae_fall.hpp"
 #include "util/game_types.hpp"
 
 std::string AeJump::m_alias = "AeJump";
@@ -47,14 +48,26 @@ m_anim_dir{anim_dir}
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeJump::process(Actor& actor) {
+    if(!m_started) {
+        actor.scrap_event(AeFall::get_type_static());
+        actor.block_event(AeFall::get_type_static());
+        m_started = true;
+    }
+
     constexpr float FPS = 60;
+
     if(m_deceleration == 0) {
         float steps = FPS * m_duration;
         steps = m_jump_height / steps;
         m_speed = steps * 2;
         m_deceleration = m_speed / (FPS * m_duration);
     }
-    if(!actor.move(0, -m_speed, true)) {return EventSignal::end;}
+
+    if(!actor.move(0, -m_speed, true)) {
+        actor.unblock_event(AeFall::get_type_static());
+        return EventSignal::abort;
+    }
+
     actor.animate(m_animation, m_anim_dir);
 
     if(m_slow_on_release) {
@@ -66,7 +79,11 @@ EventSignal AeJump::process(Actor& actor) {
     }
 
     m_speed -= m_deceleration;
-    if(m_speed <= 0) {return EventSignal::end;}
+
+    if(m_speed <= 0) {
+        actor.unblock_event(AeFall::get_type_static());
+        return EventSignal::end;
+    }
     else {return signal();}
 }
 
@@ -82,8 +99,9 @@ AeJump* AeJump::create(float dur, float j_h, bool slow_r, float slow_f, Animatio
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeJump::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeJump::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
+    (void)map; // Mute unused var warning for seldomly used param MapData
     XMLError eResult;
 
     // Additional members

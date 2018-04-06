@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_TEMPLATE_HPP_INCLUDED //< Change this
-#define AE_TEMPLATE_HPP_INCLUDED //< Change this
+#ifndef AE_MULTI_HPP_INCLUDED //< Change this
+#define AE_MULTI_HPP_INCLUDED //< Change this
 
 #include <vector>
 #include <string>
@@ -29,30 +29,31 @@
 class Actor;
 
 /**
- * @brief Define this!
+ * @brief An event holding a list of other events
  */
-class AeTemplate : public EventContainer<ActorEvent, AeTemplate>{
+class AeMulti : public EventContainer<ActorEvent, AeMulti>{
     // The default interface block (copy this!)
     public:
-        AeTemplate() {}
-        static AeTemplate* create() {return duplicate(AeTemplate());}
+        AeMulti() {}
+        static AeMulti* create() {return duplicate(AeMulti());}
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeTemplate() override {}
+        virtual ~AeMulti() override {}
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
         virtual void kill() {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
+        virtual ActorEvent* copy() const override;
     private:
         static std::string m_alias; //< Define this!
 
     // The specialized block
     public:
-        AeTemplate(/*vars*/);
-        static AeTemplate* create(/*vars*/);
+        AeMulti(std::vector<ActorEvent*> event_list);
+        static AeMulti* create(std::vector<ActorEvent*> event_list);
     private:
+        std::vector<ActorEvent*> m_events;
         // Members
 };
 
-#endif // AE_TEMPLATE_HPP_INCLUDED
+#endif // AE_MULTI_HPP_INCLUDED

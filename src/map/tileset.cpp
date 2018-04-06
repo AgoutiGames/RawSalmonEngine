@@ -360,7 +360,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
         // Parse events
         else {
             std::pair<std::string, ActorEvent*> event;
-            eResult = ActorEvent::parse_multi(p_tile, event);
+            eResult = ActorEvent::parse_multi(p_tile, base_map, event);
             if(eResult == XML_SUCCESS) {
                 base_map.register_event(event);
             }

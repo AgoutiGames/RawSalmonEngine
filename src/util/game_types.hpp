@@ -55,16 +55,17 @@ enum class AnimationType {
 };
 
 enum class Priority{
-    low,
-    medium,
-    high,
-    invalid,
+    low = 25,
+    medium = 50,
+    high = 75,
+    invalid = -1,
 };
 
 enum class EventSignal{
     next,
     stop,
     end,
+    abort,
     erase,
     invalid,
 };
@@ -84,6 +85,7 @@ enum class AnimSignal{
     wrap,
     next,
     none,
+    missing,
 };
 
 struct ActorTemplate {

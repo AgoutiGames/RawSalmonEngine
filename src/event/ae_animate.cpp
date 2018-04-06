@@ -48,6 +48,7 @@ m_game_frames{g_f}
  */
 EventSignal AeAnimate::process(Actor& actor) {
     AnimSignal sig = actor.animate_trigger(m_animation, m_direction);
+    if(sig == AnimSignal::missing) {return EventSignal::abort;}
     if(m_cycles > 0) {
         if(sig == AnimSignal::wrap) {
             m_cycles--;
@@ -78,8 +79,9 @@ AeAnimate* AeAnimate::create(AnimationType anim, Direction dir, unsigned cyc, un
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeAnimate::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeAnimate::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
+    (void)map; // Mute unused var warning for seldomly used param MapData
     XMLError eResult;
 
     // Additional members

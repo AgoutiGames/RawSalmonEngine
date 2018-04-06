@@ -36,7 +36,7 @@ class AeFall : public EventContainer<ActorEvent, AeFall>{
     public:
         AeFall() {}
         static AeFall* create() {return duplicate(AeFall());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
         virtual ~AeFall() override {}
         virtual std::string get_type() const override {return m_alias;}

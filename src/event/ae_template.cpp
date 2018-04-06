@@ -57,8 +57,9 @@ AeTemplate* AeTemplate::create(/*vars*/) {
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeTemplate::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeTemplate::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
+    (void)map; // Mute unused var warning for seldomly used param MapData
     //XMLError eResult;
 
     // Additional members

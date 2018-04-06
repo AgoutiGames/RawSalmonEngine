@@ -27,6 +27,7 @@
 #include "event/ae_animate.hpp"
 #include "event/ae_jump.hpp"
 #include "event/ae_fall.hpp"
+#include "event/ae_multi.hpp"
 
 std::map<std::string, ActorEvent*> ActorEvent::m_event_dict;
 
@@ -39,6 +40,7 @@ void ActorEvent::initialize_all() {
     register_class<AeAnimate>();
     register_class<AeJump>();
     register_class<AeFall>();
+    register_class<AeMulti>();
 }
 
 /**
@@ -47,7 +49,7 @@ void ActorEvent::initialize_all() {
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError ActorEvent::parse_multi(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) {
+tinyxml2::XMLError ActorEvent::parse_multi(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) {
     using namespace tinyxml2;
     XMLError eResult;
 
@@ -61,7 +63,7 @@ tinyxml2::XMLError ActorEvent::parse_multi(tinyxml2::XMLElement* source, std::pa
     }
 
     if(m_event_dict.find(event_type) == m_event_dict.end()) {
-        std::cerr << "Error: Cant parse event of unknown type " << event_type << "\n Add this event type to the ActorEvent initialize_all method!\n";
+        std::cerr << "Error: Cant parse event of unknown type " << event_type << "\nAdd this event type to the ActorEvent initialize_all method!\n";
         return XML_WRONG_ATTRIBUTE_TYPE;
     }
 
@@ -80,7 +82,7 @@ tinyxml2::XMLError ActorEvent::parse_multi(tinyxml2::XMLElement* source, std::pa
         return XML_ERROR_PARSING_ELEMENT;
     }
 
-    eResult = m_event_dict[event_type]->parse(p_property, entry);
+    eResult = m_event_dict[event_type]->parse(p_property, map, entry);
     if(eResult != XML_SUCCESS) {std::cerr << "Failed at parsing event with tile id: " << source->Attribute("id") << "\n";}
     return eResult;
 }

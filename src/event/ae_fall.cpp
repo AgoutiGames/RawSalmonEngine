@@ -52,11 +52,12 @@ EventSignal AeFall::process(Actor& actor) {
     if(m_speed > m_max_velocity) {m_speed = m_max_velocity;}
     std::vector<float> way = dir_to_mov(m_fall_dir);
     float pos = actor.get_y();
-    if(!actor.on_ground(Direction::down)) {
+
+    if(!actor.on_ground(m_fall_dir)) {
         actor.move(way[0] * m_speed / FPS, way[1] * m_speed / FPS, true);
         actor.block_event(m_alias);
         actor.animate(m_animation, m_anim_dir);
-        std::cerr << "Fall: " << actor.get_y() - pos << " Actor pos x: "<< actor.get_x() << " y: " << actor.get_y() << "\n";
+        // std::cerr << "Fall: " << actor.get_y() - pos << " Actor pos x: "<< actor.get_x() << " y: " << actor.get_y() << "\n";
         m_height += abs(actor.get_y() - pos);
         return signal();
     }
@@ -79,8 +80,9 @@ AeFall* AeFall::create(float acc, float max, unsigned death, Direction fall, Ani
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeFall::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeFall::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
+    (void)map; // Mute unused var warning for seldomly used param MapData
     XMLError eResult;
 
     // Additional members

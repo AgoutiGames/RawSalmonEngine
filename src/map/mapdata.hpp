@@ -46,12 +46,12 @@ class MapData {
         void update();
 
         unsigned get_overhang(Direction dir) const;
-        SDL_Renderer* get_renderer() const {return *mpp_renderer;}
-        std::string get_file_path() const {return m_base_path;}
+        SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
+        std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
         Uint16 get_gid(Tile* tile)  const;
         Tile* get_tile(Uint16 tile_id) const;
-        unsigned get_tile_h() const {return m_tile_h;}
-        unsigned get_tile_w() const {return m_tile_w;}
+        unsigned get_tile_h() const {return m_tile_h;} ///< Return base tile height
+        unsigned get_tile_w() const {return m_tile_w;} ///< Return base tile width
         void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);} ///< Link event name with @c ActorEvent*
         ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event
         bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
