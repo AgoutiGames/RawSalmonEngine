@@ -135,6 +135,7 @@ tinyxml2::XMLError AeMulti::parse(tinyxml2::XMLElement* source, MapData& map, st
 
         else {
             std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
+            std::cerr << "If the property is a number, there is a number gap between the events\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         source = source->NextSiblingElement("property");

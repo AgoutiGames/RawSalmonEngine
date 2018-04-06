@@ -95,6 +95,10 @@
   <properties>
    <property name="1" value="WRight"/>
    <property name="2" value="WUp"/>
+   <property name="3" value="WUp"/>
+   <property name="4" value="WRight"/>
+   <property name="5" value="WUp"/>
+   <property name="6" value="WUp"/>
    <property name="NAME" value="Diagonal"/>
   </properties>
  </tile>

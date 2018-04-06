@@ -42,7 +42,7 @@ class AeTemplate : public EventContainer<ActorEvent, AeTemplate>{
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
-        virtual void kill() {kill(this);}
+        virtual void kill() override {kill(this);}
         virtual ActorEvent* copy() const override {return duplicate(this);}
     private:
         static std::string m_alias; //< Define this!
