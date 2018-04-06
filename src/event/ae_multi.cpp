@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_move_sustained.hpp"
+#include "event/ae_multi.hpp" //< Change this!
 
 #include <string>
 #include <map>
@@ -25,46 +25,48 @@
 #include "actor/actor.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
+#include "map/mapdata.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMoveSustained::m_alias = "AeMoveSustained";
+std::string AeMulti::m_alias = "AeMulti";
 
-AeMoveSustained::AeMoveSustained(Direction dir, AnimationType anim) :
+AeMulti::AeMulti(std::vector<ActorEvent*> event_list) :
 EventContainer(),
-m_direction{dir},
-m_animation{anim}
+m_events{event_list}
 {
 
 }
 
 /**
- * @brief Move the actor to the supplied direction until key is released
- * @param actor The actor which should move
+ * @brief Process the contained events
+ * @param actor The actor which gets processed by each event
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeMoveSustained::process(Actor& actor) {
-    // process stuff
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    if (keys[get_key().scancode]) {
-        std::vector<float> mov_factors;
-        if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
-        else {mov_factors = dir_to_mov(m_direction);}
-        if(actor.move(mov_factors[0], mov_factors[1])) {
-            actor.animate(m_animation, m_direction);
+EventSignal AeMulti::process(Actor& actor) {
+    if(!m_events.empty()) {
+        for(unsigned i = 0; i < m_events.size(); i++) {
+            ActorEvent* event = m_events[i];
+            EventSignal e_signal = event->process(actor);
+            if(e_signal == EventSignal::stop) {
+                return signal();
+            }
+            else if(e_signal == EventSignal::end || e_signal == EventSignal::abort) {
+                m_events[i]->kill();
+                m_events.erase(m_events.begin() + i);
+                i--;
+            }
+            else if(e_signal == EventSignal::erase) {return e_signal;}
         }
-        else {
-            return EventSignal::abort;
-        }
-        return signal();
     }
-    else {
+    if(m_events.empty()) {
         return EventSignal::end;
     }
+    return signal();
 }
 
 /// Create event and return pointer to it
-AeMoveSustained* AeMoveSustained::create(Direction dir, AnimationType anim) {
-    AeMoveSustained temp(dir, anim);
+AeMulti* AeMulti::create(std::vector<ActorEvent*> event_list) {
+    AeMulti temp(event_list);
     return duplicate(temp);
 }
 
@@ -74,16 +76,17 @@ AeMoveSustained* AeMoveSustained::create(Direction dir, AnimationType anim) {
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeMulti::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
-    (void)map; // Mute unused var warning for seldomly used param MapData
     //XMLError eResult;
 
-    Direction dir = Direction::up;
-    AnimationType anim = AnimationType::walk;
+    // Additional members
     std::string event_name("");
+    std::vector<ActorEvent*> event_list;
     Priority prio = Priority::medium;
     EventSignal sig = EventSignal::next;
+
+    unsigned current_event = 1;
 
     while(source != nullptr) {
         const char* p_name;
@@ -92,21 +95,7 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, MapData&
         std::string name(p_name);
         if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-        else if(name == "DIRECTION") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            dir = str_to_direction(value);
-            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "ANIMATION_TYPE") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            anim = str_to_anim_type(value);
-            if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
+        // Parse additional members
 
         else if(name == "NAME") {
             p_value = source->Attribute("value");
@@ -130,6 +119,20 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, MapData&
             if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
         }
 
+        else if(name == std::to_string(current_event)) {
+            p_value = source->Attribute("value");
+            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+            std::string value(p_value);
+            if(!map.check_event(value)) {
+                std::cerr << "Event " << value << " has not been parsed before!\n";
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
+            else {
+                event_list.push_back(map.get_event(value));
+                current_event++;
+            }
+        }
+
         else {
             std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
@@ -140,10 +143,18 @@ tinyxml2::XMLError AeMoveSustained::parse(tinyxml2::XMLElement* source, MapData&
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(dir, anim);
+    ActorEvent* event = create(event_list);
     event->set_priority(prio);
     event->set_signal(sig);
     entry = std::make_pair(event_name, event);
 
     return XML_SUCCESS;
+}
+
+ActorEvent* AeMulti::copy() const{
+    std::vector<ActorEvent*> new_list;
+    for(ActorEvent* e : m_events) {
+        new_list.push_back(e->copy());
+    }
+    return create(new_list);
 }

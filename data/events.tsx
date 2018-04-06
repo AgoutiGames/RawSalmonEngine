@@ -69,7 +69,7 @@
    <property name="JUMP_DURATION" type="float" value="0.8"/>
    <property name="JUMP_HEIGHT" type="float" value="300"/>
    <property name="NAME" value="Jump1"/>
-   <property name="SLOW_FACTOR" type="float" value="0.1"/>
+   <property name="SLOW_FACTOR" type="float" value="0.05"/>
   </properties>
  </tile>
  <tile id="9" type="AeAnimate">
@@ -78,6 +78,24 @@
    <property name="CYCLES" type="int" value="5"/>
    <property name="DIRECTION" value="RIGHT"/>
    <property name="NAME" value="Test"/>
+  </properties>
+ </tile>
+ <tile id="10" type="AeMoveDirection">
+  <properties>
+   <property name="DIRECTION" value="RIGHT"/>
+   <property name="NAME" value="WRight"/>
+  </properties>
+ </tile>
+ <tile id="11" type="AeMoveDirection">
+  <properties>
+   <property name="NAME" value="WUp"/>
+  </properties>
+ </tile>
+ <tile id="12" type="AeMulti">
+  <properties>
+   <property name="1" value="WRight"/>
+   <property name="2" value="WUp"/>
+   <property name="NAME" value="Diagonal"/>
   </properties>
  </tile>
 </tileset>

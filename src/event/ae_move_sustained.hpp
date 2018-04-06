@@ -36,7 +36,7 @@ class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
     public:
         AeMoveSustained() {}
         static AeMoveSustained* create() {return duplicate(AeMoveSustained());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
         virtual ~AeMoveSustained() override {}
         virtual std::string get_type() const override {return m_alias;}

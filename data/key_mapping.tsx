@@ -82,7 +82,10 @@
  </tile>
  <tile id="15" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="false"/>
+   <property name="EVENT" value="Diagonal"/>
    <property name="KEYPRESS" value="E"/>
+   <property name="SUSTAINED" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="16" type="KEY_MAPPING">

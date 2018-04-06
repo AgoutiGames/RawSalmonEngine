@@ -52,7 +52,7 @@ EventSignal AeMoveDirection::process(Actor& actor) {
             actor.animate(m_animation, m_direction);
             m_duration--;
         }
-        else {m_duration = 0;}
+        else {return EventSignal::abort;}
     }
     if (m_duration == 0) return EventSignal::end;
     else return signal();
@@ -70,8 +70,9 @@ AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Anima
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
+    (void)map; // Mute unused var warning for seldomly used param MapData
     XMLError eResult;
 
     Direction dir = Direction::up;

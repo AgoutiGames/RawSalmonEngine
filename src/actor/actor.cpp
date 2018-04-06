@@ -186,7 +186,7 @@ bool Actor::process_events() {
             if(signal == EventSignal::stop) {
                 break;
             }
-            else if(signal == EventSignal::end) {
+            else if(signal == EventSignal::end || signal == EventSignal::abort) {
                 m_event_pipeline[i]->kill();
                 m_event_pipeline.erase(m_event_pipeline.begin() + i);
                 i--;
@@ -270,11 +270,11 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
         std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
-        return AnimSignal::none;
+        return AnimSignal::missing;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
         std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
-        return AnimSignal::none;
+        return AnimSignal::missing;
     }
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;
@@ -447,5 +447,14 @@ bool Actor::on_ground(Direction dir) const {
 }
 
 unsigned Actor::scrap_event(std::string event_type, ActorEvent* except) {
-
+    unsigned counter = 0;
+    for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
+        if(m_event_pipeline[i]->get_type() == event_type && m_event_pipeline[i] != except) {
+            m_event_pipeline[i]->kill();
+            m_event_pipeline.erase(m_event_pipeline.begin() + i);
+            i--;
+            counter++;
+        }
+    }
+    return counter;
 }

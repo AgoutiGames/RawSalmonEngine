@@ -36,7 +36,7 @@ class AeJump : public EventContainer<ActorEvent, AeJump>{
     public:
         AeJump() {}
         static AeJump* create() {return duplicate(AeJump());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
         virtual ~AeJump() override {}
         virtual std::string get_type() const override {return m_alias;}
@@ -63,6 +63,7 @@ class AeJump : public EventContainer<ActorEvent, AeJump>{
 
         float m_speed = 0;
         float m_deceleration = 0;
+        bool m_started = false;
         // Members
 };
 

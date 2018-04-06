@@ -28,6 +28,7 @@ set(EVENT_SOURCES
     src/event/ae_animate.cpp
     src/event/ae_jump.cpp
     src/event/ae_fall.cpp
+    src/event/ae_multi.cpp
     )
 
 set(GRAPHICS_SOURCES
