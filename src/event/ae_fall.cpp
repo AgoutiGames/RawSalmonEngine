@@ -21,6 +21,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <cmath>
 
 #include "actor/actor.hpp"
 #include "event/actor_event.hpp"
@@ -58,7 +59,7 @@ EventSignal AeFall::process(Actor& actor) {
         actor.block_event(m_alias);
         actor.animate(m_animation, m_anim_dir);
         // std::cerr << "Fall: " << actor.get_y() - pos << " Actor pos x: "<< actor.get_x() << " y: " << actor.get_y() << "\n";
-        m_height += abs(actor.get_y() - pos);
+        m_height += std::abs(actor.get_y() - pos);
         return signal();
     }
     else {
