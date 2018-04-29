@@ -205,7 +205,9 @@ bool Actor::process_events() {
  * @param event The event to be added
  */
 void Actor::add_event(ActorEvent* event) {
-    if(!is_blocked(event->get_type()) && !is_blocked(event->get_key()) && !in_cooldown(event->get_type())) {
+    if(!is_blocked(event->get_type()) && !is_blocked(event->name())
+       && !is_blocked(event->get_key())
+       && !in_cooldown(event->get_type()) && !in_cooldown(event->name())) {
         if(!m_event_pipeline.empty()) {
             auto it = m_event_pipeline.end();
             do {
@@ -354,21 +356,21 @@ bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
 
 /**
  * @brief Return if actors event pipeline is blocked for a specific event
- * @param event_type Name of the event type
- * @return @c bool indicating if event type is currently blocked
+ * @param name Name of the event or event type
+ * @return @c bool indicating if event or event type is currently blocked
  */
-bool Actor::is_blocked(std::string event_type) const {
-    if(m_block.find(event_type) == m_block.end()) {
+bool Actor::is_blocked(std::string name) const {
+    if(m_block.find(name) == m_block.end()) {
         return false;
     }
     else {
-        return m_block.at(event_type);
+        return m_block.at(name);
     }
 }
 
 /**
  * @brief Return if actors event pipeline is blocked for a specific key
- * @param key The key which gets checkes
+ * @param key The key which gets checked
  * @return @c bool indicating if key is currently blocked
  */
 bool Actor::is_blocked(const SDL_Keysym& key) const {
@@ -382,14 +384,14 @@ bool Actor::is_blocked(const SDL_Keysym& key) const {
 
 /**
  * @brief Return if actors event pipeline is on cooldown for a specific event
- * @param event_type Name of the event type
- * @return @c bool indicating if event type is currently on cooldown
+ * @param name Name of the event or event type
+ * @return @c bool indicating if event or event type is currently on cooldown
  */
-bool Actor::in_cooldown(std::string event_type) const {
-    if(m_timestamp.find(event_type) == m_timestamp.end()) {
+bool Actor::in_cooldown(std::string name) const {
+    if(m_timestamp.find(name) == m_timestamp.end()) {
         return false;
     }
-    if(m_timestamp.at(event_type) > SDL_GetTicks()) {
+    if(m_timestamp.at(name) > SDL_GetTicks()) {
         return true;
     }
     else {return false;}
@@ -446,10 +448,13 @@ bool Actor::on_ground(Direction dir) const {
     return m_map->collide(&temp);
 }
 
-unsigned Actor::scrap_event(std::string event_type, ActorEvent* except) {
+/**
+ * @brief Deletes all event with given name or type except one
+ */
+unsigned Actor::scrap_event(std::string name, ActorEvent* except) {
     unsigned counter = 0;
     for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
-        if(m_event_pipeline[i]->get_type() == event_type && m_event_pipeline[i] != except) {
+        if(( m_event_pipeline[i]->get_type() == name || m_event_pipeline[i]->name() == name) && m_event_pipeline[i] != except) {
             m_event_pipeline[i]->kill();
             m_event_pipeline.erase(m_event_pipeline.begin() + i);
             i--;

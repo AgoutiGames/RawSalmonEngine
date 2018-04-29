@@ -40,6 +40,8 @@ class ActorEvent{
         virtual void set_priority(Priority x) = 0;
         virtual EventSignal signal() const = 0;
         virtual void set_signal(EventSignal x) = 0;
+        virtual std::string name() const = 0;
+        virtual void set_name(std::string x) = 0;
         virtual ~ActorEvent() = 0;
         virtual std::string get_type() const = 0;
         virtual ActorEvent* copy() const = 0;
