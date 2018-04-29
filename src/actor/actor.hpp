@@ -103,7 +103,14 @@ class Actor{
 };
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list
-inline bool operator< (const Actor& lhs, const Actor& rhs) {return lhs.get_y() < rhs.get_y();}
+inline bool operator< (const Actor& lhs, const Actor& rhs) {
+    if(lhs.get_y() != rhs.get_y()) {
+        return lhs.get_y() < rhs.get_y();
+    }
+    else {
+        return lhs.get_x() < rhs.get_x();
+    }
+}
 
 
 #endif // ACTOR_HPP_INCLUDED
