@@ -264,8 +264,8 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
         }
     }
     else {
-        std::cerr << "Missing tile animation on actor animation for " << actor_name << "\n";
-        return XML_NO_ATTRIBUTE;
+        std::cerr << "Missing tile animation on actor animation for " << actor_name << " -> will use static tile instead\n";
+        // return XML_NO_ATTRIBUTE;
     }
 
     if(actor_name == "_") {
@@ -283,7 +283,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
         return XML_NO_ATTRIBUTE;
     }
 
-    else if(m_speed >= m_anim_ids.size()) {
+    else if(m_animated && m_speed >= m_anim_ids.size()) {
         std::cerr << "The trigger frame " << m_speed << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << "\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
@@ -371,6 +371,7 @@ void Tile::init_anim(Uint32 time) {
  * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
 bool Tile::push_anim() {
+    if(!m_animated) {return true;}
     bool wrap_around = false;
     Uint32 time = SDL_GetTicks();
     if(time - m_anim_timestamp >= m_durations[m_current_id]) {
@@ -395,6 +396,7 @@ bool Tile::push_anim() {
  * @note The wrap around signal has precedence over the trigger signal
  */
 AnimSignal Tile::push_anim_trigger() {
+    if(!m_animated) {return AnimSignal::wrap;}
     Uint32 time = SDL_GetTicks();
     if(time - m_anim_timestamp >= m_durations[m_current_id]) {
         m_current_id++;
@@ -419,6 +421,7 @@ AnimSignal Tile::push_anim_trigger() {
  * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
 void Tile::push_anim(Uint32 time) {
+    if(!m_animated) {return;}
     if(time - m_anim_timestamp >= m_durations[m_current_id]) {
         m_current_id++;
         m_anim_timestamp = time;
