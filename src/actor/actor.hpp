@@ -65,16 +65,16 @@ class Actor{
         unsigned get_h() const {return m_width;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
-        void set_cooldown(std::string event_type, float dur_sec) {m_timestamp[event_type] = SDL_GetTicks() + dur_sec * 1000;}
-        Uint32 get_cooldown(std::string event_type) const {return m_timestamp.at(event_type);}
-        void block_event(std::string event_type) {m_block[event_type] = true;}
+        void set_cooldown(std::string name, float dur_sec) {m_timestamp[name] = SDL_GetTicks() + dur_sec * 1000;}
+        Uint32 get_cooldown(std::string name) const {return m_timestamp.at(name);}
+        void block_event(std::string name) {m_block[name] = true;}
         void block_event(SDL_Keycode key) {m_block_key[key] = true;}
-        void unblock_event(std::string event_type) {m_block[event_type] = false;}
+        void unblock_event(std::string name) {m_block[name] = false;}
         void unblock_event(SDL_Keycode key) {m_block_key[key] = false;}
-        bool is_blocked(std::string event_type) const;
+        bool is_blocked(std::string name) const;
         bool is_blocked(const SDL_Keysym& key) const;
-        bool in_cooldown(std::string event_type) const;
-        unsigned scrap_event(std::string event_type, ActorEvent* except = nullptr);
+        bool in_cooldown(std::string name) const;
+        unsigned scrap_event(std::string name, ActorEvent* except = nullptr);
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
 
 
@@ -97,7 +97,7 @@ class Actor{
         std::map<Response, ActorEvent*> m_response; ///< Map which yields events for response values
 
         std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
-        std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event type
+        std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event or event type
         std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
         std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
 };

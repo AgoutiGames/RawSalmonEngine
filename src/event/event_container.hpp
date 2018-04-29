@@ -20,6 +20,7 @@
 #define EVENT_CONTAINER_HPP_INCLUDED
 
 #include <list>
+#include <string>
 
 #include "util/game_types.hpp"
 
@@ -35,7 +36,8 @@ template <class T, class U>
 
 class EventContainer : public T{
     public:
-        EventContainer(Priority prio = Priority::medium, EventSignal signal = EventSignal::next) : m_priority{prio}, m_signal{signal} {}
+        EventContainer(Priority prio = Priority::medium, EventSignal signal = EventSignal::next, std::string name = "")
+        : m_priority{prio}, m_signal{signal}, m_name{name} {}
 
         /**
          * @brief Deletes the data of the event in the @c event_list
@@ -64,6 +66,12 @@ class EventContainer : public T{
         /// Sets the signal value of the event
         virtual void set_signal(EventSignal x) override {m_signal = x;}
 
+        /// Returns the default name of the event
+        virtual std::string name() const override {return m_name;}
+
+        /// Sets the name value of the event
+        virtual void set_name(std::string x) override {m_name = x;}
+
         /**
          * @brief duplicates given event
          * @param event The event which should be duplicated
@@ -83,6 +91,7 @@ class EventContainer : public T{
 
         Priority m_priority;
         EventSignal m_signal;
+        std::string m_name;
 
         /// Deletes the @c event_list variable
         static void initialize();

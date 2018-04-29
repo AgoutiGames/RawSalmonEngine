@@ -145,6 +145,7 @@ tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, MapData&
     ActorEvent* event = create(dir, duration, anim);
     event->set_priority(prio);
     event->set_signal(sig);
+    event->set_name(event_name);
     entry = std::make_pair(event_name, event);
 
     return XML_SUCCESS;

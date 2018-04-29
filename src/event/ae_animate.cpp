@@ -173,6 +173,7 @@ tinyxml2::XMLError AeAnimate::parse(tinyxml2::XMLElement* source, MapData& map, 
     ActorEvent* event = create(anim, dir, cycles, anim_frames, game_frames);
     event->set_priority(prio);
     event->set_signal(sig);
+    event->set_name(event_name);
     entry = std::make_pair(event_name, event);
 
     return XML_SUCCESS;

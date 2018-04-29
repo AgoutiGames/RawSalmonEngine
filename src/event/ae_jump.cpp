@@ -198,6 +198,7 @@ tinyxml2::XMLError AeJump::parse(tinyxml2::XMLElement* source, MapData& map, std
     ActorEvent* event = create(duration,jump_height,slow_on_release,slow_factor,animation,anim_dir);
     event->set_priority(prio);
     event->set_signal(sig);
+    event->set_name(event_name);
     entry = std::make_pair(event_name, event);
 
     return XML_SUCCESS;
