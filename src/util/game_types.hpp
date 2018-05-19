@@ -39,7 +39,7 @@ enum class Direction {
     down,
     left,
     right,
-    current,
+    current, ///< Keyword for last used direction
     invalid,
 };
 
@@ -49,7 +49,7 @@ enum class AnimationType {
     run,
     jump,
     fall,
-    current,
+    current, ///< Keyord for last used AnimationType
     none,
     invalid,
 };
@@ -62,12 +62,12 @@ enum class Priority{
 };
 
 enum class EventSignal{
-    next,
-    stop,
-    end,
-    abort,
-    erase,
-    invalid,
+    next, ///< Process next event in pipeline
+    stop, ///< Stop processing events here
+    end,  ///< The event succesfully finished, needs to be deleted
+    abort,///< The event preemtively finished, needs to be deleted
+    erase,///< Erase the actor who processed this event
+    invalid, ///< EventSignal did not properly parse
 };
 
 enum class Response{
