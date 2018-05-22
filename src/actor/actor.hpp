@@ -62,7 +62,7 @@ class Actor{
         float get_x() const {return m_x;}
         float get_y() const {return m_y;}
         unsigned get_w() const {return m_width;}
-        unsigned get_h() const {return m_width;}
+        unsigned get_h() const {return m_height;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
         void set_cooldown(std::string name, float dur_sec) {m_timestamp[name] = SDL_GetTicks() + dur_sec * 1000;}
