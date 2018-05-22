@@ -64,7 +64,7 @@ private:
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
-    SDL_Rect m_hitbox;
+    SDL_Rect m_hitbox = {0,0,0,0};
     float m_speed = 1.0f;
     bool m_animated = false;
 
