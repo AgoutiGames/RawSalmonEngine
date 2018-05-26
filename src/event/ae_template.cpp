@@ -25,6 +25,7 @@
 #include "actor/actor.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
+#include "map/mapdata.hpp"
 #include "util/game_types.hpp"
 
 std::string AeTemplate::m_alias = "Define This!";
