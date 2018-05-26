@@ -51,6 +51,8 @@ class AeMulti : public EventContainer<ActorEvent, AeMulti>{
     public:
         AeMulti(std::vector<ActorEvent*> event_list);
         static AeMulti* create(std::vector<ActorEvent*> event_list);
+        virtual void set_cause(Actor* x) override;
+        virtual void set_key(SDL_Keysym x) override;
     private:
         std::vector<ActorEvent*> m_events;
         // Members

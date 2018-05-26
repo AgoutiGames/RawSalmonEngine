@@ -153,10 +153,33 @@ tinyxml2::XMLError AeMulti::parse(tinyxml2::XMLElement* source, MapData& map, st
     return XML_SUCCESS;
 }
 
+/**
+ * @brief When copied, also copy contained events
+ */
 ActorEvent* AeMulti::copy() const{
     std::vector<ActorEvent*> new_list;
     for(ActorEvent* e : m_events) {
         new_list.push_back(e->copy());
     }
     return create(new_list);
+}
+
+/**
+ * @brief Set cause to every contained event
+ */
+void AeMulti::set_cause(Actor* x) {
+    ActorEvent::set_cause(x);
+    for(ActorEvent* e : m_events) {
+        e->set_cause(x);
+    }
+}
+
+/**
+ * @brief Set cause to every contained event
+ */
+void AeMulti::set_key(SDL_Keysym x) {
+    ActorEvent::set_key(x);
+    for(ActorEvent* e : m_events) {
+        e->set_key(x);
+    }
 }
