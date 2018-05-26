@@ -29,6 +29,7 @@ set(EVENT_SOURCES
     src/event/ae_jump.cpp
     src/event/ae_fall.cpp
     src/event/ae_multi.cpp
+    src/event/ate_on_ground.cpp
     )
 
 set(GRAPHICS_SOURCES

@@ -102,4 +102,10 @@
    <property name="NAME" value="Diagonal"/>
   </properties>
  </tile>
+ <tile id="13" type="AteOnGround">
+  <properties>
+   <property name="NAME" value="JumpOnce"/>
+   <property name="SUCCESS" value="Jump1"/>
+  </properties>
+ </tile>
 </tileset>
