@@ -73,6 +73,15 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AteOnGround" color="#a0a0a4">
+  <property name="CONTINUOUS" type="bool" default="false"/>
+  <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="FAILURE" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SUCCESS" type="string"/>
+ </objecttype>
  <objecttype name="KEY_MAPPING" color="#a0a0a4">
   <property name="DOWN" type="bool" default="false"/>
   <property name="EVENT" type="string"/>

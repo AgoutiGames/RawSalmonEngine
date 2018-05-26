@@ -47,9 +47,9 @@ class ActorEvent{
         virtual ActorEvent* copy() const = 0;
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const = 0;
 
-        void set_cause(Actor* x) {m_cause = x;}
+        virtual void set_cause(Actor* x) {m_cause = x;}
         Actor* get_cause() const {return m_cause;}
-        void set_key(SDL_Keysym x) {m_key = x;}
+        virtual void set_key(SDL_Keysym x) {m_key = x;}
         const SDL_Keysym& get_key() const {return m_key;}
 
         static void initialize_all();

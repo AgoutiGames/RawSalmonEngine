@@ -28,6 +28,7 @@
 #include "event/ae_jump.hpp"
 #include "event/ae_fall.hpp"
 #include "event/ae_multi.hpp"
+#include "event/ate_on_ground.hpp"
 
 std::map<std::string, ActorEvent*> ActorEvent::m_event_dict;
 
@@ -41,6 +42,7 @@ void ActorEvent::initialize_all() {
     register_class<AeJump>();
     register_class<AeFall>();
     register_class<AeMulti>();
+    register_class<AteOnGround>();
 }
 
 /**
