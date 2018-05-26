@@ -39,7 +39,8 @@ Actor::Actor(const ActorTemplate& templ, MapData* map) :
  m_base_speed {templ.speed},
  m_direction {templ.direction},
  m_hitbox {templ.hitbox},
- m_animations {templ.animations}
+ m_animations {templ.animations},
+ m_response {templ.response}
 {
 
 }
