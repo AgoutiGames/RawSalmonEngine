@@ -49,7 +49,7 @@ Cause::Cause(Actor* actor) :
     data.actor = actor;
 }
 
-std::string Cause::get_type() {
+std::string Cause::get_type() const {
     if(type == CauseType::tile) {
         return data.tile.pointer->get_type();
     }
@@ -61,7 +61,7 @@ std::string Cause::get_type() {
     }
 }
 
-std::pair<unsigned, unsigned> Cause::get_pos() {
+std::pair<unsigned, unsigned> Cause::get_pos() const {
     if(type == CauseType::tile) {
         return {data.tile.x, data.tile.y};
     }

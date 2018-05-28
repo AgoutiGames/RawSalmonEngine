@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 
+#include "actor/cause.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
@@ -51,7 +52,7 @@ class AeMulti : public EventContainer<ActorEvent, AeMulti>{
     public:
         AeMulti(std::vector<ActorEvent*> event_list);
         static AeMulti* create(std::vector<ActorEvent*> event_list);
-        virtual void set_cause(Actor* x) override;
+        virtual void set_cause(Cause x) override;
         virtual void set_key(SDL_Keysym x) override;
     private:
         std::vector<ActorEvent*> m_events;

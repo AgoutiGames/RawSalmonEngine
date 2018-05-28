@@ -20,10 +20,11 @@
 #define CAUSE_HPP_INCLUDED
 
 #include <string>
-
 #include <SDL2/SDL.h>
-#include "map/tile.hpp"
-#include "actor/actor.hpp"
+
+class Actor;
+class Tile;
+
 
 class Cause{
     private:
@@ -45,16 +46,16 @@ class Cause{
         bool actor() const {if(type == CauseType::actor) {return true;} else {return false;}}
         bool none() const {if(type == CauseType::none) {return true;} else {return false;}}
 
-        SDL_Keysym get_key() const {if(type == CauseType::key) {return data.key;} else {return SDL_Keysym();}}
+        const SDL_Keysym get_key() const {if(type == CauseType::key) {return data.key;} else {return SDL_Keysym();}}
         Actor* get_actor() const {if(type == CauseType::actor) {return data.actor;} else {return nullptr;}}
         Tile* get_tile() const {if(type == CauseType::tile) {return data.tile.pointer;} else {return nullptr;}}
 
-        std::string get_type();
-        std::pair<unsigned, unsigned> get_pos();
+        std::string get_type() const;
+        std::pair<unsigned, unsigned> get_pos() const;
 
 
     private:
-        const CauseType type;
+        CauseType type;
 
         union{
             SDL_Keysym key;
