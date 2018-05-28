@@ -22,25 +22,25 @@
 #include <iostream>
 #include <map>
 
-#include "event/ae_move_direction.hpp"
 #include "map/mapdata.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-/*
-Actor::Actor(Uint16 tile_id) : Actor::Actor(m_templates.at(m_gid_to_temp_name.at(tile_id)))
+
+Actor::Actor(Uint16 tile_id, MapData* map) : Actor::Actor(map->get_actor_template(tile_id), map)
 {
 
 }
-*/
 
-Actor::Actor(const ActorTemplate& templ, const MapData* map) :
+
+Actor::Actor(const ActorTemplate& templ, MapData* map) :
  m_map {map},
+ m_type {templ.template_name},
  m_base_speed {templ.speed},
- m_AI {templ.AI},
  m_direction {templ.direction},
  m_hitbox {templ.hitbox},
- m_animations {templ.animations}
+ m_animations {templ.animations},
+ m_response {templ.response}
 {
 
 }
@@ -78,7 +78,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
     if(p_tile_properties != nullptr) {
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
-        eResult = parse_actor_properties(p_property, m_base_speed, m_AI, m_direction);
+        eResult = m_map->parse_actor_properties(p_property, m_base_speed, m_direction, m_response);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing actor properties for actor: " << m_name << "\n";
             return eResult;
@@ -89,10 +89,11 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 
 /**
  * @brief Render the actor at it's position relative to the camera position
+ * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
  */
-void Actor::render(int x_cam, int y_cam, const MapData& base_map) const {
-    SDL_Rect dest {static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), static_cast<int>(m_width), static_cast<int>(m_height)};
-    m_animations.at(m_anim_state).at(m_direction).render(dest, base_map);
+void Actor::render(int x_cam, int y_cam) const {
+    SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
+    m_animations.at(m_anim_state).at(m_direction).render(dest, *m_map);
 
     // Alternative which doesnt do any resizing
     //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), base_map);
@@ -104,68 +105,100 @@ void Actor::render(int x_cam, int y_cam, const MapData& base_map) const {
  * @return a @c bool which indicates collision
  * @todo Apply tile speed modifiers
  */
-bool Actor::move(float x_factor, float y_factor) {
+bool Actor::move(float x_factor, float y_factor, bool absolute) {
     bool moved = true;
     // Move the Actor
     constexpr float FPS = 60;
-    // Determine if it can collide/ has gitbox
-    if(!SDL_RectEmpty(&m_hitbox)) {
+    SDL_Rect temp = get_hitbox();
+    float x_step;
+    float y_step;
+    if(absolute) {
+        x_step = x_factor;
+        y_step = y_factor;
+    }
+    else {
+        x_step = x_factor * m_base_speed / FPS;
+        y_step = y_factor * m_base_speed / FPS;
+    }
+
+    // Determine if it can collide/ has hitbox
+    if(!SDL_RectEmpty(&temp)) {
+
+        std::vector<Actor*> collided;
+
         // Apply position of actor to hitbox
-        SDL_Rect temp = m_hitbox;
-        m_x += x_factor * m_base_speed / FPS;
+        m_x += x_step;
+        // Apply x movement
         temp.x += static_cast<int>(m_x);
+        // Check for x_axis collision
         if(x_factor != 0) {
+            // Apply y movement
             temp.y += static_cast<int>(m_y) - m_height;
             // Check for x-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->collide(&temp, x_inter_depth, y_inter_depth)) {
+            if(m_map->collide(&temp, x_inter_depth, y_inter_depth, collided)) {
                 // Do stuff with the intersection depth
                 if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
                 m_x -= x_inter_depth;
                 temp.x -= x_inter_depth;
                 moved = false;
             }
-            temp.y -= static_cast<int>(m_y) - m_height;
+            // Undo y movement
+            temp.y = get_hitbox().y;
         }
-
+        // Check for y_axis collision
         if(y_factor != 0){
-            m_y += y_factor * m_base_speed / FPS;
+            // Apply y movement
+            m_y += y_step;
             temp.y += static_cast<int>(m_y) - m_height;
             // Check for y-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->collide(&temp, x_inter_depth, y_inter_depth)) {
+            if(m_map->collide(&temp, x_inter_depth, y_inter_depth, collided)) {
                 // Do stuff with the intersection depth
                 if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
                 m_y -= y_inter_depth;
                 moved = false;
             }
         }
+        // Trigger collision events for each colliding actor, including this one
+        for(Actor* a : collided) {
+            a->respond(Response::on_collision, this);
+            respond(Response::on_collision, a);
+        }
+    }
+    else {
+        m_x += x_step;
+        m_y += y_step;
     }
     return moved;
 }
 
 /**
  * @brief Process the event pipeline
- * @return a @c bool which indicates if the actor "died"
- * @todo Implement AI and Player behaviour when event_pipeline is empty
+ * @return a @c bool which indicates if the actor should be erased
  */
 bool Actor::process_events() {
-    bool alive = true;
     if(!m_event_pipeline.empty()) {
-        ActorEvent* event = m_event_pipeline.front();
-        bool processed = event->process(*this);
-        if(processed) {
-            m_event_pipeline.front()->kill();
-            m_event_pipeline.erase(m_event_pipeline.begin());
+        for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
+            ActorEvent* event = m_event_pipeline[i];
+            EventSignal signal = event->process(*this);
+            if(signal == EventSignal::stop) {
+                break;
+            }
+            else if(signal == EventSignal::end || signal == EventSignal::abort) {
+                m_event_pipeline[i]->kill();
+                m_event_pipeline.erase(m_event_pipeline.begin() + i);
+                i--;
+            }
+            else if(signal == EventSignal::erase) {return false;}
         }
     }
-    else {
-        animate(AnimationType::idle, Direction::down);
-        // AI and Player behaviour stuff
+    if(m_event_pipeline.empty()) {
+        respond(Response::on_idle);
     }
-    return alive;
+    return true;
 }
 
 /**
@@ -173,27 +206,31 @@ bool Actor::process_events() {
  * @param event The event to be added
  */
 void Actor::add_event(ActorEvent* event) {
-    if(event->priority() == Priority::clear_all) m_event_pipeline.clear();
-    if(!m_event_pipeline.empty()) {
-        auto it = m_event_pipeline.end();
-        do {
-            --it;
-            if((*it)->priority() >= event->priority()) {
-                ++it;
-                m_event_pipeline.insert(it, event);
-                return;
-            }
-        } while(it != m_event_pipeline.begin());
+    if(!is_blocked(event->get_type()) && !is_blocked(event->name())
+       && !is_blocked(event->get_key())
+       && !in_cooldown(event->get_type()) && !in_cooldown(event->name())) {
+        if(!m_event_pipeline.empty()) {
+            auto it = m_event_pipeline.end();
+            do {
+                --it;
+                if((*it)->priority() >= event->priority()) {
+                    ++it;
+                    m_event_pipeline.insert(it, event);
+                    return;
+                }
+            } while(it != m_event_pipeline.begin());
+        }
+        m_event_pipeline.insert(m_event_pipeline.begin(), event);
+        return;
     }
-    m_event_pipeline.insert(m_event_pipeline.begin(), event);
 }
 
 /**
  * @brief Update the actor state
  * @return @c bool which returns true if actor is alive
- * @note Currently only pushes the animation
  */
 bool Actor::update() {
+    respond(Response::on_always);
     bool alive = process_events();
     return alive;
 }
@@ -203,10 +240,19 @@ bool Actor::update() {
  * @param anim The type of the animation
  * @param dir The direction of the animation
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
- * @warning Currently there is no checking if anim or dir are valid for the actor!!
- *          Segmentation fault possible for not properly parsed actor!!!
  */
 bool Actor::animate(AnimationType anim, Direction dir) {
+    if(anim == AnimationType::none) {return false;}
+    if(anim == AnimationType::current) {anim = m_anim_state;}
+    if(dir == Direction::current) {dir = m_direction;}
+    if(m_animations.find(anim) == m_animations.end()) {
+        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
+        return false;
+    }
+    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
+        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
+        return false;
+    }
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;
         m_direction = dir;
@@ -216,14 +262,43 @@ bool Actor::animate(AnimationType anim, Direction dir) {
 }
 
 /**
+ * @brief Animate the actor
+ * @param anim The type of the animation
+ * @param dir The direction of the animation
+ * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger
+ */
+AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
+    if(anim == AnimationType::none) {return AnimSignal::none;}
+    if(anim == AnimationType::current) {anim = m_anim_state;}
+    if(dir == Direction::current) {dir = m_direction;}
+    if(m_animations.find(anim) == m_animations.end()) {
+        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
+        return AnimSignal::missing;
+    }
+    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
+        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
+        return AnimSignal::missing;
+    }
+    if(m_anim_state != anim || m_direction != dir) {
+        m_anim_state = anim;
+        m_direction = dir;
+        m_animations[m_anim_state][m_direction].init_anim();
+    }
+    return m_animations[m_anim_state][m_direction].push_anim_trigger();
+}
+
+/**
  * @brief Returns true if actor collides with rect
  * @note Hitbox width and height should be at least 10px
  *       when max actor speed is 500px per second
- * Returns minimum x and y values to go back to not intersect anymore
+ * @param rect The rect against which collision gets checked
+ * @param x_depth, y_depth The minimum x and y values to go back to not intersect anymore
+ * @param type The type of the hitbox
+ * @return @c bool which indicates collision
  */
-bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
-    if(SDL_RectEmpty(&m_hitbox)) {return false;}
-    SDL_Rect temp = m_hitbox;
+bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type) const{
+    SDL_Rect temp = get_hitbox(type);
+    if(SDL_RectEmpty(&temp)) {return false;}
     temp.x += static_cast<int>(m_x);
     temp.y += static_cast<int>(m_y) - m_height;
     SDL_Rect inter;
@@ -239,4 +314,153 @@ bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth) const{
         return true;
     }
     return false;
+}
+
+/**
+ * @brief Returns true if actor collides with rect
+ * @note Hitbox width and height should be at least 10px
+ *       when max actor speed is 500px per second
+ * @param rect The rect against which collision gets checked
+ * @param type The type of the hitbox
+ * @return @c bool which indicates collision
+ */
+bool Actor::collide(const SDL_Rect* rect, std::string type) const{
+    SDL_Rect temp = get_hitbox(type);
+    if(SDL_RectEmpty(&temp)) {return false;}
+    temp.x += static_cast<int>(m_x);
+    temp.y += static_cast<int>(m_y) - m_height;
+    if(SDL_HasIntersection(&temp, rect) && !SDL_RectEquals(&temp, rect)) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param cause Pointer to the Actor which may caused this event
+ * @param key Keypress which may caused this event
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
+        if(cause != nullptr) {event->set_cause(cause);}
+        if(key.sym != SDLK_UNKNOWN) {event->set_key(key);}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Return if actors event pipeline is blocked for a specific event
+ * @param name Name of the event or event type
+ * @return @c bool indicating if event or event type is currently blocked
+ */
+bool Actor::is_blocked(std::string name) const {
+    if(m_block.find(name) == m_block.end()) {
+        return false;
+    }
+    else {
+        return m_block.at(name);
+    }
+}
+
+/**
+ * @brief Return if actors event pipeline is blocked for a specific key
+ * @param key The key which gets checked
+ * @return @c bool indicating if key is currently blocked
+ */
+bool Actor::is_blocked(const SDL_Keysym& key) const {
+    if(m_block_key.find(key.sym) == m_block_key.end()) {
+        return false;
+    }
+    else {
+        return m_block_key.at(key.sym);
+    }
+}
+
+/**
+ * @brief Return if actors event pipeline is on cooldown for a specific event
+ * @param name Name of the event or event type
+ * @return @c bool indicating if event or event type is currently on cooldown
+ */
+bool Actor::in_cooldown(std::string name) const {
+    if(m_timestamp.find(name) == m_timestamp.end()) {
+        return false;
+    }
+    if(m_timestamp.at(name) > SDL_GetTicks()) {
+        return true;
+    }
+    else {return false;}
+}
+
+/**
+ * @brief Returns the hitbox of the supplied type
+ * @param type The supplied type
+ * @return @c SDL_Rect The hitbox
+ * @note If there is no valid hitbox an empty one gets returned
+ */
+SDL_Rect Actor::get_hitbox(std::string type) const {
+    if(m_hitbox.find(type) == m_hitbox.end()) {
+        std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
+        return SDL_Rect{0,0,0,0};
+    }
+    else{
+        return m_hitbox.at(type);
+    }
+}
+
+bool Actor::on_ground(Direction dir) const {
+    SDL_Rect pos = get_hitbox();
+    pos.x += get_x();
+    pos.y += get_y() - get_h();
+    SDL_Rect temp;
+    if(dir == Direction::up) {
+        temp.x = pos.x;
+        temp.y =pos.y - 1;
+        temp.w = pos.w;
+        temp.h = 1;
+    }
+    else if(dir == Direction::down) {
+        temp.x = pos.x;
+        temp.y =pos.y + pos.h;
+        temp.w = pos.w;
+        temp.h = 1;
+    }
+    else if(dir == Direction::left) {
+        temp.x = pos.x - 1;
+        temp.y =pos.y;
+        temp.w = 1;
+        temp.h = pos.h;
+    }
+    else if(dir == Direction::right) {
+        temp.x = pos.x + pos.w;
+        temp.y =pos.y;
+        temp.w = 1;
+        temp.h = pos.h;
+    }
+    else {
+        return false;
+    }
+    return m_map->collide(&temp);
+}
+
+/**
+ * @brief Deletes all event with given name or type except one
+ */
+unsigned Actor::scrap_event(std::string name, ActorEvent* except) {
+    unsigned counter = 0;
+    for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
+        if(( m_event_pipeline[i]->get_type() == name || m_event_pipeline[i]->name() == name) && m_event_pipeline[i] != except) {
+            m_event_pipeline[i]->kill();
+            m_event_pipeline.erase(m_event_pipeline.begin() + i);
+            i--;
+            counter++;
+        }
+    }
+    return counter;
 }

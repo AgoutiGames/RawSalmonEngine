@@ -19,9 +19,14 @@
 #ifndef ACTOR_EVENT_HPP_INCLUDED
 #define ACTOR_EVENT_HPP_INCLUDED
 
+#include <map>
+#include <string>
+
+#include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
+class MapData;
 
 /// Category via which all actor events can be handled
 /// @warning Always add new actor events to the initialize_all method!
@@ -29,15 +34,44 @@ class ActorEvent{
 
     public:
         ActorEvent() {}
-        virtual bool process(Actor& actor) = 0;
+        virtual EventSignal process(Actor& actor) = 0;
         virtual void kill() = 0;
-        virtual Priority priority() = 0;
+        virtual Priority priority() const = 0;
+        virtual void set_priority(Priority x) = 0;
+        virtual EventSignal signal() const = 0;
+        virtual void set_signal(EventSignal x) = 0;
+        virtual std::string name() const = 0;
+        virtual void set_name(std::string x) = 0;
         virtual ~ActorEvent() = 0;
+        virtual std::string get_type() const = 0;
+        virtual ActorEvent* copy() const = 0;
+        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const = 0;
+
+        virtual void set_cause(Actor* x) {m_cause = x;}
+        Actor* get_cause() const {return m_cause;}
+        virtual void set_key(SDL_Keysym x) {m_key = x;}
+        const SDL_Keysym& get_key() const {return m_key;}
 
         static void initialize_all();
 
+        template <class T>
+        static void register_class();
+
+        static tinyxml2::XMLError parse_multi(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry);
+
     private:
+        Actor* m_cause = nullptr;
+        SDL_Keysym m_key;
+
+        static std::map<std::string, ActorEvent*> m_event_dict;
+
 };
 
+/// Registers the type of event as an actor event
+template <class T>
+void ActorEvent::register_class() {
+    EventContainer<ActorEvent, T>::initialize();
+    m_event_dict[T::get_type_static()] = T::create();
+}
 
 #endif // ACTOR_EVENT_HPP_INCLUDED

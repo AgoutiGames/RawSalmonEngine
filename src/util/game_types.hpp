@@ -25,57 +25,86 @@
 #include <map>
 
 #include "graphics/texture.hpp"
-#include "map/tile.hpp"
 #include "util/tinyxml2.h"
 
+class ActorEvent;
+class Tile;
 
 /**
  * @brief A collection of various enums
  */
-
-enum class Behaviour {
-    player,
-    idle,
-    walk_around,
-    invalid,
-};
 
 enum class Direction {
     up,
     down,
     left,
     right,
+    current, ///< Keyword for last used direction
     invalid,
 };
 
 enum class AnimationType {
     idle,
     walk,
+    run,
+    jump,
+    fall,
+    current, ///< Keyord for last used AnimationType
+    none,
     invalid,
 };
 
 enum class Priority{
-    low,
-    medium,
-    high,
-    clear_all,
+    low = 25,
+    medium = 50,
+    high = 75,
+    invalid = -1,
+};
+
+enum class EventSignal{
+    next, ///< Process next event in pipeline
+    stop, ///< Stop processing events here
+    end,  ///< The event succesfully finished, needs to be deleted
+    abort,///< The event preemtively finished, needs to be deleted
+    erase,///< Erase the actor who processed this event
+    invalid, ///< EventSignal did not properly parse
+};
+
+enum class Response{
+    on_hit,
+    on_collision,
+    on_activation,
+    on_death,
+    on_idle,
+    on_always,
+    invalid,
+};
+
+enum class AnimSignal{
+    trigger,
+    wrap,
+    next,
+    none,
+    missing,
 };
 
 struct ActorTemplate {
     std::string template_name = "_";
     float speed = 250.0f; // Pixel per second
-    Behaviour AI = Behaviour::idle;
     Direction direction = Direction::down;
-    SDL_Rect hitbox = {0,0,0,0};
+    std::map<std::string, SDL_Rect> hitbox;
     std::map<AnimationType, std::map<Direction, Tile>> animations;
+    std::map<Response, ActorEvent*> response; ///< Map which yields events for response values
 };
 
 AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
-Behaviour str_to_behaviour(const std::string& name);
+Priority str_to_priority(const std::string& name);
+EventSignal str_to_event_signal(const std::string& name);
+Response str_to_response(const std::string& name);
 tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
+tinyxml2::XMLError parse_hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects);
 tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img);
-tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Behaviour& beh, Direction& dir);
 
 std::vector<float> dir_to_mov(const Direction dir);
 

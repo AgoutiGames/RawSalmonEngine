@@ -24,6 +24,7 @@
 #include <map>
 
 #include "util/tinyxml2.h"
+#include "util/game_types.hpp"
 
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 
@@ -36,9 +37,9 @@ class MapData;
 
 class Tile{
 public:
-    Tile();
+    Tile() {}
     Tile(Tileset* ts, SDL_Rect& clp); // The initializing constructor
-    ~Tile();
+    ~Tile() {}
 
     void render(int x, int y, const MapData& base_map) const;
     void render(SDL_Rect& dest, const MapData& base_map) const; // Resizable render
@@ -55,6 +56,7 @@ public:
     void init_anim(Uint32 time);
 
     bool push_anim();
+    AnimSignal push_anim_trigger();
     void push_anim(Uint32 time);
 
 private:
@@ -62,7 +64,7 @@ private:
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
-    SDL_Rect m_hitbox;
+    SDL_Rect m_hitbox = {0,0,0,0};
     float m_speed = 1.0f;
     bool m_animated = false;
 

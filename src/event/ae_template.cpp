@@ -16,51 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_move_direction.hpp"
+#include "event/ae_template.hpp" //< Change this!
 
-#include <iostream>
 #include <string>
+#include <map>
+#include <iostream>
 
 #include "actor/actor.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
+#include "map/mapdata.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMoveDirection::m_alias = "AeMoveDirection";
+std::string AeTemplate::m_alias = "Define This!";
 
-AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration, AnimationType anim) :
+AeTemplate::AeTemplate(/*vars*/) :
 EventContainer(),
-m_direction{dir},
-m_duration{duration},
-m_animation{anim}
+/*vars*/{}
 {
 
 }
 
 /**
- * @brief Move the actor to the supplied direction for x frames
- * @param actor The actor which should move
+ * @brief Do ...
+ * @param actor The actor which should ...
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeMoveDirection::process(Actor& actor) {
-    // process stuff
-    if (m_duration != 0) {
-        std::vector<float> mov_factors;
-        if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
-        else {mov_factors = dir_to_mov(m_direction);}
-        if(actor.move(mov_factors[0], mov_factors[1])) {
-            actor.animate(m_animation, m_direction);
-            m_duration--;
-        }
-        else {return EventSignal::abort;}
-    }
-    if (m_duration == 0) return EventSignal::end;
-    else return signal();
+EventSignal AeTemplate::process(Actor& actor) {
+    // Add stuff!
 }
 
 /// Create event and return pointer to it
-AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, AnimationType anim) {
-    AeMoveDirection temp(dir, duration, anim);
+AeTemplate* AeTemplate::create(/*vars*/) {
+    AeTemplate temp(/*vars*/);
     return duplicate(temp);
 }
 
@@ -70,14 +58,12 @@ AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, Anima
  * @param entry Returns parsed event associated with its name
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeTemplate::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
     using namespace tinyxml2;
     (void)map; // Mute unused var warning for seldomly used param MapData
-    XMLError eResult;
+    //XMLError eResult;
 
-    Direction dir = Direction::up;
-    unsigned duration = 1;
-    AnimationType anim = AnimationType::walk;
+    // Additional members
     std::string event_name("");
     Priority prio = Priority::medium;
     EventSignal sig = EventSignal::next;
@@ -89,26 +75,7 @@ tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, MapData&
         std::string name(p_name);
         if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-        else if(name == "DIRECTION") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            dir = str_to_direction(value);
-            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "DURATION") {
-            eResult = source->QueryUnsignedAttribute("value", &duration);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "ANIMATION_TYPE") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            anim = str_to_anim_type(value);
-            if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
+        // Parse additional members
 
         else if(name == "NAME") {
             p_value = source->Attribute("value");
@@ -142,7 +109,7 @@ tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, MapData&
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(dir, duration, anim);
+    ActorEvent* event = create(/*vars*/);
     event->set_priority(prio);
     event->set_signal(sig);
     event->set_name(event_name);

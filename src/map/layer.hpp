@@ -21,6 +21,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <list>
 #include <string>
 
 #include "actor/actor.hpp"
@@ -49,13 +50,15 @@ class Layer{
     public:
         Layer(unsigned tile_w, unsigned tile_h);
 
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source, const MapData& base_map);
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
         bool render(SDL_Rect* camera, const MapData& base_map) const;
         void update();
-        std::vector<Actor*> get_actors(std::string name = "", Behaviour behaviour = Behaviour::invalid, Direction direction = Direction::invalid,
+        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map) const;
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, const MapData& base_map, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, const MapData& base_map, std::string type = "COLLIDE");
 
 
     private:
@@ -77,7 +80,7 @@ class Layer{
         float m_opacity = 1.0f; ///< @warning value only works with image layers!
 
         // members for m_type object
-        std::vector<Actor> m_obj_grid;
+        std::list<Actor> m_obj_grid;
 };
 
 

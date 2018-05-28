@@ -38,7 +38,7 @@ public:
     void close();
 
     void render();
-    void update();
+    bool update();
 
     bool load_map(std::string mapfile);
     bool fetch_player();
@@ -46,12 +46,16 @@ public:
     SDL_Rect m_camera;
     Actor* m_player = nullptr;
 
+    bool m_cam_bound = true;
+    bool m_key_repeat = false;
+
 private:
     SDL_Window* m_window = nullptr;
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
     unsigned m_screen_w;
     unsigned m_screen_h;
+
 
     MapData m_map; ///< Stores the currently active game map
 };

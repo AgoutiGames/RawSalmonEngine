@@ -16,31 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_MOVE_DIRECTION_HPP_INCLUDED
-#define AE_MOVE_DIRECTION_HPP_INCLUDED
+#ifndef AE_TEMPLATE_HPP_INCLUDED //< Change this
+#define AE_TEMPLATE_HPP_INCLUDED //< Change this
 
-#include <map>
 #include <vector>
 #include <string>
 
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class Actor;
 
 /**
- * @brief Move the actor to the supplied direction for x frames
+ * @brief Define this!
  */
-class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
+class AeTemplate : public EventContainer<ActorEvent, AeTemplate>{
     // The default interface block (copy this!)
     public:
-        AeMoveDirection() {}
-        static AeMoveDirection* create() {return duplicate(AeMoveDirection());}
+        AeTemplate() {}
+        static AeTemplate* create() {return duplicate(AeTemplate());}
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMoveDirection() override {}
+        virtual ~AeTemplate() override {}
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
@@ -51,12 +49,10 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
     // The specialized block
     public:
-        AeMoveDirection(Direction dir, unsigned duration, AnimationType anim);
-        static AeMoveDirection* create(Direction dir, unsigned duration, AnimationType anim);
+        AeTemplate(/*vars*/);
+        static AeTemplate* create(/*vars*/);
     private:
-        Direction m_direction;
-        unsigned m_duration; ///< How many frames the movement persists
-        AnimationType m_animation;
+        // Members
 };
 
-#endif // AE_MOVE_DIRECTION_HPP_INCLUDED
+#endif // AE_TEMPLATE_HPP_INCLUDED

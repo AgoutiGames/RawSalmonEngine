@@ -20,6 +20,7 @@
 #define EVENT_CONTAINER_HPP_INCLUDED
 
 #include <list>
+#include <string>
 
 #include "util/game_types.hpp"
 
@@ -35,7 +36,8 @@ template <class T, class U>
 
 class EventContainer : public T{
     public:
-        EventContainer(Priority prio) : m_priority{prio} {}
+        EventContainer(Priority prio = Priority::medium, EventSignal signal = EventSignal::next, std::string name = "")
+        : m_priority{prio}, m_signal{signal}, m_name{name} {}
 
         /**
          * @brief Deletes the data of the event in the @c event_list
@@ -53,26 +55,43 @@ class EventContainer : public T{
         }
 
         /// Returns the priority value of the event
-        virtual Priority priority() {return m_priority;}
+        virtual Priority priority() const override {return m_priority;}
+
+        /// Sets the priority value of the event
+        virtual void set_priority(Priority x) override {m_priority = x;}
+
+        /// Returns the default signal of the event
+        virtual EventSignal signal() const override {return m_signal;}
+
+        /// Sets the signal value of the event
+        virtual void set_signal(EventSignal x) override {m_signal = x;}
+
+        /// Returns the default name of the event
+        virtual std::string name() const override {return m_name;}
+
+        /// Sets the name value of the event
+        virtual void set_name(std::string x) override {m_name = x;}
 
         /**
          * @brief duplicates given event
          * @param event The event which should be duplicated
          * @return Pointer to the duplicate of the event
          */
-        static U* duplicate(U* event);
+        static U* duplicate(const U* event);
 
         /**
          * @brief duplicates given event
          * @param event The event which should be duplicated
          * @return Pointer to the duplicate of the event
          */
-        static U* duplicate(U& event);
+        static U* duplicate(const U& event);
 
 
         virtual ~EventContainer() = 0;
 
         Priority m_priority;
+        EventSignal m_signal;
+        std::string m_name;
 
         /// Deletes the @c event_list variable
         static void initialize();
@@ -87,12 +106,12 @@ template <class T, class U> void EventContainer<T, U>::initialize() {
     m_event_list.clear();
 }
 
-template <class T, class U> U* EventContainer<T, U>::duplicate(U* event) {
+template <class T, class U> U* EventContainer<T, U>::duplicate(const U* event) {
             m_event_list.push_back(U(*event));
             return &m_event_list.back();
         }
 
-template <class T, class U> U* EventContainer<T, U>::duplicate(U& event) {
+template <class T, class U> U* EventContainer<T, U>::duplicate(const U& event) {
             m_event_list.push_back(U(event));
             return &m_event_list.back();
         }
