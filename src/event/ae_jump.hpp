@@ -16,31 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_MOVE_DIRECTION_HPP_INCLUDED
-#define AE_MOVE_DIRECTION_HPP_INCLUDED
+#ifndef AE_JUMP_HPP_INCLUDED //< Change this
+#define AE_JUMP_HPP_INCLUDED //< Change this
 
-#include <map>
 #include <vector>
 #include <string>
 
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class Actor;
 
 /**
- * @brief Move the actor to the supplied direction for x frames
+ * @brief Perform a jump
  */
-class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
+class AeJump : public EventContainer<ActorEvent, AeJump>{
     // The default interface block (copy this!)
     public:
-        AeMoveDirection() {}
-        static AeMoveDirection* create() {return duplicate(AeMoveDirection());}
+        AeJump() {}
+        static AeJump* create() {return duplicate(AeJump());}
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMoveDirection() override {}
+        virtual ~AeJump() override {}
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
@@ -51,12 +49,22 @@ class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
 
     // The specialized block
     public:
-        AeMoveDirection(Direction dir, unsigned duration, AnimationType anim);
-        static AeMoveDirection* create(Direction dir, unsigned duration, AnimationType anim);
+        AeJump(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir);
+        static AeJump* create(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir);
     private:
-        Direction m_direction;
-        unsigned m_duration; ///< How many frames the movement persists
+        float m_duration;
+        float m_jump_height;
+
+        bool m_slow_on_release;
+        float m_slow_factor;
+
         AnimationType m_animation;
+        Direction m_anim_dir;
+
+        float m_speed = 0;
+        float m_deceleration = 0;
+        bool m_started = false;
+        // Members
 };
 
-#endif // AE_MOVE_DIRECTION_HPP_INCLUDED
+#endif // AE_JUMP_HPP_INCLUDED

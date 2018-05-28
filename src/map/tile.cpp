@@ -31,13 +31,6 @@
 #include "util/tinyxml2.h"
 
 /**
- * @brief Construct an empty tile
- */
-Tile::Tile() {
-
-}
-
-/**
  * @brief Construct and registers a fully functional tile
  * @param ts Pointer to the corresponding tileset
  * @param clp @c SDL_Rect which determines the snippet of the whole tileset image
@@ -131,6 +124,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
  * @brief Parse tile information of actor animation tiles
  * @param source The @c XMLElement from the tileset
  * @param first_gid The first global tile id of the tileset
+ * @param base_map Reference to map object to register as actor animation
  * @return an @c XMLError object which indicates success or error type
  *
  * Determines the tile type and calls the corresponding tile parsers
@@ -138,6 +132,9 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
 tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map) {
     using namespace tinyxml2;
     XMLError eResult;
+
+    // Initalize default trigger frame to 0
+    m_speed = 0;
 
     // Initialize temporary variables
     std::string actor_name = "_";
@@ -175,6 +172,16 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                         std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
+                    if(anim == AnimationType::current) {
+                        std::cerr << "You can't define a specific animation type as the current one\n";
+                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        return XML_WRONG_ATTRIBUTE_TYPE;
+                    }
+                    if(anim == AnimationType::none) {
+                        std::cerr << "You can't define a specific animation type as no animation\n";
+                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        return XML_WRONG_ATTRIBUTE_TYPE;
+                    }
                 }
                 else {
                     std::cerr << "Missing animation type in actor animation for " << actor_name << "\n";
@@ -188,7 +195,12 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                 if(p_direction != nullptr) {
                     dir = str_to_direction(std::string(p_direction));
                     if(dir == Direction::invalid) {
-                        std::cerr << "Invalid animation type \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
+                        std::cerr << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
+                        return XML_WRONG_ATTRIBUTE_TYPE;
+                    }
+                    if(dir == Direction::current) {
+                        std::cerr << "You can't define a specific direction as the current one\n";
+                        std::cerr << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                 }
@@ -198,6 +210,18 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
                 }
 
             }
+
+            else if(name == "TRIGGER_FRAME") {
+                int frame;
+                eResult = p_property->QueryIntAttribute("value", &frame);
+                if(eResult != XML_SUCCESS) return eResult;
+                if(frame < 0) {
+                    std::cerr << "Trigger frame can't be a negative value!\n";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+                m_speed = frame;
+            }
+
             else {
                 std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
                 return XML_ERROR_PARSING_ATTRIBUTE;
@@ -240,8 +264,8 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
         }
     }
     else {
-        std::cerr << "Missing tile animation on actor animation for " << actor_name << "\n";
-        return XML_NO_ATTRIBUTE;
+        std::cerr << "Missing tile animation on actor animation for " << actor_name << " -> will use static tile instead\n";
+        // return XML_NO_ATTRIBUTE;
     }
 
     if(actor_name == "_") {
@@ -259,9 +283,28 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
         return XML_NO_ATTRIBUTE;
     }
 
+    else if(m_animated && m_speed >= m_anim_ids.size()) {
+        std::cerr << "The trigger frame " << m_speed << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << "\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
     else {
         // Add this animated tile to the actor template
         base_map.add_actor_animation(actor_name, anim, dir, this);
+
+        // Parse the hitboxes of the actor animation
+        XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
+        if(p_objgroup != nullptr) {
+            XMLElement* p_object = p_objgroup->FirstChildElement("object");
+            if(p_object != nullptr) {
+                ActorTemplate& temp = base_map.get_actor_template(actor_name);
+                eResult = parse_hitboxes(p_object, temp.hitbox);
+                if(eResult != XML_SUCCESS) {
+                    std::cerr << "Failed at parsing hitboxes of actor animation for actor " << actor_name << "\n";
+                    return eResult;
+                }
+            }
+        }
     }
 
     return XML_SUCCESS;
@@ -270,6 +313,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
 /**
  * @brief Parse tile information of actor template tiles
  * @param source The @c XMLElement from the tileset
+ * @param base_map Reference to map object to register as actor template
  * @return an @c XMLError object which indicates success or error type
  *
  * Parse the tile via the static Actor method @c add_template
@@ -286,10 +330,16 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData
     return XML_SUCCESS;
 }
 
-Tile::~Tile() {
-
-}
-
+/**
+ * @brief Returns area of tileset image corresponding to tile
+ * @param base_map Required for looking up other tiles
+ *
+ * For animated tiles the clip is the one of the current animation tile id,
+ * instead of recursively calling this function again, get_clip_self is used which
+ * always yields the normal clip value of the tile.
+ *
+ * If not animated the normal clip value is returned
+ */
 const SDL_Rect& Tile::get_clip(const MapData& base_map) const {
     if(m_animated) {
         // Avoids daisy chaining of animated tiles
@@ -318,8 +368,10 @@ void Tile::init_anim(Uint32 time) {
  *
  * Checks if next frame of animated tile is due, changes to next frame
  * and wraps around if required.
+ * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
 bool Tile::push_anim() {
+    if(!m_animated) {return true;}
     bool wrap_around = false;
     Uint32 time = SDL_GetTicks();
     if(time - m_anim_timestamp >= m_durations[m_current_id]) {
@@ -334,12 +386,42 @@ bool Tile::push_anim() {
 }
 
 /**
+ * @brief Animates a tile
+ * @return a @c AnimSignal which indicates if the animation reached it's starting point/ frame 0
+ *         or if it reached its trigger frame
+ *
+ * Checks if next frame of animated tile is due, changes to next frame
+ * and wraps around if required.
+ * @note This code effectively quantizes animation to 1000ms/FPS steps
+ * @note The wrap around signal has precedence over the trigger signal
+ */
+AnimSignal Tile::push_anim_trigger() {
+    if(!m_animated) {return AnimSignal::wrap;}
+    Uint32 time = SDL_GetTicks();
+    if(time - m_anim_timestamp >= m_durations[m_current_id]) {
+        m_current_id++;
+        m_anim_timestamp = time;
+        if(m_current_id >= m_anim_ids.size()) {
+            m_current_id = 0;
+            return AnimSignal::wrap;
+        }
+        if(m_current_id == static_cast<int>(m_speed)) {
+            return AnimSignal::trigger;
+        }
+        return AnimSignal::next;
+    }
+    return AnimSignal::none;
+}
+
+/**
  * @brief Animates a tile with supplied timestamp
  *
  * Checks if next frame of animated tile is due, changes to next frame
  * and wraps around if required.
+ * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
 void Tile::push_anim(Uint32 time) {
+    if(!m_animated) {return;}
     if(time - m_anim_timestamp >= m_durations[m_current_id]) {
         m_current_id++;
         m_anim_timestamp = time;
@@ -352,6 +434,7 @@ void Tile::push_anim(Uint32 time) {
 /**
  * @brief Render a tile object to a coordinate
  * @param x, y The specified coordinates
+ * @param base_map Reference to map for getting clip and renderer
  */
 void Tile::render(int x, int y, const MapData& base_map) const {
     x += mp_tileset->get_x_offset();
@@ -365,6 +448,7 @@ void Tile::render(int x, int y, const MapData& base_map) const {
 /**
  * @brief Render a tile object to a rect
  * @param dest The rendering rect
+ * @param base_map Reference to map for getting clip and renderer
  *
  * This function can resize the tile image
  */

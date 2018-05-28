@@ -3,7 +3,7 @@
 
 A game engine utilising *"[Tiled](http://www.mapeditor.org)" map files*.
 
-The current state of  the project is fairly universal and resembles an **advanced map renderer for tmx files**. The clue of this engine is that it reads all game information **from the map files** an therefore the majority of game building will happen **inside the UI** of the streamlined *[Tiled Mapeditor](http://www.mapeditor.org)*. The ultimate goal of this project is to implement a full fledged game development environment via *[Tiled](http://www.mapeditor.org)*. The currently used **[Tiled](http://www.mapeditor.org) Version** is **1.0.2**
+The current state of  the project is fairly universal and resembles an **advanced map renderer for tmx files**. The clue of this engine is that it reads all game information **from the map files** an therefore the majority of game building will happen **inside the UI** of the streamlined *[Tiled Mapeditor](http://www.mapeditor.org)*. The ultimate goal of this project is to implement a full fledged game development environment via *[Tiled](http://www.mapeditor.org)*. The currently used **[Tiled](http://www.mapeditor.org) Version** is **1.1.4**. The minimum version is **1.0** because of the heavy use of typed tiles.
 ## Features ![Salmon Jump](/icons/RawSalmonLogo_Ver1_128px.png)
 * Supported map orientations <img align="right" src="icons/lossyput.gif">
   - [x] Orthogonal

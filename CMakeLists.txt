@@ -23,7 +23,14 @@ set(CORE_SOURCES
 
 set(EVENT_SOURCES
     src/event/actor_event.cpp
-    src/event/ae_move_direction.cpp)
+    src/event/ae_move_direction.cpp
+    src/event/ae_move_sustained.cpp
+    src/event/ae_animate.cpp
+    src/event/ae_jump.cpp
+    src/event/ae_fall.cpp
+    src/event/ae_multi.cpp
+    src/event/ate_on_ground.cpp
+    )
 
 set(GRAPHICS_SOURCES
     src/graphics/texture.cpp
