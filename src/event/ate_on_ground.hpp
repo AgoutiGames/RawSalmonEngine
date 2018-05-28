@@ -51,7 +51,7 @@ class AteOnGround : public EventContainer<ActorEvent, AteOnGround>{
     public:
         AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false);
         static AteOnGround* create(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false);
-        virtual void set_cause(Actor* x) override;
+        virtual void set_cause(Cause x) override;
         virtual void set_key(SDL_Keysym x) override;
     private:
         ActorEvent* m_success;

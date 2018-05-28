@@ -208,7 +208,7 @@ ActorEvent* AteOnGround::copy() const{
 /**
  * @brief Set cause to every contained event
  */
-void AteOnGround::set_cause(Actor* x) {
+void AteOnGround::set_cause(Cause x) {
     ActorEvent::set_cause(x);
     if(m_success != nullptr) m_success->set_cause(x);
     if(m_failure != nullptr) m_failure->set_cause(x);

@@ -167,7 +167,7 @@ ActorEvent* AeMulti::copy() const{
 /**
  * @brief Set cause to every contained event
  */
-void AeMulti::set_cause(Actor* x) {
+void AeMulti::set_cause(Cause x) {
     ActorEvent::set_cause(x);
     for(ActorEvent* e : m_events) {
         e->set_cause(x);
