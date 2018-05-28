@@ -14,6 +14,7 @@ include_directories(src)
 
 set(ACTOR_SOURCES
     src/actor/actor.cpp
+    src/actor/cause.cpp
     )
 
 set(CORE_SOURCES

@@ -61,13 +61,22 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
         while(p_property != nullptr) {
             const char* p_name;
+            const char* p_value;
             p_name = p_property->Attribute("name");
             std::string name(p_name);
             if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
             else if(name == "SPEED") {
                 eResult = p_property->QueryFloatAttribute("value", &m_speed);
                 if(eResult != XML_SUCCESS) return eResult;
             }
+
+            else if(name == "TYPE") {
+                p_value = source->Attribute("value");
+                if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+                m_type = std::string(p_value);
+            }
+
             else {
                 std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
                 return XML_ERROR_PARSING_ATTRIBUTE;
