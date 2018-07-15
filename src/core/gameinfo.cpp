@@ -165,8 +165,6 @@ bool GameInfo::update() {
  * @brief Draws the current map in correlation to the camera to screen
  */
 void GameInfo::render() {
-    SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF ); // White Background
-    SDL_RenderClear(m_renderer);
     m_map.render(&m_camera);
     SDL_RenderPresent(m_renderer);
 }

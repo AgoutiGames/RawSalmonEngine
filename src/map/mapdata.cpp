@@ -110,6 +110,30 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     if(eResult != XML_SUCCESS) return eResult;
     std::cout << "Tile height: " << m_tile_h << "\n";
 
+    // Parse possible backgroundcolor
+    const char* p_bg_color;
+    p_bg_color = pMap->Attribute("backgroundcolor");
+    if(p_bg_color == nullptr) {
+        std::cerr << "Map is missing a custom backgroundcolor, will use white as default";
+        m_bg_color = {255,255,255,255};
+    }
+    else {
+        std::string s_bg_color = p_bg_color;
+        s_bg_color.erase(s_bg_color.begin()); // Delete leading # sign
+
+        // Check for possible alpha value (since ARGB and RGB is possible)
+        if(s_bg_color.length() > 6) {
+            m_bg_color.a = std::stoul(std::string(s_bg_color, 0, 2), nullptr, 16);
+            s_bg_color.erase(s_bg_color.begin(), s_bg_color.begin() + 2);
+        }
+        // Set to fully opaque if no value is supplied
+        else {m_bg_color.a = 255;}
+
+        m_bg_color.r = std::stoul(std::string(s_bg_color, 0, 2), nullptr, 16);
+        m_bg_color.g = std::stoul(std::string(s_bg_color, 2, 2), nullptr, 16);
+        m_bg_color.b = std::stoul(std::string(s_bg_color, 4, 2), nullptr, 16);
+    }
+
     // All tilesets get parsed
     std::vector<XMLElement*> p_tilesets;
 
@@ -195,6 +219,10 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
  */
 bool MapData::render(SDL_Rect* camera) const{
     bool success = true;
+
+    SDL_SetRenderDrawColor(*mpp_renderer, m_bg_color.r, m_bg_color.g, m_bg_color.b, m_bg_color.a);
+    SDL_RenderClear(*mpp_renderer);
+
     // Renders all layers
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         if(!m_layers[i_layer].render(camera, *this)) {
