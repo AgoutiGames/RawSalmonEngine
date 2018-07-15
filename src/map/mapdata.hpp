@@ -93,6 +93,7 @@ class MapData {
         unsigned m_tile_h;
         unsigned m_width;  // The map dimensions
         unsigned m_height;
+        SDL_Color m_bg_color;
                                //                         | |
         void write_overhang(); // sets the 4 values below v v
         unsigned m_up_overhang = 0;
