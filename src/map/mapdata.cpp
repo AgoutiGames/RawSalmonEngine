@@ -173,8 +173,12 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     // Collect all layers to a vector of pointers
     std::vector<XMLElement*> p_layers;
-    XMLElement* pLa = pMap->FirstChildElement("layer");
-    if (pLa == nullptr) return XML_ERROR_PARSING_ELEMENT;
+    XMLElement* pLa = p_tilesets.back()->NextSiblingElement();
+    if (pLa == nullptr) {
+        std::cerr << "Mapfile has no layers\n";
+        return XML_ERROR_PARSING_ELEMENT;
+    }
+
     do{
         p_layers.push_back(pLa);
         pLa = pLa->NextSiblingElement();
