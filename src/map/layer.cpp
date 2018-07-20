@@ -192,6 +192,10 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
                         return eResult;
                     }
                 }
+                else if(name == "PARALLAX") {
+                    eResult = p_property->QueryBoolAttribute("value", &m_parallax);
+                    if(eResult != XML_SUCCESS) return eResult;
+                }
                 else{
                     std::cerr << "Unknown image layer property " << p_name << " occured\n";
                     return XML_ERROR_PARSING;
@@ -308,12 +312,24 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             break;}
         // Render map type "image"
         case image:{
-            int x = m_offset_x - camera->x;
-            int y = m_offset_y - camera->y;
-            if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
-                return success;
+            if(m_parallax) {
+                int x_range = base_map.get_w() - camera->w;
+                int y_range = base_map.get_h() - camera->h;
+                float x_trans_fact = static_cast<float>(camera->x) / x_range;
+                float y_trans_fact = static_cast<float>(camera->y) / y_range;
+                x_trans_fact = x_trans_fact * (m_width - camera->w);
+                y_trans_fact = y_trans_fact * (m_height - camera->h);
+                m_img.render(base_map.get_renderer(), -x_trans_fact, -y_trans_fact);
+
             }
-            else {m_img.render(base_map.get_renderer(), x, y);}
+            else{
+                int x = m_offset_x - camera->x;
+                int y = m_offset_y - camera->y;
+                if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
+                    return success;
+                }
+                else {m_img.render(base_map.get_renderer(), x, y);}
+            }
             break;}
         // Don't render unknown type
         default:{
