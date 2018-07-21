@@ -207,7 +207,11 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     }
     else {
         m_player = actor_list[0];
+
+        m_camera.bind_player(m_player);
     }
+
+    m_camera.bind_map(get_w(),get_h());
 
     // This must be called after the parsing of all tilesets!
     // It sets all animated tiles to their starting positions
@@ -221,7 +225,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
  * @param camera The rectangular area of the map to be rendered
  * @return @c bool which indicates success or failure
  */
-bool MapData::render(SDL_Rect* camera) const{
+bool MapData::render() const{
     bool success = true;
 
     SDL_SetRenderDrawColor(*mpp_renderer, m_bg_color.r, m_bg_color.g, m_bg_color.b, m_bg_color.a);
@@ -229,7 +233,7 @@ bool MapData::render(SDL_Rect* camera) const{
 
     // Renders all layers
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
-        if(!m_layers[i_layer].render(camera, *this)) {
+        if(!m_layers[i_layer].render(m_camera, *this)) {
             std::cerr << "Failed at rendering layer " << i_layer << " !\n";
             success = false;
         }
@@ -243,6 +247,7 @@ void MapData::update() {
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         m_layers[i_layer].update();
     }
+    m_camera.update();
     // Checks and changes animated tiles
     push_all_anim();
 }

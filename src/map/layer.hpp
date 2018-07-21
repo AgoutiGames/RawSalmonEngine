@@ -26,6 +26,7 @@
 
 #include "actor/actor.hpp"
 #include "graphics/texture.hpp"
+#include "map/camera.hpp"
 #include "map/tileset.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
@@ -52,7 +53,7 @@ class Layer{
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
-        bool render(SDL_Rect* camera, const MapData& base_map) const;
+        bool render(const Camera& camera, const MapData& base_map) const;
         void update();
         std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);

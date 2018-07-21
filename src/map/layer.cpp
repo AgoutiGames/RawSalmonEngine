@@ -229,7 +229,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
  * @warning The layer opacity value is ignored except for @c image type layers
  */
 
-bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
+bool Layer::render(const Camera& camera, const MapData& base_map) const {
     bool success = true;
     switch(m_type) {
         // Render map type "map"
@@ -239,19 +239,19 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             int tile_h = static_cast<int>(m_tile_h);
 
             // Apply the layer offset
-            int x_camera = camera->x - m_offset_x;
-            int y_camera = camera->y - m_offset_y;
+            int x_camera = camera.x() - m_offset_x;
+            int y_camera = camera.y() - m_offset_y;
 
             // Horizontal range of tiles to render
             int x_tile_from = x_camera / tile_w;
-            int x_tile_to = (x_camera + camera->w) / tile_w;
+            int x_tile_to = (x_camera + camera.w()) / tile_w;
 
             // Horizontal pixel offset to full tile
             int x_tile_offset = x_camera % tile_w;
 
             // Vertical range of tiles to render
             int y_tile_from = y_camera / tile_h;
-            int y_tile_to = (y_camera + camera->h) / tile_h;
+            int y_tile_to = (y_camera + camera.h()) / tile_h;
 
             // Vertical pixel offset to full tile
             int y_tile_offset = y_camera % tile_h;
@@ -299,10 +299,10 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             break;}
         // Render map type "object"
         case object:{
-            int x = camera->x - m_offset_x;
-            int y = camera->y - m_offset_y;
+            int x = camera.x() - m_offset_x;
+            int y = camera.y() - m_offset_y;
             int from = y - base_map.get_overhang(Direction::up) * m_tile_h;
-            int to = y + camera->h + base_map.get_overhang(Direction::down) * m_tile_h;
+            int to = y + camera.h() + base_map.get_overhang(Direction::down) * m_tile_h;
             // Has y-axis offscreen culling
             for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
                 int feet = it->get_y();
@@ -313,19 +313,19 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
         // Render map type "image"
         case image:{
             if(m_parallax) {
-                int x_range = base_map.get_w() - camera->w;
-                int y_range = base_map.get_h() - camera->h;
-                float x_trans_fact = static_cast<float>(camera->x) / x_range;
-                float y_trans_fact = static_cast<float>(camera->y) / y_range;
-                x_trans_fact = x_trans_fact * (m_width - camera->w);
-                y_trans_fact = y_trans_fact * (m_height - camera->h);
+                int x_range = base_map.get_w() - camera.w();
+                int y_range = base_map.get_h() - camera.h();
+                float x_trans_fact = static_cast<float>(camera.x()) / x_range;
+                float y_trans_fact = static_cast<float>(camera.y()) / y_range;
+                x_trans_fact = x_trans_fact * (m_width - camera.w());
+                y_trans_fact = y_trans_fact * (m_height - camera.h());
                 m_img.render(base_map.get_renderer(), -x_trans_fact, -y_trans_fact);
 
             }
             else{
-                int x = m_offset_x - camera->x;
-                int y = m_offset_y - camera->y;
-                if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
+                int x = m_offset_x - camera.x();
+                int y = m_offset_y - camera.y();
+                if(y > camera.h() || x > camera.w() || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
                     return success;
                 }
                 else {m_img.render(base_map.get_renderer(), x, y);}

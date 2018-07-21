@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 
+#include "map/camera.hpp"
 #include "map/tile.hpp"
 #include "map/layer.hpp"
 #include "map/tileset.hpp"
@@ -38,11 +39,11 @@
 
 class MapData {
     public:
-        MapData() {}
+        MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
         ~MapData() {}
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
-        bool render(SDL_Rect* camera) const;
+        bool render() const;
         void update();
 
         unsigned get_overhang(Direction dir) const;
@@ -96,6 +97,8 @@ class MapData {
         unsigned m_width;  // The map dimensions in tiles
         unsigned m_height;
         SDL_Color m_bg_color;
+
+        Camera m_camera;
                                //                         | |
         void write_overhang(); // sets the 4 values below v v
         unsigned m_up_overhang = 0;
