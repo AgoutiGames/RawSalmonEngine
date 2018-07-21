@@ -41,13 +41,9 @@ public:
     bool update();
 
     bool load_map(std::string mapfile);
-    bool fetch_player();
 
-    SDL_Rect m_camera;
-    Actor* m_player = nullptr;
 
-    bool m_cam_bound = true;
-    bool m_key_repeat = false;
+    bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
 private:
     SDL_Window* m_window = nullptr;
