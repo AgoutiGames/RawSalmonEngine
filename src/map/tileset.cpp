@@ -215,10 +215,10 @@ bool Tileset::render(Uint16 local_tile_id, int x, int y, const MapData& base_map
  * @todo Use pixel margin instead of tile margin for possibly slightly better performance
  */
 std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsigned tile_h) const{
-    unsigned pix_up = 0;
-    unsigned pix_down = 0;
-    unsigned pix_left = 0;
-    unsigned pix_right = 0;
+    int pix_up = 0;
+    int pix_down = 0;
+    int pix_left = 0;
+    int pix_right = 0;
 
     // Translate offset into required margin sizes
     if (m_x_offset > 0) {
@@ -237,6 +237,11 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     // Take oversized tiles into account
     pix_left += m_tile_width - tile_w;
     pix_down += m_tile_height - tile_h;
+
+    if (pix_up < 0) {pix_up = 0;}
+    if (pix_down < 0) {pix_down = 0;}
+    if (pix_left < 0) {pix_left = 0;}
+    if (pix_right < 0) {pix_right = 0;}
 
     // Translate the pixel margin into a tile margin
     // @todo? Using the pixel values, the rendering could

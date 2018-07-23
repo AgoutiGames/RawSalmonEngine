@@ -154,10 +154,13 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
 
         // Parse image position
         eResult = source->QueryIntAttribute("offsetx", &m_offset_x);
-        if(eResult != XML_SUCCESS) return eResult;
+        if(eResult != XML_SUCCESS) {
+            m_offset_x = 0;
+        }
         eResult = source->QueryIntAttribute("offsety", &m_offset_y);
-        if(eResult != XML_SUCCESS) return eResult;
-
+        if(eResult != XML_SUCCESS) {
+            m_offset_y = 0;
+        }
         // Parse opacity (which works with image layer)
         float opacity;
         eResult = source->QueryFloatAttribute("opacity", &opacity);
