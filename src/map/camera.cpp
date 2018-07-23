@@ -36,7 +36,7 @@ void Camera::update() {
         else if(m_rect.x > static_cast<int>(m_map_width - m_rect.w - m_crop_right)) {
             m_rect.x = m_map_width - m_rect.w - m_crop_right;
         }
-        else if(m_rect.y < m_crop_up) {
+        if(m_rect.y < m_crop_up) {
             m_rect.y = m_crop_up;
         }
         else if(m_rect.y > static_cast<int>(m_map_height - m_rect.h - m_crop_down)) {
