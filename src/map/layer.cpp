@@ -404,11 +404,14 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
     switch (m_type) {
         case map:{
             if(type != "COLLIDE") {break;}
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
             // Calculate possible chunk of tiles which could possibly collide with the rect
-            int x_from = (rect->x + m_offset_x) / m_tile_w;
-            int y_from = (rect->y + m_offset_y) / m_tile_h;
-            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
-            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            int x_from = (rect->x - m_offset_x) / tile_w;
+            int y_from = (rect->y - m_offset_y) / tile_h;
+            int x_to = (rect->x - m_offset_x + rect->w) / tile_w;
+            int y_to = (rect->y - m_offset_y + rect->h) / tile_h;
             // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
@@ -420,8 +423,8 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
                             // Move tile hitbox to tile coordinates
-                            tile_rect.x += m_offset_x + x * m_tile_w;
-                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            tile_rect.x += m_offset_x + x * tile_w;
+                            tile_rect.y += m_offset_y + y * tile_h;
                             SDL_Rect intersect;
                             // Get intersection from supplied rect and tile rect
                             if(SDL_IntersectRect(rect, &tile_rect, &intersect)) {
@@ -475,11 +478,14 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<A
     switch (m_type) {
         case map:{
             if(type != "COLLIDE") {break;}
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
             // Calculate possible chunk of tiles which could possibly collide with the rect
-            int x_from = (rect->x + m_offset_x) / m_tile_w;
-            int y_from = (rect->y + m_offset_y) / m_tile_h;
-            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
-            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            int x_from = (rect->x - m_offset_x) / tile_w;
+            int y_from = (rect->y - m_offset_y) / tile_h;
+            int x_to = (rect->x - m_offset_x + rect->w) / tile_w;
+            int y_to = (rect->y - m_offset_y + rect->h) / tile_h;
             // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
@@ -491,8 +497,8 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<A
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
                             // Move tile hitbox to tile coordinates
-                            tile_rect.x += m_offset_x + x * m_tile_w;
-                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            tile_rect.x += m_offset_x + x * tile_w;
+                            tile_rect.y += m_offset_y + y * tile_h;
                             // Get intersection from supplied rect and tile rect
                             if(SDL_HasIntersection(rect, &tile_rect)) {
                                 collide = true;
@@ -532,11 +538,14 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::string t
     switch (m_type) {
         case map:{
             if(type != "COLLIDE") {break;}
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
             // Calculate possible chunk of tiles which could possibly collide with the rect
-            int x_from = (rect->x + m_offset_x) / m_tile_w;
-            int y_from = (rect->y + m_offset_y) / m_tile_h;
-            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
-            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            int x_from = (rect->x - m_offset_x) / tile_w;
+            int y_from = (rect->y - m_offset_y) / tile_h;
+            int x_to = (rect->x - m_offset_x + rect->w) / tile_w;
+            int y_to = (rect->y - m_offset_y + rect->h) / tile_h;
             // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
@@ -548,8 +557,8 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::string t
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
                             // Move tile hitbox to tile coordinates
-                            tile_rect.x += m_offset_x + x * m_tile_w;
-                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            tile_rect.x += m_offset_x + x * tile_w;
+                            tile_rect.y += m_offset_y + y * tile_h;
                             // Get intersection from supplied rect and tile rect
                             if(SDL_HasIntersection(rect, &tile_rect)) {
                                 collide = true;
