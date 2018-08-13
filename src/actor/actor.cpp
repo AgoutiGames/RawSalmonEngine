@@ -84,6 +84,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
             return eResult;
         }
     }
+    respond(Response::on_spawn);
     return XML_SUCCESS;
 }
 
@@ -339,17 +340,69 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
 /**
  * @brief Triggers event bound to Response value
  * @param r the Response value
- * @param cause Pointer to the Actor which may caused this event
- * @param key Keypress which may caused this event
  * @return @c bool indication if response is defined/gets triggered
  */
-bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
+bool Actor::respond(Response r) {
     if(m_response.find(r) == m_response.end()) {
         return false;
     }
     else {
         ActorEvent* event = m_response.at(r)->copy();
-        if(cause != nullptr) {event->set_cause(cause);}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param a Pointer to the Actor which may caused this event
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, Actor* a) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
+        if(a != nullptr) {event->set_cause(Cause(a));}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param t Pointer to the Tile which may caused this event
+ * @param x X-coordinate of the tile
+ * @param y Y-coordinate of the tile
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, Tile* t, int x, int y) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
+        if(t != nullptr) {event->set_cause(Cause(t,x,y));}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param key Keypress which may caused this event
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, SDL_Keysym key) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
         if(key.sym != SDLK_UNKNOWN) {event->set_key(key);}
         add_event(event);
         return true;

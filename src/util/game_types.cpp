@@ -68,6 +68,7 @@ Response str_to_response(const std::string& name) {
     if(name == "ON_DEATH") return Response::on_death;
     if(name == "ON_IDLE") return Response::on_idle;
     if(name == "ON_ALWAYS") return Response::on_always;
+    if(name == "ON_SPAWN") return Response::on_spawn;
     else return Response::invalid;
 }
 
