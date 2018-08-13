@@ -77,6 +77,7 @@ enum class Response{
     on_death,
     on_idle,
     on_always,
+    on_spawn,
     invalid,
 };
 

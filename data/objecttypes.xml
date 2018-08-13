@@ -16,6 +16,7 @@
   <property name="ON_DEATH" type="string"/>
   <property name="ON_HIT" type="string"/>
   <property name="ON_IDLE" type="string"/>
+  <property name="ON_SPAWN" type="string"/>
  </objecttype>
  <objecttype name="AeAnimate" color="#a0a0a4">
   <property name="ANIMATION_FRAMES" type="int" default="0"/>

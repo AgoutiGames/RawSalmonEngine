@@ -52,7 +52,10 @@ class Actor{
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(Direction dir) const;
-        bool respond(Response r, Actor* cause = nullptr, SDL_Keysym key = SDL_Keysym());
+        bool respond(Response r);
+        bool respond(Response r, Actor* a);
+        bool respond(Response r, SDL_Keysym key);
+        bool respond(Response r, Tile* t, int x, int y);
 
         // Getters
         AnimationType get_animation() const {return m_anim_state;}
