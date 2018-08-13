@@ -23,7 +23,9 @@
 /// The game Loop!
 int main()
 {
+    // Better read resolution from config file
     GameInfo game(800, 600);
+    // Also better read first map file from text file (or at least make the name standard like "main.tmx"
     if(!game.load_map("example.tmx")) {
         std::cerr << "Map couldn't load\n";
     }

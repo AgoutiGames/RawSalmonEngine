@@ -25,6 +25,11 @@
 class Actor;
 class Tile;
 
+/**
+ * @brief Store information of the object which has triggered an event
+ *
+ * @note Events can be either caused by other actors, keypresses or tiles
+ */
 
 class Cause{
     private:
@@ -38,20 +43,22 @@ class Cause{
     public:
         Cause();
         Cause(SDL_Keysym key);
-        Cause(Tile* tile, unsigned x = 0, unsigned y = 0);
+        Cause(Tile* tile, int x = 0, int y = 0);
         Cause(Actor* actor);
 
+        // Checks against tile types
         bool key() const {if(type == CauseType::key) {return true;} else {return false;}}
         bool tile() const {if(type == CauseType::tile) {return true;} else {return false;}}
         bool actor() const {if(type == CauseType::actor) {return true;} else {return false;}}
         bool none() const {if(type == CauseType::none) {return true;} else {return false;}}
 
+        // Return cause objects
         const SDL_Keysym get_key() const {if(type == CauseType::key) {return data.key;} else {return SDL_Keysym();}}
         Actor* get_actor() const {if(type == CauseType::actor) {return data.actor;} else {return nullptr;}}
         Tile* get_tile() const {if(type == CauseType::tile) {return data.tile.pointer;} else {return nullptr;}}
 
         std::string get_type() const;
-        std::pair<unsigned, unsigned> get_pos() const;
+        std::pair<int, int> get_pos() const;
 
 
     private:
@@ -62,8 +69,8 @@ class Cause{
             Actor* actor;
             struct{
                 Tile* pointer;
-                unsigned x;
-                unsigned y;
+                int x;
+                int y;
             } tile;
         } data;
 

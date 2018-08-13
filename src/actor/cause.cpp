@@ -23,19 +23,22 @@
  #include "actor/actor.hpp"
  #include "map/tile.hpp"
 
+ // Default constructor
 Cause::Cause() :
  type{CauseType::none}
 {
 
 }
 
+// Constructor for keypress
 Cause::Cause(SDL_Keysym key) :
  type{CauseType::key}
 {
     data.key = key;
 }
 
-Cause::Cause(Tile* tile, unsigned x, unsigned y) :
+// Constructor for tile
+Cause::Cause(Tile* tile, int x, int y) :
  type{CauseType::tile}
 {
     data.tile.pointer = tile;
@@ -43,12 +46,19 @@ Cause::Cause(Tile* tile, unsigned x, unsigned y) :
     data.tile.y = y;
 }
 
+// Constructor for actor
 Cause::Cause(Actor* actor) :
  type{CauseType::actor}
 {
     data.actor = actor;
 }
 
+/**
+ * @brief Return the type of the cause
+ * @return Type as a string
+ * @note Only actor and tiles return a type,
+ *       key returns an empty string
+ */
 std::string Cause::get_type() const {
     if(type == CauseType::tile) {
         return data.tile.pointer->get_type();
@@ -61,13 +71,19 @@ std::string Cause::get_type() const {
     }
 }
 
-std::pair<unsigned, unsigned> Cause::get_pos() const {
+/**
+ * @brief Return the position of the cause
+ * @return X and Y-coordinates
+ * @note Only actor and tiles return their coords,
+ *       key returns 0, 0
+ */
+std::pair<int, int> Cause::get_pos() const {
     if(type == CauseType::tile) {
         return {data.tile.x, data.tile.y};
     }
     else if(type == CauseType::actor) {
-        unsigned x = data.actor->get_x();
-        unsigned y = data.actor->get_y() - data.actor->get_h();
+        int x = data.actor->get_x();
+        int y = data.actor->get_y() - data.actor->get_h();
         return {x, y};
     }
     else {return {0,0};}

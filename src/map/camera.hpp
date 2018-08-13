@@ -24,7 +24,7 @@
 #include "actor/actor.hpp"
 
 /**
- * @brief Be an interface for a smart sdl_rect used for camera purposes
+ * @brief An interface for a smart sdl_rect used for camera purposes
  */
 
 class Camera{

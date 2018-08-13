@@ -31,7 +31,7 @@ class ActorEvent;
 class Tile;
 
 /**
- * @brief A collection of various enums
+ * @brief A collection of various enums and handy functions for conversion and parsing
  */
 
 enum class Direction {
