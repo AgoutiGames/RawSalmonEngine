@@ -47,6 +47,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     XMLError eResult;
     std::string full_path;
 
+    // Better read this from the tiled map as a custom property
     std::vector<std::string> symbolic_tilesets{"events.tsx", "key_mapping.tsx"};
 
     for(std::string name : symbolic_tilesets) {

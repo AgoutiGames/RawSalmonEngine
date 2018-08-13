@@ -48,7 +48,7 @@ void Camera::update() {
 /**
  * @brief Move camera to the supplied position in respect to map border
  *
- * If the camera is player bound, the player position has precedence over the supplied coordinates
+ * @note If the camera is player bound, the player position has precedence over the supplied coordinates
  */
 void Camera::update(int x, int y) {
     m_rect.x = x;
@@ -76,8 +76,8 @@ void Camera::bind_map(unsigned w, unsigned h) {
 /**
  * @brief Crop the visual boundaries of the map in each direction
  *
- * l = left | r = right | u = up | d = down
- * Positive values make the bounds narrower and vice versa
+ * @note l = left | r = right | u = up | d = down
+ * @note Positive values let you see less, negative values let you see more of the map
  */
 void Camera::set_crop(int l, int r, int u, int d) {
     m_crop_left = l;

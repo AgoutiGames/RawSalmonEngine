@@ -90,7 +90,9 @@ class MapData {
         void process_keys_sustained();
 
     private:
+        // Better delete this after parsing
         tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file
+
         std::string m_base_path = "../data/"; ///< Path to folder where .tmx map files are
         unsigned m_tile_w; // The tile dimensions in pixels
         unsigned m_tile_h;

@@ -38,22 +38,23 @@ class MapData;
 class Actor{
 
     public:
+        // Constructors
         Actor(Uint16 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
         Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
+        // Core functions
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         bool update();
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor, bool absolute = false);
-        bool process_events();
-        void add_event(ActorEvent* event);
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(Direction dir) const;
         bool respond(Response r, Actor* cause = nullptr, SDL_Keysym key = SDL_Keysym());
 
+        // Getters
         AnimationType get_animation() const {return m_anim_state;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
@@ -65,6 +66,13 @@ class Actor{
         unsigned get_h() const {return m_height;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
+
+        SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
+
+        // Event related functions
+        bool process_events();
+        void add_event(ActorEvent* event);
+        unsigned scrap_event(std::string name, ActorEvent* except = nullptr);
         void set_cooldown(std::string name, float dur_sec) {m_timestamp[name] = SDL_GetTicks() + dur_sec * 1000;}
         Uint32 get_cooldown(std::string name) const {return m_timestamp.at(name);}
         void block_event(std::string name) {m_block[name] = true;}
@@ -74,10 +82,6 @@ class Actor{
         bool is_blocked(std::string name) const;
         bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string name) const;
-        unsigned scrap_event(std::string name, ActorEvent* except = nullptr);
-        SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
-
-
 
     private:
         MapData* m_map;
@@ -92,7 +96,7 @@ class Actor{
 
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
         Direction m_direction; ///< Current direction facing
-        std::map<std::string, SDL_Rect> m_hitbox;
+        std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         std::map<Response, ActorEvent*> m_response; ///< Map which yields events for response values
 

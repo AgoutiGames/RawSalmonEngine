@@ -202,8 +202,9 @@ bool Actor::process_events() {
 }
 
 /**
- * @brief Adds the event to the actors pipeline and sorts
+ * @brief Adds the event to the actors pipeline
  * @param event The event to be added
+ * @note The position where the event is added corresponds to its priority value
  */
 void Actor::add_event(ActorEvent* event) {
     if(!is_blocked(event->get_type()) && !is_blocked(event->name())
@@ -265,7 +266,7 @@ bool Actor::animate(AnimationType anim, Direction dir) {
  * @brief Animate the actor
  * @param anim The type of the animation
  * @param dir The direction of the animation
- * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger
+ * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger frame
  */
 AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
     if(anim == AnimationType::none) {return AnimSignal::none;}
@@ -414,6 +415,11 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     }
 }
 
+/**
+ * @brief Checks if the actor is standing on ground
+ * @param dir The direction of gravity
+ * @return @c bool which is True if the actor is on ground
+ */
 bool Actor::on_ground(Direction dir) const {
     SDL_Rect pos = get_hitbox();
     pos.x += get_x();
@@ -450,7 +456,10 @@ bool Actor::on_ground(Direction dir) const {
 }
 
 /**
- * @brief Deletes all event with given name or type except one
+ * @brief Deletes all events with given name or type except one
+ * @param name The individual name or type of the event
+ * @param except The event which shouldn't be deleted
+ * @return the count of events which have been deleted
  */
 unsigned Actor::scrap_event(std::string name, ActorEvent* except) {
     unsigned counter = 0;
