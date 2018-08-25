@@ -39,6 +39,8 @@ class Actor{
 
     public:
         // Constructors
+        // I have no idea why but with a default constructor
+        // this won't compile properly
         Actor(Uint16 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
         Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
@@ -51,7 +53,7 @@ class Actor{
         bool move(float x_factor, float y_factor, bool absolute = false);
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
-        bool on_ground(Direction dir) const;
+        bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
         bool respond(Response r);
         bool respond(Response r, Actor* a);
         bool respond(Response r, SDL_Keysym key);
@@ -69,6 +71,19 @@ class Actor{
         unsigned get_h() const {return m_height;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
+
+        // Getters and setters for the custom data blocks
+        void set_val(std::string name, bool val);
+        void set_val(std::string name, int val);
+        void set_val(std::string name, float val);
+        void set_val(std::string name, std::string val);
+        //void set_val(std::string name, Actor& val);
+
+        bool get_val_bool(std::string name);
+        int get_val_int(std::string name);
+        float get_val_float(std::string name);
+        std::string get_val_string(std::string name);
+        //Actor& get_val_actor(std::string name);
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
 
@@ -107,6 +122,13 @@ class Actor{
         std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event or event type
         std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
         std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
+
+        // Different Maps we need so actors can hold data
+        std::map<std::string, bool> m_data_bool;
+        std::map<std::string, int> m_data_int;
+        std::map<std::string, float> m_data_float;
+        std::map<std::string, std::string> m_data_string;
+        //std::map<std::string, Actor> m_data_actor;
 };
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list

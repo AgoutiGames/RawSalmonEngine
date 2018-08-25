@@ -24,6 +24,9 @@ set(CORE_SOURCES
 
 set(EVENT_SOURCES
     src/event/actor_event.cpp
+    src/event/ae_accelerate.cpp
+    src/event/ae_decelerate.cpp
+    src/event/ae_move.cpp
     src/event/ae_move_direction.cpp
     src/event/ae_move_sustained.cpp
     src/event/ae_animate.cpp

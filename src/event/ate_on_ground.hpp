@@ -49,8 +49,8 @@ class AteOnGround : public EventContainer<ActorEvent, AteOnGround>{
 
     // The specialized block
     public:
-        AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false);
-        static AteOnGround* create(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false);
+        AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false, int tolerance = 0);
+        static AteOnGround* create(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false, int tolerance = 0);
         virtual void set_cause(Cause x) override;
         virtual void set_key(SDL_Keysym x) override;
     private:
@@ -60,6 +60,7 @@ class AteOnGround : public EventContainer<ActorEvent, AteOnGround>{
         bool m_continuous;
         bool m_decision;
         bool m_start = true;
+        int m_tolerance;
 };
 
 #endif // ATE_ON_GROUND_HPP_INCLUDED
