@@ -30,12 +30,13 @@
 
 std::string AteOnGround::m_alias = "AteOnGround";
 
-AteOnGround::AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction, bool continuous) :
+AteOnGround::AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction, bool continuous, int tolerance) :
 EventContainer(),
 m_success{success},
 m_failure{failure},
 m_direction{direction},
-m_continuous{continuous}
+m_continuous{continuous},
+m_tolerance{tolerance}
 {
 
 }
@@ -49,13 +50,13 @@ EventSignal AteOnGround::process(Actor& actor) {
     EventSignal sig;
     if(m_start) {
         if(!m_continuous) {
-            m_decision = actor.on_ground(m_direction);
+            m_decision = actor.on_ground(m_direction, m_tolerance);
         }
         m_start = false;
     }
 
     if(m_continuous) {
-        m_decision = actor.on_ground(m_direction);
+        m_decision = actor.on_ground(m_direction, m_tolerance);
     }
 
     if(m_decision) {
@@ -74,8 +75,8 @@ EventSignal AteOnGround::process(Actor& actor) {
 }
 
 /// Create event and return pointer to it
-AteOnGround* AteOnGround::create(ActorEvent* success, ActorEvent* failure, Direction direction, bool continuous) {
-    AteOnGround temp(success, failure, direction, continuous);
+AteOnGround* AteOnGround::create(ActorEvent* success, ActorEvent* failure, Direction direction, bool continuous, int tolerance) {
+    AteOnGround temp(success, failure, direction, continuous, tolerance);
     return duplicate(temp);
 }
 
@@ -98,6 +99,7 @@ tinyxml2::XMLError AteOnGround::parse(tinyxml2::XMLElement* source, MapData& map
     ActorEvent* failure = nullptr;
     Direction direction = Direction::down;
     bool continuous = false;
+    int tolerance = 0;
 
     while(source != nullptr) {
         const char* p_name;
@@ -169,6 +171,11 @@ tinyxml2::XMLError AteOnGround::parse(tinyxml2::XMLElement* source, MapData& map
             if (eResult != XML_SUCCESS) return eResult;
         }
 
+        else if(name == "TOLERANCE") {
+            eResult = source->QueryIntAttribute("value", &tolerance);
+            if (eResult != XML_SUCCESS) return eResult;
+        }
+
         else {
             std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
@@ -185,7 +192,7 @@ tinyxml2::XMLError AteOnGround::parse(tinyxml2::XMLElement* source, MapData& map
         return XML_ERROR_PARSING;
     }
 
-    ActorEvent* event = create(success, failure, direction, continuous);
+    ActorEvent* event = create(success, failure, direction, continuous, tolerance);
     event->set_priority(prio);
     event->set_signal(sig);
     event->set_name(event_name);
@@ -202,7 +209,7 @@ ActorEvent* AteOnGround::copy() const{
     ActorEvent* failure = nullptr;
     if(m_success != nullptr) success = m_success->copy();
     if(m_failure != nullptr) failure = m_failure->copy();
-    return create(success, failure, m_direction, m_continuous);
+    return create(success, failure, m_direction, m_continuous, m_tolerance);
 }
 
 /**

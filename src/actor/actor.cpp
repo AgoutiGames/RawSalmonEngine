@@ -473,33 +473,33 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
  * @param dir The direction of gravity
  * @return @c bool which is True if the actor is on ground
  */
-bool Actor::on_ground(Direction dir) const {
+bool Actor::on_ground(Direction dir, int tolerance) const {
     SDL_Rect pos = get_hitbox();
     pos.x += get_x();
     pos.y += get_y() - get_h();
     SDL_Rect temp;
     if(dir == Direction::up) {
         temp.x = pos.x;
-        temp.y =pos.y - 1;
+        temp.y =pos.y - 1 - tolerance;
         temp.w = pos.w;
-        temp.h = 1;
+        temp.h = 1 + tolerance;
     }
     else if(dir == Direction::down) {
         temp.x = pos.x;
         temp.y =pos.y + pos.h;
         temp.w = pos.w;
-        temp.h = 1;
+        temp.h = 1 + tolerance;
     }
     else if(dir == Direction::left) {
-        temp.x = pos.x - 1;
+        temp.x = pos.x - 1 - tolerance;
         temp.y =pos.y;
-        temp.w = 1;
+        temp.w = 1 + tolerance;
         temp.h = pos.h;
     }
     else if(dir == Direction::right) {
         temp.x = pos.x + pos.w;
         temp.y =pos.y;
-        temp.w = 1;
+        temp.w = 1 + tolerance;
         temp.h = pos.h;
     }
     else {
@@ -526,3 +526,60 @@ unsigned Actor::scrap_event(std::string name, ActorEvent* except) {
     }
     return counter;
 }
+
+void Actor::set_val(std::string name, bool val) {m_data_bool[name] = val;}
+void Actor::set_val(std::string name, int val) {m_data_int[name] = val;}
+void Actor::set_val(std::string name, float val) {m_data_float[name] = val;}
+void Actor::set_val(std::string name, std::string val) {m_data_string[name] = val;}
+//void Actor::set_val(std::string name, Actor& val) {m_data_actor[name] = val;}
+
+bool Actor::get_val_bool(std::string name) {
+    if(m_data_bool.find(name) == m_data_bool.end()) {
+        std::cerr << "Could not find boolean " << name << " for actor " << m_name << "\n";
+        return false;
+    }
+    else{
+        return m_data_bool[name];
+    }
+}
+
+int Actor::get_val_int(std::string name) {
+    if(m_data_int.find(name) == m_data_int.end()) {
+        std::cerr << "Could not find integer " << name << " for actor " << m_name << "\n";
+        return 0;
+    }
+    else{
+        return m_data_int[name];
+    }
+}
+
+float Actor::get_val_float(std::string name) {
+    if(m_data_float.find(name) == m_data_float.end()) {
+        std::cerr << "Could not find float " << name << " for actor " << m_name << "\n";
+        return 0.0f;
+    }
+    else{
+        return m_data_float[name];
+    }
+}
+
+std::string Actor::get_val_string(std::string name) {
+    if(m_data_string.find(name) == m_data_string.end()) {
+        std::cerr << "Could not find string " << name << " for actor " << m_name << "\n";
+        return "";
+    }
+    else{
+        return m_data_string[name];
+    }
+}
+/*
+Actor& Actor::get_val_actor(std::string name) {
+    if(m_data_actor.find(name) == m_data_actor.end()) {
+        std::cerr << "Could not find sub-actor " << name << " for actor " << m_name << "\n";
+        return *this;
+    }
+    else{
+        return m_data_actor[name];
+    }
+}
+*/
