@@ -33,7 +33,7 @@ class SoundEffect {
     public:
         SoundEffect() {}
         SoundEffect(std::string path);
-        bool good() const {return m_good;}
+        bool good() const {return (m_sound.get() == nullptr) ? false : true ;}
         void play() const;
 
         struct Deleter {
@@ -43,9 +43,7 @@ class SoundEffect {
         };
 
     private:
-        std::string m_path = "";
         std::shared_ptr<Mix_Chunk> m_sound;
-        bool m_good = false;
 };
 
 

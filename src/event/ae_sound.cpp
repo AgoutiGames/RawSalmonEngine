@@ -124,7 +124,7 @@ tinyxml2::XMLError AeSound::parse(tinyxml2::XMLElement* source, MapData& map, st
     }
     SoundEffect temp(map.get_file_path() + "audio/" + path);
     if(!temp.good()) {
-        std::cerr << "Audio file: " << map.get_file_path() + "audio/" + path << "not found!\n";
+        std::cerr << "Audio file: " << map.get_file_path() + "audio/" + path << " not found!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
