@@ -24,13 +24,11 @@
 #include <SDL2/SDL_mixer.h>
 
 SoundEffect::SoundEffect(std::string path) :
-m_path{path},
-m_sound(Mix_LoadWAV(m_path.c_str()), SoundEffect::Deleter())
+m_sound(Mix_LoadWAV(path.c_str()), SoundEffect::Deleter())
 {
     if(m_sound == nullptr) {
-        std::cerr << "Failed to load sound effect at: " << m_path << " ! SDL_mixer Error:" << Mix_GetError() << "\n";
+        std::cerr << "Failed to load sound effect at: " << path << " ! SDL_mixer Error: " << Mix_GetError() << "\n";
     }
-    else {m_good = true;}
 }
 
 /**
