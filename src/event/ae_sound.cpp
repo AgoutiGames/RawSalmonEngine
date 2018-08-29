@@ -39,13 +39,12 @@ m_sound{sound}
 }
 
 /**
- * @brief Do ...
- * @param actor The actor which should ...
+ * @brief Play a sound
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeSound::process(Actor& actor) {
+    (void)actor; // Mute unused var warning :
     m_sound.play();
-
     return EventSignal::end;
 }
 
