@@ -19,13 +19,13 @@
 #ifndef TEXTURE_HPP_INCLUDED
 #define TEXTURE_HPP_INCLUDED
 
+#include <memory>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
 /**
  * @brief Stores and manages an SDL Texture
- * @todo Make a copy constructor, @c mTexture has to be handled via shared pointer then
  */
 
 class Texture
@@ -34,17 +34,14 @@ class Texture
 		//Initializes variables
 		Texture();
 
-		//Deallocates memory
-		~Texture();
+		//Deallocates texture
+		void free();
 
 		//Loads image at specified path
 		bool loadFromFile(SDL_Renderer* renderer, std::string path );
 
 		//Creates image from font string
 		bool loadFromRenderedText( SDL_Renderer* renderer, std::string textureText, SDL_Color textColor, TTF_Font *font );
-
-		//Deallocates texture
-		void free();
 
 		//Set color modulation
 		void setColor( Uint8 red, Uint8 green, Uint8 blue );
@@ -63,9 +60,15 @@ class Texture
 		int getWidth() const;
 		int getHeight() const;
 
+        struct Deleter {
+            void operator()(SDL_Texture* p) {
+                if(p != nullptr) {SDL_DestroyTexture(p);}
+            }
+        };
+
 	private:
 		//The actual hardware texture
-		SDL_Texture* mTexture; ///< The actual hardware texture
+		std::shared_ptr<SDL_Texture> mTexture; ///< The actual hardware texture
 
 		//Image dimensions
 		int mWidth;

@@ -26,14 +26,6 @@
 Texture::Texture()
 {
 	//Initialize
-	mTexture = nullptr;
-	mWidth = 0;
-	mHeight = 0;
-}
-
-Texture::~Texture()
-{
-	//Deallocate
 	free();
 }
 
@@ -45,8 +37,8 @@ Texture::~Texture()
  */
 bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
 {
-	//Get rid of preexisting texture
-	free();
+    //Get rid of preexisting texture
+    free();
 
 	//The final texture
 	SDL_Texture* newTexture = nullptr;
@@ -79,9 +71,10 @@ bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
 		SDL_FreeSurface( loadedSurface );
 	}
 
+	mTexture = std::shared_ptr<SDL_Texture>(newTexture, Texture::Deleter());
+
 	//Return success
-	mTexture = newTexture;
-	return mTexture != nullptr;
+	return mTexture.get() != nullptr;
 }
 /**
  * @brief Creates a texture from a text
@@ -101,8 +94,8 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
 	if( textSurface != nullptr )
 	{
 		//Create texture from surface pixels
-        mTexture = SDL_CreateTextureFromSurface( renderer, textSurface );
-		if( mTexture == nullptr )
+        mTexture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface( renderer, textSurface ), Texture::Deleter());
+		if( mTexture.get() == nullptr )
 		{
 			std::cerr << "Unable to create texture from rendered text! SDL Error: " << SDL_GetError() << "\n";
 		}
@@ -121,40 +114,34 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
 		std::cerr << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << "\n";
 	}
 
-
 	//Return success
-	return mTexture != nullptr;
+	return mTexture.get() != nullptr;
 }
 
 /// Cleans up the hardware texture
 void Texture::free()
 {
-	//Free texture if it exists
-	if( mTexture != nullptr )
-	{
-		SDL_DestroyTexture( mTexture );
-		mTexture = nullptr;
+        mTexture = nullptr;
 		mWidth = 0;
 		mHeight = 0;
-	}
 }
 
 void Texture::setColor( Uint8 red, Uint8 green, Uint8 blue )
 {
 	//Modulate texture rgb
-	SDL_SetTextureColorMod( mTexture, red, green, blue );
+	SDL_SetTextureColorMod( mTexture.get(), red, green, blue );
 }
 
 void Texture::setBlendMode( SDL_BlendMode blending )
 {
 	//Set blending function
-	SDL_SetTextureBlendMode( mTexture, blending );
+	SDL_SetTextureBlendMode( mTexture.get(), blending );
 }
 
 void Texture::setAlpha( Uint8 alpha )
 {
 	//Modulate texture alpha
-	SDL_SetTextureAlphaMod( mTexture, alpha );
+	SDL_SetTextureAlphaMod( mTexture.get(), alpha );
 }
 
 /**
@@ -177,7 +164,7 @@ void Texture::render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip
 	}
 
 	//Render to screen
-	SDL_RenderCopy( renderer, mTexture, clip, &renderQuad );
+	SDL_RenderCopy( renderer, mTexture.get(), clip, &renderQuad );
 }
 
 /**
@@ -188,7 +175,7 @@ void Texture::render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip
  */
 void Texture::render_resize(SDL_Renderer* renderer,const SDL_Rect* clip, const SDL_Rect* dest) const
 {
-    SDL_RenderCopy(renderer, mTexture, clip, dest);
+    SDL_RenderCopy(renderer, mTexture.get(), clip, dest);
 }
 
 int Texture::getWidth() const
