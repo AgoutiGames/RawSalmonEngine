@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_ANIMATE_HPP_INCLUDED //< Change this
-#define AE_ANIMATE_HPP_INCLUDED //< Change this
+#ifndef AE_SOUND_HPP_INCLUDED //< Change this
+#define AE_SOUND_HPP_INCLUDED //< Change this
 
 #include <vector>
 #include <string>
 
+#include "audio/sound_effect.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
@@ -29,19 +30,16 @@
 class Actor;
 
 /**
- * @brief Animate the actor
- * @note Due to late checking this event stays one extra game frame in the event pipeline
- *       This means that an event with frames = 1 animates in the first and deletes in the second frame
- *       If placed in "OnIdle" it will effectively only animate each second frame
+ * @brief Plays a sound!
  */
-class AeAnimate : public EventContainer<ActorEvent, AeAnimate>{
+class AeSound : public EventContainer<ActorEvent, AeSound>{
     // The default interface block (copy this!)
     public:
-        AeAnimate() {}
-        static AeAnimate* create() {return duplicate(AeAnimate());}
+        AeSound() {}
+        static AeSound* create() {return duplicate(AeSound());}
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
         virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeAnimate() override {}
+        virtual ~AeSound() override {}
         virtual std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
         using EventContainer::kill;
@@ -52,15 +50,12 @@ class AeAnimate : public EventContainer<ActorEvent, AeAnimate>{
 
     // The specialized block
     public:
-        AeAnimate(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f);
-        static AeAnimate* create(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f);
+        AeSound(SoundEffect sound);
+        static AeSound* create(SoundEffect sound);
     private:
-        AnimationType m_animation;
-        Direction m_direction;
-        unsigned m_cycles;
-        unsigned m_anim_frames;
-        unsigned m_game_frames;
         // Members
+        SoundEffect m_sound;
+
 };
 
-#endif // AE_ANIMATE_HPP_INCLUDED
+#endif // AE_SOUND_HPP_INCLUDED

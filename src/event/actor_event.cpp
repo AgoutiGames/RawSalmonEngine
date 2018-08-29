@@ -32,6 +32,7 @@
 #include "event/ae_accelerate.hpp"
 #include "event/ae_decelerate.hpp"
 #include "event/ae_move.hpp"
+#include "event/ae_sound.hpp"
 
 std::map<std::string, ActorEvent*> ActorEvent::m_event_dict;
 
@@ -49,6 +50,7 @@ void ActorEvent::initialize_all() {
     register_class<AeAccelerate>();
     register_class<AeDecelerate>();
     register_class<AeMove>();
+    register_class<AeSound>();
 }
 
 /**

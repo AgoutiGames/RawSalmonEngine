@@ -29,7 +29,7 @@
  <objectgroup name="Objektebene 1">
   <object id="1" name="PLAYER" gid="31" x="520" y="664" width="128" height="128">
    <properties>
-    <property name="ON_ALWAYS" value="Fall"/>
+    <property name="ON_ALWAYS" value="Physics"/>
     <property name="ON_IDLE" value="IdleLast"/>
    </properties>
   </object>

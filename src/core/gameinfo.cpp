@@ -20,6 +20,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 
 #include "util/tinyxml2.h"
@@ -44,7 +45,7 @@ bool GameInfo::init() {
 	bool success = true;
 
 	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 )
 	{
 		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
 		success = false;
@@ -85,6 +86,13 @@ bool GameInfo::init() {
 					std::cerr << "SDL_image could not initialize! SDL_image Error: "<< IMG_GetError() << "\n" ;
 					success = false;
 				}
+
+				//Initialize SDL_mixer
+				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+                {
+                    printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+                    success = false;
+                }
 			}
 		}
 	}
@@ -154,6 +162,7 @@ void GameInfo::close() {
 	m_renderer = nullptr;
 
 	//Quit SDL subsystems
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
