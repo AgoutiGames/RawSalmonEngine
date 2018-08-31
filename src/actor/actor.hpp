@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 
+#include "actor/data_block.hpp"
 #include "event/actor_event.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
@@ -41,6 +42,7 @@ class Actor{
         // Constructors
         // I have no idea why but with a default constructor
         // this won't compile properly
+        // This probably has something to do with members lacking one
         Actor(Uint16 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
         Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
@@ -79,11 +81,7 @@ class Actor{
         void set_val(std::string name, std::string val);
         //void set_val(std::string name, Actor& val);
 
-        bool get_val_bool(std::string name);
-        int get_val_int(std::string name);
-        float get_val_float(std::string name);
-        std::string get_val_string(std::string name);
-        //Actor& get_val_actor(std::string name);
+        DataBlock& get_data() {return m_data;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
 
@@ -123,12 +121,7 @@ class Actor{
         std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
         std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
 
-        // Different Maps we need so actors can hold data
-        std::map<std::string, bool> m_data_bool;
-        std::map<std::string, int> m_data_int;
-        std::map<std::string, float> m_data_float;
-        std::map<std::string, std::string> m_data_string;
-        //std::map<std::string, Actor> m_data_actor;
+        DataBlock m_data; ///< This holds custom user values by string
 };
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list

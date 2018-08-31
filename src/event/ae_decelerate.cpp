@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "actor/data_block.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "map/mapdata.hpp"
@@ -47,28 +48,29 @@ m_y_speed_name{y_name}
  */
 EventSignal AeDecelerate::process(Actor& actor) {
     bool at_zero_speed = false;
+    DataBlock& values = actor.get_data();
     if(m_x_factor != 0.0f) {
-        float temp = actor.get_val_float(m_x_speed_name);
+        float temp = values.get_val_float(m_x_speed_name);
         if(temp > 0.0f) {
-            if(temp > m_x_factor) {actor.set_val(m_x_speed_name, temp - m_x_factor);}
-            else {actor.set_val(m_x_speed_name, 0.0f);}
+            if(temp > m_x_factor) {values.set_val(m_x_speed_name, temp - m_x_factor);}
+            else {values.set_val(m_x_speed_name, 0.0f);}
         }
         else if(temp < 0.0f) {
-            if(temp < -m_x_factor) {actor.set_val(m_x_speed_name, temp + m_x_factor);}
-            else {actor.set_val(m_x_speed_name, 0.0f);}
+            if(temp < -m_x_factor) {values.set_val(m_x_speed_name, temp + m_x_factor);}
+            else {values.set_val(m_x_speed_name, 0.0f);}
         }
         else {at_zero_speed = true;}
     }
 
     if(m_y_factor != 0.0f) {
-        float temp = actor.get_val_float(m_y_speed_name);
+        float temp = values.get_val_float(m_y_speed_name);
         if(temp > 0.0f) {
-            if(temp > m_y_factor) {actor.set_val(m_y_speed_name, temp - m_y_factor);}
-            else {actor.set_val(m_y_speed_name, 0.0f);}
+            if(temp > m_y_factor) {values.set_val(m_y_speed_name, temp - m_y_factor);}
+            else {values.set_val(m_y_speed_name, 0.0f);}
         }
         else if(temp < 0.0f) {
-            if(temp < -m_y_factor) {actor.set_val(m_y_speed_name, temp + m_y_factor);}
-            else {actor.set_val(m_y_speed_name, 0.0f);}
+            if(temp < -m_y_factor) {values.set_val(m_y_speed_name, temp + m_y_factor);}
+            else {values.set_val(m_y_speed_name, 0.0f);}
         }
         else {at_zero_speed = true;}
     }
