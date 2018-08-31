@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 
+#include "actor/data_block.hpp"
 #include "map/camera.hpp"
 #include "map/tile.hpp"
 #include "map/layer.hpp"
@@ -55,6 +56,7 @@ class MapData {
         unsigned get_tile_w() const {return m_tile_w;} ///< Return base tile width
         unsigned get_w() const {return m_width * m_tile_w;} ///< Return map width in pixels
         unsigned get_h() const {return m_height * m_tile_h;} ///< Return map height in pixels
+        DataBlock& get_data() {return m_data;}
         void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);} ///< Link event name with @c ActorEvent*
         ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event
         bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
@@ -99,6 +101,8 @@ class MapData {
         unsigned m_width;  // The map dimensions in tiles
         unsigned m_height;
         SDL_Color m_bg_color;
+
+        DataBlock m_data; ///< This holds custom user values by string
 
         Camera m_camera;
                                //                         | |

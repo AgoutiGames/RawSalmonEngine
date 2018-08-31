@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "actor/data_block.hpp"
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "map/mapdata.hpp"
@@ -49,51 +50,52 @@ m_y_speed_name{y_name}
  */
 EventSignal AeAccelerate::process(Actor& actor) {
     bool hit_limit = false;
+    DataBlock& values = actor.get_data();
     if(m_x_factor != 0.0f) {
 
-        float temp = actor.get_val_float(m_x_speed_name);
+        float temp = values.get_val_float(m_x_speed_name);
 
         if(m_x_max_speed < 0.0f) {
             if(temp + m_x_factor < m_x_max_speed) {
-                actor.set_val(m_x_speed_name, m_x_max_speed);
+                values.set_val(m_x_speed_name, m_x_max_speed);
                 hit_limit = true;
             }
             else {
-                actor.set_val(m_x_speed_name, temp + m_x_factor);
+                values.set_val(m_x_speed_name, temp + m_x_factor);
             }
         }
 
         else {
             if(temp + m_x_factor > m_x_max_speed) {
-                actor.set_val(m_x_speed_name, m_x_max_speed);
+                values.set_val(m_x_speed_name, m_x_max_speed);
                 hit_limit = true;
             }
             else {
-                actor.set_val(m_x_speed_name, temp + m_x_factor);
+                values.set_val(m_x_speed_name, temp + m_x_factor);
             }
         }
     }
 
     if(m_y_factor != 0.0f) {
-        float temp = actor.get_val_float(m_y_speed_name);
+        float temp = values.get_val_float(m_y_speed_name);
 
         if(m_y_max_speed < 0.0f) {
             if(temp + m_y_factor < m_y_max_speed) {
-                actor.set_val(m_y_speed_name, m_y_max_speed);
+                values.set_val(m_y_speed_name, m_y_max_speed);
                 hit_limit = true;
             }
             else {
-                actor.set_val(m_y_speed_name, temp + m_y_factor);
+                values.set_val(m_y_speed_name, temp + m_y_factor);
             }
         }
 
         else {
             if(temp + m_y_factor > m_y_max_speed) {
-                actor.set_val(m_y_speed_name, m_y_max_speed);
+                values.set_val(m_y_speed_name, m_y_max_speed);
                 hit_limit = true;
             }
             else {
-                actor.set_val(m_y_speed_name, temp + m_y_factor);
+                values.set_val(m_y_speed_name, temp + m_y_factor);
             }
         }
     }

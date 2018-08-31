@@ -15,6 +15,7 @@ include_directories(src)
 set(ACTOR_SOURCES
     src/actor/actor.cpp
     src/actor/cause.cpp
+    src/actor/data_block.cpp
     )
 
 set(AUDIO_SOURCES
