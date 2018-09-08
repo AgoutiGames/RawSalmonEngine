@@ -106,12 +106,13 @@
  <objecttype name="AeSetVar" color="#a0a0a4">
   <property name="*=" type="bool" default="false"/>
   <property name="+=" type="bool" default="false"/>
-  <property name="=" type="bool" default="false"/>
   <property name="GLOBAL" type="bool" default="false"/>
-  <property name="LOCAL" type="bool" default="false"/>
+  <property name="LOCAL" type="bool" default="true"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="TYPE" type="string" default="FLOAT"/>
+  <property name="VAL_NAME" type="string"/>
  </objecttype>
  <objecttype name="AeSound" color="#a0a0a4">
   <property name="NAME" type="string"/>
