@@ -89,14 +89,14 @@ class EventContainer : public T{
 
         virtual ~EventContainer() = 0;
 
-        Priority m_priority;
-        EventSignal m_signal;
-        std::string m_name;
-
         /// Deletes the @c event_list variable
         static void initialize();
 
     private:
+        Priority m_priority;
+        EventSignal m_signal;
+        std::string m_name;
+
         static std::list<U> m_event_list;
 };
 

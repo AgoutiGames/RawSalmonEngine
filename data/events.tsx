@@ -86,9 +86,11 @@
    <property name="NAME" value="WRight"/>
   </properties>
  </tile>
- <tile id="11" type="AeMoveDirection">
+ <tile id="11" type="AeSetVar">
   <properties>
-   <property name="NAME" value="WUp"/>
+   <property name="NAME" value="Zero_Y"/>
+   <property name="VALUE" type="float" value="0"/>
+   <property name="VAL_NAME" value="__YSPEED"/>
   </properties>
  </tile>
  <tile id="12" type="AeSound">
@@ -164,8 +166,9 @@
  </tile>
  <tile id="22" type="AeMulti">
   <properties>
-   <property name="1" value="Jump_Dyn"/>
-   <property name="2" value="Jump_Sound"/>
+   <property name="1" value="Zero_Y"/>
+   <property name="2" value="Jump_Dyn"/>
+   <property name="3" value="Jump_Sound"/>
    <property name="NAME" value="Jump_Dyn2"/>
   </properties>
  </tile>
