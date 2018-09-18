@@ -154,10 +154,13 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
 
         // Parse image position
         eResult = source->QueryIntAttribute("offsetx", &m_offset_x);
-        if(eResult != XML_SUCCESS) return eResult;
+        if(eResult != XML_SUCCESS) {
+            m_offset_x = 0;
+        }
         eResult = source->QueryIntAttribute("offsety", &m_offset_y);
-        if(eResult != XML_SUCCESS) return eResult;
-
+        if(eResult != XML_SUCCESS) {
+            m_offset_y = 0;
+        }
         // Parse opacity (which works with image layer)
         float opacity;
         eResult = source->QueryFloatAttribute("opacity", &opacity);
@@ -192,6 +195,10 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
                         return eResult;
                     }
                 }
+                else if(name == "PARALLAX") {
+                    eResult = p_property->QueryBoolAttribute("value", &m_parallax);
+                    if(eResult != XML_SUCCESS) return eResult;
+                }
                 else{
                     std::cerr << "Unknown image layer property " << p_name << " occured\n";
                     return XML_ERROR_PARSING;
@@ -225,7 +232,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
  * @warning The layer opacity value is ignored except for @c image type layers
  */
 
-bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
+bool Layer::render(const Camera& camera, const MapData& base_map) const {
     bool success = true;
     switch(m_type) {
         // Render map type "map"
@@ -235,19 +242,19 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             int tile_h = static_cast<int>(m_tile_h);
 
             // Apply the layer offset
-            int x_camera = camera->x - m_offset_x;
-            int y_camera = camera->y - m_offset_y;
+            int x_camera = camera.x() - m_offset_x;
+            int y_camera = camera.y() - m_offset_y;
 
             // Horizontal range of tiles to render
             int x_tile_from = x_camera / tile_w;
-            int x_tile_to = (x_camera + camera->w) / tile_w;
+            int x_tile_to = (x_camera + camera.w()) / tile_w;
 
             // Horizontal pixel offset to full tile
             int x_tile_offset = x_camera % tile_w;
 
             // Vertical range of tiles to render
             int y_tile_from = y_camera / tile_h;
-            int y_tile_to = (y_camera + camera->h) / tile_h;
+            int y_tile_to = (y_camera + camera.h()) / tile_h;
 
             // Vertical pixel offset to full tile
             int y_tile_offset = y_camera % tile_h;
@@ -295,10 +302,10 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             break;}
         // Render map type "object"
         case object:{
-            int x = camera->x - m_offset_x;
-            int y = camera->y - m_offset_y;
+            int x = camera.x() - m_offset_x;
+            int y = camera.y() - m_offset_y;
             int from = y - base_map.get_overhang(Direction::up) * m_tile_h;
-            int to = y + camera->h + base_map.get_overhang(Direction::down) * m_tile_h;
+            int to = y + camera.h() + base_map.get_overhang(Direction::down) * m_tile_h;
             // Has y-axis offscreen culling
             for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
                 int feet = it->get_y();
@@ -308,12 +315,24 @@ bool Layer::render(SDL_Rect* camera, const MapData& base_map) const {
             break;}
         // Render map type "image"
         case image:{
-            int x = m_offset_x - camera->x;
-            int y = m_offset_y - camera->y;
-            if(y > camera->h || x > camera->w || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
-                return success;
+            if(m_parallax) {
+                int x_range = base_map.get_w() - camera.w();
+                int y_range = base_map.get_h() - camera.h();
+                float x_trans_fact = static_cast<float>(camera.x()) / x_range;
+                float y_trans_fact = static_cast<float>(camera.y()) / y_range;
+                x_trans_fact = x_trans_fact * (m_width - camera.w());
+                y_trans_fact = y_trans_fact * (m_height - camera.h());
+                m_img.render(base_map.get_renderer(), -x_trans_fact, -y_trans_fact);
+
             }
-            else {m_img.render(base_map.get_renderer(), x, y);}
+            else{
+                int x = m_offset_x - camera.x();
+                int y = m_offset_y - camera.y();
+                if(y > camera.h() || x > camera.w() || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
+                    return success;
+                }
+                else {m_img.render(base_map.get_renderer(), x, y);}
+            }
             break;}
         // Don't render unknown type
         default:{
@@ -385,11 +404,14 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
     switch (m_type) {
         case map:{
             if(type != "COLLIDE") {break;}
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
             // Calculate possible chunk of tiles which could possibly collide with the rect
-            int x_from = (rect->x + m_offset_x) / m_tile_w;
-            int y_from = (rect->y + m_offset_y) / m_tile_h;
-            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
-            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            int x_from = (rect->x - m_offset_x) / tile_w;
+            int y_from = (rect->y - m_offset_y) / tile_h;
+            int x_to = (rect->x - m_offset_x + rect->w) / tile_w;
+            int y_to = (rect->y - m_offset_y + rect->h) / tile_h;
             // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
@@ -401,8 +423,8 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
                             // Move tile hitbox to tile coordinates
-                            tile_rect.x += m_offset_x + x * m_tile_w;
-                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            tile_rect.x += m_offset_x + x * tile_w;
+                            tile_rect.y += m_offset_y + y * tile_h;
                             SDL_Rect intersect;
                             // Get intersection from supplied rect and tile rect
                             if(SDL_IntersectRect(rect, &tile_rect, &intersect)) {
@@ -456,11 +478,14 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<A
     switch (m_type) {
         case map:{
             if(type != "COLLIDE") {break;}
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
             // Calculate possible chunk of tiles which could possibly collide with the rect
-            int x_from = (rect->x + m_offset_x) / m_tile_w;
-            int y_from = (rect->y + m_offset_y) / m_tile_h;
-            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
-            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            int x_from = (rect->x - m_offset_x) / tile_w;
+            int y_from = (rect->y - m_offset_y) / tile_h;
+            int x_to = (rect->x - m_offset_x + rect->w) / tile_w;
+            int y_to = (rect->y - m_offset_y + rect->h) / tile_h;
             // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
@@ -472,8 +497,8 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<A
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
                             // Move tile hitbox to tile coordinates
-                            tile_rect.x += m_offset_x + x * m_tile_w;
-                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            tile_rect.x += m_offset_x + x * tile_w;
+                            tile_rect.y += m_offset_y + y * tile_h;
                             // Get intersection from supplied rect and tile rect
                             if(SDL_HasIntersection(rect, &tile_rect)) {
                                 collide = true;
@@ -513,11 +538,14 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::string t
     switch (m_type) {
         case map:{
             if(type != "COLLIDE") {break;}
+            // Cast tile_w and h to int to simplify calculations
+            int tile_w = static_cast<int>(m_tile_w);
+            int tile_h = static_cast<int>(m_tile_h);
             // Calculate possible chunk of tiles which could possibly collide with the rect
-            int x_from = (rect->x + m_offset_x) / m_tile_w;
-            int y_from = (rect->y + m_offset_y) / m_tile_h;
-            int x_to = (rect->x + m_offset_x + rect->w) / m_tile_w;
-            int y_to = (rect->y + m_offset_y + rect->h) / m_tile_h;
+            int x_from = (rect->x - m_offset_x) / tile_w;
+            int y_from = (rect->y - m_offset_y) / tile_h;
+            int x_to = (rect->x - m_offset_x + rect->w) / tile_w;
+            int y_to = (rect->y - m_offset_y + rect->h) / tile_h;
             // Iterate through all possible tiles
             for(int y = y_from; y <= y_to && y >= 0 && y < static_cast<int>(m_height); y++) {
                 for(int x = x_from; x <= x_to && x >= 0 && x < static_cast<int>(m_width); x++) {
@@ -529,8 +557,8 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::string t
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
                             // Move tile hitbox to tile coordinates
-                            tile_rect.x += m_offset_x + x * m_tile_w;
-                            tile_rect.y += m_offset_y + y * m_tile_h;
+                            tile_rect.x += m_offset_x + x * tile_w;
+                            tile_rect.y += m_offset_y + y * tile_h;
                             // Get intersection from supplied rect and tile rect
                             if(SDL_HasIntersection(rect, &tile_rect)) {
                                 collide = true;

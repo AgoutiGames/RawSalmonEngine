@@ -59,6 +59,8 @@ public:
     AnimSignal push_anim_trigger();
     void push_anim(Uint32 time);
 
+    std::string get_type() const {return m_type;}
+
 private:
     const SDL_Rect& get_clip(const MapData& base_map) const;
 
@@ -66,6 +68,7 @@ private:
     SDL_Rect m_clip;
     SDL_Rect m_hitbox = {0,0,0,0};
     float m_speed = 1.0f;
+    std::string m_type;
     bool m_animated = false;
 
     // Variables required for animated tiles

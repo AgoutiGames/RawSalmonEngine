@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="12" height="5" tilewidth="512" tileheight="512" infinite="0" backgroundcolor="#506fd3" nextobjectid="10">
+ <tileset firstgid="1" name="Boden" tilewidth="512" tileheight="512" tilecount="1" columns="1">
+  <image source="tilesets/terra/dirt_row_1.png" width="512" height="512"/>
+  <tile id="0">
+   <objectgroup draworder="index">
+    <object id="1" x="0" y="182" width="512" height="330"/>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <tileset firstgid="2" name="Büsche" tilewidth="512" tileheight="512" tilecount="1" columns="1">
+  <image source="tilesets/terra/bushes.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="3" name="Euk_Tree" tilewidth="512" tileheight="512" tilecount="1" columns="1">
+  <image source="tilesets/terra/Euk_Tree.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="4" name="grass_row" tilewidth="512" tileheight="512" tilecount="1" columns="1">
+  <image source="tilesets/terra/grass_row.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="5" name="rock_row" tilewidth="512" tileheight="512" tilecount="1" columns="1">
+  <image source="tilesets/terra/rock_row.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="6" source="tilesets/block_actor.tsx"/>
+ <tileset firstgid="8" source="tilesets/block_animation.tsx"/>
+ <imagelayer name="BG 1" visible="0" offsetx="20" offsety="920">
+  <image source="tilesets/terra/parallax_layer_4.png" width="3000" height="1300"/>
+  <properties>
+   <property name="PARALLAX" type="bool" value="true"/>
+  </properties>
+ </imagelayer>
+ <layer name="Hopsi" width="12" height="5" offsetx="0" offsety="150">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  </data>
+ </layer>
+ <layer name="Hopsi2" width="12" height="5">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 3" width="12" height="5" offsetx="0" offsety="300">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 5" width="12" height="5" offsetx="0" offsety="300">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAFAAAAAAAAAAAAAAAFAAAABQAAAAAAAAAAAAAABQAAAAUAAAAAAAAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 4" width="12" height="5" offsetx="0" offsety="300">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 5" width="12" height="5" offsetx="0" offsety="300">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAACAAAAAgAAAAAAAAACAAAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 1" width="12" height="5" offsetx="0" offsety="300">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAA
+  </data>
+ </layer>
+ <objectgroup name="Objektebene 1">
+  <object id="1" name="PLAYER" gid="6" x="177.333" y="2511.45" width="128" height="128">
+   <properties>
+    <property name="ON_ALWAYS" value="Physics"/>
+    <property name="ON_IDLE" value="IdleLast"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

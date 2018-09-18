@@ -22,6 +22,7 @@
 #include <map>
 #include <string>
 
+#include "actor/cause.hpp"
 #include "event/event_container.hpp"
 #include "util/game_types.hpp"
 
@@ -47,10 +48,10 @@ class ActorEvent{
         virtual ActorEvent* copy() const = 0;
         virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const = 0;
 
-        virtual void set_cause(Actor* x) {m_cause = x;}
-        Actor* get_cause() const {return m_cause;}
-        virtual void set_key(SDL_Keysym x) {m_key = x;}
-        const SDL_Keysym& get_key() const {return m_key;}
+        virtual void set_cause(Cause x) {m_cause = x;}
+        const Cause& get_cause() const {return m_cause;}
+        virtual void set_key(SDL_Keysym x) {m_cause = Cause(x);}
+        const SDL_Keysym get_key() const {return m_cause.get_key();}
 
         static void initialize_all();
 
@@ -60,8 +61,7 @@ class ActorEvent{
         static tinyxml2::XMLError parse_multi(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry);
 
     private:
-        Actor* m_cause = nullptr;
-        SDL_Keysym m_key;
+        Cause m_cause;
 
         static std::map<std::string, ActorEvent*> m_event_dict;
 

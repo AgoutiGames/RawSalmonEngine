@@ -68,6 +68,7 @@ Response str_to_response(const std::string& name) {
     if(name == "ON_DEATH") return Response::on_death;
     if(name == "ON_IDLE") return Response::on_idle;
     if(name == "ON_ALWAYS") return Response::on_always;
+    if(name == "ON_SPAWN") return Response::on_spawn;
     else return Response::invalid;
 }
 
@@ -80,6 +81,13 @@ std::vector<float> dir_to_mov(const Direction dir) {
     else return std::vector<float>{0,0};
 }
 
+/**
+ * @brief Converts the xmlelement to a proper SDL_Rect with checking
+ * @param source The @c XMLElement which holds the information
+ * @param rect The rect which gets produced
+ * @return @c XMLError Indicating success or failure
+ * @note Only the first hitbox gets parsed, multiple hitboxes lead to an error
+ */
 tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
     using namespace tinyxml2;
     XMLError eResult;
@@ -123,6 +131,12 @@ tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Converts the xmlelement to multiple proper SDL_Rects with checking
+ * @param source The @c XMLElement which holds the information
+ * @param rects The rects which get produced
+ * @return @c XMLError Indicating success or failure
+ */
 tinyxml2::XMLError parse_hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects) {
     using namespace tinyxml2;
     XMLError eResult;
@@ -176,6 +190,12 @@ tinyxml2::XMLError parse_hitboxes(tinyxml2::XMLElement* source, std::map<std::st
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Set the blendmode of a texture according to XML information
+ * @param source The @c XMLElement which holds the information
+ * @param img The texture which blendmode gets set
+ * @return @c XMLError Indicating success or failure
+ */
 tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img) {
     using namespace tinyxml2;
     const char* p_mode;

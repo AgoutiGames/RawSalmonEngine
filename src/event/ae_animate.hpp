@@ -30,6 +30,9 @@ class Actor;
 
 /**
  * @brief Animate the actor
+ * @note Due to late checking this event stays one extra game frame in the event pipeline
+ *       This means that an event with frames = 1 animates in the first and deletes in the second frame
+ *       If placed in "OnIdle" it will effectively only animate each second frame
  */
 class AeAnimate : public EventContainer<ActorEvent, AeAnimate>{
     // The default interface block (copy this!)

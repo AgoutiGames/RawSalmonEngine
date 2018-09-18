@@ -84,6 +84,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
             return eResult;
         }
     }
+    respond(Response::on_spawn);
     return XML_SUCCESS;
 }
 
@@ -202,8 +203,9 @@ bool Actor::process_events() {
 }
 
 /**
- * @brief Adds the event to the actors pipeline and sorts
+ * @brief Adds the event to the actors pipeline
  * @param event The event to be added
+ * @note The position where the event is added corresponds to its priority value
  */
 void Actor::add_event(ActorEvent* event) {
     if(!is_blocked(event->get_type()) && !is_blocked(event->name())
@@ -265,7 +267,7 @@ bool Actor::animate(AnimationType anim, Direction dir) {
  * @brief Animate the actor
  * @param anim The type of the animation
  * @param dir The direction of the animation
- * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger
+ * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger frame
  */
 AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
     if(anim == AnimationType::none) {return AnimSignal::none;}
@@ -338,17 +340,69 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
 /**
  * @brief Triggers event bound to Response value
  * @param r the Response value
- * @param cause Pointer to the Actor which may caused this event
- * @param key Keypress which may caused this event
  * @return @c bool indication if response is defined/gets triggered
  */
-bool Actor::respond(Response r, Actor* cause, SDL_Keysym key) {
+bool Actor::respond(Response r) {
     if(m_response.find(r) == m_response.end()) {
         return false;
     }
     else {
         ActorEvent* event = m_response.at(r)->copy();
-        if(cause != nullptr) {event->set_cause(cause);}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param a Pointer to the Actor which may caused this event
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, Actor* a) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
+        if(a != nullptr) {event->set_cause(Cause(a));}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param t Pointer to the Tile which may caused this event
+ * @param x X-coordinate of the tile
+ * @param y Y-coordinate of the tile
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, Tile* t, int x, int y) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
+        if(t != nullptr) {event->set_cause(Cause(t,x,y));}
+        add_event(event);
+        return true;
+    }
+}
+
+/**
+ * @brief Triggers event bound to Response value
+ * @param r the Response value
+ * @param key Keypress which may caused this event
+ * @return @c bool indication if response is defined/gets triggered
+ */
+bool Actor::respond(Response r, SDL_Keysym key) {
+    if(m_response.find(r) == m_response.end()) {
+        return false;
+    }
+    else {
+        ActorEvent* event = m_response.at(r)->copy();
         if(key.sym != SDLK_UNKNOWN) {event->set_key(key);}
         add_event(event);
         return true;
@@ -414,33 +468,38 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     }
 }
 
-bool Actor::on_ground(Direction dir) const {
+/**
+ * @brief Checks if the actor is standing on ground
+ * @param dir The direction of gravity
+ * @return @c bool which is True if the actor is on ground
+ */
+bool Actor::on_ground(Direction dir, int tolerance) const {
     SDL_Rect pos = get_hitbox();
     pos.x += get_x();
     pos.y += get_y() - get_h();
     SDL_Rect temp;
     if(dir == Direction::up) {
         temp.x = pos.x;
-        temp.y =pos.y - 1;
+        temp.y =pos.y - 1 - tolerance;
         temp.w = pos.w;
-        temp.h = 1;
+        temp.h = 1 + tolerance;
     }
     else if(dir == Direction::down) {
         temp.x = pos.x;
         temp.y =pos.y + pos.h;
         temp.w = pos.w;
-        temp.h = 1;
+        temp.h = 1 + tolerance;
     }
     else if(dir == Direction::left) {
-        temp.x = pos.x - 1;
+        temp.x = pos.x - 1 - tolerance;
         temp.y =pos.y;
-        temp.w = 1;
+        temp.w = 1 + tolerance;
         temp.h = pos.h;
     }
     else if(dir == Direction::right) {
         temp.x = pos.x + pos.w;
         temp.y =pos.y;
-        temp.w = 1;
+        temp.w = 1 + tolerance;
         temp.h = pos.h;
     }
     else {
@@ -450,7 +509,10 @@ bool Actor::on_ground(Direction dir) const {
 }
 
 /**
- * @brief Deletes all event with given name or type except one
+ * @brief Deletes all events with given name or type except one
+ * @param name The individual name or type of the event
+ * @param except The event which shouldn't be deleted
+ * @return the count of events which have been deleted
  */
 unsigned Actor::scrap_event(std::string name, ActorEvent* except) {
     unsigned counter = 0;

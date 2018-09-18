@@ -16,6 +16,18 @@
   <property name="ON_DEATH" type="string"/>
   <property name="ON_HIT" type="string"/>
   <property name="ON_IDLE" type="string"/>
+  <property name="ON_SPAWN" type="string"/>
+ </objecttype>
+ <objecttype name="AeAccelerate" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="XFACTOR" type="float" default="40"/>
+  <property name="XMAX_SPEED" type="float" default="500"/>
+  <property name="XSPEED_NAME" type="string" default="__XSPEED"/>
+  <property name="YFACTOR" type="float" default="40"/>
+  <property name="YMAX_SPEED" type="float" default="500"/>
+  <property name="YSPEED_NAME" type="string" default="__YSPEED"/>
  </objecttype>
  <objecttype name="AeAnimate" color="#a0a0a4">
   <property name="ANIMATION_FRAMES" type="int" default="0"/>
@@ -26,6 +38,15 @@
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
+ <objecttype name="AeDecelerate" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="XFACTOR" type="float" default="10"/>
+  <property name="XSPEED_NAME" type="string" default="__XSPEED"/>
+  <property name="YFACTOR" type="float" default="10"/>
+  <property name="YSPEED_NAME" type="string" default="__YSPEED"/>
  </objecttype>
  <objecttype name="AeFall" color="#a0a0a4">
   <property name="ACCELERATION" type="float" default="500"/>
@@ -48,6 +69,15 @@
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="SLOW_FACTOR" type="float" default="0.5"/>
   <property name="SLOW_ON_RELEASE" type="bool" default="true"/>
+ </objecttype>
+ <objecttype name="AeMove" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="XFACTOR" type="float" default="1"/>
+  <property name="XSPEED_NAME" type="string" default="__XSPEED"/>
+  <property name="YFACTOR" type="float" default="1"/>
+  <property name="YSPEED_NAME" type="string" default="__YSPEED"/>
  </objecttype>
  <objecttype name="AeMoveDirection" color="#a0a0a4">
   <property name="ANIMATION_TYPE" type="string" default="WALK"/>
@@ -73,6 +103,23 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeSetVar" color="#a0a0a4">
+  <property name="*=" type="bool" default="false"/>
+  <property name="+=" type="bool" default="false"/>
+  <property name="GLOBAL" type="bool" default="false"/>
+  <property name="LOCAL" type="bool" default="true"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="TYPE" type="string" default="FLOAT"/>
+  <property name="VAL_NAME" type="string"/>
+ </objecttype>
+ <objecttype name="AeSound" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PATH" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
  <objecttype name="AteOnGround" color="#a0a0a4">
   <property name="CONTINUOUS" type="bool" default="false"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
@@ -81,6 +128,7 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="SUCCESS" type="string"/>
+  <property name="TOLERANCE" type="int" default="0"/>
  </objecttype>
  <objecttype name="KEY_MAPPING" color="#a0a0a4">
   <property name="DOWN" type="bool" default="false"/>

@@ -26,6 +26,7 @@
 
 #include "actor/actor.hpp"
 #include "graphics/texture.hpp"
+#include "map/camera.hpp"
 #include "map/tileset.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
@@ -52,7 +53,7 @@ class Layer{
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
-        bool render(SDL_Rect* camera, const MapData& base_map) const;
+        bool render(const Camera& camera, const MapData& base_map) const;
         void update();
         std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                       AnimationType animation = AnimationType::invalid);
@@ -66,18 +67,19 @@ class Layer{
 
         // members for m_type map
         std::string m_name;
-        unsigned m_width;
+        unsigned m_width;   // Measured in tiles for "map" and pixels for "image"
         unsigned m_height;
         unsigned m_tile_w;
         unsigned m_tile_h;
         std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information
-        int m_offset_x = 0;
+        int m_offset_x = 0; // Taken as position for "image"
         int m_offset_y = 0;
 
         // members for m_type image
         std::string m_img_src;
         Texture m_img;
         float m_opacity = 1.0f; ///< @warning value only works with image layers!
+        bool m_parallax = false;
 
         // members for m_type object
         std::list<Actor> m_obj_grid;

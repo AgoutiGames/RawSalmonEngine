@@ -23,6 +23,8 @@
 #include <vector>
 #include <string>
 
+#include "actor/data_block.hpp"
+#include "map/camera.hpp"
 #include "map/tile.hpp"
 #include "map/layer.hpp"
 #include "map/tileset.hpp"
@@ -38,11 +40,11 @@
 
 class MapData {
     public:
-        MapData() {}
+        MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
         ~MapData() {}
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
-        bool render(SDL_Rect* camera) const;
+        bool render() const;
         void update();
 
         unsigned get_overhang(Direction dir) const;
@@ -52,6 +54,9 @@ class MapData {
         Tile* get_tile(Uint16 tile_id) const;
         unsigned get_tile_h() const {return m_tile_h;} ///< Return base tile height
         unsigned get_tile_w() const {return m_tile_w;} ///< Return base tile width
+        unsigned get_w() const {return m_width * m_tile_w;} ///< Return map width in pixels
+        unsigned get_h() const {return m_height * m_tile_h;} ///< Return map height in pixels
+        DataBlock& get_data() {return m_data;}
         void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);} ///< Link event name with @c ActorEvent*
         ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event
         bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
@@ -87,12 +92,19 @@ class MapData {
         void process_keys_sustained();
 
     private:
+        // Better delete this after parsing
         tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file
+
         std::string m_base_path = "../data/"; ///< Path to folder where .tmx map files are
-        unsigned m_tile_w; // The tile dimensions
+        unsigned m_tile_w; // The tile dimensions in pixels
         unsigned m_tile_h;
-        unsigned m_width;  // The map dimensions
+        unsigned m_width;  // The map dimensions in tiles
         unsigned m_height;
+        SDL_Color m_bg_color;
+
+        DataBlock m_data; ///< This holds custom user values by string
+
+        Camera m_camera;
                                //                         | |
         void write_overhang(); // sets the 4 values below v v
         unsigned m_up_overhang = 0;
