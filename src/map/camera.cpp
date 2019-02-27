@@ -23,6 +23,8 @@ Camera::Camera(int x, int y, int w, int h) :
 
 /**
  * @brief Move camera to a valid position in respect to player position and map border
+ *
+ * @note If the camera is map bound and the map is smaller than the camera, the map is centered inside the camera frame
  */
 void Camera::update() {
     if(m_player_bound) {
@@ -30,17 +32,34 @@ void Camera::update() {
         m_rect.y = m_player->get_y_center() - (m_rect.h / 2);
     }
     if(m_map_bound) {
-        if(m_rect.x < m_crop_left) {
-            m_rect.x = m_crop_left;
+        // Check if map is less wide than the effective camera frame
+        if( static_cast<int>(m_map_width) - m_crop_left - m_crop_right < m_rect.w ) {
+            // Center the camera horizontally relative to map
+            m_rect.x = ((static_cast<int>(m_map_width) - m_crop_left - m_crop_right) - m_rect.w) / 2;
         }
-        else if(m_rect.x > static_cast<int>(m_map_width - m_rect.w - m_crop_right)) {
-            m_rect.x = m_map_width - m_rect.w - m_crop_right;
+        else {
+            // Check horizontal borders
+            if(m_rect.x < m_crop_left) {
+                m_rect.x = m_crop_left;
+            }
+            else if(m_rect.x > static_cast<int>(m_map_width) - m_rect.w - m_crop_right) {
+                m_rect.x = m_map_width - m_rect.w - m_crop_right;
+            }
         }
-        if(m_rect.y < m_crop_up) {
-            m_rect.y = m_crop_up;
+
+        // Check if map is less high than the effective camera frame
+        if( static_cast<int>(m_map_height) - m_crop_up - m_crop_down < m_rect.h ) {
+            // Center the camera vertically relative to map
+            m_rect.y = ((static_cast<int>(m_map_height) - m_crop_up - m_crop_down) - m_rect.h) / 2;
         }
-        else if(m_rect.y > static_cast<int>(m_map_height - m_rect.h - m_crop_down)) {
-            m_rect.y = m_map_height - m_rect.h - m_crop_down;
+        else {
+            // Check vertical borders
+            if(m_rect.y < m_crop_up) {
+                m_rect.y = m_crop_up;
+            }
+            else if(m_rect.y > static_cast<int>(m_map_height) - m_rect.h - m_crop_down) {
+                m_rect.y = m_map_height - m_rect.h - m_crop_down;
+            }
         }
     }
 }

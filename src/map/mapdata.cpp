@@ -115,7 +115,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     const char* p_bg_color;
     p_bg_color = pMap->Attribute("backgroundcolor");
     if(p_bg_color == nullptr) {
-        std::cerr << "Map is missing a custom backgroundcolor, will use white as default";
+        std::cerr << "Map is missing a custom backgroundcolor, will use white as default\n";
         m_bg_color = {255,255,255,255};
     }
     else {
@@ -212,6 +212,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         m_camera.bind_player(m_player);
     }
 
+    // By default bind the camera to the map borders
     m_camera.bind_map(get_w(),get_h());
 
     // This must be called after the parsing of all tilesets!
