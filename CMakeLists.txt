@@ -52,6 +52,7 @@ set(MAP_SOURCES
     src/map/mapdata.cpp
     src/map/layer.cpp
     src/map/tileset.cpp
+    src/map/tileset_collection.cpp
     src/map/tile.cpp
     )
 
