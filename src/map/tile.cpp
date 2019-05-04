@@ -28,6 +28,7 @@
 #include "map/mapdata.hpp"
 #include "map/tileset.hpp"
 #include "util/game_types.hpp"
+#include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
 /**
@@ -90,7 +91,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
     if(p_objgroup != nullptr) {
         XMLElement* p_object = p_objgroup->FirstChildElement("object");
         if(p_object != nullptr) {
-            eResult = parse_hitbox(p_object, m_hitbox);
+            eResult = parse::hitbox(p_object, m_hitbox);
             if(eResult != XML_SUCCESS) {
                 std::cerr << "Failed at parsing hitbox for tile\n";
                 return eResult;
@@ -307,7 +308,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
             XMLElement* p_object = p_objgroup->FirstChildElement("object");
             if(p_object != nullptr) {
                 ActorTemplate& temp = base_map.get_actor_template(actor_name);
-                eResult = parse_hitboxes(p_object, temp.hitbox);
+                eResult = parse::hitboxes(p_object, temp.hitbox);
                 if(eResult != XML_SUCCESS) {
                     std::cerr << "Failed at parsing hitboxes of actor animation for actor " << actor_name << "\n";
                     return eResult;

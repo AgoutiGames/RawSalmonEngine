@@ -103,9 +103,6 @@ Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
-tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
-tinyxml2::XMLError parse_hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects);
-tinyxml2::XMLError parse_blendmode(tinyxml2::XMLElement* source, Texture& img);
 
 std::vector<float> dir_to_mov(const Direction dir);
 

@@ -27,6 +27,7 @@
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/base64.h"
+#include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
 /**
@@ -189,7 +190,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
                 std::string name(p_name);
                 if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
                 if(name == "BLEND_MODE") {
-                    eResult = parse_blendmode(p_property, m_img);
+                    eResult = parse::blendmode(p_property, m_img);
                     if(eResult != XML_SUCCESS) {
                         std::cerr << "Failed at parsing blend mode for layer: " << m_name << "\n";
                         return eResult;

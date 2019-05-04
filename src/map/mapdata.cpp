@@ -27,6 +27,7 @@
 
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
+#include "util/parse.hpp"
 
 /**
  * @brief Parse the supplied .tmx file
@@ -563,7 +564,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     if(p_objgroup != nullptr) {
         XMLElement* p_object = p_objgroup->FirstChildElement("object");
         if(p_object != nullptr) {
-            eResult = parse_hitboxes(p_object, m_templates[actor_name].hitbox);
+            eResult = parse::hitboxes(p_object, m_templates[actor_name].hitbox);
             if(eResult != XML_SUCCESS) {
                 std::cerr << "Failed at parsing hitbox for actor template: " << actor_name << "\n";
                 return eResult;

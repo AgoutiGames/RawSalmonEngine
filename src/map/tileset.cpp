@@ -31,6 +31,7 @@
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
+#include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
 /**
@@ -156,7 +157,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
             std::string name(p_name);
             if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
             if(name == "BLEND_MODE") {
-                eResult = parse_blendmode(p_property, m_image);
+                eResult = parse::blendmode(p_property, m_image);
                 if(eResult != XML_SUCCESS) {
                     std::cerr << "Failed at parsing blend mode for tileset: " << m_name << "\n";
                     return eResult;

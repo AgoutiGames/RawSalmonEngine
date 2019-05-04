@@ -59,6 +59,7 @@ set(MAP_SOURCES
 set(UTIL_SOURCES
     src/util/base64.cpp
     src/util/game_types.cpp
+    src/util/parse.cpp
     src/util/tinyxml2.cpp
     )
 
