@@ -21,7 +21,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "actor/actor.hpp"
+class Actor;
 
 /**
  * @brief An interface for a smart sdl_rect used for camera purposes

@@ -22,19 +22,21 @@
 #include <iostream>
 #include <map>
 
+#include "event/actor_event.hpp"
 #include "map/mapdata.hpp"
+#include "map/tile.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
 
-Actor::Actor(Uint16 tile_id, MapData* map) : Actor::Actor(map->get_actor_template(tile_id), map)
+Actor::Actor(Uint16 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor_template(tile_id), mapdata)
 {
 
 }
 
 
-Actor::Actor(const ActorTemplate& templ, MapData* map) :
- m_map {map},
+Actor::Actor(const ActorTemplate& templ, MapData* mapdata) :
+ m_map {mapdata},
  m_type {templ.template_name},
  m_base_speed {templ.speed},
  m_direction {templ.direction},

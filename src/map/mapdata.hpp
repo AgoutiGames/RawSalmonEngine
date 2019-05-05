@@ -24,12 +24,15 @@
 #include <string>
 
 #include "actor/data_block.hpp"
+#include "actor/actor.hpp"
 #include "map/camera.hpp"
-#include "map/tile.hpp"
-#include "map/layer.hpp"
-#include "map/tileset.hpp"
 #include "map/tileset_collection.hpp"
+#include "util/game_types.hpp"
 #include "util/tinyxml2.h"
+
+class Tile; // forward declaration
+class Layer;
+class ActorEvent;
 
 /**
  * @brief Contain, render and update all game map layers
@@ -41,8 +44,8 @@
 
 class MapData {
     public:
-        MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
-        ~MapData() {}
+        MapData(unsigned screen_w, unsigned screen_h);
+        ~MapData();
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
         bool render() const;
@@ -51,11 +54,11 @@ class MapData {
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
 
-        unsigned get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Return map width in pixels
-        unsigned get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Return map height in pixels
+        unsigned get_w() const;
+        unsigned get_h() const;
         DataBlock& get_data() {return m_data;}
         void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);} ///< Link event name with @c ActorEvent*
-        ActorEvent* get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event
+        ActorEvent* get_event(std::string name) const;
         bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}

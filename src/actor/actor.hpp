@@ -24,11 +24,21 @@
 #include <map>
 
 #include "actor/data_block.hpp"
-#include "event/actor_event.hpp"
+#include "map/tile.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
+class ActorEvent;
 class MapData;
+
+struct ActorTemplate {
+    std::string template_name = "_";
+    float speed = 250.0f; // Pixel per second
+    Direction direction = Direction::down;
+    std::map<std::string, SDL_Rect> hitbox;
+    std::map<AnimationType, std::map<Direction, Tile>> animations;
+    std::map<Response, ActorEvent*> response; ///< Map which yields events for response values
+};
 
 /**
  * @brief Parse, store and manage all actors
@@ -133,6 +143,5 @@ inline bool operator< (const Actor& lhs, const Actor& rhs) {
         return lhs.get_x() < rhs.get_x();
     }
 }
-
 
 #endif // ACTOR_HPP_INCLUDED

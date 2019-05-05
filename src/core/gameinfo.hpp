@@ -22,7 +22,6 @@
 #include <SDL2/SDL.h>
 #include <string>
 
-#include "actor/actor.hpp"
 #include "map/mapdata.hpp"
 
 /**

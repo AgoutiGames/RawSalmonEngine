@@ -29,8 +29,6 @@
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 
 class Tileset; // forward declaration
-class TilesetCollection;
-class MapData;
 
 /**
  * @brief Parse, store and manage all tiles

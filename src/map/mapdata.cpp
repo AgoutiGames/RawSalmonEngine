@@ -25,9 +25,17 @@
 #include <sstream>
 #include <vector>
 
+#include "event/actor_event.hpp"
 #include "map/tile.hpp"
+#include "map/layer.hpp"
 #include "util/game_types.hpp"
 #include "util/parse.hpp"
+
+/// Plain constructor
+MapData::MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
+
+/// Empty destructor
+MapData::~MapData() {}
 
 /**
  * @brief Parse the supplied .tmx file
@@ -110,7 +118,11 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     parse::bg_color(pMap, m_bg_color); // Discard Result since missing bg_color is generally okay
 
     // This initiates the parsing of all tilesets
-    m_ts_collection.init(pMap, this);
+    eResult = m_ts_collection.init(pMap, this);
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Error at parsing tilesets!\n";
+        return eResult;
+    }
 
     // Get the first Element that isn't a tileset (can be layer, imagelayer or objectgroup)
     XMLElement* pLa;
@@ -535,3 +547,9 @@ void MapData::process_keys_sustained() {
         }
     }
 }
+
+unsigned MapData::get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Return map width in pixels
+
+unsigned MapData::get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Return map height in pixels
+
+ActorEvent* MapData::get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event

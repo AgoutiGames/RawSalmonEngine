@@ -24,11 +24,7 @@
 #include <vector>
 #include <map>
 
-#include "graphics/texture.hpp"
 #include "util/tinyxml2.h"
-
-class ActorEvent;
-class Tile;
 
 /**
  * @brief A collection of various enums and handy functions for conversion and parsing
@@ -87,15 +83,6 @@ enum class AnimSignal{
     next,
     none,
     missing,
-};
-
-struct ActorTemplate {
-    std::string template_name = "_";
-    float speed = 250.0f; // Pixel per second
-    Direction direction = Direction::down;
-    std::map<std::string, SDL_Rect> hitbox;
-    std::map<AnimationType, std::map<Direction, Tile>> animations;
-    std::map<Response, ActorEvent*> response; ///< Map which yields events for response values
 };
 
 AnimationType str_to_anim_type(const std::string& name);

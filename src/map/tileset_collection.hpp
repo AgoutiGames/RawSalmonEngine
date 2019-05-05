@@ -22,9 +22,12 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
-#include "map/tile.hpp"
-#include "map/tileset.hpp"
 #include "util/tinyxml2.h"
+#include "util/game_types.hpp"
+
+class Tileset; // forward declaration
+class Tile;
+class MapData;
 
 class TilesetCollection{
     public:
@@ -67,7 +70,6 @@ class TilesetCollection{
 
         std::vector<Tile*> mp_tiles;      ///< List of pointers to all tiles in order
         std::vector<Uint16> m_anim_tiles; ///< List of ids of all animated tiles
-        Tile m_empty_tile; ///< A placeholder which currently has no use except matching gids (this is tile 0)
 };
 
 

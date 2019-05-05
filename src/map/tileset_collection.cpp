@@ -27,6 +27,7 @@
 
 #include "map/tile.hpp"
 #include "map/mapdata.hpp"
+#include "map/tileset.hpp"
 #include "util/game_types.hpp"
 #include "util/parse.hpp"
 
@@ -60,7 +61,11 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
 
     // Clear Tile and Tileset data
     mp_tiles.clear();
-    mp_tiles.push_back(&m_empty_tile);
+    // Since tiled adresses tiles beginning with index one, we push a nullptr to position 0
+    // to avoid unnecessary addition on tile acess
+    //
+    // Anybody who dares manually adressing tile 0, deserves the segmentation fault ;-)
+    mp_tiles.push_back(nullptr);
     m_anim_tiles.clear();
 
     m_tilesets.clear();
@@ -84,6 +89,7 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
     // and passes the current timestamp
     init_anim_tiles();
 
+    return XML_SUCCESS;
 }
 
 /// Returns tile overhang values for the specified direction (up, down, left, right)

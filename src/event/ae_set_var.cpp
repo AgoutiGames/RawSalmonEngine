@@ -314,7 +314,7 @@ tinyxml2::XMLError AeSetVar::parse(tinyxml2::XMLElement* source, MapData& map, s
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    if(local && global || !local && !global) {
+    if( (local && global) || (!local && !global) ) {
         std::cerr << "You must either set global or local var, neither both nor none!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
