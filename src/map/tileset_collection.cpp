@@ -33,7 +33,7 @@
 tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData* mapdata) {
     using namespace tinyxml2;
 
-    m_base_map = mapdata;
+    mp_base_map = mapdata;
 
     XMLError eResult = source->QueryUnsignedAttribute("tilewidth", &m_tile_w);
     if(eResult != XML_SUCCESS) return eResult;
@@ -68,7 +68,7 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
 
     // Actually parse each tileset of the vector of pointers
     for(unsigned i = 0; i < p_tilesets.size(); i++) {
-        eResult = m_tilesets[i].init(p_tilesets[i], m_base_map->get_file_path(), m_base_map->get_renderer(), *this);
+        eResult = m_tilesets[i].init(p_tilesets[i], *this);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing Tileset: " << i << "\n";
             return eResult;
@@ -126,59 +126,6 @@ Tile* TilesetCollection::get_tile(Uint16 tile_id) const{
         return nullptr;
     }
     else return mp_tiles[tile_id];
-}
-
-/**
- * @brief Parse tile information from tileset
- * @param source The @c XMLElement from the tileset
- * @param first_gid The first global tile id of the tileset
- * @return an @c XMLError object which indicates success or error type
- *
- * Determines the tile type and calls the corresponding tile parsers
- */
-tinyxml2::XMLError TilesetCollection::parse_tiles_from_tileset(tinyxml2::XMLElement* source, unsigned first_gid) {
-    using namespace tinyxml2;
-
-    XMLError eResult;
-
-    while(source != nullptr) {
-        unsigned tile_id;
-        eResult = source->QueryUnsignedAttribute("id", &tile_id);
-        if(eResult != XML_SUCCESS) return eResult;
-        tile_id += first_gid;
-
-        Tile* T = mp_tiles[tile_id];
-        const char* p_type;
-        p_type = source->Attribute("type");
-
-        std::string tile_type;
-        if(p_type != nullptr) tile_type = p_type;
-
-        // Parse normal map tile
-        if(p_type == nullptr) {
-            eResult = T->parse_tile(source, first_gid, *this);
-        }
-        // Parse Actor_Animation tile
-        else if(tile_type == "ACTOR_ANIMATION") {
-            eResult = T->parse_actor_anim(source, first_gid, *m_base_map);
-        }
-        // Parse Actor_Template
-        else if(tile_type == "ACTOR_TEMPLATE") {
-            eResult = T->parse_actor_templ(source, *m_base_map);
-        }
-        else {
-            std::cerr << "Unknown tile type: " << tile_type << "\n";
-            return XML_WRONG_ATTRIBUTE_TYPE;
-        }
-
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading tile gid: " << tile_id << " local id: " << tile_id - first_gid << "\n";
-            return eResult;
-        }
-
-        source = source->NextSiblingElement();
-    }
-    return XML_SUCCESS;
 }
 
 /// Registers tile so it's renderable by its gid
@@ -292,9 +239,5 @@ bool TilesetCollection::render(Uint16 tile_id, SDL_Rect& dest) const{
         mp_tiles[tile_id]->render(dest);
     }
     return success;
-}
-
-SDL_Renderer* TilesetCollection::get_renderer() const {
-    return m_base_map->get_renderer();
 }
 

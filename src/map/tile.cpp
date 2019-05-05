@@ -45,13 +45,11 @@ mp_tileset{ts}, m_clip{clp}
 /**
  * @brief Parse tile information of standard tiles
  * @param source The @c XMLElement from the tileset
- * @param first_gid The first global tile id of the tileset
- * @param base_map Reference to map object to register possible animated status
  * @return an @c XMLError object which indicates success or error type
  *
  * Determines the tile type and calls the corresponding tile parsers
  */
-tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, TilesetCollection& ts_collection) {
+tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
     XMLError eResult;
@@ -105,7 +103,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
         XMLElement* p_frame = p_animation->FirstChildElement("frame");
 
         m_animated = true;
-        ts_collection.set_tile_animated(this);
+        mp_tileset->get_ts_collection().set_tile_animated(this);
 
         // Parse each animation frame
         while(p_frame != nullptr) {
@@ -117,7 +115,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
             if(eResult != XML_SUCCESS) return eResult;
 
             // We don't use local, but global tile ids for animation
-            anim_tile_id += first_gid;
+            anim_tile_id += mp_tileset->get_first_gid();
 
             // The actual registration of the frame
             m_anim_ids.push_back(static_cast<Uint16>(anim_tile_id));
@@ -139,7 +137,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
  *
  * Determines the tile type and calls the corresponding tile parsers
  */
-tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map) {
+tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
 
@@ -263,7 +261,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
             if(eResult != XML_SUCCESS) return eResult;
 
             // We don't use local, but global tile ids for animation
-            anim_tile_id += first_gid;
+            anim_tile_id += mp_tileset->get_first_gid();
 
             // The actual registration of the frame
             m_anim_ids.push_back(static_cast<Uint16>(anim_tile_id));
@@ -299,6 +297,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
     }
 
     else {
+        MapData& base_map = mp_tileset->get_ts_collection().get_mapdata();
         // Add this animated tile to the actor template
         base_map.add_actor_animation(actor_name, anim, dir, this);
 
@@ -328,11 +327,11 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source, unsigned
  *
  * Parse the tile via the static Actor method @c add_template
  */
-tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData& base_map) {
+tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
 
-    eResult = base_map.add_actor_template(source, this);
+    eResult = mp_tileset->get_ts_collection().get_mapdata().add_actor_template(source, this);
     if(eResult != XML_SUCCESS) {
         std::cerr << "Failed at adding actor template\n";
         return XML_ERROR_PARSING_ELEMENT;
@@ -351,10 +350,10 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData
  * If not animated the normal clip value is returned
  */
 const SDL_Rect& Tile::get_clip() const {
-    const TilesetCollection* tsc = mp_tileset->get_ts_collection();
+    const TilesetCollection& tsc = mp_tileset->get_ts_collection();
     if(m_animated) {
         // Avoids daisy chaining of animated tiles
-        return tsc->get_tile(m_anim_ids[m_current_id])->get_clip_self();
+        return tsc.get_tile(m_anim_ids[m_current_id])->get_clip_self();
     }
     else {
         return m_clip;
@@ -448,9 +447,9 @@ void Tile::push_anim(Uint32 time) {
  * @param tsc Reference to map for getting clip and renderer
  */
 void Tile::render(int x, int y) const {
-    const TilesetCollection* tsc = mp_tileset->get_ts_collection();
+    const TilesetCollection& tsc = mp_tileset->get_ts_collection();
     x += mp_tileset->get_x_offset();
-    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc->get_tile_h());
+    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
     const Texture* image = mp_tileset->get_image_pointer();
 
     image->render(x, y, &get_clip());

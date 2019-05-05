@@ -39,7 +39,6 @@ class TilesetCollection{
         Uint16 get_gid(Tile* tile)  const;
         Tile* get_tile(Uint16 tile_id) const;
 
-        tinyxml2::XMLError parse_tiles_from_tileset(tinyxml2::XMLElement* source, unsigned first_gid);
         bool register_tile(Tile* tile, unsigned gid);
         void set_tile_animated(unsigned gid);
         void set_tile_animated(Tile* tile);
@@ -50,10 +49,10 @@ class TilesetCollection{
         bool render(Uint16 tile_id, int x, int y) const;
         bool render(Uint16 tile_id, SDL_Rect& dest) const;
 
-        SDL_Renderer* get_renderer() const;///< Return pointer to the SDL_Renderer
+        MapData& get_mapdata() {return *mp_base_map;}
 
     private:
-        MapData* m_base_map = nullptr;
+        MapData* mp_base_map = nullptr;
 
         unsigned m_tile_w; // The tile dimensions in pixels
         unsigned m_tile_h;

@@ -34,16 +34,6 @@
 #include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
-/**
- * @brief Constructs an empty tileset object
- */
-Tileset::Tileset() {
-
-}
-
-Tileset::~Tileset() {
-
-}
 
 /**
  * @brief Initialize a tileset from XML info
@@ -51,18 +41,18 @@ Tileset::~Tileset() {
  * @param ts_collection Reference to tileset collection to register tiles, etc.
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, std::string path, SDL_Renderer* renderer, TilesetCollection& ts_collection) {
+tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollection& ts_collection) {
 
     using namespace tinyxml2;
 
-    m_ts_collection = &ts_collection;
+    mp_ts_collection = &ts_collection;
 
     XMLError eResult;
     eResult = ts_file->QueryUnsignedAttribute("firstgid", &m_first_gid);
     if(eResult != XML_SUCCESS) return eResult;
 
     // If attribute "source" is set, load external .tsx tileset file
-    std::string full_path = path;
+    std::string full_path = ts_collection.get_mapdata().get_file_path();
 
     const char* p_source;
     p_source = ts_file->Attribute("source");
@@ -109,7 +99,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, std::string path
     const char* p_ts_source;
     p_ts_source = p_image->Attribute("source");
     if (p_ts_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-    m_image.loadFromFile(renderer, full_path + std::string(p_ts_source));
+    m_image.loadFromFile(mp_ts_collection->get_mapdata().get_renderer(), full_path + std::string(p_ts_source));
     eResult = p_image->QueryUnsignedAttribute("width", &m_width);
     if(eResult != XML_SUCCESS) return eResult;
     eResult = p_image->QueryUnsignedAttribute("height", &m_height);
@@ -176,10 +166,11 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, std::string path
 
     // Check if there is specific tile info
     XMLElement* p_tile = ts_file->FirstChildElement("tile");
+
     if(p_tile != nullptr) {
 
         // Method of MapData object deals with the parsing of all tiles
-        eResult = ts_collection.parse_tiles_from_tileset(p_tile, m_first_gid);
+        eResult = parse_tile_info(p_tile);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at loading tile info of tileset: " << m_name << " \n";
             return eResult;
@@ -381,6 +372,59 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
             }
         }
         p_tile = p_tile->NextSiblingElement("tile");
+    }
+    return XML_SUCCESS;
+}
+
+
+/**
+ * @brief Parse tile information from tileset
+ * @param source The @c XMLElement from the tileset
+ * @param first_gid The first global tile id of the tileset
+ * @return an @c XMLError object which indicates success or error type
+ *
+ * Determines the tile type and calls the corresponding tile parsers
+ */
+tinyxml2::XMLError Tileset::parse_tile_info(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    XMLError eResult;
+
+    while(source != nullptr) {
+        unsigned tile_id;
+        eResult = source->QueryUnsignedAttribute("id", &tile_id);
+        if(eResult != XML_SUCCESS) return eResult;
+
+        Tile& tile = m_tiles[tile_id];
+        const char* p_type;
+        p_type = source->Attribute("type");
+
+        std::string tile_type;
+        if(p_type != nullptr) tile_type = p_type;
+
+        // Parse normal map tile
+        if(p_type == nullptr) {
+            eResult = tile.parse_tile(source);
+        }
+        // Parse Actor_Animation tile
+        else if(tile_type == "ACTOR_ANIMATION") {
+            eResult = tile.parse_actor_anim(source);
+        }
+        // Parse Actor_Template
+        else if(tile_type == "ACTOR_TEMPLATE") {
+            eResult = tile.parse_actor_templ(source);
+        }
+        else {
+            std::cerr << "Unknown tile type: " << tile_type << "\n";
+            return XML_WRONG_ATTRIBUTE_TYPE;
+        }
+
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at loading tile gid: " << tile_id + m_first_gid << " local id: " << tile_id << "\n";
+            return eResult;
+        }
+
+        source = source->NextSiblingElement();
     }
     return XML_SUCCESS;
 }

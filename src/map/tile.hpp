@@ -49,9 +49,9 @@ public:
     const SDL_Rect& get_clip_self() const {return m_clip;}
     const SDL_Rect& get_hitbox() const {return m_hitbox;}
 
-    tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, TilesetCollection& ts_collection);
-    tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map);
-    tinyxml2::XMLError parse_actor_templ(tinyxml2::XMLElement* source, MapData& base_map);
+    tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source);
+    tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
+    tinyxml2::XMLError parse_actor_templ(tinyxml2::XMLElement* source);
 
     void init_anim();
     void init_anim(Uint32 time);
@@ -61,6 +61,8 @@ public:
     void push_anim(Uint32 time);
 
     std::string get_type() const {return m_type;}
+
+    Tileset& get_tileset() {return *mp_tileset;}
 
 private:
     const SDL_Rect& get_clip() const;
