@@ -38,7 +38,6 @@ class Tile{
 public:
     Tile() {}
     Tile(Tileset* ts, SDL_Rect& clp); // The initializing constructor
-    ~Tile() {}
 
     void render(int x, int y) const;
     void render(SDL_Rect& dest) const; // Resizable render

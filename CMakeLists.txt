@@ -51,6 +51,10 @@ set(MAP_SOURCES
     src/map/camera.cpp
     src/map/mapdata.cpp
     src/map/layer.cpp
+    src/map/layer_collection.cpp
+    src/map/map_layer.cpp
+    src/map/image_layer.cpp
+    src/map/object_layer.cpp
     src/map/tileset.cpp
     src/map/tileset_collection.cpp
     src/map/tile.cpp

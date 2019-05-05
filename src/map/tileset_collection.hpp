@@ -29,8 +29,14 @@ class Tileset; // forward declaration
 class Tile;
 class MapData;
 
+// This class SHOULD NOT be copy constructable or assignable, only MOVABLE since moving m_tilesets and their internal
+// Tile objects keeps their memory adresses stable and therefore mp_tiles will still be in a valid state
 class TilesetCollection{
     public:
+
+        TilesetCollection() = default;
+        TilesetCollection(TilesetCollection& tsc) = delete;
+        TilesetCollection& operator= ( const TilesetCollection& ) = delete;
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData* mapdata);
 
