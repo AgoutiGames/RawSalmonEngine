@@ -31,6 +31,7 @@
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 
 class Tile; // forward declaration
+class TilesetCollection;
 class MapData;
 
 /**
@@ -43,18 +44,19 @@ class MapData;
 class Tileset{
 
     public:
-        Tileset(); // Automatically appends to static tileset list
+        Tileset();
         ~Tileset();
 
-        tinyxml2::XMLError init(tinyxml2::XMLElement* ts_file, MapData& base_map); // Initialize single object
+        tinyxml2::XMLError init(tinyxml2::XMLElement* ts_file, std::string path, SDL_Renderer* renderer, TilesetCollection& base_map); // Initialize single object
         static tinyxml2::XMLError parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map);
 
         const Texture* get_image_pointer() const {return &m_image;}
+        TilesetCollection* get_ts_collection() const {return m_ts_collection;}
         unsigned get_tile_height() const {return m_tile_height;}
         int get_x_offset() const {return m_x_offset;}
         int get_y_offset() const {return m_y_offset;}
 
-        bool render(Uint16 local_tile_id, int x, int y, const MapData& base_map) const;
+        bool render(Uint16 local_tile_id, int x, int y) const;
 
         std::map<Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h) const;
 
@@ -67,6 +69,8 @@ class Tileset{
         unsigned m_tile_count;
         unsigned m_width;       // Dimensions of the whole tileset image
         unsigned m_height;
+
+        TilesetCollection* m_ts_collection;
 
         // Setting these values too high can severely impact performance
         int m_x_offset = 0;

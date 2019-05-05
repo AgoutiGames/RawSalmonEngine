@@ -22,7 +22,7 @@
  </tileset>
  <tileset firstgid="6" source="tilesets/block_actor.tsx"/>
  <tileset firstgid="8" source="tilesets/block_animation.tsx"/>
- <imagelayer name="BG 1" visible="0" offsetx="20" offsety="920">
+ <imagelayer name="BG 1" offsetx="20" offsety="920">
   <image source="tilesets/terra/parallax_layer_4.png" width="3000" height="1300"/>
   <properties>
    <property name="PARALLAX" type="bool" value="true"/>

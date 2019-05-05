@@ -19,9 +19,17 @@
 #ifndef TILESET_COLLECTION_HPP_INCLUDED
 #define TILESET_COLLECTION_HPP_INCLUDED
 
+#include <vector>
+#include <SDL2/SDL.h>
+
+#include "map/tile.hpp"
+#include "map/tileset.hpp"
+#include "util/tinyxml2.h"
+
 class TilesetCollection{
     public:
 
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData* mapdata);
 
         unsigned get_tile_h() const {return m_tile_h;} ///< Return base tile height
         unsigned get_tile_w() const {return m_tile_w;} ///< Return base tile width
@@ -42,7 +50,11 @@ class TilesetCollection{
         bool render(Uint16 tile_id, int x, int y) const;
         bool render(Uint16 tile_id, SDL_Rect& dest) const;
 
+        SDL_Renderer* get_renderer() const;///< Return pointer to the SDL_Renderer
+
     private:
+        MapData* m_base_map = nullptr;
+
         unsigned m_tile_w; // The tile dimensions in pixels
         unsigned m_tile_h;
 

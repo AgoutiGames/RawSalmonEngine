@@ -32,6 +32,8 @@ namespace parse{
     tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
     tinyxml2::XMLError hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects);
     tinyxml2::XMLError blendmode(tinyxml2::XMLElement* source, Texture& img);
+
+    tinyxml2::XMLError bg_color(tinyxml2::XMLElement* source, SDL_Color& color);
 }
 
 

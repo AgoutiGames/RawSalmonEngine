@@ -18,7 +18,14 @@
  */
  #include "util/parse.hpp"
 
- #include <iostream>
+#include <SDL2/SDL.h>
+#include <string>
+#include <vector>
+#include <map>
+#include <iostream>
+
+#include "graphics/texture.hpp"
+#include "util/tinyxml2.h"
 
  /**
  * @brief Converts the xmlelement to a proper SDL_Rect with checking
@@ -151,3 +158,41 @@ tinyxml2::XMLError parse::blendmode(tinyxml2::XMLElement* source, Texture& img) 
     }
     return XML_SUCCESS;
 }
+
+/**
+ * @brief Parse the background color of a map to a variable
+ * @param source The @c XMLElement which holds the information
+ * @param color The referencte where the resulting color will be stored
+ * @return @c CMLError Indicating sucess or failure
+ */
+tinyxml2::XMLError parse::bg_color(tinyxml2::XMLElement* source, SDL_Color& color) {
+    using namespace tinyxml2;
+
+    const char* p_bg_color;
+    p_bg_color = source->Attribute("backgroundcolor");
+    if(p_bg_color == nullptr) {
+        std::cerr << "Map is missing a custom backgroundcolor, will use white as default\n";
+        color = {255,255,255,255};
+
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+    else {
+        std::string s_bg_color = p_bg_color;
+        s_bg_color.erase(s_bg_color.begin()); // Delete leading # sign
+
+        // Check for possible alpha value (since ARGB and RGB is possible)
+        if(s_bg_color.length() > 6) {
+            color.a = std::stoul(std::string(s_bg_color, 0, 2), nullptr, 16);
+            s_bg_color.erase(s_bg_color.begin(), s_bg_color.begin() + 2);
+        }
+        // Set to fully opaque if no value is supplied
+        else {color.a = 255;}
+
+        color.r = std::stoul(std::string(s_bg_color, 0, 2), nullptr, 16);
+        color.g = std::stoul(std::string(s_bg_color, 2, 2), nullptr, 16);
+        color.b = std::stoul(std::string(s_bg_color, 4, 2), nullptr, 16);
+
+        return XML_SUCCESS;
+    }
+}
+

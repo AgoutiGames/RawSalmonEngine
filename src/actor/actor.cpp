@@ -94,7 +94,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
  */
 void Actor::render(int x_cam, int y_cam) const {
     SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-    m_animations.at(m_anim_state).at(m_direction).render(dest, *m_map);
+    m_animations.at(m_anim_state).at(m_direction).render(dest);
 
     // Alternative which doesnt do any resizing
     //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), base_map);

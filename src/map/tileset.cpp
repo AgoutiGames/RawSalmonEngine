@@ -48,19 +48,21 @@ Tileset::~Tileset() {
 /**
  * @brief Initialize a tileset from XML info
  * @param ts_file The @c XMLElement which storest the tileset information
- * @param base_map Reference to map object to get renderer, file path, register tiles, etc.
+ * @param ts_collection Reference to tileset collection to register tiles, etc.
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_map) {
+tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, std::string path, SDL_Renderer* renderer, TilesetCollection& ts_collection) {
 
     using namespace tinyxml2;
+
+    m_ts_collection = &ts_collection;
 
     XMLError eResult;
     eResult = ts_file->QueryUnsignedAttribute("firstgid", &m_first_gid);
     if(eResult != XML_SUCCESS) return eResult;
 
     // If attribute "source" is set, load external .tsx tileset file
-    std::string full_path = base_map.get_file_path();
+    std::string full_path = path;
 
     const char* p_source;
     p_source = ts_file->Attribute("source");
@@ -107,7 +109,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
     const char* p_ts_source;
     p_ts_source = p_image->Attribute("source");
     if (p_ts_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-    m_image.loadFromFile(base_map.get_renderer(), full_path + std::string(p_ts_source));
+    m_image.loadFromFile(renderer, full_path + std::string(p_ts_source));
     eResult = p_image->QueryUnsignedAttribute("width", &m_width);
     if(eResult != XML_SUCCESS) return eResult;
     eResult = p_image->QueryUnsignedAttribute("height", &m_height);
@@ -141,7 +143,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
 
         // Construct each tile of the tilset and store in m_tiles
         m_tiles.push_back(Tile(this, temp));
-        if(!base_map.register_tile(&m_tiles.back(), i_tile + m_first_gid)) {
+        if(!ts_collection.register_tile(&m_tiles.back(), i_tile + m_first_gid)) {
             std::cerr << "Failed to register Tile, abort parsing process!\n";
             return XML_ERROR_PARSING;
         }
@@ -177,7 +179,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
     if(p_tile != nullptr) {
 
         // Method of MapData object deals with the parsing of all tiles
-        eResult = base_map.parse_tiles_from_tileset(p_tile, m_first_gid);
+        eResult = ts_collection.parse_tiles_from_tileset(p_tile, m_first_gid);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at loading tile info of tileset: " << m_name << " \n";
             return eResult;
@@ -190,17 +192,16 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, MapData& base_ma
  * @brief Renders a tile of the tileset at a coordinate
  * @param x, y The specified coordinate
  * @param local_tile_id The ID of the tile corresponding to it's tileset
- * @param base_map Reference to map object for rendering
  * @return @c bool which indicates success or failure
  */
-bool Tileset::render(Uint16 local_tile_id, int x, int y, const MapData& base_map) const {
+bool Tileset::render(Uint16 local_tile_id, int x, int y) const {
     bool success = true;
     if(local_tile_id >= m_tiles.size()) {
         std::cerr << "Local tileset tile id " << local_tile_id << " is out of bounds\n";
         success = false;
     }
     else {
-        m_tiles[local_tile_id].render(x, y, base_map);
+        m_tiles[local_tile_id].render(x, y);
     }
     return success;
 }

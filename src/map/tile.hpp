@@ -29,6 +29,7 @@
 // forward-declare the parts you need in one of the files and leave the #include out of that file.
 
 class Tileset; // forward declaration
+class TilesetCollection;
 class MapData;
 
 /**
@@ -41,14 +42,14 @@ public:
     Tile(Tileset* ts, SDL_Rect& clp); // The initializing constructor
     ~Tile() {}
 
-    void render(int x, int y, const MapData& base_map) const;
-    void render(SDL_Rect& dest, const MapData& base_map) const; // Resizable render
+    void render(int x, int y) const;
+    void render(SDL_Rect& dest) const; // Resizable render
 
     // Avoids daisy chaining of animated tiles
     const SDL_Rect& get_clip_self() const {return m_clip;}
     const SDL_Rect& get_hitbox() const {return m_hitbox;}
 
-    tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map);
+    tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, TilesetCollection& ts_collection);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map);
     tinyxml2::XMLError parse_actor_templ(tinyxml2::XMLElement* source, MapData& base_map);
 
@@ -62,7 +63,7 @@ public:
     std::string get_type() const {return m_type;}
 
 private:
-    const SDL_Rect& get_clip(const MapData& base_map) const;
+    const SDL_Rect& get_clip() const;
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;

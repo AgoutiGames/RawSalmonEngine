@@ -53,8 +53,8 @@ class Texture
 		void setAlpha( Uint8 alpha );
 
 		//Renders texture at given point
-		void render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip = nullptr) const;
-		void render_resize(SDL_Renderer* renderer,const SDL_Rect* clip, const SDL_Rect* dest) const;
+		void render(int x, int y, const SDL_Rect* clip = nullptr) const;
+		void render_resize(const SDL_Rect* clip, const SDL_Rect* dest) const;
 
 		//Gets image dimensions
 		int getWidth() const;
@@ -69,6 +69,8 @@ class Texture
 	private:
 		//The actual hardware texture
 		std::shared_ptr<SDL_Texture> mTexture; ///< The actual hardware texture
+
+		SDL_Renderer* mRenderer;
 
 		//Image dimensions
 		int mWidth;

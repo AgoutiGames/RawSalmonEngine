@@ -40,6 +40,8 @@ bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
     //Get rid of preexisting texture
     free();
 
+    mRenderer = renderer;
+
 	//The final texture
 	SDL_Texture* newTexture = nullptr;
 
@@ -89,6 +91,8 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
 	//Get rid of preexisting texture
 	free();
 
+	mRenderer = renderer;
+
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid( font, textureText.c_str(), textColor );
 	if( textSurface != nullptr )
@@ -122,6 +126,7 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
 void Texture::free()
 {
         mTexture = nullptr;
+        mRenderer = nullptr;
 		mWidth = 0;
 		mHeight = 0;
 }
@@ -151,7 +156,7 @@ void Texture::setAlpha( Uint8 alpha )
  * @param y The y-coordinate of the render position
  * @param clip The area of the image which gets drawn
  */
-void Texture::render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip ) const
+void Texture::render( int x, int y, const SDL_Rect* clip ) const
 {
 	//Set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
@@ -164,7 +169,7 @@ void Texture::render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip
 	}
 
 	//Render to screen
-	SDL_RenderCopy( renderer, mTexture.get(), clip, &renderQuad );
+	SDL_RenderCopy( mRenderer, mTexture.get(), clip, &renderQuad );
 }
 
 /**
@@ -173,9 +178,9 @@ void Texture::render( SDL_Renderer* renderer, int x, int y, const SDL_Rect* clip
  * @param clip The area of the image which gets drawn
  * @param dest Destination area to draw to (including stretch or shrink)
  */
-void Texture::render_resize(SDL_Renderer* renderer,const SDL_Rect* clip, const SDL_Rect* dest) const
+void Texture::render_resize(const SDL_Rect* clip, const SDL_Rect* dest) const
 {
-    SDL_RenderCopy(renderer, mTexture.get(), clip, dest);
+    SDL_RenderCopy(mRenderer, mTexture.get(), clip, dest);
 }
 
 int Texture::getWidth() const

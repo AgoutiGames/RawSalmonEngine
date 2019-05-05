@@ -233,7 +233,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
  * @warning The layer opacity value is ignored except for @c image type layers
  */
 
-bool Layer::render(const Camera& camera, const MapData& base_map) const {
+bool Layer::render(const Camera& camera, const MapData& base_map, const TilesetCollection& ts_collection) const {
     bool success = true;
     switch(m_type) {
         // Render map type "map"
@@ -261,14 +261,14 @@ bool Layer::render(const Camera& camera, const MapData& base_map) const {
             int y_tile_offset = y_camera % tile_h;
 
             // Apply the margin which makes up for oversized tiles and tileset offset
-            x_tile_from -= base_map.get_overhang(Direction::left);
-            x_tile_to += base_map.get_overhang(Direction::right);
-            y_tile_from -= base_map.get_overhang(Direction::up);
-            y_tile_to += base_map.get_overhang(Direction::down);
+            x_tile_from -= ts_collection.get_overhang(Direction::left);
+            x_tile_to += ts_collection.get_overhang(Direction::right);
+            y_tile_from -= ts_collection.get_overhang(Direction::up);
+            y_tile_to += ts_collection.get_overhang(Direction::down);
 
             // Pixel perfect position of the first upper left tile
-            int x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
-            int y = -y_tile_offset - (base_map.get_overhang(Direction::up) * m_tile_h);
+            int x = -x_tile_offset - (ts_collection.get_overhang(Direction::left) * m_tile_w);
+            int y = -y_tile_offset - (ts_collection.get_overhang(Direction::up) * m_tile_h);
 
             // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
 
@@ -287,7 +287,7 @@ bool Layer::render(const Camera& camera, const MapData& base_map) const {
                             // Get tile id from map layer data and draw at current position if tile_id is not 0
                             Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
                             if(tile_id != 0) {
-                                if(!base_map.render(tile_id,x,y)) success = false;
+                                if(!ts_collection.render(tile_id,x,y)) success = false;
                             }
                         }
                         // Move to next horizontal tile position
@@ -295,7 +295,7 @@ bool Layer::render(const Camera& camera, const MapData& base_map) const {
                     }
                 }
                 // Reset horizontal tile position
-                x = -x_tile_offset - (base_map.get_overhang(Direction::left) * m_tile_w);
+                x = -x_tile_offset - (ts_collection.get_overhang(Direction::left) * m_tile_w);
 
                 // Move to next vertical tile position
                 y += tile_h;
@@ -305,8 +305,8 @@ bool Layer::render(const Camera& camera, const MapData& base_map) const {
         case object:{
             int x = camera.x() - m_offset_x;
             int y = camera.y() - m_offset_y;
-            int from = y - base_map.get_overhang(Direction::up) * m_tile_h;
-            int to = y + camera.h() + base_map.get_overhang(Direction::down) * m_tile_h;
+            int from = y - ts_collection.get_overhang(Direction::up) * m_tile_h;
+            int to = y + camera.h() + ts_collection.get_overhang(Direction::down) * m_tile_h;
             // Has y-axis offscreen culling
             for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
                 int feet = it->get_y();
@@ -323,7 +323,7 @@ bool Layer::render(const Camera& camera, const MapData& base_map) const {
                 float y_trans_fact = static_cast<float>(camera.y()) / y_range;
                 x_trans_fact = x_trans_fact * (m_width - camera.w());
                 y_trans_fact = y_trans_fact * (m_height - camera.h());
-                m_img.render(base_map.get_renderer(), -x_trans_fact, -y_trans_fact);
+                m_img.render(-x_trans_fact, -y_trans_fact);
 
             }
             else{
@@ -332,7 +332,7 @@ bool Layer::render(const Camera& camera, const MapData& base_map) const {
                 if(y > camera.h() || x > camera.w() || x < (-static_cast<int>(m_width)) || y < (-static_cast<int>(m_height))) {
                     return success;
                 }
-                else {m_img.render(base_map.get_renderer(), x, y);}
+                else {m_img.render(x, y);}
             }
             break;}
         // Don't render unknown type
@@ -398,7 +398,7 @@ std::vector<Actor*> Layer::get_actors(std::string name, Direction direction, Ani
  * @param type The type of the hitbox
  * @return @c bool which indicates collision
  */
-bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData& base_map, std::vector<Actor*>& collided, std::string type){
+bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const TilesetCollection& ts_collection, std::vector<Actor*>& collided, std::string type){
     bool collide = false;
     int x_depth = 0;
     int y_depth = 0;
@@ -419,7 +419,7 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
                     Uint16 tile_id = m_map_grid[y][x];
                     // Exclude invalid tiles from check
                     if(tile_id != 0) {
-                        Tile* tile = base_map.get_tile(tile_id);
+                        Tile* tile = ts_collection.get_tile(tile_id);
                         SDL_Rect tile_rect = tile->get_hitbox();
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
@@ -474,7 +474,7 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const MapData&
  * @param type The type of the hitbox
  * @return @c bool which indicates collision
  */
-bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<Actor*>& collided, std::string type){
+bool Layer::collide(const SDL_Rect* rect, const TilesetCollection& ts_collection, std::vector<Actor*>& collided, std::string type){
     bool collide = false;
     switch (m_type) {
         case map:{
@@ -493,7 +493,7 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<A
                     Uint16 tile_id = m_map_grid[y][x];
                     // Exclude invalid tiles from check
                     if(tile_id != 0) {
-                        Tile* tile = base_map.get_tile(tile_id);
+                        Tile* tile = ts_collection.get_tile(tile_id);
                         SDL_Rect tile_rect = tile->get_hitbox();
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {
@@ -534,7 +534,7 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::vector<A
  * @param type The type of the hitbox
  * @return @c bool which indicates collision
  */
-bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::string type){
+bool Layer::collide(const SDL_Rect* rect, const TilesetCollection& ts_collection, std::string type){
     bool collide = false;
     switch (m_type) {
         case map:{
@@ -553,7 +553,7 @@ bool Layer::collide(const SDL_Rect* rect, const MapData& base_map, std::string t
                     Uint16 tile_id = m_map_grid[y][x];
                     // Exclude invalid tiles from check
                     if(tile_id != 0) {
-                        Tile* tile = base_map.get_tile(tile_id);
+                        Tile* tile = ts_collection.get_tile(tile_id);
                         SDL_Rect tile_rect = tile->get_hitbox();
                         // Only check collision for tiles with valid hitbox
                         if(!SDL_RectEmpty(&tile_rect)) {

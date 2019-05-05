@@ -51,7 +51,7 @@ mp_tileset{ts}, m_clip{clp}
  *
  * Determines the tile type and calls the corresponding tile parsers
  */
-tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, MapData& base_map) {
+tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first_gid, TilesetCollection& ts_collection) {
     using namespace tinyxml2;
 
     XMLError eResult;
@@ -105,7 +105,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, unsigned first
         XMLElement* p_frame = p_animation->FirstChildElement("frame");
 
         m_animated = true;
-        base_map.set_tile_animated(this);
+        ts_collection.set_tile_animated(this);
 
         // Parse each animation frame
         while(p_frame != nullptr) {
@@ -342,7 +342,7 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData
 
 /**
  * @brief Returns area of tileset image corresponding to tile
- * @param base_map Required for looking up other tiles
+ * @param tsc Required for looking up other tiles
  *
  * For animated tiles the clip is the one of the current animation tile id,
  * instead of recursively calling this function again, get_clip_self is used which
@@ -350,10 +350,11 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source, MapData
  *
  * If not animated the normal clip value is returned
  */
-const SDL_Rect& Tile::get_clip(const MapData& base_map) const {
+const SDL_Rect& Tile::get_clip() const {
+    const TilesetCollection* tsc = mp_tileset->get_ts_collection();
     if(m_animated) {
         // Avoids daisy chaining of animated tiles
-        return base_map.get_tile(m_anim_ids[m_current_id])->get_clip_self();
+        return tsc->get_tile(m_anim_ids[m_current_id])->get_clip_self();
     }
     else {
         return m_clip;
@@ -444,30 +445,31 @@ void Tile::push_anim(Uint32 time) {
 /**
  * @brief Render a tile object to a coordinate
  * @param x, y The specified coordinates
- * @param base_map Reference to map for getting clip and renderer
+ * @param tsc Reference to map for getting clip and renderer
  */
-void Tile::render(int x, int y, const MapData& base_map) const {
+void Tile::render(int x, int y) const {
+    const TilesetCollection* tsc = mp_tileset->get_ts_collection();
     x += mp_tileset->get_x_offset();
-    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - base_map.get_tile_h());
+    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc->get_tile_h());
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render(base_map.get_renderer(), x, y, &get_clip(base_map));
+    image->render(x, y, &get_clip());
     return;
 }
 
 /**
  * @brief Render a tile object to a rect
  * @param dest The rendering rect
- * @param base_map Reference to map for getting clip and renderer
+ * @param tsc Reference to map for getting clip and renderer
  *
  * This function can resize the tile image
  */
-void Tile::render(SDL_Rect& dest, const MapData& base_map) const {
+void Tile::render(SDL_Rect& dest) const {
     dest.x += mp_tileset->get_x_offset();
     dest.y += mp_tileset->get_y_offset();
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render_resize(base_map.get_renderer(), &get_clip(base_map), &dest);
+    image->render_resize(&get_clip(), &dest);
     return;
 }
 
