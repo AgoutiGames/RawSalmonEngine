@@ -20,6 +20,31 @@
 #ifndef IMAGE_LAYER_HPP_INCLUDED
 #define IMAGE_LAYER_HPP_INCLUDED
 
+#include <vector>
+#include <map>
+#include <string>
+#include <SDL2/SDL.h>
+
+#include "map/layer.hpp"
+
+class ImageLayer : public Layer{
+    public:
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection) override;
+
+        bool render(const Camera& camera) const override;
+        void update() override;
+
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
+        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
+        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
+
+        LayerType get_type() {return LayerType::image;}
+    private:
+        std::string m_img_src;
+        Texture m_img;
+        float m_opacity = 1.0f; ///< @warning value only works with image layers!
+        bool m_parallax = false;
+};
 
 
 #endif // IMAGE_LAYER_HPP_INCLUDED

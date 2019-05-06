@@ -26,6 +26,7 @@
 #include "actor/data_block.hpp"
 #include "actor/actor.hpp"
 #include "map/camera.hpp"
+#include "map/layer_collection.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
@@ -63,6 +64,8 @@ class MapData {
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
+
+
         std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
                                        AnimationType animation = AnimationType::invalid);
         bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE");
@@ -95,7 +98,8 @@ class MapData {
 
         Camera m_camera;
 
-        std::vector<Layer> m_layers; ///< Contains all used layers
+        //std::vector<Layer> m_layers; ///< Contains all used layers
+        LayerCollection m_layer_collection;
 
         TilesetCollection m_ts_collection;
 

@@ -20,6 +20,37 @@
 #ifndef MAP_LAYER_HPP_INCLUDED
 #define MAP_LAYER_HPP_INCLUDED
 
+#include <vector>
+#include <map>
+#include <string>
+#include <SDL2/SDL.h>
+
+#include "map/layer.hpp"
+
+class MapLayer : public Layer{
+    public:
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection);
+
+        bool render(const Camera& camera) const override;
+        void update() override;
+
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
+        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
+        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
+
+        LayerType get_type() {return LayerType::map;}
+
+    private:
+        // members for m_type map
+        std::string m_name;
+        unsigned m_width;   // Measured in tiles for "map" and pixels for "image"
+        unsigned m_height;
+        unsigned m_tile_w;
+        unsigned m_tile_h;
+        std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information
+        int m_offset_x = 0; // Taken as position for "image"
+        int m_offset_y = 0;
+};
 
 
 #endif // MAP_LAYER_HPP_INCLUDED

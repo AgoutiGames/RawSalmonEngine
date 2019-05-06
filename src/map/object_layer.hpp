@@ -20,6 +20,29 @@
 #ifndef OBJECT_LAYER_HPP_INCLUDED
 #define OBJECT_LAYER_HPP_INCLUDED
 
+#include <vector>
+#include <map>
+#include <string>
+#include <SDL2/SDL.h>
+
+#include "map/layer.hpp"
+
+class ObjectLayer : public Layer{
+    public:
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection) override;
+
+        bool render(const Camera& camera) const override;
+        void update() override;
+
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
+        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
+        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
+
+        LayerType get_type() {return LayerType::object;}
+
+    private:
+        std::list<Actor> m_obj_grid;
+};
 
 
 #endif // OBJECT_LAYER_HPP_INCLUDED

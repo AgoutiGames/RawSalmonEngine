@@ -28,6 +28,7 @@
 #include "event/actor_event.hpp"
 #include "map/tile.hpp"
 #include "map/layer.hpp"
+#include "map/layer_collection.hpp"
 #include "util/game_types.hpp"
 #include "util/parse.hpp"
 
@@ -130,33 +131,11 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         pLa != nullptr && std::string("tileset") == pLa->Name();
         pLa = pLa->NextSiblingElement()) {;}
 
-    // Collect all layers to a vector of pointers
-    std::vector<XMLElement*> p_layers;
-    if (pLa == nullptr) {
-        std::cerr << "Mapfile has no layers\n";
-        return XML_ERROR_PARSING_ELEMENT;
-    }
+    m_layer_collection.init(pLa, *this);
 
-    do{
-        p_layers.push_back(pLa);
-        pLa = pLa->NextSiblingElement();
-    }while(pLa != nullptr );
-    std::cout << "Layer count: " << p_layers.size() << "\n";
 
-    // Clear layer vector member of possible old data
-    m_layers.clear();
-    m_layers.resize(p_layers.size(), Layer(m_ts_collection.get_tile_w(), m_ts_collection.get_tile_h()));
-
-    // Actually parse each layer of the vector of pointers
-    for(unsigned i_layer = 0; i_layer < p_layers.size(); i_layer++) {
-        XMLError eResult = m_layers[i_layer].init(p_layers[i_layer], *this);
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at parsing layer: " << i_layer << "\n";
-            return eResult;
-        }
-    }
     // Fetch player
-    std::vector<Actor*> actor_list = get_actors(std::string("PLAYER"));
+    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string("PLAYER"));
     if(actor_list.size() > 1) {
         std::cerr << "Error: More than one actor called PLAYER!\n";
     }
@@ -180,27 +159,20 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
  * @return @c bool which indicates success or failure
  */
 bool MapData::render() const{
-    bool success = true;
 
     SDL_SetRenderDrawColor(*mpp_renderer, m_bg_color.r, m_bg_color.g, m_bg_color.b, m_bg_color.a);
     SDL_RenderClear(*mpp_renderer);
 
-    // Renders all layers
-    for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
-        if(!m_layers[i_layer].render(m_camera, *this, m_ts_collection)) {
-            std::cerr << "Failed at rendering layer " << i_layer << " !\n";
-            success = false;
-        }
-    }
-    return success;
+    return m_layer_collection.render(m_camera);
+
 }
 /**
  * @brief Calls update function of all map layers and animates tiles
  */
 void MapData::update() {
-    for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
-        m_layers[i_layer].update();
-    }
+
+    m_layer_collection.update();
+
     m_camera.update();
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
@@ -212,12 +184,14 @@ void MapData::update() {
  * @note "invalid" value indicates that a parameter is ignored
  */
 std::vector<Actor*> MapData::get_actors(std::string name, Direction direction, AnimationType animation) {
+    /*
     std::vector<Actor*> actor_list;
     for(Layer& layer : m_layers) {
         std::vector<Actor*> sublist = layer.get_actors(name, direction, animation);
         actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
     }
     return actor_list;
+    */ /// FIX THIS IN THE END
 }
 
 /**
@@ -339,19 +313,8 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
  * @return @c bool which indicates collision
  */
 bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
-    if(SDL_RectEmpty(rect)) {return false;}
-    bool collide = false;
-    int x_depth = 0;
-    int y_depth = 0;
-    // Iterate through all layers
-    for(Layer& layer : m_layers) {
-        if(layer.collide(rect, x_depth, y_depth, m_ts_collection, collided, type)) {
-            if(x_depth > x_max) {x_max = x_depth;}
-            if(y_depth > y_max) {y_max = y_depth;}
-            collide = true;
-        }
-    }
-    return collide;
+
+    return m_layer_collection.collide(rect, x_max, y_max, collided, type);
 }
 
 /**
@@ -362,15 +325,8 @@ bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<
  * @return @c bool which indicates collision
  */
 bool MapData::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
-    if(SDL_RectEmpty(rect)) {return false;}
-    bool collide = false;
-    // Iterate through all layers
-    for(Layer& layer : m_layers) {
-        if(layer.collide(rect, m_ts_collection, collided, type)) {
-            collide = true;
-        }
-    }
-    return collide;
+
+    return m_layer_collection.collide(rect, collided, type);
 }
 
 /**
@@ -380,15 +336,7 @@ bool MapData::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::
  * @return @c bool which indicates collision
  */
 bool MapData::collide(const SDL_Rect* rect, std::string type) {
-    if(SDL_RectEmpty(rect)) {return false;}
-    bool collide = false;
-    // Iterate through all layers
-    for(Layer& layer : m_layers) {
-        if(layer.collide(rect, m_ts_collection, type)) {
-            collide = true;
-        }
-    }
-    return collide;
+    return m_layer_collection.collide(rect, type);
 }
 
 /**

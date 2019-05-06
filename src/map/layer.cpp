@@ -30,10 +30,19 @@
 #include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
+Layer::Layer() {}
+
+Layer::~Layer() {}
+
+Layer* Layer::parse(tinyxml2::XMLElement* source, tinyxml2::XMLError& eresult) {
+    /// IMPLEMENT THIS
+    return nullptr;
+}
+
 /**
  * @brief Constructs empty uninitialized Layer
  * @param tile_w, tile_h Dimensions of a standard tile
- */
+ *
 Layer::Layer(unsigned tile_w, unsigned tile_h) :
 m_tile_w{tile_w}, m_tile_h{tile_h}
 {
@@ -45,7 +54,7 @@ m_tile_w{tile_w}, m_tile_h{tile_h}
  * @param source The @c XMLElement* which stores the layer info
  * @param base_map To get file path or renderer for img parsing
  * @return an @c XMLError object which indicates success or error type
- */
+ *
 tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
@@ -231,7 +240,7 @@ tinyxml2::XMLError Layer::init(tinyxml2::XMLElement* source, MapData& base_map) 
  * @return @c bool which indicates success or failure
 
  * @warning The layer opacity value is ignored except for @c image type layers
- */
+ *
 
 bool Layer::render(const Camera& camera, const MapData& base_map, const TilesetCollection& ts_collection) const {
     bool success = true;
@@ -350,7 +359,7 @@ bool Layer::render(const Camera& camera, const MapData& base_map, const TilesetC
  * This function currently triggers the update function of every
  * object of an object type layer. When it returns false, this is
  * a signal to delete the object.
- */
+ *
 void Layer::update() {
     if(m_type == object) {
         for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
@@ -372,7 +381,7 @@ void Layer::update() {
  * @brief Fetch all actors which conform the supplied parameters
  * @return Vector of conforming actors
  * @note "invalid" value indicates that a parameter is ignored
- */
+ *
 std::vector<Actor*> Layer::get_actors(std::string name, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
     if(m_type == LayerType::object) {
@@ -397,7 +406,7 @@ std::vector<Actor*> Layer::get_actors(std::string name, Direction direction, Ani
  * @param collided A container to which colliding actors are added
  * @param type The type of the hitbox
  * @return @c bool which indicates collision
- */
+ *
 bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const TilesetCollection& ts_collection, std::vector<Actor*>& collided, std::string type){
     bool collide = false;
     int x_depth = 0;
@@ -437,7 +446,7 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const TilesetC
                                 std::cerr << "check " << rect->x << " " << rect->y << " " << rect->w << " " << rect->h << "\n";
                                 std::cerr << "x depth: " << intersect.w << "\n";
                                 std::cerr << "y_depth: " << intersect.h << "\n";
-                                */
+                                *
                                 collide = true;
                             }
                         }
@@ -473,7 +482,7 @@ bool Layer::collide(const SDL_Rect* rect, int& x_max, int& y_max, const TilesetC
  * @param collided A container to which colliding actors are added
  * @param type The type of the hitbox
  * @return @c bool which indicates collision
- */
+ *
 bool Layer::collide(const SDL_Rect* rect, const TilesetCollection& ts_collection, std::vector<Actor*>& collided, std::string type){
     bool collide = false;
     switch (m_type) {
@@ -533,7 +542,7 @@ bool Layer::collide(const SDL_Rect* rect, const TilesetCollection& ts_collection
  * @param base_map Reference on map instance used for looking up tiles by their gid
  * @param type The type of the hitbox
  * @return @c bool which indicates collision
- */
+ *
 bool Layer::collide(const SDL_Rect* rect, const TilesetCollection& ts_collection, std::string type){
     bool collide = false;
     switch (m_type) {
@@ -584,3 +593,4 @@ bool Layer::collide(const SDL_Rect* rect, const TilesetCollection& ts_collection
     }
     return collide;
 }
+*/

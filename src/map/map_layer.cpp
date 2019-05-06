@@ -18,3 +18,20 @@
  */
 
  #include "map/map_layer.hpp"
+
+bool MapLayer::render(const Camera& camera) const {
+
+}
+void MapLayer::update() {
+
+}
+
+bool MapLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
+
+}
+bool MapLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
+
+}
+bool MapLayer::collide(const SDL_Rect* rect, std::string type) {
+
+}

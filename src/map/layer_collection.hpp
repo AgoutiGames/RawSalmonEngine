@@ -19,10 +19,36 @@
 #ifndef LAYER_COLLECTION_HPP_INCLUDED
 #define LAYER_COLLECTION_HPP_INCLUDED
 
+#include <vector>
+#include <SDL2/SDL.h>
+
+#include "util/tinyxml2.h"
+#include "util/game_types.hpp"
+
+class Actor;
+class Camera;
+class Layer;
+class MapData;
+
 class LayerCollection {
     public:
 
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
+
+        bool render(const Camera& camera) const;
+        void update();
+        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
+                                      AnimationType animation = AnimationType::invalid);
+        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE");
+        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE");
+
+        MapData& get_base_map() {return *m_base_map;}
+
     private:
+
+        MapData* m_base_map;
+        std::vector<Layer*> m_layers;
 
 };
 

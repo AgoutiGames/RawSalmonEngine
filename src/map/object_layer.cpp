@@ -18,3 +18,21 @@
  */
 
  #include "map/object_layer.hpp"
+
+bool ObjectLayer::render(const Camera& camera) const {
+
+}
+void ObjectLayer::update() {
+
+}
+
+bool ObjectLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
+
+}
+bool ObjectLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
+
+}
+bool ObjectLayer::collide(const SDL_Rect* rect, std::string type) {
+
+}
+

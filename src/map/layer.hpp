@@ -31,6 +31,7 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
+class LayerCollection;
 class MapData;
 
 /**
@@ -39,6 +40,38 @@ class MapData;
  * Can store all possible layer types
  */
 
+class Layer {
+    public:
+        enum LayerType{
+            map,
+            object,
+            image,
+            undefinied
+        };
+
+        Layer();
+        virtual ~Layer();
+
+        virtual tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection) = 0;
+
+        virtual bool render(const Camera& camera) const = 0;
+        virtual void update() = 0;
+
+        virtual bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") = 0;
+        virtual bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") = 0;
+        virtual bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") = 0;
+
+        virtual LayerType get_type() {return LayerType::undefinied;}
+
+        static Layer* parse(tinyxml2::XMLElement* source, tinyxml2::XMLError& eresult);
+
+    private:
+        LayerCollection* m_layer_collection;
+        std::string m_name;
+        int m_offset_x = 0; // Taken as position for "image"
+        int m_offset_y = 0;
+};
+/*
 class Layer{
     private:
         enum LayerType{
@@ -84,6 +117,6 @@ class Layer{
         // members for m_type object
         std::list<Actor> m_obj_grid;
 };
-
+*/
 
 #endif // LAYER_HPP_INCLUDED
