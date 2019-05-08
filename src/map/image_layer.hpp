@@ -26,10 +26,10 @@
 #include <SDL2/SDL.h>
 
 #include "map/layer.hpp"
+#include "graphics/texture.hpp"
 
 class ImageLayer : public Layer{
     public:
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection) override;
 
         bool render(const Camera& camera) const override;
         void update() override;
@@ -38,10 +38,25 @@ class ImageLayer : public Layer{
         bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
 
-        LayerType get_type() {return LayerType::image;}
+        LayerType get_type() override {return LayerType::image;}
+
+        static ImageLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
+
+        ImageLayer(const ImageLayer &) = delete;
+        ImageLayer& operator=(const ImageLayer &) = delete;
+        ImageLayer(ImageLayer &&) = delete;
+        ImageLayer& operator=(ImageLayer &&) = delete;
+
+    protected:
+        ImageLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
+
     private:
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source);
+
         std::string m_img_src;
         Texture m_img;
+        unsigned m_width;   // Measured in tiles for "map" and pixels for "image"
+        unsigned m_height;
         float m_opacity = 1.0f; ///< @warning value only works with image layers!
         bool m_parallax = false;
 };

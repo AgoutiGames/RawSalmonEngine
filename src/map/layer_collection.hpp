@@ -33,6 +33,9 @@ class MapData;
 class LayerCollection {
     public:
 
+        LayerCollection() = default;
+        ~LayerCollection();
+
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
         bool render(const Camera& camera) const;
@@ -44,6 +47,12 @@ class LayerCollection {
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE");
 
         MapData& get_base_map() {return *m_base_map;}
+
+        // Don't allow copy construction and assignment because our destructor would delete twice!
+        LayerCollection(const LayerCollection &) = delete;
+        LayerCollection& operator=(const LayerCollection &) = delete;
+        LayerCollection(LayerCollection &&) = delete;
+        LayerCollection& operator=(LayerCollection &&) = delete;
 
     private:
 

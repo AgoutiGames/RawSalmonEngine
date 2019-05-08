@@ -84,13 +84,6 @@ class Actor{
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
 
-        // Getters and setters for the custom data blocks
-        void set_val(std::string name, bool val);
-        void set_val(std::string name, int val);
-        void set_val(std::string name, float val);
-        void set_val(std::string name, std::string val);
-        //void set_val(std::string name, Actor& val);
-
         DataBlock& get_data() {return m_data;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;

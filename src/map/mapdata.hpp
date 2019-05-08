@@ -65,18 +65,12 @@ class MapData {
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
 
-
-        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
-                                       AnimationType animation = AnimationType::invalid);
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE");
-        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE");
-        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE");
-
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
         bool add_actor_hitbox(std::string actor, std::string hitbox, const SDL_Rect& rect);
 
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
+        LayerCollection& get_layer_collection() {return m_layer_collection;}
 
         tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp);
 

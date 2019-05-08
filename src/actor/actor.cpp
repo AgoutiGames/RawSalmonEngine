@@ -140,7 +140,7 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
             // Check for x-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->collide(&temp, x_inter_depth, y_inter_depth, collided)) {
+            if(m_map->get_layer_collection().collide(&temp, x_inter_depth, y_inter_depth, collided)) {
                 // Do stuff with the intersection depth
                 if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
                 m_x -= x_inter_depth;
@@ -158,7 +158,7 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
             // Check for y-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->collide(&temp, x_inter_depth, y_inter_depth, collided)) {
+            if(m_map->get_layer_collection().collide(&temp, x_inter_depth, y_inter_depth, collided)) {
                 // Do stuff with the intersection depth
                 if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
                 m_y -= y_inter_depth;
@@ -507,7 +507,7 @@ bool Actor::on_ground(Direction dir, int tolerance) const {
     else {
         return false;
     }
-    return m_map->collide(&temp);
+    return m_map->get_layer_collection().collide(&temp);
 }
 
 /**

@@ -27,6 +27,7 @@
 
 #include "event/actor_event.hpp"
 #include "map/tile.hpp"
+#include "map/tileset.hpp"
 #include "map/layer.hpp"
 #include "map/layer_collection.hpp"
 #include "util/game_types.hpp"
@@ -118,6 +119,8 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     // Parse possible backgroundcolor
     parse::bg_color(pMap, m_bg_color); // Discard Result since missing bg_color is generally okay
 
+    // First parse tilesets, then layers, because layers depend on tileset information
+
     // This initiates the parsing of all tilesets
     eResult = m_ts_collection.init(pMap, this);
     if(eResult != XML_SUCCESS) {
@@ -131,8 +134,12 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         pLa != nullptr && std::string("tileset") == pLa->Name();
         pLa = pLa->NextSiblingElement()) {;}
 
-    m_layer_collection.init(pLa, *this);
-
+    // Parse all layers of the map file
+    eResult = m_layer_collection.init(pLa, *this);
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Error at parsing layers!\n";
+        return eResult;
+    }
 
     // Fetch player
     std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string("PLAYER"));
@@ -176,22 +183,6 @@ void MapData::update() {
     m_camera.update();
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
-}
-
-/**
- * @brief Fetch all actors which conform the supplied parameters
- * @return Vector of conforming actors
- * @note "invalid" value indicates that a parameter is ignored
- */
-std::vector<Actor*> MapData::get_actors(std::string name, Direction direction, AnimationType animation) {
-    /*
-    std::vector<Actor*> actor_list;
-    for(Layer& layer : m_layers) {
-        std::vector<Actor*> sublist = layer.get_actors(name, direction, animation);
-        actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
-    }
-    return actor_list;
-    */ /// FIX THIS IN THE END
 }
 
 /**
@@ -302,41 +293,6 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
         }
     }
     return XML_SUCCESS;
-}
-
-/**
- * @brief Checks if given rect collides with any layer present in this map
- * @param rect The rect to check against
- * @param x_max, y_max The maximum depth of intersection by axis
- * @param collided A container to which colliding actors are added
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool MapData::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
-
-    return m_layer_collection.collide(rect, x_max, y_max, collided, type);
-}
-
-/**
- * @brief Checks if given rect collides with any layer present in this map
- * @param rect The rect to check against
- * @param collided A container to which colliding actors are added
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool MapData::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
-
-    return m_layer_collection.collide(rect, collided, type);
-}
-
-/**
- * @brief Checks if given rect collides with any layer present in this map
- * @param rect The rect to check against
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool MapData::collide(const SDL_Rect* rect, std::string type) {
-    return m_layer_collection.collide(rect, type);
 }
 
 /**

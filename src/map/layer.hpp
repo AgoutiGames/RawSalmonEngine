@@ -24,13 +24,10 @@
 #include <list>
 #include <string>
 
-#include "actor/actor.hpp"
-#include "graphics/texture.hpp"
-#include "map/camera.hpp"
-#include "map/tileset.hpp"
-#include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
+class Actor;
+class Camera;
 class LayerCollection;
 class MapData;
 
@@ -49,10 +46,8 @@ class Layer {
             undefinied
         };
 
-        Layer();
+        // Virtual deconstructor makes sure that the dtor of dervied is called when deleted through pointer to base
         virtual ~Layer();
-
-        virtual tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection) = 0;
 
         virtual bool render(const Camera& camera) const = 0;
         virtual void update() = 0;
@@ -63,9 +58,11 @@ class Layer {
 
         virtual LayerType get_type() {return LayerType::undefinied;}
 
-        static Layer* parse(tinyxml2::XMLElement* source, tinyxml2::XMLError& eresult);
+        static Layer* parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult);
 
-    private:
+    protected:
+        Layer(std::string name, LayerCollection* layer_collection);
+
         LayerCollection* m_layer_collection;
         std::string m_name;
         int m_offset_x = 0; // Taken as position for "image"

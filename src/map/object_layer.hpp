@@ -26,10 +26,10 @@
 #include <SDL2/SDL.h>
 
 #include "map/layer.hpp"
+#include "util/game_types.hpp"
 
 class ObjectLayer : public Layer{
     public:
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection) override;
 
         bool render(const Camera& camera) const override;
         void update() override;
@@ -38,9 +38,23 @@ class ObjectLayer : public Layer{
         bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
 
-        LayerType get_type() {return LayerType::object;}
+        LayerType get_type() override {return LayerType::object;}
+
+        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
+                                      AnimationType animation = AnimationType::invalid);
+        static ObjectLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
+
+        ObjectLayer(const ObjectLayer &) = delete;
+        ObjectLayer& operator=(const ObjectLayer &) = delete;
+        ObjectLayer(ObjectLayer &&) = delete;
+        ObjectLayer& operator=(ObjectLayer &&) = delete;
+
+    protected:
+        ObjectLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
     private:
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source);
+
         std::list<Actor> m_obj_grid;
 };
 

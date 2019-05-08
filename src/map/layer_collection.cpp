@@ -25,6 +25,14 @@
 #include "map/object_layer.hpp"
 #include "map/layer_collection.hpp"
 
+LayerCollection::~LayerCollection() {
+    for(Layer* layer : m_layers) {
+        if(layer != nullptr) {
+            delete layer;
+        }
+    }
+}
+
  tinyxml2::XMLError LayerCollection::init(tinyxml2::XMLElement* source, MapData& base_map) {
 
     using namespace tinyxml2;
@@ -51,13 +59,14 @@
 
     // Actually parse each layer of the vector of pointers
     for(unsigned i_layer = 0; i_layer < p_layers.size(); i_layer++) {
-        XMLError eResult;
-        m_layers[i_layer] = Layer::parse(p_layers[i_layer], eResult);
+        XMLError eResult = XML_SUCCESS;
+        m_layers[i_layer] = Layer::parse(p_layers[i_layer], this, eResult);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing layer: " << i_layer << "\n";
             return eResult;
         }
     }
+    return XML_SUCCESS;
  }
 
 bool LayerCollection::render(const Camera& camera) const{
@@ -145,12 +154,13 @@ bool LayerCollection::collide(const SDL_Rect* rect, std::string type) {
  * @note "invalid" value indicates that a parameter is ignored
  */
 std::vector<Actor*> LayerCollection::get_actors(std::string name, Direction direction, AnimationType animation) {
-    /*
     std::vector<Actor*> actor_list;
-    for(Layer& layer : m_layers) {
-        std::vector<Actor*> sublist = layer.get_actors(name, direction, animation);
-        actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
+    for(Layer* layer : m_layers) {
+        if(layer->get_type() == Layer::object) {
+            ObjectLayer* ob_layer = static_cast<ObjectLayer*>(layer);
+            std::vector<Actor*> sublist = ob_layer->get_actors(name, direction, animation);
+            actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
+        }
     }
     return actor_list;
-    */ /// FIX THIS IN THE END
 }

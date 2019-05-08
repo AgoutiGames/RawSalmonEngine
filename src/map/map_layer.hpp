@@ -27,9 +27,10 @@
 
 #include "map/layer.hpp"
 
+class TilesetCollection;
+
 class MapLayer : public Layer{
     public:
-        tinyxml2::XMLError init(tinyxml2::XMLElement* source, LayerCollection& layer_collection);
 
         bool render(const Camera& camera) const override;
         void update() override;
@@ -38,18 +39,27 @@ class MapLayer : public Layer{
         bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
 
-        LayerType get_type() {return LayerType::map;}
+        LayerType get_type() override {return LayerType::map;}
+
+        static MapLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
+
+        MapLayer(const MapLayer &) = delete;
+        MapLayer& operator=(const MapLayer &) = delete;
+        MapLayer(MapLayer &&) = delete;
+        MapLayer& operator=(MapLayer &&) = delete;
+
+    protected:
+        MapLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
     private:
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source);
+
         // members for m_type map
-        std::string m_name;
+        TilesetCollection* m_ts_collection;
         unsigned m_width;   // Measured in tiles for "map" and pixels for "image"
         unsigned m_height;
-        unsigned m_tile_w;
-        unsigned m_tile_h;
+
         std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information
-        int m_offset_x = 0; // Taken as position for "image"
-        int m_offset_y = 0;
 };
 
 
