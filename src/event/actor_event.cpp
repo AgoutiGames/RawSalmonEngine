@@ -55,6 +55,22 @@ void ActorEvent::initialize_all() {
     register_class<AeSetVar>();
 }
 
+void ActorEvent::print_size() {
+    std::cout << "MoveDir: " << AeMoveDirection::m_event_list.size() << "\n";
+    std::cout << "MoveSus: " << AeMoveSustained::m_event_list.size() << "\n";
+    std::cout << "Anim: " << AeAnimate::m_event_list.size() << "\n";
+    std::cout << "Jump: " << AeJump::m_event_list.size() << "\n";
+    std::cout << "Fall: " << AeFall::m_event_list.size() << "\n";
+    std::cout << "Multi: " << AeMulti::m_event_list.size() << "\n";
+    std::cout << "Ground: " << AteOnGround::m_event_list.size() << "\n";
+    std::cout << "Accel: " << AeAccelerate::m_event_list.size() << "\n";
+    std::cout << "Deccel: " << AeDecelerate::m_event_list.size() << "\n";
+    std::cout << "Move: " << AeMove::m_event_list.size() << "\n";
+    std::cout << "Sound: " << AeSound::m_event_list.size() << "\n";
+    std::cout << "Set: " << AeSetVar::m_event_list.size() << "\n";
+
+}
+
 /**
  * @brief Determine event type and parse event from symbolic tile
  * @param source The symbolic tile XMLElement

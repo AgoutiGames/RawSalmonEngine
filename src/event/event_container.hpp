@@ -97,6 +97,7 @@ class EventContainer : public T{
         EventSignal m_signal;
         std::string m_name;
 
+    public:
         static std::list<U> m_event_list;
 };
 

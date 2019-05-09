@@ -60,6 +60,8 @@ class ActorEvent{
 
         static tinyxml2::XMLError parse_multi(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry);
 
+        static void print_size();
+
     private:
         Cause m_cause;
 
