@@ -164,6 +164,13 @@ ActorEvent* AeMulti::copy() const{
     return create(new_list);
 }
 
+void AeMulti::kill() {
+    for(ActorEvent* e : m_events) {
+        e->kill();
+    }
+    kill(this);
+}
+
 /**
  * @brief Set cause to every contained event
  */

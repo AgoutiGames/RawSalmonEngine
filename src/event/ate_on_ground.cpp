@@ -212,6 +212,12 @@ ActorEvent* AteOnGround::copy() const{
     return create(success, failure, m_direction, m_continuous, m_tolerance);
 }
 
+void AteOnGround::kill() {
+    if(m_success != nullptr) m_success->kill();
+    if(m_failure != nullptr) m_failure->kill();
+    kill(this);
+}
+
 /**
  * @brief Set cause to every contained event
  */

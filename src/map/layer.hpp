@@ -61,6 +61,8 @@ class Layer {
         static Layer* parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult);
 
     protected:
+        // This constructor can only be invoked in the initialiser list of derived class, not by itself!
+        // If this class wouldn't be abstract, the protectedness of the constructor would make it "abstract like"
         Layer(std::string name, LayerCollection* layer_collection);
 
         LayerCollection* m_layer_collection;

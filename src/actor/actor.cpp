@@ -227,6 +227,8 @@ void Actor::add_event(ActorEvent* event) {
         m_event_pipeline.insert(m_event_pipeline.begin(), event);
         return;
     }
+    // If event can't be added, kill it!
+    event->kill();
 }
 
 /**
