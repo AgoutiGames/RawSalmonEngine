@@ -50,7 +50,7 @@ void ActorEvent::initialize_all() {
     register_class<AteOnGround>();
     register_class<AeAccelerate>();
     register_class<AeDecelerate>();
-    register_class<AeMove>();
+    //register_class<AeMove>();
     register_class<AeSound>();
     register_class<AeSetVar>();
 }
@@ -65,7 +65,7 @@ void ActorEvent::print_size() {
     std::cout << "Ground: " << AteOnGround::m_event_list.size() << "\n";
     std::cout << "Accel: " << AeAccelerate::m_event_list.size() << "\n";
     std::cout << "Deccel: " << AeDecelerate::m_event_list.size() << "\n";
-    std::cout << "Move: " << AeMove::m_event_list.size() << "\n";
+    //std::cout << "Move: " << AeMove::m_event_list.size() << "\n";
     std::cout << "Sound: " << AeSound::m_event_list.size() << "\n";
     std::cout << "Set: " << AeSetVar::m_event_list.size() << "\n";
 

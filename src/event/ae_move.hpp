@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,32 +30,24 @@ class Actor;
 /**
  * @brief Move Actor by its current speed
  */
-class AeMove : public EventContainer<ActorEvent, AeMove>{
+class AeMove : public Event<Actor>{
     // The default interface block (copy this!)
     public:
-        AeMove() {}
-        static AeMove* create() {return duplicate(AeMove());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMove() override {}
-        virtual std::string get_type() const override {return m_alias;}
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        Event<Actor>* create(tinyxml2::XMLElement* source, MapData& base_map) const override;
+        EventSignal process(Actor& actor) override;
+        ~AeMove() override {}
+
+        std::string get_type() const override {return m_alias;}
         static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
+
     private:
         static std::string m_alias; //< Define this!
-
-    // The specialized block
-    public:
-        AeMove(float x_factor, float y_factor, std::string x_name = "__XSPEED", std::string y_name = "__YSPEED");
-        static AeMove* create(float x_factor, float y_factor, std::string x_name = "__XSPEED", std::string y_name = "__YSPEED");
-    private:
         // Members
-        float m_x_factor;
-        float m_y_factor;
-        std::string m_x_speed_name;
-        std::string m_y_speed_name;
+        float m_x_factor = 1.0f;
+        float m_y_factor = 1.0f;
+        std::string m_x_speed_name = "__XSPEED";
+        std::string m_y_speed_name = "__YSPEED";
 };
 
 #endif // AE_MOVE_HPP_INCLUDED
