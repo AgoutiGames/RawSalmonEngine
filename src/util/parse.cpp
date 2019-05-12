@@ -196,3 +196,134 @@ tinyxml2::XMLError parse::bg_color(tinyxml2::XMLElement* source, SDL_Color& colo
     }
 }
 
+tinyxml2::XMLError Parser::parse_int(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_int.find(name) == m_int.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+    return source->QueryIntAttribute(name.c_str(), m_int.at(name));
+}
+
+tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_float.find(name) == m_float.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+    return source->QueryFloatAttribute(name.c_str(), m_float.at(name));
+}
+
+tinyxml2::XMLError Parser::parse_double(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_double.find(name) == m_double.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+    return source->QueryDoubleAttribute(name.c_str(), m_double.at(name));
+}
+
+tinyxml2::XMLError Parser::parse_string(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_string.find(name) == m_string.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+
+    const char* p_value = source->Attribute("value");
+    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    *m_string.at(name) = std::string(p_value);
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError Parser::parse_priority(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_priority.find(name) == m_priority.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+
+    const char* p_value = source->Attribute("value");
+    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+    std::string value(p_value);
+    Priority prio = str_to_priority(value);
+    if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+    *m_priority.at(name) = prio;
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError Parser::parse_signal(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_signal.find(name) == m_signal.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+
+    const char* p_value = source->Attribute("value");
+    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+    std::string value(p_value);
+    EventSignal sig = str_to_event_signal(value);
+    if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+    *m_signal.at(name) = sig;
+    return XML_SUCCESS;
+}
+
+
+Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
+    parsers[0] = &Parser::parse_int;
+    parsers[1] = &Parser::parse_float;
+    parsers[2] = &Parser::parse_double;
+    parsers[3] = &Parser::parse_string;
+    parsers[4] = &Parser::parse_priority;
+    parsers[5] = &Parser::parse_signal;
+    /// ! Don't forget adding new parsing member function here!
+}
+
+tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
+        bool no_attribute = true;
+
+        if(source->Attribute("name") == nullptr) {
+            std::cerr << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+
+        for(ParsePointer p : parsers) {
+            XMLError result = (this->*p)(source);
+            if(result == XML_SUCCESS) {
+                no_attribute = false;
+                break;
+            }
+            else if(result == XML_NO_ATTRIBUTE) {
+                continue;
+            }
+            else {
+                std::cerr << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
+                return result;
+            }
+        }
+
+        if(no_attribute) {
+            std::cerr << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+    }
+    return XML_SUCCESS;
+}
+

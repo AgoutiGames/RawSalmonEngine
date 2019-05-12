@@ -301,7 +301,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
  * @param speed, dir, resp The possible actor member vars which can be defined via properties
  * @return @c XMLError which indicates success or failure
  */
-tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp) {
+tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, Event<Actor>*>& resp) {
     using namespace tinyxml2;
     XMLError eResult;
     while(source != nullptr) {
@@ -396,7 +396,7 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
             SDL_Keysym temp;
             temp.sym = key;
             temp.scancode = scancode;
-            m_key_sustained[scancode]->set_key(temp);
+            m_key_sustained[scancode]->set_cause(Cause(temp));
         }
         if(up) {
             m_key_up[key] = get_event(event);
@@ -415,9 +415,9 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
  */
 bool MapData::process_key_down(SDL_Event  e) {
     if(m_player != nullptr && m_key_down.find(e.key.keysym.sym) != m_key_down.end()) {
-        ActorEvent* event = m_key_down.at(e.key.keysym.sym)->copy();
-        event->set_key(e.key.keysym);
-        m_player->add_event(event);
+        Event<Actor>* event = m_key_down.at(e.key.keysym.sym)->clone();
+        event->set_cause(Cause(e.key.keysym));
+        m_player->get_event_queue().add_event(event);
         return true;
     }
     return false;
@@ -430,9 +430,9 @@ bool MapData::process_key_down(SDL_Event  e) {
  */
 bool MapData::process_key_up(SDL_Event  e) {
     if(m_player != nullptr && m_key_up.find(e.key.keysym.sym) != m_key_up.end()) {
-        ActorEvent* event = m_key_up.at(e.key.keysym.sym)->copy();
-        event->set_key(e.key.keysym);
-        m_player->add_event(event);
+        Event<Actor>* event = m_key_up.at(e.key.keysym.sym)->clone();
+        event->set_cause(Cause(e.key.keysym));
+        m_player->get_event_queue().add_event(event);
         return true;
     }
     return false;
@@ -444,9 +444,9 @@ bool MapData::process_key_up(SDL_Event  e) {
 void MapData::process_keys_sustained() {
     if(m_player != nullptr) {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        for(std::pair<SDL_Scancode, ActorEvent*> x : m_key_sustained) {
+        for(std::pair<SDL_Scancode, Event<Actor>*> x : m_key_sustained) {
             if(keys[x.first]) {
-                m_player->add_event(x.second->copy());
+                m_player->get_event_queue().add_event(x.second->clone());
             }
         }
     }
@@ -456,4 +456,4 @@ unsigned MapData::get_w() const {return m_width * m_ts_collection.get_tile_w();}
 
 unsigned MapData::get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Return map height in pixels
 
-ActorEvent* MapData::get_event(std::string name) const {return m_events.at(name)->copy();} ///< Return copy of named event
+Event<Actor>* MapData::get_event(std::string name) const {return m_events.at(name)->clone();} ///< Return copy of named event

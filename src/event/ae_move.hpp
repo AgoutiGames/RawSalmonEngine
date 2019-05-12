@@ -34,16 +34,18 @@ class AeMove : public Event<Actor>{
     // The default interface block (copy this!)
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        Event<Actor>* create(tinyxml2::XMLElement* source, MapData& base_map) const override;
         EventSignal process(Actor& actor) override;
         ~AeMove() override {}
 
+        // Covariant return type!
+        AeMove* create() const override {return new AeMove();}
+        AeMove* clone() const override {return new AeMove(*this);}
+
         std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
 
     private:
-        static bool good;
-        static std::string m_alias; //< Define this!
+        static const bool good;
+        static const std::string m_alias; //< Define this!
         // Members
         float m_x_factor = 1.0f;
         float m_y_factor = 1.0f;

@@ -107,9 +107,6 @@ bool GameInfo::init() {
  * @warning The SDL2 renderer must be initialized prior loading!
  */
 bool GameInfo::load_map(std::string mapfile) {
-    // Empty event storage to avoid memory leaks
-    ActorEvent::initialize_all();
-
     tinyxml2::XMLError eResult = m_map.init_map(mapfile, &m_renderer);
     if(eResult == tinyxml2::XML_SUCCESS) return true;
     else return false;

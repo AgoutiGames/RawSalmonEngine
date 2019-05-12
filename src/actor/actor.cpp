@@ -179,65 +179,17 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
 }
 
 /**
- * @brief Process the event pipeline
- * @return a @c bool which indicates if the actor should be erased
- */
-bool Actor::process_events() {
-    if(!m_event_pipeline.empty()) {
-        for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
-            ActorEvent* event = m_event_pipeline[i];
-            EventSignal signal = event->process(*this);
-            if(signal == EventSignal::stop) {
-                break;
-            }
-            else if(signal == EventSignal::end || signal == EventSignal::abort) {
-                m_event_pipeline[i]->kill();
-                m_event_pipeline.erase(m_event_pipeline.begin() + i);
-                i--;
-            }
-            else if(signal == EventSignal::erase) {return false;}
-        }
-    }
-    if(m_event_pipeline.empty()) {
-        respond(Response::on_idle);
-    }
-    return true;
-}
-
-/**
- * @brief Adds the event to the actors pipeline
- * @param event The event to be added
- * @note The position where the event is added corresponds to its priority value
- */
-void Actor::add_event(ActorEvent* event) {
-    if(!is_blocked(event->get_type()) && !is_blocked(event->name())
-       && !is_blocked(event->get_key())
-       && !in_cooldown(event->get_type()) && !in_cooldown(event->name())) {
-        if(!m_event_pipeline.empty()) {
-            auto it = m_event_pipeline.end();
-            do {
-                --it;
-                if((*it)->priority() >= event->priority()) {
-                    ++it;
-                    m_event_pipeline.insert(it, event);
-                    return;
-                }
-            } while(it != m_event_pipeline.begin());
-        }
-        m_event_pipeline.insert(m_event_pipeline.begin(), event);
-        return;
-    }
-    // If event can't be added, kill it!
-    event->kill();
-}
-
-/**
  * @brief Update the actor state
  * @return @c bool which returns true if actor is alive
  */
 bool Actor::update() {
     respond(Response::on_always);
-    bool alive = process_events();
+    bool alive = m_events.process_events(*this);
+
+    if(m_events.is_empty()) {
+        respond(Response::on_idle);
+    }
+
     return alive;
 }
 
@@ -351,8 +303,8 @@ bool Actor::respond(Response r) {
         return false;
     }
     else {
-        ActorEvent* event = m_response.at(r)->copy();
-        add_event(event);
+        Event<Actor>* event = m_response.at(r)->clone();
+        m_events.add_event(event);
         return true;
     }
 }
@@ -368,9 +320,9 @@ bool Actor::respond(Response r, Actor* a) {
         return false;
     }
     else {
-        ActorEvent* event = m_response.at(r)->copy();
+        Event<Actor>* event = m_response.at(r)->clone();
         if(a != nullptr) {event->set_cause(Cause(a));}
-        add_event(event);
+        m_events.add_event(event);
         return true;
     }
 }
@@ -388,9 +340,9 @@ bool Actor::respond(Response r, Tile* t, int x, int y) {
         return false;
     }
     else {
-        ActorEvent* event = m_response.at(r)->copy();
+        Event<Actor>* event = m_response.at(r)->clone();
         if(t != nullptr) {event->set_cause(Cause(t,x,y));}
-        add_event(event);
+        m_events.add_event(event);
         return true;
     }
 }
@@ -406,54 +358,11 @@ bool Actor::respond(Response r, SDL_Keysym key) {
         return false;
     }
     else {
-        ActorEvent* event = m_response.at(r)->copy();
-        if(key.sym != SDLK_UNKNOWN) {event->set_key(key);}
-        add_event(event);
+        Event<Actor>* event = m_response.at(r)->clone();
+        if(key.sym != SDLK_UNKNOWN) {event->set_cause(Cause(key));}
+        m_events.add_event(event);
         return true;
     }
-}
-
-/**
- * @brief Return if actors event pipeline is blocked for a specific event
- * @param name Name of the event or event type
- * @return @c bool indicating if event or event type is currently blocked
- */
-bool Actor::is_blocked(std::string name) const {
-    if(m_block.find(name) == m_block.end()) {
-        return false;
-    }
-    else {
-        return m_block.at(name);
-    }
-}
-
-/**
- * @brief Return if actors event pipeline is blocked for a specific key
- * @param key The key which gets checked
- * @return @c bool indicating if key is currently blocked
- */
-bool Actor::is_blocked(const SDL_Keysym& key) const {
-    if(m_block_key.find(key.sym) == m_block_key.end()) {
-        return false;
-    }
-    else {
-        return m_block_key.at(key.sym);
-    }
-}
-
-/**
- * @brief Return if actors event pipeline is on cooldown for a specific event
- * @param name Name of the event or event type
- * @return @c bool indicating if event or event type is currently on cooldown
- */
-bool Actor::in_cooldown(std::string name) const {
-    if(m_timestamp.find(name) == m_timestamp.end()) {
-        return false;
-    }
-    if(m_timestamp.at(name) > SDL_GetTicks()) {
-        return true;
-    }
-    else {return false;}
 }
 
 /**
@@ -512,21 +421,3 @@ bool Actor::on_ground(Direction dir, int tolerance) const {
     return m_map->get_layer_collection().collide(&temp);
 }
 
-/**
- * @brief Deletes all events with given name or type except one
- * @param name The individual name or type of the event
- * @param except The event which shouldn't be deleted
- * @return the count of events which have been deleted
- */
-unsigned Actor::scrap_event(std::string name, ActorEvent* except) {
-    unsigned counter = 0;
-    for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
-        if(( m_event_pipeline[i]->get_type() == name || m_event_pipeline[i]->name() == name) && m_event_pipeline[i] != except) {
-            m_event_pipeline[i]->kill();
-            m_event_pipeline.erase(m_event_pipeline.begin() + i);
-            i--;
-            counter++;
-        }
-    }
-    return counter;
-}

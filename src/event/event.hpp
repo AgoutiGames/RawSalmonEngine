@@ -39,15 +39,15 @@ public:
     virtual std::string get_type() const = 0;
     virtual ~Event() = 0;
 
+    virtual Event<Scope>* create() const = 0;
+    virtual Event<Scope>* clone() const = 0;
+
     std::string get_name() const {return m_name;}
     Priority get_priority() const {return m_priority;}
     EventSignal get_signal() const {return m_signal;}
 
     void set_cause(Cause x) {m_cause = x;}
     Cause get_cause() const {return m_cause;}
-
-    // The actual implementation behaves like a static function, only is virtual for finding the right child class
-    virtual Event<Scope>* create(tinyxml2::XMLElement* source, MapData& base_map) const = 0;
 
     static Event<Scope>* parse(tinyxml2::XMLElement* source, MapData& base_map);
 
@@ -60,23 +60,10 @@ protected:
     template <class T>
     static bool register_class();
 
-    bool parse_default_members(tinyxml2::XMLElement* source, std::string name);
-
 private:
 
     static std::map<std::string, Event<Scope>*>& get_dict();
 
-    //static int initialize_lookup();
-
-    // this baad boy won't be statically initialized ever because its a stl map
-    // if i want to register classes themselves, I'll need to get some lazy initialization
-    // and put the var as a static inside a getter
-    //static std::map<std::string, Event<Scope>> m_event_dict;
-
-    // m_size has to come last because its definition triggers the
-    // redefinition of m_event_dict which would otherwise be overwritten
-    // by the default definition
-    //static int m_size;
 };
 
 template<class Scope>
@@ -95,8 +82,9 @@ Event<Scope>::~Event() {}
 template <class Scope>
 template <class T>
 bool Event<Scope>::register_class() {
-    get_dict()[T::get_type_static()] = static_cast<Event<Scope>*>(new T());
-    std::cerr << "Just registered " << T::get_type_static() << "\n";
+    Event<Scope>* event = new T();
+    get_dict()[event->get_type()] = event;
+    std::cerr << "Just registered " << event->get_type() << "\n";
     return true;
 }
 
@@ -133,74 +121,14 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
         return nullptr;
     }
 
-    Event<Scope>* parsed_event = get_dict()[event_type].create(source, base_map);
-    if(parsed_event == nullptr) {
+    Event<Scope>* parsed_event = get_dict()[event_type]->create();
+    tinyxml2::XMLError result = parsed_event->init(source, base_map);
+    if(result != tinyxml2::XMLError::XML_SUCCESS) {
         std::cerr << "Failed at parsing event with tile id: " << source->Attribute("id") << "\n";
+        delete parsed_event;
         return nullptr;
     }
     return parsed_event;
 }
-
-// Return false if something went wrong and we have to abort
-// If parsed successful or there isn't anything to parse, return true
-template<class Scope>
-bool Event<Scope>::parse_default_members(tinyxml2::XMLElement* source, std::string name) {
-    using namespace tinyxml2;
-    const char* p_value;
-    if(name == "NAME") {
-        p_value = source->Attribute("value");
-        if(p_value == nullptr) return false;
-        m_name = std::string(p_value);
-    }
-
-    else if(name == "PRIORITY") {
-        p_value = source->Attribute("value");
-        if(p_value == nullptr) return false;
-        std::string value(p_value);
-        m_priority = str_to_priority(value);
-        if(m_priority == Priority::invalid) {return false;}
-    }
-
-    else if(name == "SIGNAL") {
-        p_value = source->Attribute("value");
-        if(p_value == nullptr) return false;
-        std::string value(p_value);
-        m_signal = str_to_event_signal(value);
-        if(m_signal == EventSignal::invalid) {return false;}
-    }
-    return true;
-}
-
-/*
-template <class Scope>
-int Event<Scope>::initialize_lookup() {
-    return 0;
-}
-
-template <>
-int Event<Actor>::initialize_lookup() {
-    int sum = 0;
-    // sum += register_class<AeMove>();
-    return sum;
-}
-
-template <>
-int Event<MapData>::initialize_lookup() {
-    int sum = 0;
-    // sum += register_class< CLASS NAME >();
-    return sum;
-}
-
-template <>
-int Event<GameInfo>::initialize_lookup() {
-    int sum = 0;
-    // sum += register_class< CLASS NAME >();
-    return sum;
-}
-
-template <class Scope>
-int Event<Scope>::m_size = Event<Scope>::initialize_lookup();
-*/
-
 
 #endif // EVENT_HPP_INCLUDED

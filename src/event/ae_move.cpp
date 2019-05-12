@@ -27,18 +27,12 @@
 #include "event/actor_event.hpp"
 #include "event/event_container.hpp"
 #include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMove::m_alias = "AeMove";
+const std::string AeMove::m_alias = "AeMove";
 
-bool AeMove::good = Event<Actor>::register_class<AeMove>();
-
-Event<Actor>* AeMove::create(tinyxml2::XMLElement* source, MapData& base_map) const {
-    Event<Actor>* event = new AeMove();
-    tinyxml2::XMLError result = event->init(source, base_map);
-    if(result != tinyxml2::XMLError::XML_SUCCESS) {return nullptr;}
-    return event;
-}
+const bool AeMove::good = Event<Actor>::register_class<AeMove>();
 
 /**
  * @brief Increase speed of an actor
@@ -84,53 +78,27 @@ EventSignal AeMove::process(Actor& actor) {
  */
 tinyxml2::XMLError AeMove::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    (void)base_map; // Mute unused var warning for seldomly used param MapData
 
-    XMLError eResult;
+    Parser parser(base_map);
 
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
 
-        // Parse additional members
+    parser.add(m_x_factor, "XFACTOR");
+    parser.add(m_y_factor, "YFACTOR");
+    parser.add(m_x_speed_name, "XSPEED_NAME");
+    parser.add(m_y_speed_name, "YSPEED_NAME");
 
-        else if(!Event<Actor>::parse_default_members(source, name)) {
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
+    XMLError eResult = parser.parse(source);
 
-        else if(name == "XFACTOR") {
-            eResult = source->QueryFloatAttribute("value", &m_x_factor);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "XSPEED_NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            m_x_speed_name = std::string(p_value);
-        }
-
-        else if(name == "YFACTOR") {
-            eResult = source->QueryFloatAttribute("value", &m_y_factor);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "YSPEED_NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            m_y_speed_name = std::string(p_value);
-        }
-
-        else {
-            std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        source = source->NextSiblingElement("property");
-    }
     if(m_name == "") {
         std::cerr << "Missing name property!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

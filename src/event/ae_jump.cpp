@@ -49,8 +49,8 @@ m_anim_dir{anim_dir}
  */
 EventSignal AeJump::process(Actor& actor) {
     if(!m_started) {
-        actor.scrap_event(AeFall::get_type_static());
-        actor.block_event(AeFall::get_type_static());
+        actor.get_event_queue().scrap_event(AeFall().get_type());
+        actor.get_event_queue().block_event(AeFall().get_type());
         m_started = true;
     }
 
@@ -64,7 +64,7 @@ EventSignal AeJump::process(Actor& actor) {
     }
 
     if(!actor.move(0, -m_speed, true)) {
-        actor.unblock_event(AeFall::get_type_static());
+        actor.get_event_queue().unblock_event(AeFall::get_type_static());
         return EventSignal::abort;
     }
 
@@ -81,7 +81,7 @@ EventSignal AeJump::process(Actor& actor) {
     m_speed -= m_deceleration;
 
     if(m_speed <= 0) {
-        actor.unblock_event(AeFall::get_type_static());
+        actor.get_event_queue().unblock_event(AeFall::get_type_static());
         return EventSignal::end;
     }
     else {return signal();}

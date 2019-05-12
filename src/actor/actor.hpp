@@ -24,11 +24,11 @@
 #include <map>
 
 #include "actor/data_block.hpp"
+#include "event/event_queue.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-class ActorEvent;
 class MapData;
 
 struct ActorTemplate {
@@ -37,7 +37,7 @@ struct ActorTemplate {
     Direction direction = Direction::down;
     std::map<std::string, SDL_Rect> hitbox;
     std::map<AnimationType, std::map<Direction, Tile>> animations;
-    std::map<Response, ActorEvent*> response; ///< Map which yields events for response values
+    std::map<Response, Event<Actor>*> response; ///< Map which yields events for response values
 };
 
 /**
@@ -88,19 +88,7 @@ class Actor{
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
 
-        // Event related functions
-        bool process_events();
-        void add_event(ActorEvent* event);
-        unsigned scrap_event(std::string name, ActorEvent* except = nullptr);
-        void set_cooldown(std::string name, float dur_sec) {m_timestamp[name] = SDL_GetTicks() + dur_sec * 1000;}
-        Uint32 get_cooldown(std::string name) const {return m_timestamp.at(name);}
-        void block_event(std::string name) {m_block[name] = true;}
-        void block_event(SDL_Keycode key) {m_block_key[key] = true;}
-        void unblock_event(std::string name) {m_block[name] = false;}
-        void unblock_event(SDL_Keycode key) {m_block_key[key] = false;}
-        bool is_blocked(std::string name) const;
-        bool is_blocked(const SDL_Keysym& key) const;
-        bool in_cooldown(std::string name) const;
+        EventQueue<Actor>& get_event_queue() {return m_events;}
 
     private:
         MapData* m_map;
@@ -117,12 +105,9 @@ class Actor{
         Direction m_direction; ///< Current direction facing
         std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
-        std::map<Response, ActorEvent*> m_response; ///< Map which yields events for response values
+        std::map<Response, Event<Actor>*> m_response; ///< Map which yields events for response values
 
-        std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
-        std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event or event type
-        std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
-        std::vector<ActorEvent*> m_event_pipeline; ///< Vector of current events to be processed
+        EventQueue<Actor> m_events;
 
         DataBlock m_data; ///< This holds custom user values by string
 };

@@ -25,8 +25,10 @@
 #include <map>
 
 #include "graphics/texture.hpp"
+#include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
+class MapData;
 
 namespace parse{
     tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
@@ -35,6 +37,46 @@ namespace parse{
 
     tinyxml2::XMLError bg_color(tinyxml2::XMLElement* source, SDL_Color& color);
 }
+
+class Parser{
+    public:
+        Parser(MapData& base_map);
+
+        void add(int& value, std::string name) {m_int[name] = &value;}
+        void add(float& value, std::string name) {m_float[name] = &value;}
+        void add(double& value, std::string name) {m_double[name] = &value;}
+        void add(std::string& value, std::string name) {m_string[name] = &value;}
+        void add(Priority& value, std::string name) {m_priority[name] = &value;}
+        void add(EventSignal& value, std::string name) {m_signal[name] = &value;}
+
+        tinyxml2::XMLError parse(tinyxml2::XMLElement* source);
+
+    private:
+        static constexpr int type_count = 6;
+        MapData* m_base_map;
+
+        std::map<std::string, int*> m_int;
+        tinyxml2::XMLError parse_int(tinyxml2::XMLElement* source);
+
+        std::map<std::string, float*> m_float;
+        tinyxml2::XMLError parse_float(tinyxml2::XMLElement* source);
+
+        std::map<std::string, double*> m_double;
+        tinyxml2::XMLError parse_double(tinyxml2::XMLElement* source);
+
+        std::map<std::string, std::string*> m_string;
+        tinyxml2::XMLError parse_string(tinyxml2::XMLElement* source);
+
+        std::map<std::string, Priority*> m_priority;
+        tinyxml2::XMLError parse_priority(tinyxml2::XMLElement* source);
+
+        std::map<std::string, EventSignal*> m_signal;
+        tinyxml2::XMLError parse_signal(tinyxml2::XMLElement* source);
+
+        typedef tinyxml2::XMLError(Parser::* ParsePointer)(tinyxml2::XMLElement* source);
+        ParsePointer parsers[type_count];
+
+};
 
 
 

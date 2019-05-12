@@ -33,7 +33,9 @@
 
 class Tile; // forward declaration
 class Layer;
-class ActorEvent;
+
+template <class Scope>
+class Event;
 
 /**
  * @brief Contain, render and update all game map layers
@@ -58,8 +60,8 @@ class MapData {
         unsigned get_w() const;
         unsigned get_h() const;
         DataBlock& get_data() {return m_data;}
-        void register_event(std::pair<std::string, ActorEvent*> event) {m_events.insert(event);} ///< Link event name with @c ActorEvent*
-        ActorEvent* get_event(std::string name) const;
+        void register_event(std::pair<std::string, Event<Actor>*> event) {m_events.insert(event);} ///< Link event name with @c Event<Actor>*
+        Event<Actor>* get_event(std::string name) const;
         bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
@@ -72,7 +74,7 @@ class MapData {
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
         LayerCollection& get_layer_collection() {return m_layer_collection;}
 
-        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, ActorEvent*>& resp);
+        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, Event<Actor>*>& resp);
 
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
         bool process_key_up(SDL_Event e);
@@ -100,12 +102,12 @@ class MapData {
         std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
         std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
-        std::map<std::string, ActorEvent*> m_events; ///< List of all parsed events by name
+        std::map<std::string, Event<Actor>*> m_events; ///< List of all parsed events by name
         Actor* m_player = nullptr;
 
-        std::map<SDL_Keycode, ActorEvent*> m_key_up;
-        std::map<SDL_Keycode, ActorEvent*> m_key_down;
-        std::map<SDL_Scancode, ActorEvent*> m_key_sustained;
+        std::map<SDL_Keycode, Event<Actor>*> m_key_up;
+        std::map<SDL_Keycode, Event<Actor>*> m_key_down;
+        std::map<SDL_Scancode, Event<Actor>*> m_key_sustained;
 
         SDL_Renderer** mpp_renderer = nullptr;
 };
