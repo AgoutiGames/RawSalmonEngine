@@ -60,9 +60,11 @@ protected:
     template <class T>
     static bool register_class();
 
+    bool parse_default_members(tinyxml2::XMLElement* source, std::string name);
+
 private:
 
-    static std::map<std::string, Event<Scope>>& get_dict();
+    static std::map<std::string, Event<Scope>*>& get_dict();
 
     //static int initialize_lookup();
 
@@ -78,11 +80,11 @@ private:
 };
 
 template<class Scope>
-std::map<std::string, Event<Scope>>& Event<Scope>::get_dict() {
+std::map<std::string, Event<Scope>*>& Event<Scope>::get_dict() {
     // Lazy initialization of event_dict
     // Can be called during dynamic initialization of static members
     // of other classes (events can finally register themselves before main!)
-    static std::map<std::string, Event<Scope>> event_dict;
+    static std::map<std::string, Event<Scope>*> event_dict;
     return event_dict;
 }
 
@@ -93,7 +95,8 @@ Event<Scope>::~Event() {}
 template <class Scope>
 template <class T>
 bool Event<Scope>::register_class() {
-    get_dict()[T::get_type_static()] = T();
+    get_dict()[T::get_type_static()] = static_cast<Event<Scope>*>(new T());
+    std::cerr << "Just registered " << T::get_type_static() << "\n";
     return true;
 }
 
@@ -136,6 +139,36 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
         return nullptr;
     }
     return parsed_event;
+}
+
+// Return false if something went wrong and we have to abort
+// If parsed successful or there isn't anything to parse, return true
+template<class Scope>
+bool Event<Scope>::parse_default_members(tinyxml2::XMLElement* source, std::string name) {
+    using namespace tinyxml2;
+    const char* p_value;
+    if(name == "NAME") {
+        p_value = source->Attribute("value");
+        if(p_value == nullptr) return false;
+        m_name = std::string(p_value);
+    }
+
+    else if(name == "PRIORITY") {
+        p_value = source->Attribute("value");
+        if(p_value == nullptr) return false;
+        std::string value(p_value);
+        m_priority = str_to_priority(value);
+        if(m_priority == Priority::invalid) {return false;}
+    }
+
+    else if(name == "SIGNAL") {
+        p_value = source->Attribute("value");
+        if(p_value == nullptr) return false;
+        std::string value(p_value);
+        m_signal = str_to_event_signal(value);
+        if(m_signal == EventSignal::invalid) {return false;}
+    }
+    return true;
 }
 
 /*

@@ -183,8 +183,6 @@ void MapData::update() {
     m_camera.update();
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
-
-    ActorEvent::print_size();
 }
 
 /**

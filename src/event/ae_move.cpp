@@ -31,6 +31,8 @@
 
 std::string AeMove::m_alias = "AeMove";
 
+bool AeMove::good = Event<Actor>::register_class<AeMove>();
+
 Event<Actor>* AeMove::create(tinyxml2::XMLElement* source, MapData& base_map) const {
     Event<Actor>* event = new AeMove();
     tinyxml2::XMLError result = event->init(source, base_map);
@@ -95,26 +97,8 @@ tinyxml2::XMLError AeMove::init(tinyxml2::XMLElement* source, MapData& base_map)
 
         // Parse additional members
 
-        else if(name == "NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            m_name = std::string(p_value);
-        }
-
-        else if(name == "PRIORITY") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            m_priority = str_to_priority(value);
-            if(m_priority == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SIGNAL") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            m_signal = str_to_event_signal(value);
-            if(m_signal == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+        else if(!Event<Actor>::parse_default_members(source, name)) {
+            return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
         else if(name == "XFACTOR") {

@@ -42,6 +42,7 @@ class AeMove : public Event<Actor>{
         static std::string get_type_static() {return m_alias;}
 
     private:
+        static bool good;
         static std::string m_alias; //< Define this!
         // Members
         float m_x_factor = 1.0f;
