@@ -41,6 +41,12 @@ EventSignal AteOnGround::process(Actor& actor) {
     if(m_start) {
         if(!m_continuous) {
             m_decision = actor.on_ground(m_direction, m_tolerance);
+            if(m_decision) {
+                std::cerr << "On ground!\n";
+            }
+            else {
+                std::cerr << "NOT on ground!\n";
+            }
         }
         m_start = false;
     }
