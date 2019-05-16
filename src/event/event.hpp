@@ -34,10 +34,19 @@ class MapData;
 template<class Scope>
 class Event {
 public:
+    Event() = default;
+    // Enable possible copy or move of derived
+    Event(const Event& other) = default;
+    Event& operator=(const Event& other) = default;
+    Event(Event&& other) = default;
+    Event& operator=(Event&& other) = default;
+
+    // delete works on pointer to base
+    virtual ~Event() = default;
+
     virtual tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) = 0;
     virtual EventSignal process(Scope& entity) = 0;
     virtual std::string get_type() const = 0;
-    virtual ~Event() = 0;
 
     virtual Event<Scope>* create() const = 0;
     virtual Event<Scope>* clone() const = 0;
@@ -74,9 +83,6 @@ std::map<std::string, Event<Scope>*>& Event<Scope>::get_dict() {
     static std::map<std::string, Event<Scope>*> event_dict;
     return event_dict;
 }
-
-template<class Scope>
-Event<Scope>::~Event() {}
 
 /// Registers the type of event as an actor event
 template <class Scope>
@@ -122,9 +128,9 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
     }
 
     Event<Scope>* parsed_event = get_dict()[event_type]->create();
-    tinyxml2::XMLError result = parsed_event->init(source, base_map);
+    tinyxml2::XMLError result = parsed_event->init(p_property, base_map);
     if(result != tinyxml2::XMLError::XML_SUCCESS) {
-        std::cerr << "Failed at parsing event with tile id: " << source->Attribute("id") << "\n";
+        std::cerr << "Failed at parsing event of type:" << parsed_event->get_type() << " with tile id: " << source->Attribute("id") << "\n";
         delete parsed_event;
         return nullptr;
     }

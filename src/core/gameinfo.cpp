@@ -23,7 +23,6 @@
 #include <SDL2/SDL_mixer.h>
 #include <iostream>
 
-#include "event/actor_event.hpp"
 #include "util/tinyxml2.h"
 
 /// Constructs a @c GameInfo Object

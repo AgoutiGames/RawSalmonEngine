@@ -23,9 +23,6 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
-#include "actor/data_block.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 #include "util/game_types.hpp"
@@ -73,7 +70,7 @@ EventSignal AeMove::process(Actor& actor) {
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AeMove::init(tinyxml2::XMLElement* source, MapData& base_map) {

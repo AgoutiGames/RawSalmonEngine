@@ -44,10 +44,11 @@ class ObjectLayer : public Layer{
                                       AnimationType animation = AnimationType::invalid);
         static ObjectLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
-        ObjectLayer(const ObjectLayer &) = delete;
-        ObjectLayer& operator=(const ObjectLayer &) = delete;
-        ObjectLayer(ObjectLayer &&) = delete;
-        ObjectLayer& operator=(ObjectLayer &&) = delete;
+        ObjectLayer(const ObjectLayer& other) = delete;
+        ObjectLayer& operator=(const ObjectLayer& other) = delete;
+
+        ObjectLayer(ObjectLayer&& other) = default;
+        ObjectLayer& operator=(ObjectLayer&& other) = default;
 
     protected:
         ObjectLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);

@@ -46,8 +46,16 @@ class Layer {
             undefinied
         };
 
-        // Virtual deconstructor makes sure that the dtor of dervied is called when deleted through pointer to base
-        virtual ~Layer();
+        Layer(std::string name, LayerCollection* layer_collection);
+
+        Layer(const Layer& other) = default;
+        Layer& operator=(const Layer& other) = default;
+        Layer(Layer&& other) = default;
+        Layer& operator=(Layer&& other) = default;
+
+
+        // Virtual deconstructor makes sure that the dtor of derived is called when deleted through pointer to base
+        virtual ~Layer() = default;
 
         virtual bool render(const Camera& camera) const = 0;
         virtual void update() = 0;
@@ -61,10 +69,6 @@ class Layer {
         static Layer* parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult);
 
     protected:
-        // This constructor can only be invoked in the initialiser list of derived class, not by itself!
-        // If this class wouldn't be abstract, the protectedness of the constructor would make it "abstract like"
-        Layer(std::string name, LayerCollection* layer_collection);
-
         LayerCollection* m_layer_collection;
         std::string m_name;
         int m_offset_x = 0; // Taken as position for "image"

@@ -33,13 +33,10 @@
 #include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
-Layer::~Layer() {}
-
 Layer::Layer(std::string name, LayerCollection* layer_collection) {
     m_name = name;
     m_layer_collection = layer_collection;
 }
-
 
 Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult) {
 

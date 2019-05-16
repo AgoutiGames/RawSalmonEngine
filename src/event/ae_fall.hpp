@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,38 +30,31 @@ class Actor;
 /**
  * @brief Let the actor fall
  */
-class AeFall : public EventContainer<ActorEvent, AeFall>{
-    // The default interface block (copy this!)
+class AeFall : public Event<Actor>{
     public:
-        AeFall() {}
-        static AeFall* create() {return duplicate(AeFall());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeFall() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeFall(float acc, float max, unsigned death, Direction fall, AnimationType anim, Direction a_dir);
-        static AeFall* create(float acc, float max, unsigned death, Direction fall, AnimationType anim, Direction a_dir);
-    private:
-        float m_acceleration;
-        float m_max_velocity;
-        unsigned m_death_height;
-        Direction m_fall_dir;
+        // Covariant return type!
+        AeFall* create() const override {return new AeFall();}
+        AeFall* clone() const override {return new AeFall(*this);}
 
-        AnimationType m_animation;
-        Direction m_anim_dir;
+        std::string get_type() const override {return m_alias;}
+
+    private:
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        float m_acceleration = 500.0f;
+        float m_max_velocity = 1000.0f;
+        unsigned m_death_height = 0.0f;
+        Direction m_fall_dir = Direction::down;
+
+        AnimationType m_animation = AnimationType::fall;
+        Direction m_anim_dir = Direction::current;
 
         float m_speed = 0;
         float m_height = 0;
-        // Members
 };
 
 #endif // AE_FALL_HPP_INCLUDED

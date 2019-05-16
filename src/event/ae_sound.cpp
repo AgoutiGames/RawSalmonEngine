@@ -23,20 +23,13 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
-#include "audio/sound_effect.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
 #include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AeSound::m_alias = "AeSound";
+const std::string AeSound::m_alias = "AeSound";
 
-AeSound::AeSound(SoundEffect sound) :
-EventContainer(),
-m_sound{sound}
-{
-
-}
+const bool AeSound::good = Event<Actor>::register_class<AeSound>();
 
 /**
  * @brief Play a sound
@@ -48,91 +41,40 @@ EventSignal AeSound::process(Actor& actor) {
     return EventSignal::end;
 }
 
-/// Create event and return pointer to it
-AeSound* AeSound::create(SoundEffect sound) {
-    AeSound temp(sound);
-    return duplicate(temp);
-}
-
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeSound::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeSound::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    (void)map; // Mute unused var warning for seldomly used param MapData
-    //XMLError eResult;
 
-    // Additional members
-    std::string event_name("");
-    Priority prio = Priority::medium;
-    EventSignal sig = EventSignal::next;
-    std::string path("");
+    Parser parser(base_map);
 
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
 
-        // Parse additional members
+    // Add additional members here
+    parser.add(m_sound, "PATH");
 
-        else if(name == "NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
-        }
+    XMLError eResult = parser.parse(source);
 
-        else if(name == "PRIORITY") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            prio = str_to_priority(value);
-            if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SIGNAL") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            sig = str_to_event_signal(value);
-            if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "PATH") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            path = std::string(p_value);
-        }
-
-        else {
-            std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        source = source->NextSiblingElement("property");
-    }
-    if(event_name == "") {
+    if(m_name == "") {
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    else if(path == "") {
-        std::cerr << "Missing path property!\n";
-        return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-    SoundEffect temp(map.get_file_path() + "audio/" + path);
-    if(!temp.good()) {
-        std::cerr << "Audio file: " << map.get_file_path() + "audio/" + path << " not found!\n";
+
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    ActorEvent* event = create(temp);
-    event->set_priority(prio);
-    event->set_signal(sig);
-    event->set_name(event_name);
-    entry = std::make_pair(event_name, event);
+    if(!m_sound.good()) {
+        std::cerr << "Missing sound path property!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
 
     return XML_SUCCESS;
 }

@@ -22,9 +22,8 @@
 #include <vector>
 #include <string>
 
-#include "actor/cause.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
+#include "event/event_queue.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -32,31 +31,25 @@ class Actor;
 /**
  * @brief An event holding a list of other events
  */
-class AeMulti : public EventContainer<ActorEvent, AeMulti>{
-    // The default interface block (copy this!)
+class AeMulti : public Event<Actor>{
     public:
-        AeMulti() {}
-        static AeMulti* create() {return duplicate(AeMulti());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMulti() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override;
-        virtual ActorEvent* copy() const override;
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeMulti(std::vector<ActorEvent*> event_list);
-        static AeMulti* create(std::vector<ActorEvent*> event_list);
-        virtual void set_cause(Cause x) override;
-        virtual void set_key(SDL_Keysym x) override;
+        // Covariant return type!
+        AeMulti* create() const override {return new AeMulti();}
+        AeMulti* clone() const override {return new AeMulti(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
+        // reimplement/hide inherited function
+        void set_cause(Cause x);
+
     private:
-        std::vector<ActorEvent*> m_events;
-        // Members
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        EventQueue<Actor> m_events;
 };
 
 #endif // AE_MULTI_HPP_INCLUDED

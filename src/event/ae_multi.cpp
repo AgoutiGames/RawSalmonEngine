@@ -23,19 +23,13 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
 #include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMulti::m_alias = "AeMulti";
+const std::string AeMulti::m_alias = "AeMulti";
 
-AeMulti::AeMulti(std::vector<ActorEvent*> event_list) :
-EventContainer(),
-m_events{event_list}
-{
-
-}
+const bool AeMulti::good = Event<Actor>::register_class<AeMulti>();
 
 /**
  * @brief Process the contained events
@@ -43,6 +37,14 @@ m_events{event_list}
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeMulti::process(Actor& actor) {
+    EventSignal sig = m_events.process_events(actor);
+    switch(sig) {
+    // If all events played without problems
+    case (EventSignal::next) : {return get_signal();}
+    // If something special happened
+    default : {return sig;}
+    }
+    /*
     if(!m_events.empty()) {
         for(unsigned i = 0; i < m_events.size(); i++) {
             ActorEvent* event = m_events[i];
@@ -58,33 +60,20 @@ EventSignal AeMulti::process(Actor& actor) {
             else if(e_signal == EventSignal::erase) {return e_signal;}
         }
     }
-    if(m_events.empty()) {
+    if(m_events.is_empty()) {
         return EventSignal::end;
     }
-    return signal();
-}
-
-/// Create event and return pointer to it
-AeMulti* AeMulti::create(std::vector<ActorEvent*> event_list) {
-    AeMulti temp(event_list);
-    return duplicate(temp);
+    return get_signal();*/
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
- */
-tinyxml2::XMLError AeMulti::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+ */ /*
+tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    //XMLError eResult;
-
-    // Additional members
-    std::string event_name("");
-    std::vector<ActorEvent*> event_list;
-    Priority prio = Priority::medium;
-    EventSignal sig = EventSignal::next;
 
     unsigned current_event = 1;
 
@@ -100,35 +89,35 @@ tinyxml2::XMLError AeMulti::parse(tinyxml2::XMLElement* source, MapData& map, st
         else if(name == "NAME") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
+            m_name = std::string(p_value);
         }
 
         else if(name == "PRIORITY") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
             std::string value(p_value);
-            prio = str_to_priority(value);
-            if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+            m_priority = str_to_priority(value);
+            if(m_priority == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
         }
 
         else if(name == "SIGNAL") {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
             std::string value(p_value);
-            sig = str_to_event_signal(value);
-            if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+            m_signal = str_to_event_signal(value);
+            if(m_signal == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
         }
 
         else if(name == std::to_string(current_event)) {
             p_value = source->Attribute("value");
             if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
             std::string value(p_value);
-            if(!map.check_event(value)) {
+            if(!base_map.check_event(value)) {
                 std::cerr << "Event " << value << " has not been parsed before!\n";
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             else {
-                event_list.push_back(map.get_event(value));
+                m_events.add_event(base_map.get_event(value));
                 current_event++;
             }
         }
@@ -140,53 +129,62 @@ tinyxml2::XMLError AeMulti::parse(tinyxml2::XMLElement* source, MapData& map, st
         }
         source = source->NextSiblingElement("property");
     }
-    if(event_name == "") {
+    if(m_name == "") {
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(event_list);
-    event->set_priority(prio);
-    event->set_signal(sig);
-    event->set_name(event_name);
-    entry = std::make_pair(event_name, event);
-
     return XML_SUCCESS;
-}
+}*/
 
 /**
- * @brief When copied, also copy contained events
+ * @brief Parse event from symbolic tile
+ * @param source The symbolic tile XMLElement
+ * @param base_map Seldomly used in parser to fetch actors or other events
+ * @return @c XMLError indication sucess or failure of parsing
  */
-ActorEvent* AeMulti::copy() const{
-    std::vector<ActorEvent*> new_list;
-    for(ActorEvent* e : m_events) {
-        new_list.push_back(e->copy());
-    }
-    return create(new_list);
-}
+tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    using namespace tinyxml2;
 
-void AeMulti::kill() {
-    for(ActorEvent* e : m_events) {
-        e->kill();
+    Parser parser(base_map);
+
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
+    std::vector<std::string> event_names;
+    parser.add(event_names);
+
+    XMLError eResult = parser.parse(source);
+
+    if(m_name == "") {
+        std::cerr << "Missing name property!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    kill(this);
+
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
+    for(std::string value : event_names) {
+        if(!base_map.check_event(value)) {
+            std::cerr << "Event " << value << " has not been parsed before!\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_events.add_event(base_map.get_event(value));
+        }
+    }
+
+    return XML_SUCCESS;
 }
 
 /**
  * @brief Set cause to every contained event
  */
 void AeMulti::set_cause(Cause x) {
-    ActorEvent::set_cause(x);
-    for(ActorEvent* e : m_events) {
+    Event<Actor>::set_cause(x);
+    for(Event<Actor>* e : m_events.get_events()) {
         e->set_cause(x);
     }
 }
 
-/**
- * @brief Set cause to every contained event
- */
-void AeMulti::set_key(SDL_Keysym x) {
-    ActorEvent::set_key(x);
-    for(ActorEvent* e : m_events) {
-        e->set_key(x);
-    }
-}

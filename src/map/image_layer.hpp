@@ -42,10 +42,11 @@ class ImageLayer : public Layer{
 
         static ImageLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
-        ImageLayer(const ImageLayer &) = delete;
-        ImageLayer& operator=(const ImageLayer &) = delete;
-        ImageLayer(ImageLayer &&) = delete;
-        ImageLayer& operator=(ImageLayer &&) = delete;
+        ImageLayer(const ImageLayer& other) = delete;
+        ImageLayer& operator=(const ImageLayer& other) = delete;
+
+        ImageLayer(ImageLayer&& other) = default;
+        ImageLayer& operator=(ImageLayer&& other) = default;
 
     protected:
         ImageLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);

@@ -35,8 +35,12 @@ class TilesetCollection{
     public:
 
         TilesetCollection() = default;
-        TilesetCollection(TilesetCollection& tsc) = delete;
-        TilesetCollection& operator= ( const TilesetCollection& ) = delete;
+
+        TilesetCollection(const TilesetCollection& other) = delete;
+        TilesetCollection& operator= (const TilesetCollection& other) = delete;
+
+        TilesetCollection(TilesetCollection&& other) = default;
+        TilesetCollection& operator= (TilesetCollection&& other) = default;
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData* mapdata);
 

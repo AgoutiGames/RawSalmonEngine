@@ -23,22 +23,13 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AeAnimate::m_alias = "AeAnimate";
+const std::string AeAnimate::m_alias = "AeAnimate";
 
-AeAnimate::AeAnimate(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f) :
-EventContainer(),
-m_animation{anim},
-m_direction{dir},
-m_cycles{cyc},
-m_anim_frames{a_f},
-m_game_frames{g_f}
-{
-
-}
+const bool AeAnimate::good = Event<Actor>::register_class<AeAnimate>();
 
 /**
  * @brief Animate the actor
@@ -64,117 +55,42 @@ EventSignal AeAnimate::process(Actor& actor) {
     }
     else {return EventSignal::end;}
 
-    return signal();
-}
-
-/// Create event and return pointer to it
-AeAnimate* AeAnimate::create(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f) {
-    AeAnimate temp(anim, dir, cyc, a_f, g_f);
-    return duplicate(temp);
+    return get_signal();
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeAnimate::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeAnimate::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    (void)map; // Mute unused var warning for seldomly used param MapData
-    XMLError eResult;
 
-    // Additional members
-    AnimationType anim = AnimationType::idle;
-    Direction dir = Direction::current;
-    unsigned cycles = 0;
-    unsigned anim_frames = 0;
-    unsigned game_frames = 0;
-    std::string event_name("");
-    Priority prio = Priority::medium;
-    EventSignal sig = EventSignal::next;
+    Parser parser(base_map);
 
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
 
-        // Parse additional members
+    // Add additional members here
+    parser.add(m_animation, "ANIMATION_TYPE");
+    parser.add(m_direction, "DIRECTION");
+    parser.add(m_cycles, "CYCLES");
+    parser.add(m_anim_frames, "ANIMATION_FRAMES");
+    parser.add(m_game_frames, "GAME_FRAMES");
 
-        else if(name == "NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
-        }
+    XMLError eResult = parser.parse(source);
 
-        else if(name == "ANIMATION_TYPE") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            anim = str_to_anim_type(value);
-            if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-            if(anim == AnimationType::none) {
-                std::cerr << "Cant count cycles or frames with Animation Type none!\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-        }
-
-        else if(name == "DIRECTION") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            dir = str_to_direction(value);
-            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "CYCLES") {
-            eResult = source->QueryUnsignedAttribute("value", &cycles);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "ANIMATION_FRAMES") {
-            eResult = source->QueryUnsignedAttribute("value", &anim_frames);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "GAME_FRAMES") {
-            eResult = source->QueryUnsignedAttribute("value", &game_frames);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "PRIORITY") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            prio = str_to_priority(value);
-            if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SIGNAL") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            sig = str_to_event_signal(value);
-            if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else {
-            std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        source = source->NextSiblingElement("property");
-    }
-    if(event_name == "") {
+    if(m_name == "") {
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(anim, dir, cycles, anim_frames, game_frames);
-    event->set_priority(prio);
-    event->set_signal(sig);
-    event->set_name(event_name);
-    entry = std::make_pair(event_name, event);
+
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
 
     return XML_SUCCESS;
 }

@@ -35,7 +35,6 @@ class AeMove : public Event<Actor>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
         EventSignal process(Actor& actor) override;
-        ~AeMove() override {}
 
         // Covariant return type!
         AeMove* create() const override {return new AeMove();}

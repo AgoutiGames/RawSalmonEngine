@@ -105,6 +105,12 @@ class Actor{
         Direction m_direction; ///< Current direction facing
         std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
+
+        /// !! Dont ever delete the pointers located here, they are copies of pointers residing in
+        /// !! MapData m_templates which deletes them properly upon destruction
+        /// If we'd delete them here, we would have multiple deletes on the same events since multiple
+        /// Actors may have been initialized by the same template!!
+
         std::map<Response, Event<Actor>*> m_response; ///< Map which yields events for response values
 
         EventQueue<Actor> m_events;

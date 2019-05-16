@@ -23,23 +23,13 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
 #include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AteOnGround::m_alias = "AteOnGround";
+const std::string AteOnGround::m_alias = "AteOnGround";
 
-AteOnGround::AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction, bool continuous, int tolerance) :
-EventContainer(),
-m_success{success},
-m_failure{failure},
-m_direction{direction},
-m_continuous{continuous},
-m_tolerance{tolerance}
-{
-
-}
+const bool AteOnGround::good = Event<Actor>::register_class<AteOnGround>();
 
 /**
  * @brief Trigger specific event if on ground or not
@@ -60,178 +50,82 @@ EventSignal AteOnGround::process(Actor& actor) {
     }
 
     if(m_decision) {
-        if(m_success == nullptr) return EventSignal::end;
+        if(m_success == nullptr) {return EventSignal::end;}
         sig = m_success->process(actor);
     }
     else {
-        if(m_failure == nullptr) return EventSignal::end;
+        if(m_failure == nullptr) {return EventSignal::end;}
         sig = m_failure->process(actor);
     }
 
-    if(sig == EventSignal::abort) return sig;
-    else if(sig == EventSignal::end) return sig;
-    else if(sig == EventSignal::erase) return sig;
-    else return signal();
-}
-
-/// Create event and return pointer to it
-AteOnGround* AteOnGround::create(ActorEvent* success, ActorEvent* failure, Direction direction, bool continuous, int tolerance) {
-    AteOnGround temp(success, failure, direction, continuous, tolerance);
-    return duplicate(temp);
+    if(sig == EventSignal::next) return get_signal();
+    else {return sig;}
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AteOnGround::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    XMLError eResult;
 
-    // Additional members
-    std::string event_name("");
-    Priority prio = Priority::medium;
-    EventSignal sig = EventSignal::next;
+    Parser parser(base_map);
 
-    ActorEvent* success = nullptr;
-    ActorEvent* failure = nullptr;
-    Direction direction = Direction::down;
-    bool continuous = false;
-    int tolerance = 0;
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
 
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    // Add additional members here
+    parser.add(m_direction, "DIRECTION");
+    parser.add(m_continuous, "CONTINUOUS");
+    parser.add(m_tolerance, "TOLERANCE");
+    std::string sucess_name = "";
+    parser.add(sucess_name, "SUCESS");
+    std::string failure_name = "";
+    parser.add(failure_name, "FAILURE");
 
-        // Parse additional members
+    XMLError eResult = parser.parse(source);
 
-        else if(name == "NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
-        }
-
-        else if(name == "PRIORITY") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            prio = str_to_priority(value);
-            if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SIGNAL") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            sig = str_to_event_signal(value);
-            if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SUCCESS") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            if(!map.check_event(value)) {
-                std::cerr << "Event " << value << " has not been parsed before!\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-            else {
-                success = map.get_event(value);
-            }
-        }
-
-        else if(name == "FAILURE") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            if(!map.check_event(value)) {
-                std::cerr << "Event " << value << " has not been parsed before!\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-            else {
-                failure = map.get_event(value);
-            }
-        }
-
-        else if(name == "DIRECTION") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            direction = str_to_direction(value);
-            if(direction == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "CONTINUOUS") {
-            eResult = source->QueryBoolAttribute("value", &continuous);
-            if (eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "TOLERANCE") {
-            eResult = source->QueryIntAttribute("value", &tolerance);
-            if (eResult != XML_SUCCESS) return eResult;
-        }
-
-        else {
-            std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        source = source->NextSiblingElement("property");
-    }
-    if(event_name == "") {
+    if(m_name == "") {
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    if(success == nullptr && failure == nullptr) {
-        std::cerr << "Trigger event has no single event to trigger!\n";
-        return XML_ERROR_PARSING;
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    ActorEvent* event = create(success, failure, direction, continuous, tolerance);
-    event->set_priority(prio);
-    event->set_signal(sig);
-    event->set_name(event_name);
-    entry = std::make_pair(event_name, event);
+    if(sucess_name != "") {
+        if(!base_map.check_event(sucess_name)) {
+            std::cerr << "Event " << sucess_name << " has not been parsed before!\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_success = std::unique_ptr<Event<Actor>>(base_map.get_event(sucess_name));
+        }
+    }
+
+    if(failure_name != "") {
+        if(!base_map.check_event(failure_name)) {
+            std::cerr << "Event " << failure_name << " has not been parsed before!\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_failure = std::unique_ptr<Event<Actor>>(base_map.get_event(failure_name));
+        }
+    }
 
     return XML_SUCCESS;
-}
-
-/**
- * @brief When copied, also copy contained events
- */
-ActorEvent* AteOnGround::copy() const{
-    ActorEvent* success = nullptr;
-    ActorEvent* failure = nullptr;
-    if(m_success != nullptr) success = m_success->copy();
-    if(m_failure != nullptr) failure = m_failure->copy();
-    return create(success, failure, m_direction, m_continuous, m_tolerance);
-}
-
-void AteOnGround::kill() {
-    if(m_success != nullptr) m_success->kill();
-    if(m_failure != nullptr) m_failure->kill();
-    kill(this);
 }
 
 /**
  * @brief Set cause to every contained event
  */
 void AteOnGround::set_cause(Cause x) {
-    ActorEvent::set_cause(x);
+    Event<Actor>::set_cause(x);
     if(m_success != nullptr) m_success->set_cause(x);
     if(m_failure != nullptr) m_failure->set_cause(x);
-}
-
-/**
- * @brief Set cause to every contained event
- */
-void AteOnGround::set_key(SDL_Keysym x) {
-    ActorEvent::set_key(x);
-    if(m_success != nullptr) m_success->set_key(x);
-    if(m_failure != nullptr) m_failure->set_key(x);
 }

@@ -36,7 +36,7 @@ class Tileset; // forward declaration
 
 class Tile{
 public:
-    Tile() {}
+    Tile() = default;
     Tile(Tileset* ts, SDL_Rect& clp); // The initializing constructor
 
     void render(int x, int y) const;

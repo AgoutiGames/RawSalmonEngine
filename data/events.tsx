@@ -120,6 +120,11 @@
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
+ <tile id="16" type="AeMove">
+  <properties>
+   <property name="NAME" value="Move"/>
+  </properties>
+ </tile>
  <tile id="17" type="AeDecelerate">
   <properties>
    <property name="NAME" value="Decelerate"/>
@@ -206,6 +211,7 @@
   <properties>
    <property name="1" value="DecelerateDyn"/>
    <property name="2" value="Fall_Dyn"/>
+   <property name="3" value="Move"/>
    <property name="NAME" value="Physics"/>
   </properties>
  </tile>

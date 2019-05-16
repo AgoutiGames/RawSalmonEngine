@@ -18,24 +18,18 @@
  */
 #include "event/ae_move_direction.hpp"
 
-#include <iostream>
 #include <string>
+#include <map>
+#include <iostream>
 
 #include "actor/actor.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AeMoveDirection::m_alias = "AeMoveDirection";
+const std::string AeMoveDirection::m_alias = "AeMoveDirection";
 
-AeMoveDirection::AeMoveDirection(Direction dir, unsigned duration, AnimationType anim) :
-EventContainer(),
-m_direction{dir},
-m_duration{duration},
-m_animation{anim}
-{
-
-}
+const bool AeMoveDirection::good = Event<Actor>::register_class<AeMoveDirection>();
 
 /**
  * @brief Move the actor to the supplied direction for x frames
@@ -55,98 +49,40 @@ EventSignal AeMoveDirection::process(Actor& actor) {
         else {return EventSignal::abort;}
     }
     if (m_duration == 0) return EventSignal::end;
-    else return signal();
-}
-
-/// Create event and return pointer to it
-AeMoveDirection* AeMoveDirection::create(Direction dir, unsigned duration, AnimationType anim) {
-    AeMoveDirection temp(dir, duration, anim);
-    return duplicate(temp);
+    else return get_signal();
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMoveDirection::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeMoveDirection::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    (void)map; // Mute unused var warning for seldomly used param MapData
-    XMLError eResult;
 
-    Direction dir = Direction::up;
-    unsigned duration = 1;
-    AnimationType anim = AnimationType::walk;
-    std::string event_name("");
-    Priority prio = Priority::medium;
-    EventSignal sig = EventSignal::next;
+    Parser parser(base_map);
 
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
 
-        else if(name == "DIRECTION") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            dir = str_to_direction(value);
-            if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
+    // Add additional members here
+    parser.add(m_duration, "DURATION");
+    parser.add(m_direction, "DIRECTION");
+    parser.add(m_animation, "ANIMATION_TYPE");
 
-        else if(name == "DURATION") {
-            eResult = source->QueryUnsignedAttribute("value", &duration);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
+    XMLError eResult = parser.parse(source);
 
-        else if(name == "ANIMATION_TYPE") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            anim = str_to_anim_type(value);
-            if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
-        }
-
-        else if(name == "PRIORITY") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            prio = str_to_priority(value);
-            if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SIGNAL") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            sig = str_to_event_signal(value);
-            if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else {
-            std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        source = source->NextSiblingElement("property");
-    }
-    if(event_name == "") {
+    if(m_name == "") {
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-    ActorEvent* event = create(dir, duration, anim);
-    event->set_priority(prio);
-    event->set_signal(sig);
-    event->set_name(event_name);
-    entry = std::make_pair(event_name, event);
+
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
 
     return XML_SUCCESS;
 }

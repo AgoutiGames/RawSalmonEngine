@@ -19,44 +19,35 @@
 #ifndef AE_MOVE_DIRECTION_HPP_INCLUDED
 #define AE_MOVE_DIRECTION_HPP_INCLUDED
 
-#include <map>
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class Actor;
 
 /**
  * @brief Move the actor to the supplied direction for x frames
  */
-class AeMoveDirection : public EventContainer<ActorEvent, AeMoveDirection>{
-    // The default interface block (copy this!)
+class AeMoveDirection : public Event<Actor>{
     public:
-        AeMoveDirection() {}
-        static AeMoveDirection* create() {return duplicate(AeMoveDirection());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMoveDirection() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeMoveDirection(Direction dir, unsigned duration, AnimationType anim);
-        static AeMoveDirection* create(Direction dir, unsigned duration, AnimationType anim);
+        // Covariant return type!
+        AeMoveDirection* create() const override {return new AeMoveDirection();}
+        AeMoveDirection* clone() const override {return new AeMoveDirection(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        Direction m_direction;
-        unsigned m_duration; ///< How many frames the movement persists
-        AnimationType m_animation;
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        Direction m_direction = Direction::up;
+        unsigned m_duration = 1; ///< How many frames the movement persists
+        AnimationType m_animation = AnimationType::walk;
 };
 
 #endif // AE_MOVE_DIRECTION_HPP_INCLUDED

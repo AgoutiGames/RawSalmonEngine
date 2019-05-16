@@ -49,10 +49,11 @@ class LayerCollection {
         MapData& get_base_map() {return *m_base_map;}
 
         // Don't allow copy construction and assignment because our destructor would delete twice!
-        LayerCollection(const LayerCollection &) = delete;
-        LayerCollection& operator=(const LayerCollection &) = delete;
-        LayerCollection(LayerCollection &&) = delete;
-        LayerCollection& operator=(LayerCollection &&) = delete;
+        LayerCollection(const LayerCollection& other) = delete;
+        LayerCollection& operator=(const LayerCollection& other) = delete;
+
+        LayerCollection(LayerCollection&& other) = default;
+        LayerCollection& operator=(LayerCollection&& other) = default;
 
     private:
 

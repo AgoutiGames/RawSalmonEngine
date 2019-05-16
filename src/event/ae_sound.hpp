@@ -23,8 +23,7 @@
 #include <string>
 
 #include "audio/sound_effect.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -32,28 +31,21 @@ class Actor;
 /**
  * @brief Plays a sound!
  */
-class AeSound : public EventContainer<ActorEvent, AeSound>{
-    // The default interface block (copy this!)
+class AeSound : public Event<Actor>{
     public:
-        AeSound() {}
-        static AeSound* create() {return duplicate(AeSound());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeSound() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeSound(SoundEffect sound);
-        static AeSound* create(SoundEffect sound);
+        // Covariant return type!
+        AeSound* create() const override {return new AeSound();}
+        AeSound* clone() const override {return new AeSound(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        // Members
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
         SoundEffect m_sound;
 
 };

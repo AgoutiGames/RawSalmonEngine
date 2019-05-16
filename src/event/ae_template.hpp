@@ -22,37 +22,30 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
 
 /**
- * @brief Define this!
+ * @brief Write something
  */
-class AeTemplate : public EventContainer<ActorEvent, AeTemplate>{
-    // The default interface block (copy this!)
+class AeTemplate : public Event<Actor>{
     public:
-        AeTemplate() {}
-        static AeTemplate* create() {return duplicate(AeTemplate());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeTemplate() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeTemplate(/*vars*/);
-        static AeTemplate* create(/*vars*/);
+        // Covariant return type!
+        AeTemplate* create() const override {return new AeTemplate();}
+        AeTemplate* clone() const override {return new AeTemplate(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        // Members
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+
 };
 
 #endif // AE_TEMPLATE_HPP_INCLUDED

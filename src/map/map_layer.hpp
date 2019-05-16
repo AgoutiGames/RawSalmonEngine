@@ -43,10 +43,11 @@ class MapLayer : public Layer{
 
         static MapLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
-        MapLayer(const MapLayer &) = delete;
-        MapLayer& operator=(const MapLayer &) = delete;
-        MapLayer(MapLayer &&) = delete;
-        MapLayer& operator=(MapLayer &&) = delete;
+        MapLayer(const MapLayer& other) = delete;
+        MapLayer& operator=(const MapLayer& other) = delete;
+
+        MapLayer(MapLayer&& other) = default;
+        MapLayer& operator=(MapLayer&& other) = default;
 
     protected:
         MapLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);

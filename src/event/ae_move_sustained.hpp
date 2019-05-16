@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,29 +30,23 @@ class Actor;
 /**
  * @brief Move the actor to the supplied direction as long as key is held
  */
-class AeMoveSustained : public EventContainer<ActorEvent, AeMoveSustained>{
-    // The default interface block (copy this!)
+class AeMoveSustained : public Event<Actor>{
     public:
-        AeMoveSustained() {}
-        static AeMoveSustained* create() {return duplicate(AeMoveSustained());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeMoveSustained() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeMoveSustained(Direction dir, AnimationType anim);
-        static AeMoveSustained* create(Direction dir, AnimationType anim);
+        // Covariant return type!
+        AeMoveSustained* create() const override {return new AeMoveSustained();}
+        AeMoveSustained* clone() const override {return new AeMoveSustained(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        Direction m_direction;
-        AnimationType m_animation;
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        Direction m_direction = Direction::up;
+        AnimationType m_animation = AnimationType::walk;
 };
 
 #endif // AE_MOVE_SUSTAINED_HPP_INCLUDED

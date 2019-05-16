@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -34,32 +33,26 @@ class Actor;
  *       This means that an event with frames = 1 animates in the first and deletes in the second frame
  *       If placed in "OnIdle" it will effectively only animate each second frame
  */
-class AeAnimate : public EventContainer<ActorEvent, AeAnimate>{
-    // The default interface block (copy this!)
+class AeAnimate : public Event<Actor>{
     public:
-        AeAnimate() {}
-        static AeAnimate* create() {return duplicate(AeAnimate());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeAnimate() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeAnimate(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f);
-        static AeAnimate* create(AnimationType anim, Direction dir, unsigned cyc, unsigned a_f, unsigned g_f);
+        // Covariant return type!
+        AeAnimate* create() const override {return new AeAnimate();}
+        AeAnimate* clone() const override {return new AeAnimate(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        AnimationType m_animation;
-        Direction m_direction;
-        unsigned m_cycles;
-        unsigned m_anim_frames;
-        unsigned m_game_frames;
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        AnimationType m_animation = AnimationType::idle;
+        Direction m_direction = Direction::current;
+        unsigned m_cycles = 0;
+        unsigned m_anim_frames = 0;
+        unsigned m_game_frames = 0;
         // Members
 };
 

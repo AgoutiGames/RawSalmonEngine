@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,32 +30,25 @@ class Actor;
 /**
  * @brief Lower speed var of actor until 0
  */
-class AeDecelerate : public EventContainer<ActorEvent, AeDecelerate>{
-    // The default interface block (copy this!)
+class AeDecelerate : public Event<Actor>{
     public:
-        AeDecelerate() {}
-        static AeDecelerate* create() {return duplicate(AeDecelerate());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeDecelerate() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AeDecelerate(float x_factor, float y_factor, std::string x_name = "__XSPEED", std::string y_name = "__YSPEED");
-        static AeDecelerate* create(float x_factor, float y_factor, std::string x_name = "__XSPEED", std::string y_name = "__YSPEED");
+        // Covariant return type!
+        AeDecelerate* create() const override {return new AeDecelerate();}
+        AeDecelerate* clone() const override {return new AeDecelerate(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        // Members
-        float m_x_factor;
-        float m_y_factor;
-        std::string m_x_speed_name;
-        std::string m_y_speed_name;
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        float m_x_factor = 10.0f;
+        float m_y_factor = 10.0f;
+        std::string m_x_speed_name = "__XSPEED";
+        std::string m_y_speed_name = "__YSPEED";
 };
 
 #endif // AE_DECELERATE_HPP_INCLUDED

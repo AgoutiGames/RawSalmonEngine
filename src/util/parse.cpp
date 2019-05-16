@@ -24,6 +24,8 @@
 #include <map>
 #include <iostream>
 
+#include "audio/sound_effect.hpp"
+#include "map/mapdata.hpp"
 #include "graphics/texture.hpp"
 #include "util/tinyxml2.h"
 
@@ -207,6 +209,17 @@ tinyxml2::XMLError Parser::parse_int(tinyxml2::XMLElement* source) {
     return source->QueryIntAttribute(name.c_str(), m_int.at(name));
 }
 
+tinyxml2::XMLError Parser::parse_unsigned(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_unsigned.find(name) == m_unsigned.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+    return source->QueryUnsignedAttribute(name.c_str(), m_unsigned.at(name));
+}
+
 tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -282,14 +295,110 @@ tinyxml2::XMLError Parser::parse_signal(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+tinyxml2::XMLError Parser::parse_direction(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_direction.find(name) == m_direction.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+
+    const char* p_value = source->Attribute("value");
+    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+    std::string value(p_value);
+    Direction dir = str_to_direction(value);
+    if(dir == Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+    *m_direction.at(name) = dir;
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError Parser::parse_animation_type(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_animation_type.find(name) == m_animation_type.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+
+    const char* p_value = source->Attribute("value");
+    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+    std::string value(p_value);
+    AnimationType anim = str_to_anim_type(value);
+    if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
+    if(anim == AnimationType::none) {
+        std::cerr << "Cant count cycles or frames with Animation Type none!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+    *m_animation_type.at(name) = anim;
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError Parser::parse_bool(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_bool.find(name) == m_bool.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+    return source->QueryBoolAttribute(name.c_str(), m_bool.at(name));
+}
+
+tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_sound.find(name) == m_sound.end()) {
+        return XML_NO_ATTRIBUTE;
+    }
+
+    const char* p_value = source->Attribute("value");
+    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+    std::string value(p_value);
+
+    SoundEffect temp(m_base_map->get_file_path() + "audio/" + value);
+    if(!temp.good()) {
+        std::cerr << "Audio file: " << m_base_map->get_file_path() + "audio/" + value << " not found!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
+    *m_sound.at(name) = temp;
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    if(m_iterate == nullptr) {return XML_SUCCESS;}
+
+    std::string name(source->Attribute("name"));
+    if(name == std::to_string(m_iterate->size() + 1)) {
+        const char* p_value = source->Attribute("value");
+        if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+        m_iterate->push_back(p_value);
+    }
+    return XML_SUCCESS;
+}
 
 Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
     parsers[0] = &Parser::parse_int;
-    parsers[1] = &Parser::parse_float;
-    parsers[2] = &Parser::parse_double;
-    parsers[3] = &Parser::parse_string;
-    parsers[4] = &Parser::parse_priority;
-    parsers[5] = &Parser::parse_signal;
+    parsers[1] = &Parser::parse_unsigned;
+    parsers[2] = &Parser::parse_float;
+    parsers[3] = &Parser::parse_double;
+    parsers[4] = &Parser::parse_string;
+    parsers[5] = &Parser::parse_priority;
+    parsers[6] = &Parser::parse_signal;
+    parsers[7] = &Parser::parse_direction;
+    parsers[8] = &Parser::parse_animation_type;
+    parsers[9] = &Parser::parse_bool;
+    parsers[10] = &Parser::parse_sound;
+    parsers[11] = &Parser::parse_iteration;
     /// ! Don't forget adding new parsing member function here!
 }
 
@@ -299,8 +408,9 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
     for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
         bool no_attribute = true;
 
+        std::cerr << "Now Parsing " << source->Attribute("name") << "\n";
         if(source->Attribute("name") == nullptr) {
-            std::cerr << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!\n";
+            std::cerr << "Name of event property number: " << counter << " yields null!\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
@@ -323,6 +433,39 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
             std::cerr << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
+    }
+    return XML_SUCCESS;
+}
+
+tinyxml2::XMLError Parser::parse_one(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    bool no_attribute = true;
+    for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
+
+        if(source->Attribute("name") == nullptr) {
+            std::cerr << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+
+        for(ParsePointer p : parsers) {
+            XMLError result = (this->*p)(source);
+            if(result == XML_SUCCESS) {
+                no_attribute = false;
+                break;
+            }
+            else if(result == XML_NO_ATTRIBUTE) {
+                continue;
+            }
+            else {
+                std::cerr << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
+                return result;
+            }
+        }
+    }
+    if(no_attribute) {
+        std::cerr << "No single event got parsed!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
     }
     return XML_SUCCESS;
 }

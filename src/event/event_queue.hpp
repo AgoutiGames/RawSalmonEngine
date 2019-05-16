@@ -38,7 +38,7 @@ class EventQueue {
         EventQueue& operator=(EventQueue<Scope>&& other) = default;
 
 
-        bool process_events(Scope& target);
+        EventSignal process_events(Scope& target);
 
         void add_event(Event<Scope>* event);
         unsigned scrap_event(std::string name, Event<Scope>* except = nullptr);
@@ -53,10 +53,13 @@ class EventQueue {
         void unblock_event(SDL_Keycode key) {m_block_key[key] = false;}
 
         bool is_empty() const {return m_event_pipeline.empty();}
+        int get_size() const {return m_event_pipeline.size();}
 
         bool is_blocked(std::string name) const;
         bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string name) const;
+
+        std::vector<Event<Scope>*>& get_events() {return m_event_pipeline;}
 
     private:
         std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
@@ -83,6 +86,7 @@ EventQueue<Scope>& EventQueue<Scope>::operator=(const EventQueue<Scope>& other) 
     for(Event<Scope>* event : other.m_event_pipeline) {
         m_event_pipeline.push_back(event->clone());
     }
+    return *this;
 }
 
 template<class Scope>
@@ -92,32 +96,36 @@ EventQueue<Scope>::EventQueue(const EventQueue<Scope>& other) {
 
 /**
  * @brief Process the event queue
- * @return a @c bool which indicates if the target should be erased/shutdown
+ * @return a @c Event which indicates if the target should be erased/shutdown,
+ *         if processing ended by an stop signal or if it ran out of events
  */
 template<class Scope>
-bool EventQueue<Scope>::process_events(Scope& target) {
-    if(!is_empty()) {
-        for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
-            Event<Scope>* event = m_event_pipeline[i];
-            EventSignal signal = event->process(target);
-            if(signal == EventSignal::stop) {
-                break;
-            }
-            else if(signal == EventSignal::end || signal == EventSignal::abort) {
-                delete m_event_pipeline[i];
-                m_event_pipeline.erase(m_event_pipeline.begin() + i);
-                i--;
-            }
-            else if(signal == EventSignal::erase) {return false;}
+EventSignal EventQueue<Scope>::process_events(Scope& target) {
+    for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
+        Event<Scope>* event = m_event_pipeline[i];
+        EventSignal signal = event->process(target);
+        if(signal == EventSignal::stop || signal == EventSignal::erase) {
+            return signal;
+        }
+        else if(signal == EventSignal::end || signal == EventSignal::abort) {
+            delete m_event_pipeline[i];
+            m_event_pipeline.erase(m_event_pipeline.begin() + i);
+            i--;
         }
     }
-    return true;
+    if(is_empty()) {
+        return EventSignal::end;
+    }
+    else {
+        return EventSignal::next;
+    }
 }
 
 /**
  * @brief Adds the event to the targets event queue
  * @param event The event to be added
  * @note The position where the event is added corresponds to its priority value
+ * @note We assume that the passed in events are cloned/we manage their memory now!
  */
 template<class Scope>
 void EventQueue<Scope>::add_event(Event<Scope>* event) {

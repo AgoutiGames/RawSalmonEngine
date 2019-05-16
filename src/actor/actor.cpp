@@ -22,7 +22,6 @@
 #include <iostream>
 #include <map>
 
-#include "event/actor_event.hpp"
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
@@ -184,13 +183,13 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
  */
 bool Actor::update() {
     respond(Response::on_always);
-    bool alive = m_events.process_events(*this);
+    EventSignal sig = m_events.process_events(*this);
 
-    if(m_events.is_empty()) {
-        respond(Response::on_idle);
+    switch(sig) {
+        case(EventSignal::end) : {respond(Response::on_idle); return true;}
+        case(EventSignal::erase) : {return false;}
+        default : {return true;}
     }
-
-    return alive;
 }
 
 /**

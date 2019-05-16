@@ -25,7 +25,6 @@
 #include <sstream>
 #include <vector>
 
-#include "event/actor_event.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/layer.hpp"
@@ -36,8 +35,26 @@
 /// Plain constructor
 MapData::MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
 
-/// Empty destructor
-MapData::~MapData() {}
+/// Properly delete all stored events
+MapData::~MapData() {
+    for(auto& it : m_events) {
+        delete it.second;
+    }
+    for(auto& it : m_key_up) {
+        delete it.second;
+    }
+    for(auto& it : m_key_down) {
+        delete it.second;
+    }
+    for(auto& it : m_key_sustained) {
+        delete it.second;
+    }
+    for(auto& it : m_templates) {
+        for(auto& it2 : it.second.response) {
+            delete it2.second;
+        }
+    }
+}
 
 /**
  * @brief Parse the supplied .tmx file

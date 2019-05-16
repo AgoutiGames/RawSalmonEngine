@@ -23,77 +23,14 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
 #include "map/mapdata.hpp"
+#include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-std::string AeSetVar::m_alias = "AeSetVar";
+const std::string AeSetVar::m_alias = "AeSetVar";
 
-AeSetVar::AeSetVar(std::string name, bool data, bool global) :
-EventContainer(),
-m_name{name},
-m_global{global}
-{
-    m_value.type = Value::Bool;
-    m_value.b = data;
-}
+const bool AeSetVar::good = Event<Actor>::register_class<AeSetVar>();
 
-AeSetVar::AeSetVar(std::string name, int data, bool global, bool add, bool mult) :
-EventContainer(),
-m_name{name},
-m_global{global},
-m_add{add},
-m_mult{mult}
-{
-    m_value.type = Value::Int;
-    m_value.i = data;
-}
-
-AeSetVar::AeSetVar(std::string name, float data, bool global, bool add, bool mult) :
-EventContainer(),
-m_name{name},
-m_global{global},
-m_add{add},
-m_mult{mult}
-{
-    m_value.type = Value::Float;
-    m_value.f = data;
-}
-
-AeSetVar::AeSetVar(std::string name, std::string data, bool global, bool add) :
-EventContainer(),
-m_name{name},
-m_global{global},
-m_add{add}
-{
-    m_value.type = Value::String;
-    m_value.s = data;
-}
-
-/// Create event and return pointer to it
-AeSetVar* AeSetVar::create(std::string name, bool data, bool global) {
-    AeSetVar temp(name, data, global);
-    return duplicate(temp);
-}
-
-/// Create event and return pointer to it
-AeSetVar* AeSetVar::create(std::string name, int data, bool global, bool add, bool mult) {
-    AeSetVar temp(name, data, global, add, mult);
-    return duplicate(temp);
-}
-
-/// Create event and return pointer to it
-AeSetVar* AeSetVar::create(std::string name, float data, bool global, bool add, bool mult) {
-    AeSetVar temp(name, data, global, add, mult);
-    return duplicate(temp);
-}
-
-/// Create event and return pointer to it
-AeSetVar* AeSetVar::create(std::string name, std::string data, bool global, bool add) {
-    AeSetVar temp(name, data, global, add);
-    return duplicate(temp);
-}
 /**
  * @brief Do ...
  * @param actor The actor which should ...
@@ -142,11 +79,6 @@ EventSignal AeSetVar::process(Actor& actor) {
             else {data.set_val(m_name, m_value.s);}
         }
         break;
-
-        case Value::undefined : {
-            std::cerr << "The actor " << actor.get_name() << " called AeSetVar: " << name() << " with an undefined value!\n";
-            return EventSignal::abort;
-        }
     }
     return EventSignal::end;
 }
@@ -154,202 +86,84 @@ EventSignal AeSetVar::process(Actor& actor) {
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param entry Returns parsed event associated with its name
+ * @param base_map Seldomly used in parser to fetch actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeSetVar::parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const{
+tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
-    (void)map; // Mute unused var warning for seldomly used param MapData
-    XMLError eResult = XML_SUCCESS;
 
-    // Additional members
-    std::string event_name("");
-    Priority prio = Priority::medium;
-    EventSignal sig = EventSignal::next;
+    Parser parser(base_map);
 
-    std::string val_name("");
-    Value::Type type = Value::Float;
-    bool value_b;
-    int value_i;
-    float value_f;
-    std::string value_s;
-    bool local = true;
-    bool global = false;
-    bool add = false;
-    bool mult = false;
+    std::string str_type;
+    parser.add(str_type, "TYPE");
 
-    tinyxml2::XMLElement* temp = source;
-
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-        // Parse additional members
-
-        else if(name == "TYPE") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string str_type{p_value};
-            if(str_type == "BOOL") {
-                type = Value::Bool;
-            }
-            else if(str_type == "INT") {
-                type = Value::Int;
-            }
-            else if(str_type == "FLOAT") {
-                type = Value::Float;
-            }
-            else if(str_type == "STRING") {
-                type = Value::String;
-            }
-            else {
-                std::cerr << "Event holds unknown type " << str_type << "\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-        }
-        source = source->NextSiblingElement("property");
-    }
-    if(type == Value::undefined) {
-        std::cerr << "Event is missing TYPE field!\n";
+    XMLError eResult = parser.parse_one(source);
+    if(eResult != XML_SUCCESS && eResult != XML_NO_ATTRIBUTE) {
+        std::cerr << "Failed at parsing value type!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    source = temp;
-
-    while(source != nullptr) {
-        const char* p_name;
-        const char* p_value;
-        p_name = source->Attribute("name");
-        std::string name(p_name);
-        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-        // Parse additional members
-        else if(name == "TYPE") {}
-
-        else if(name == "NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            event_name = std::string(p_value);
-        }
-
-        else if(name == "VAL_NAME") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            val_name = std::string(p_value);
-        }
-
-        else if(name == "PRIORITY") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            prio = str_to_priority(value);
-            if(prio == Priority::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "SIGNAL") {
-            p_value = source->Attribute("value");
-            if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-            std::string value(p_value);
-            sig = str_to_event_signal(value);
-            if(sig == EventSignal::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-        }
-
-        else if(name == "LOCAL") {
-            eResult = source->QueryBoolAttribute("value", &local);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "GLOBAL") {
-            eResult = source->QueryBoolAttribute("value", &global);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "+=") {
-            eResult = source->QueryBoolAttribute("value", &add);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "*=") {
-            eResult = source->QueryBoolAttribute("value", &mult);
-            if(eResult != XML_SUCCESS) return eResult;
-        }
-
-        else if(name == "VALUE") {
-            switch(type) {
-            case(Value::Bool) : eResult = source->QueryBoolAttribute("value", &value_b); break;
-            case(Value::Int) : eResult = source->QueryIntAttribute("value", &value_i); break;
-            case(Value::Float) : eResult = source->QueryFloatAttribute("value", &value_f); break;
-            case(Value::String) : {
-                p_value = source->Attribute("value");
-                if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-                value_s = std::string(p_value);
-            }break;
-            case(Value::undefined) : {
-                std::cerr << "This shouldn't ever happen!\n";
-                return XML_ERROR_PARSING_ATTRIBUTE;
-            }
-            }
-            if(eResult != XML_SUCCESS) {
-                std::cerr << "Problem encountered with parsing \"VALUE\" of the set_var event\n";
-                return eResult;
-            }
-        }
-
-        else {
-            std::cerr << "Unknown event property \""<< p_name << "\" specified\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        source = source->NextSiblingElement("property");
+    if(str_type == "BOOL") {
+        m_value.type = Value::Bool;
     }
-    if(event_name == "") {
+    else if(str_type == "INT") {
+        m_value.type = Value::Int;
+    }
+    else if(str_type == "FLOAT") {
+        m_value.type = Value::Float;
+    }
+    else if(str_type == "STRING") {
+        m_value.type = Value::String;
+    }
+    else {
+        // Do nothing, default value is set to FLOAT
+    }
+
+    parser.add(m_name, "NAME");
+    parser.add(m_priority, "PRIORITY");
+    parser.add(m_signal, "SIGNAL");
+
+    // Add additional members here
+    parser.add(m_local, "LOCAL");
+    parser.add(m_global, "GLOBAL");
+    parser.add(m_add, "+=");
+    parser.add(m_mult, "*=");
+    parser.add(m_val_name, "VAL_NAME");
+
+    const std::string tag = "VALUE";
+    switch(m_value.type) {
+    case(Value::Bool) : {parser.add(m_value.b, tag); break;}
+    case(Value::Int) : {parser.add(m_value.i, tag); break;}
+    case(Value::Float) : {parser.add(m_value.f, tag); break;}
+    case(Value::String) : {parser.add(m_value.s, tag); break;}
+    }
+
+    eResult = parser.parse(source);
+
+    if(m_name == "") {
         std::cerr << "Missing name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    if(val_name == "") {
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
+    if(m_val_name == "") {
         std::cerr << "Missing value name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    if( (local && global) || (!local && !global) ) {
+    if( (m_local && m_global) || (!m_local && !m_global) ) {
         std::cerr << "You must either set global or local var, neither both nor none!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    ActorEvent* event;
-
-    if(type == Value::Bool) {
-        if(add || mult) {
-            std::cerr << "ae_set_var of type bool can't handle adding or multiplying instruction!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        event = create(val_name, value_b, global);
-    }
-    else if(type == Value::Int) {
-        event = create(val_name, value_i, global, add, mult);
-    }
-    else if(type == Value::Float) {
-        event = create(val_name, value_f, global, add, mult);
-    }
-    else if(type == Value::String) {
-        if(mult) {
-            std::cerr << "ae_set_var of type string can concatenate via += but NOT multiply strings!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        event = create(val_name, value_s, global, add);
-    }
-    else {std::cerr << "This shouldn't ever happen!\n";
+    if(m_value.type == Value::Bool && (m_add || m_mult)) {
+        std::cerr << "ae_set_var of type bool can't handle adding or multiplying instruction!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
-
-
-    event->set_priority(prio);
-    event->set_signal(sig);
-    event->set_name(event_name);
-    entry = std::make_pair(event_name, event);
 
     return XML_SUCCESS;
 }

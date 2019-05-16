@@ -29,6 +29,7 @@
 #include "util/tinyxml2.h"
 
 class MapData;
+class SoundEffect;
 
 namespace parse{
     tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
@@ -43,20 +44,30 @@ class Parser{
         Parser(MapData& base_map);
 
         void add(int& value, std::string name) {m_int[name] = &value;}
+        void add(unsigned& value, std::string name) {m_unsigned[name] = &value;}
         void add(float& value, std::string name) {m_float[name] = &value;}
         void add(double& value, std::string name) {m_double[name] = &value;}
         void add(std::string& value, std::string name) {m_string[name] = &value;}
         void add(Priority& value, std::string name) {m_priority[name] = &value;}
         void add(EventSignal& value, std::string name) {m_signal[name] = &value;}
+        void add(Direction& value, std::string name) {m_direction[name] = &value;}
+        void add(AnimationType& value, std::string name) {m_animation_type[name] = &value;}
+        void add(bool& value, std::string name) {m_bool[name] = &value;}
+        void add(SoundEffect& value, std::string name) {m_sound[name] = &value;}
+        void add(std::vector<std::string>& value) {m_iterate = &value;}
 
         tinyxml2::XMLError parse(tinyxml2::XMLElement* source);
+        tinyxml2::XMLError parse_one(tinyxml2::XMLElement* source);
 
     private:
-        static constexpr int type_count = 6;
+        static constexpr int type_count = 12;
         MapData* m_base_map;
 
         std::map<std::string, int*> m_int;
         tinyxml2::XMLError parse_int(tinyxml2::XMLElement* source);
+
+        std::map<std::string, unsigned*> m_unsigned;
+        tinyxml2::XMLError parse_unsigned(tinyxml2::XMLElement* source);
 
         std::map<std::string, float*> m_float;
         tinyxml2::XMLError parse_float(tinyxml2::XMLElement* source);
@@ -72,6 +83,22 @@ class Parser{
 
         std::map<std::string, EventSignal*> m_signal;
         tinyxml2::XMLError parse_signal(tinyxml2::XMLElement* source);
+
+        std::map<std::string, Direction*> m_direction;
+        tinyxml2::XMLError parse_direction(tinyxml2::XMLElement* source);
+
+        std::map<std::string, AnimationType*> m_animation_type;
+        tinyxml2::XMLError parse_animation_type(tinyxml2::XMLElement* source);
+
+        std::map<std::string, bool*> m_bool;
+        tinyxml2::XMLError parse_bool(tinyxml2::XMLElement* source);
+
+        std::map<std::string, SoundEffect*> m_sound;
+        tinyxml2::XMLError parse_sound(tinyxml2::XMLElement* source);
+
+        std::vector<std::string>* m_iterate = nullptr;
+        tinyxml2::XMLError parse_iteration(tinyxml2::XMLElement* source);
+
 
         typedef tinyxml2::XMLError(Parser::* ParsePointer)(tinyxml2::XMLElement* source);
         ParsePointer parsers[type_count];

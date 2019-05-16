@@ -21,9 +21,9 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,36 +31,51 @@ class Actor;
 /**
  * @brief Trigger event if actor is or isn't on ground
  */
-class AteOnGround : public EventContainer<ActorEvent, AteOnGround>{
-    // The default interface block (copy this!)
+class AteOnGround : public Event<Actor>{
     public:
-        AteOnGround() {}
-        static AteOnGround* create() {return duplicate(AteOnGround());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AteOnGround() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override;
-        virtual ActorEvent* copy() const override;
-    private:
-        static std::string m_alias; //< Define this!
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
 
-    // The specialized block
-    public:
-        AteOnGround(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false, int tolerance = 0);
-        static AteOnGround* create(ActorEvent* success, ActorEvent* failure, Direction direction = Direction::down, bool continuous = false, int tolerance = 0);
-        virtual void set_cause(Cause x) override;
-        virtual void set_key(SDL_Keysym x) override;
+        // Covariant return type!
+        AteOnGround* create() const override {return new AteOnGround();}
+        AteOnGround* clone() const override {return new AteOnGround(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
+        // reimplement/hide inherited function
+        void set_cause(Cause x);
+
+        AteOnGround() = default;
+        AteOnGround(const AteOnGround& other) : Event<Actor>(){
+            *this = other;
+        }
+        AteOnGround& operator=(const AteOnGround& other) {
+            Event<Actor>::operator=(other);
+            m_decision = other.m_decision;
+            m_tolerance = other.m_tolerance;
+            m_start = other.m_start;
+            m_continuous = other.m_continuous;
+            m_direction = other.m_direction;
+            if(other.m_success != nullptr) {
+                m_success = std::unique_ptr<Event<Actor>>(other.m_success->clone());
+            }
+            if(other.m_failure != nullptr) {
+                m_failure = std::unique_ptr<Event<Actor>>(other.m_failure->clone());
+            }
+            return *this;
+        }
+
     private:
-        ActorEvent* m_success;
-        ActorEvent* m_failure;
-        Direction m_direction;
-        bool m_continuous;
-        bool m_decision;
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        std::unique_ptr<Event<Actor>> m_success = nullptr;
+        std::unique_ptr<Event<Actor>> m_failure = nullptr;
+        Direction m_direction = Direction::down;
+        bool m_continuous = false;
         bool m_start = true;
-        int m_tolerance;
+        int m_tolerance = 0;
+        bool m_decision;
 };
 
 #endif // ATE_ON_GROUND_HPP_INCLUDED

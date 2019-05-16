@@ -31,7 +31,7 @@
 class SoundEffect {
 
     public:
-        SoundEffect() {}
+        SoundEffect() = default;
         SoundEffect(std::string path);
         bool good() const {return (m_sound.get() == nullptr) ? false : true ;}
         void play() const;

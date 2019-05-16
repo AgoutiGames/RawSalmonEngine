@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,35 +30,29 @@ class Actor;
 /**
  * @brief Perform a jump
  */
-class AeJump : public EventContainer<ActorEvent, AeJump>{
-    // The default interface block (copy this!)
+class AeJump : public Event<Actor>{
     public:
-        AeJump() {}
-        static AeJump* create() {return duplicate(AeJump());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeJump() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
+
+        // Covariant return type!
+        AeJump* create() const override {return new AeJump();}
+        AeJump* clone() const override {return new AeJump(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        static std::string m_alias; //< Define this!
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        float m_duration = 0.5f;
+        float m_jump_height = 400.0f;
 
-    // The specialized block
-    public:
-        AeJump(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir);
-        static AeJump* create(float dur, float j_h, bool slow_r, float slow_f, AnimationType anim, Direction anim_dir);
-    private:
-        float m_duration;
-        float m_jump_height;
+        bool m_slow_on_release = true;
+        float m_slow_factor = 0.5f;
 
-        bool m_slow_on_release;
-        float m_slow_factor;
-
-        AnimationType m_animation;
-        Direction m_anim_dir;
+        AnimationType m_animation = AnimationType::jump;
+        Direction m_anim_dir = Direction::current;
 
         float m_speed = 0;
         float m_deceleration = 0;

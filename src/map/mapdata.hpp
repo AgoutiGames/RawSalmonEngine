@@ -48,6 +48,14 @@ class Event;
 class MapData {
     public:
         MapData(unsigned screen_w, unsigned screen_h);
+
+        MapData(const MapData& other) = delete;
+        MapData& operator=(const MapData& other) = delete;
+
+        MapData(MapData&& other) = default;
+        MapData& operator=(MapData&& other) = default;
+
+        /// @todo Modify destructor to properly freeing its events
         ~MapData();
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);

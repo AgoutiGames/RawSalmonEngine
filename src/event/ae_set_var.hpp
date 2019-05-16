@@ -22,8 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "event/actor_event.hpp"
-#include "event/event_container.hpp"
+#include "event/event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -31,45 +30,34 @@ class Actor;
 /**
  * @brief Sets custom vars of actor or map
  */
-class AeSetVar : public EventContainer<ActorEvent, AeSetVar>{
-    // The default interface block (copy this!)
+class AeSetVar : public Event<Actor>{
     public:
-        AeSetVar() {}
-        static AeSetVar* create() {return duplicate(AeSetVar());}
-        virtual tinyxml2::XMLError parse(tinyxml2::XMLElement* source, MapData& map, std::pair<std::string, ActorEvent*>& entry) const override; //<Define this!
-        virtual EventSignal process(Actor& actor) override;     //< Define this!
-        virtual ~AeSetVar() override {}
-        virtual std::string get_type() const override {return m_alias;}
-        static std::string get_type_static() {return m_alias;}
-        using EventContainer::kill;
-        virtual void kill() override {kill(this);}
-        virtual ActorEvent* copy() const override {return duplicate(this);}
+        tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
+        EventSignal process(Actor& actor) override;
+
+        // Covariant return type!
+        AeSetVar* create() const override {return new AeSetVar();}
+        AeSetVar* clone() const override {return new AeSetVar(*this);}
+
+        std::string get_type() const override {return m_alias;}
+
     private:
-        static std::string m_alias; //< Define this!
-    // The specialized block
-    public:
-        AeSetVar(std::string name, bool data, bool global = false);
-        AeSetVar(std::string name, int data, bool global = false, bool add = false, bool mult = false);
-        AeSetVar(std::string name, float data, bool global = false, bool add = false, bool mult = false);
-        AeSetVar(std::string name, std::string data, bool global = false, bool add = false);
-        static AeSetVar* create(std::string name, bool data, bool global = false);
-        static AeSetVar* create(std::string name, int data, bool global = false, bool add = false, bool mult = false);
-        static AeSetVar* create(std::string name, float data, bool global = false, bool add = false, bool mult = false);
-        static AeSetVar* create(std::string name, std::string data, bool global = false, bool add = false);
-    private:
-        // Members
-        std::string m_name;
-        bool m_global;
-        bool m_add;
-        bool m_mult;
+        static const bool good;
+        static const std::string m_alias; //< Define this!
+        // vv Add members with default values
+        std::string m_val_name = "";
+        bool m_local = true;
+        bool m_global = false;
+        bool m_add = false;
+        bool m_mult = false;
         struct Value {
             enum Type{
                 Bool,
                 Int,
                 Float,
-                String,
-                undefined
-            } type;
+                String
+            };
+            Type type = Float;
 
             union{
                 bool b;

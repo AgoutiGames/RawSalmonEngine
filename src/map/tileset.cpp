@@ -26,7 +26,6 @@
 #include <sstream>
 #include <map>
 
-#include "event/actor_event.hpp"
 #include "graphics/texture.hpp"
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
@@ -357,21 +356,18 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
 
         // Parse events
         else {
-
-            // Simply skip empty events
-            if(source->Attribute("type") != nullptr) {
-                std::pair<std::string, Event<Actor>*> event;
-                event.second = Event<Actor>::parse(source, base_map);
-                if(event.second == nullptr) {
-                    std::cerr << "Failed at parsing symbolic tile yielding an event\n";
-                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
-                    return XML_ERROR_PARSING;
-                }
-                else {
-                    event.first = event.second->get_type();
-                    base_map.register_event(event);
-                }
+            std::pair<std::string, Event<Actor>*> event;
+            event.second = Event<Actor>::parse(p_tile, base_map);
+            if(event.second == nullptr) {
+                std::cerr << "Failed at parsing symbolic tile yielding an event\n";
+                std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                return XML_ERROR_PARSING;
             }
+            else {
+                event.first = event.second->get_name();
+                base_map.register_event(event);
+            }
+            std::cerr << "Just Parsed " << event.second->get_name() << "\n";
         }
         p_tile = p_tile->NextSiblingElement("tile");
     }
