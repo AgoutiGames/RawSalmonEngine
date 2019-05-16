@@ -21,6 +21,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <cmath>
 
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
