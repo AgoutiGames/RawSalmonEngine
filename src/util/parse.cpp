@@ -204,9 +204,9 @@ tinyxml2::XMLError Parser::parse_int(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_int.find(name) == m_int.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
-    return source->QueryIntAttribute(name.c_str(), m_int.at(name));
+    return source->QueryIntAttribute("value", m_int.at(name));
 }
 
 tinyxml2::XMLError Parser::parse_unsigned(tinyxml2::XMLElement* source) {
@@ -215,9 +215,9 @@ tinyxml2::XMLError Parser::parse_unsigned(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_unsigned.find(name) == m_unsigned.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
-    return source->QueryUnsignedAttribute(name.c_str(), m_unsigned.at(name));
+    return source->QueryUnsignedAttribute("value", m_unsigned.at(name));
 }
 
 tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
@@ -226,9 +226,9 @@ tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_float.find(name) == m_float.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
-    return source->QueryFloatAttribute(name.c_str(), m_float.at(name));
+    return source->QueryFloatAttribute("value", m_float.at(name));
 }
 
 tinyxml2::XMLError Parser::parse_double(tinyxml2::XMLElement* source) {
@@ -237,9 +237,9 @@ tinyxml2::XMLError Parser::parse_double(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_double.find(name) == m_double.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
-    return source->QueryDoubleAttribute(name.c_str(), m_double.at(name));
+    return source->QueryDoubleAttribute("value", m_double.at(name));
 }
 
 tinyxml2::XMLError Parser::parse_string(tinyxml2::XMLElement* source) {
@@ -248,7 +248,7 @@ tinyxml2::XMLError Parser::parse_string(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_string.find(name) == m_string.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
 
     const char* p_value = source->Attribute("value");
@@ -263,7 +263,7 @@ tinyxml2::XMLError Parser::parse_priority(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_priority.find(name) == m_priority.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
 
     const char* p_value = source->Attribute("value");
@@ -282,7 +282,7 @@ tinyxml2::XMLError Parser::parse_signal(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_signal.find(name) == m_signal.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
 
     const char* p_value = source->Attribute("value");
@@ -301,7 +301,7 @@ tinyxml2::XMLError Parser::parse_direction(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_direction.find(name) == m_direction.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
 
     const char* p_value = source->Attribute("value");
@@ -320,7 +320,7 @@ tinyxml2::XMLError Parser::parse_animation_type(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_animation_type.find(name) == m_animation_type.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
 
     const char* p_value = source->Attribute("value");
@@ -343,9 +343,9 @@ tinyxml2::XMLError Parser::parse_bool(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_bool.find(name) == m_bool.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
-    return source->QueryBoolAttribute(name.c_str(), m_bool.at(name));
+    return source->QueryBoolAttribute("value", m_bool.at(name));
 }
 
 tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
@@ -354,7 +354,7 @@ tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
     std::string name(source->Attribute("name"));
 
     if(m_sound.find(name) == m_sound.end()) {
-        return XML_NO_ATTRIBUTE;
+        return XML_ERROR_MISMATCHED_ELEMENT;
     }
 
     const char* p_value = source->Attribute("value");
@@ -406,7 +406,7 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
     for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
-        bool no_attribute = true;
+        bool no_match = true;
 
         std::cerr << "Now Parsing " << source->Attribute("name") << "\n";
         if(source->Attribute("name") == nullptr) {
@@ -417,10 +417,10 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
         for(ParsePointer p : parsers) {
             XMLError result = (this->*p)(source);
             if(result == XML_SUCCESS) {
-                no_attribute = false;
+                no_match = false;
                 break;
             }
-            else if(result == XML_NO_ATTRIBUTE) {
+            else if(result == XML_ERROR_MISMATCHED_ELEMENT) {
                 continue;
             }
             else {
@@ -429,7 +429,7 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
             }
         }
 
-        if(no_attribute) {
+        if(no_match) {
             std::cerr << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
@@ -440,7 +440,7 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
 tinyxml2::XMLError Parser::parse_one(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
-    bool no_attribute = true;
+    bool no_match = true;
     for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
 
         if(source->Attribute("name") == nullptr) {
@@ -451,10 +451,10 @@ tinyxml2::XMLError Parser::parse_one(tinyxml2::XMLElement* source) {
         for(ParsePointer p : parsers) {
             XMLError result = (this->*p)(source);
             if(result == XML_SUCCESS) {
-                no_attribute = false;
+                no_match = false;
                 break;
             }
-            else if(result == XML_NO_ATTRIBUTE) {
+            else if(result == XML_ERROR_MISMATCHED_ELEMENT) {
                 continue;
             }
             else {
@@ -463,7 +463,7 @@ tinyxml2::XMLError Parser::parse_one(tinyxml2::XMLElement* source) {
             }
         }
     }
-    if(no_attribute) {
+    if(no_match) {
         std::cerr << "No single event got parsed!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
