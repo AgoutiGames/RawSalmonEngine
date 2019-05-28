@@ -382,8 +382,9 @@ tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
         const char* p_value = source->Attribute("value");
         if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
         m_iterate->push_back(p_value);
+        return XML_SUCCESS;
     }
-    return XML_SUCCESS;
+    else {return XML_ERROR_MISMATCHED_ELEMENT;}
 }
 
 Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
