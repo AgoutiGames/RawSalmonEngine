@@ -88,7 +88,7 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
     parser.add(m_continuous, "CONTINUOUS");
     parser.add(m_tolerance, "TOLERANCE");
     std::string sucess_name = "";
-    parser.add(sucess_name, "SUCESS");
+    parser.add(sucess_name, "SUCCESS");
     std::string failure_name = "";
     parser.add(failure_name, "FAILURE");
 

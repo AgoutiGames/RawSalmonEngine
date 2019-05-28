@@ -375,7 +375,7 @@ tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
 tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
-    if(m_iterate == nullptr) {return XML_SUCCESS;}
+    if(m_iterate == nullptr) {return XML_ERROR_MISMATCHED_ELEMENT;}
 
     std::string name(source->Attribute("name"));
     if(name == std::to_string(m_iterate->size() + 1)) {
@@ -437,7 +437,7 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
-tinyxml2::XMLError Parser::parse_one(tinyxml2::XMLElement* source) {
+tinyxml2::XMLError Parser::parse_ignore_unknown(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
     bool no_match = true;
@@ -465,7 +465,7 @@ tinyxml2::XMLError Parser::parse_one(tinyxml2::XMLElement* source) {
     }
     if(no_match) {
         std::cerr << "No single event got parsed!\n";
-        return XML_ERROR_PARSING_ATTRIBUTE;
+        return XML_NO_ATTRIBUTE;
     }
     return XML_SUCCESS;
 }

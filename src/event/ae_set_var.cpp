@@ -97,7 +97,7 @@ tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     std::string str_type;
     parser.add(str_type, "TYPE");
 
-    XMLError eResult = parser.parse_one(source);
+    XMLError eResult = parser.parse_ignore_unknown(source);
     if(eResult != XML_SUCCESS && eResult != XML_NO_ATTRIBUTE) {
         std::cerr << "Failed at parsing value type!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;

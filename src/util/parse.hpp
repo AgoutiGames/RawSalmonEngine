@@ -57,7 +57,7 @@ class Parser{
         void add(std::vector<std::string>& value) {m_iterate = &value;}
 
         tinyxml2::XMLError parse(tinyxml2::XMLElement* source);
-        tinyxml2::XMLError parse_one(tinyxml2::XMLElement* source);
+        tinyxml2::XMLError parse_ignore_unknown(tinyxml2::XMLElement* source);
 
     private:
         static constexpr int type_count = 12;
