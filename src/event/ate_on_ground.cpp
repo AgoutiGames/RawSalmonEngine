@@ -41,12 +41,6 @@ EventSignal AteOnGround::process(Actor& actor) {
     if(m_start) {
         if(!m_continuous) {
             m_decision = actor.on_ground(m_direction, m_tolerance);
-            if(m_decision) {
-                std::cerr << "On ground!\n";
-            }
-            else {
-                std::cerr << "NOT on ground!\n";
-            }
         }
         m_start = false;
     }
@@ -56,11 +50,11 @@ EventSignal AteOnGround::process(Actor& actor) {
     }
 
     if(m_decision) {
-        if(m_success == nullptr) {return EventSignal::end;}
+        if(!m_success) {return EventSignal::end;}
         sig = m_success->process(actor);
     }
     else {
-        if(m_failure == nullptr) {return EventSignal::end;}
+        if(!m_failure) {return EventSignal::end;}
         sig = m_failure->process(actor);
     }
 
@@ -110,7 +104,7 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
-            m_success = std::unique_ptr<Event<Actor>>(base_map.get_event(sucess_name));
+            m_success = base_map.get_event(sucess_name);
         }
     }
 
@@ -120,7 +114,7 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
-            m_failure = std::unique_ptr<Event<Actor>>(base_map.get_event(failure_name));
+            m_failure = base_map.get_event(failure_name);
         }
     }
 
@@ -132,6 +126,6 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
  */
 void AteOnGround::set_cause(Cause x) {
     Event<Actor>::set_cause(x);
-    if(m_success != nullptr) m_success->set_cause(x);
-    if(m_failure != nullptr) m_failure->set_cause(x);
+    if(m_success) m_success->set_cause(x);
+    if(m_failure) m_failure->set_cause(x);
 }

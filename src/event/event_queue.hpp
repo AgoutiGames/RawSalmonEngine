@@ -23,11 +23,12 @@
 #include <map>
 #include <vector>
 
-#include "event/event.hpp"
+#include "event/smart_event.hpp"
 
 template<class Scope>
 class EventQueue {
     public:
+        /*
         EventQueue() = default;
         ~EventQueue();
 
@@ -36,12 +37,13 @@ class EventQueue {
 
         EventQueue(EventQueue<Scope>&& other) = default;
         EventQueue& operator=(EventQueue<Scope>&& other) = default;
+        */
 
 
         EventSignal process_events(Scope& target);
 
-        void add_event(Event<Scope>* event);
-        unsigned scrap_event(std::string name, Event<Scope>* except = nullptr);
+        void add_event(SmartEvent<Scope> event);
+        unsigned scrap_event(std::string name, SmartEvent<Scope>* except = nullptr);
 
         void set_cooldown(std::string name, float dur_sec) {m_timestamp[name] = SDL_GetTicks() + dur_sec * 1000;}
         Uint32 get_cooldown(std::string name) const {return m_timestamp.at(name);}
@@ -59,22 +61,24 @@ class EventQueue {
         bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string name) const;
 
-        std::vector<Event<Scope>*>& get_events() {return m_event_pipeline;}
+        std::vector<SmartEvent<Scope>>& get_events() {return m_event_pipeline;}
 
     private:
         std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
         std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event or event type
         std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
-        std::vector<Event<Scope>*> m_event_pipeline; ///< Vector of current events to be processed
+        std::vector<SmartEvent<Scope>> m_event_pipeline; ///< Vector of current events to be processed
 
 };
 
+/*
 template<class Scope>
 EventQueue<Scope>::~EventQueue() {
     for(Event<Scope>* event : m_event_pipeline) {
         delete event;
     }
 }
+
 
 template<class Scope>
 EventQueue<Scope>& EventQueue<Scope>::operator=(const EventQueue<Scope>& other) {
@@ -93,6 +97,7 @@ template<class Scope>
 EventQueue<Scope>::EventQueue(const EventQueue<Scope>& other) {
     *this = other;
 }
+*/
 
 /**
  * @brief Process the event queue
@@ -102,13 +107,13 @@ EventQueue<Scope>::EventQueue(const EventQueue<Scope>& other) {
 template<class Scope>
 EventSignal EventQueue<Scope>::process_events(Scope& target) {
     for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
-        Event<Scope>* event = m_event_pipeline[i];
+        SmartEvent<Scope>& event = m_event_pipeline[i];
         EventSignal signal = event->process(target);
         if(signal == EventSignal::stop || signal == EventSignal::erase) {
             return signal;
         }
         else if(signal == EventSignal::end || signal == EventSignal::abort) {
-            delete m_event_pipeline[i];
+            // delete m_event_pipeline[i];
             m_event_pipeline.erase(m_event_pipeline.begin() + i);
             i--;
         }
@@ -128,7 +133,7 @@ EventSignal EventQueue<Scope>::process_events(Scope& target) {
  * @note We assume that the passed in events are cloned/we manage their memory now!
  */
 template<class Scope>
-void EventQueue<Scope>::add_event(Event<Scope>* event) {
+void EventQueue<Scope>::add_event(SmartEvent<Scope> event) {
     if(!is_blocked(event->get_type()) && !is_blocked(event->get_name())
        && !is_blocked(event->get_cause().get_key())
        && !in_cooldown(event->get_type()) && !in_cooldown(event->get_name())) {
@@ -146,10 +151,12 @@ void EventQueue<Scope>::add_event(Event<Scope>* event) {
         m_event_pipeline.insert(m_event_pipeline.begin(), event);
         return;
     }
+    /*
     else {
         // If event can't be added, delete it!
         delete event;
     }
+    */
 
 }
 
@@ -160,11 +167,11 @@ void EventQueue<Scope>::add_event(Event<Scope>* event) {
  * @return the count of events which have been deleted
  */
 template<class Scope>
-unsigned EventQueue<Scope>::scrap_event(std::string name, Event<Scope>* except) {
+unsigned EventQueue<Scope>::scrap_event(std::string name, SmartEvent<Scope>* except) {
     unsigned counter = 0;
     for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
-        if(( m_event_pipeline[i]->get_type() == name || m_event_pipeline[i]->get_name() == name) && m_event_pipeline[i] != except) {
-            delete m_event_pipeline[i];
+        if(( m_event_pipeline[i]->get_type() == name || m_event_pipeline[i]->get_name() == name) && &m_event_pipeline[i] != except) {
+            // delete m_event_pipeline[i];
             m_event_pipeline.erase(m_event_pipeline.begin() + i);
             i--;
             counter++;

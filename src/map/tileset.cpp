@@ -356,9 +356,9 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
 
         // Parse events
         else {
-            std::pair<std::string, Event<Actor>*> event;
-            event.second = Event<Actor>::parse(p_tile, base_map);
-            if(event.second == nullptr) {
+            std::pair<std::string, SmartEvent<Actor>> event;
+            event.second = SmartEvent<Actor>(p_tile, base_map);
+            if(!event.second) {
                 std::cerr << "Failed at parsing symbolic tile yielding an event\n";
                 std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
                 return XML_ERROR_PARSING;

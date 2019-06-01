@@ -37,7 +37,7 @@ struct ActorTemplate {
     Direction direction = Direction::down;
     std::map<std::string, SDL_Rect> hitbox;
     std::map<AnimationType, std::map<Direction, Tile>> animations;
-    std::map<Response, Event<Actor>*> response; ///< Map which yields events for response values
+    std::map<Response, SmartEvent<Actor>> response; ///< Map which yields events for response values
 };
 
 /**
@@ -110,8 +110,10 @@ class Actor{
         /// !! MapData m_templates which deletes them properly upon destruction
         /// If we'd delete them here, we would have multiple deletes on the same events since multiple
         /// Actors may have been initialized by the same template!!
+        ///
+        /// New implementation makes manual deletion unnecessary
 
-        std::map<Response, Event<Actor>*> m_response; ///< Map which yields events for response values
+        std::map<Response, SmartEvent<Actor>> m_response; ///< Map which yields events for response values
 
         EventQueue<Actor> m_events;
 

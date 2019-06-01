@@ -23,7 +23,7 @@
 #include <string>
 #include <memory>
 
-#include "event/event.hpp"
+#include "event/smart_event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -44,7 +44,7 @@ class AteOnGround : public Event<Actor>{
 
         // reimplement/hide inherited function
         void set_cause(Cause x);
-
+        /*
         AteOnGround() = default;
         AteOnGround(const AteOnGround& other) : Event<Actor>(){
             *this = other;
@@ -64,13 +64,16 @@ class AteOnGround : public Event<Actor>{
             }
             return *this;
         }
+        */
 
     private:
         static const bool good;
         static const std::string m_alias; //< Define this!
         // vv Add members with default values
-        std::unique_ptr<Event<Actor>> m_success = nullptr;
-        std::unique_ptr<Event<Actor>> m_failure = nullptr;
+        //std::unique_ptr<Event<Actor>> m_success = nullptr;
+        //std::unique_ptr<Event<Actor>> m_failure = nullptr;
+        SmartEvent<Actor> m_success;
+        SmartEvent<Actor> m_failure;
         Direction m_direction = Direction::down;
         bool m_continuous = false;
         bool m_start = true;

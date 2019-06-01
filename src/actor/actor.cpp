@@ -302,7 +302,7 @@ bool Actor::respond(Response r) {
         return false;
     }
     else {
-        Event<Actor>* event = m_response.at(r)->clone();
+        SmartEvent<Actor> event = m_response.at(r);
         m_events.add_event(event);
         return true;
     }
@@ -319,7 +319,7 @@ bool Actor::respond(Response r, Actor* a) {
         return false;
     }
     else {
-        Event<Actor>* event = m_response.at(r)->clone();
+        SmartEvent<Actor> event = m_response.at(r);
         if(a != nullptr) {event->set_cause(Cause(a));}
         m_events.add_event(event);
         return true;
@@ -339,7 +339,7 @@ bool Actor::respond(Response r, Tile* t, int x, int y) {
         return false;
     }
     else {
-        Event<Actor>* event = m_response.at(r)->clone();
+        SmartEvent<Actor> event = m_response.at(r);
         if(t != nullptr) {event->set_cause(Cause(t,x,y));}
         m_events.add_event(event);
         return true;
@@ -357,7 +357,7 @@ bool Actor::respond(Response r, SDL_Keysym key) {
         return false;
     }
     else {
-        Event<Actor>* event = m_response.at(r)->clone();
+        SmartEvent<Actor> event = m_response.at(r);
         if(key.sym != SDLK_UNKNOWN) {event->set_cause(Cause(key));}
         m_events.add_event(event);
         return true;

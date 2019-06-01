@@ -183,7 +183,7 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
  */
 void AeMulti::set_cause(Cause x) {
     Event<Actor>::set_cause(x);
-    for(Event<Actor>* e : m_events.get_events()) {
+    for(SmartEvent<Actor>& e : m_events.get_events()) {
         e->set_cause(x);
     }
 }
