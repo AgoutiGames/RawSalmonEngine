@@ -198,6 +198,13 @@ tinyxml2::XMLError parse::bg_color(tinyxml2::XMLElement* source, SDL_Color& colo
     }
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_int(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -209,6 +216,13 @@ tinyxml2::XMLError Parser::parse_int(tinyxml2::XMLElement* source) {
     return source->QueryIntAttribute("value", m_int.at(name));
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_unsigned(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -220,6 +234,13 @@ tinyxml2::XMLError Parser::parse_unsigned(tinyxml2::XMLElement* source) {
     return source->QueryUnsignedAttribute("value", m_unsigned.at(name));
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -231,6 +252,13 @@ tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
     return source->QueryFloatAttribute("value", m_float.at(name));
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_double(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -242,6 +270,13 @@ tinyxml2::XMLError Parser::parse_double(tinyxml2::XMLElement* source) {
     return source->QueryDoubleAttribute("value", m_double.at(name));
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_string(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -257,6 +292,13 @@ tinyxml2::XMLError Parser::parse_string(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_priority(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -276,6 +318,13 @@ tinyxml2::XMLError Parser::parse_priority(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_signal(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -295,6 +344,13 @@ tinyxml2::XMLError Parser::parse_signal(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_direction(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -314,6 +370,13 @@ tinyxml2::XMLError Parser::parse_direction(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_animation_type(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -337,6 +400,13 @@ tinyxml2::XMLError Parser::parse_animation_type(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_bool(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -348,6 +418,13 @@ tinyxml2::XMLError Parser::parse_bool(tinyxml2::XMLElement* source) {
     return source->QueryBoolAttribute("value", m_bool.at(name));
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -372,6 +449,13 @@ tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
 tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -387,6 +471,7 @@ tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
     else {return XML_ERROR_MISMATCHED_ELEMENT;}
 }
 
+/// The constructor makes iteration through all parsing functions possible by adding them to a member function array
 Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
     parsers[0] = &Parser::parse_int;
     parsers[1] = &Parser::parse_unsigned;
@@ -403,6 +488,11 @@ Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
     /// ! Don't forget adding new parsing member function here!
 }
 
+/**
+ * @brief Iterate through all properties and parse them. If a property has an unknown name, return an error.
+ * @param source The @c XMLElement which stores all attributes
+ * @return @c XMLError which indicates sucess or failure
+ */
 tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -438,6 +528,12 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Iterate through all properties and parse them. If a property has an unknown name, ignore it.
+          Only return error when no single event got parsed.
+ * @param source The @c XMLElement which stores all attributes
+ * @return @c XMLError which indicates sucess or failure
+ */
 tinyxml2::XMLError Parser::parse_ignore_unknown(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 

@@ -38,11 +38,10 @@ template <class Scope>
 class SmartEvent;
 
 /**
- * @brief Contain, render and update all game map layers
+ * @brief Container for the layers, tilesets, additional data, key/event matrix and camera of the map.
  *
- * This class is the starting point of parsing the Tiled mapfile.
- * It parses the used tilesets and map layers and stores them.
- * It renders layers and tiles.
+ * Initialize all mentioned submodules by parsing the supplied .tmx file.
+ * Call update and render of all submodules.
  */
 
 class MapData {
@@ -54,12 +53,6 @@ class MapData {
 
         MapData(MapData&& other) = default;
         MapData& operator=(MapData&& other) = default;
-
-        /*
-        /// @todo Modify destructor to properly freeing its events
-        ~MapData();
-        */
-        ~MapData() = default;
 
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
         bool render() const;
@@ -93,8 +86,6 @@ class MapData {
         void process_keys_sustained();
 
     private:
-        // Better delete this after parsing
-        tinyxml2::XMLDocument m_mapfile{true, tinyxml2::COLLAPSE_WHITESPACE}; ///< Contains the .tmx map file
 
         std::string m_base_path = "../data/"; ///< Path to folder where .tmx map files are
         unsigned m_width;  // The map dimensions in tiles

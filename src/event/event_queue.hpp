@@ -25,21 +25,12 @@
 
 #include "event/smart_event.hpp"
 
+/**
+ * @brief A field of events which can be processed and sorted according to priorities
+ */
 template<class Scope>
 class EventQueue {
     public:
-        /*
-        EventQueue() = default;
-        ~EventQueue();
-
-        EventQueue(const EventQueue<Scope>& other);
-        EventQueue& operator=(const EventQueue<Scope>& other);
-
-        EventQueue(EventQueue<Scope>&& other) = default;
-        EventQueue& operator=(EventQueue<Scope>&& other) = default;
-        */
-
-
         EventSignal process_events(Scope& target);
 
         void add_event(SmartEvent<Scope> event);
@@ -70,34 +61,6 @@ class EventQueue {
         std::vector<SmartEvent<Scope>> m_event_pipeline; ///< Vector of current events to be processed
 
 };
-
-/*
-template<class Scope>
-EventQueue<Scope>::~EventQueue() {
-    for(Event<Scope>* event : m_event_pipeline) {
-        delete event;
-    }
-}
-
-
-template<class Scope>
-EventQueue<Scope>& EventQueue<Scope>::operator=(const EventQueue<Scope>& other) {
-    m_timestamp = other.m_timestamp;
-    m_block = other.m_block;
-    m_block_key = other.m_block_key;
-
-    m_event_pipeline.clear();
-    for(Event<Scope>* event : other.m_event_pipeline) {
-        m_event_pipeline.push_back(event->clone());
-    }
-    return *this;
-}
-
-template<class Scope>
-EventQueue<Scope>::EventQueue(const EventQueue<Scope>& other) {
-    *this = other;
-}
-*/
 
 /**
  * @brief Process the event queue
@@ -151,13 +114,6 @@ void EventQueue<Scope>::add_event(SmartEvent<Scope> event) {
         m_event_pipeline.insert(m_event_pipeline.begin(), event);
         return;
     }
-    /*
-    else {
-        // If event can't be added, delete it!
-        delete event;
-    }
-    */
-
 }
 
 /**

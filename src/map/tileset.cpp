@@ -36,7 +36,7 @@
 
 /**
  * @brief Initialize a tileset from XML info
- * @param ts_file The @c XMLElement which storest the tileset information
+ * @param ts_file The @c XMLElement which stores the tileset information
  * @param ts_collection Reference to tileset collection to register tiles, etc.
  * @return an @c XMLError object which indicates success or error type
  */

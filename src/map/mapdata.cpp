@@ -35,31 +35,8 @@
 /// Plain constructor
 MapData::MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
 
-/*
-/// Properly delete all stored events
-MapData::~MapData() {
-    for(auto& it : m_events) {
-        delete it.second;
-    }
-    for(auto& it : m_key_up) {
-        delete it.second;
-    }
-    for(auto& it : m_key_down) {
-        delete it.second;
-    }
-    for(auto& it : m_key_sustained) {
-        delete it.second;
-    }
-    for(auto& it : m_templates) {
-        for(auto& it2 : it.second.response) {
-            delete it2.second;
-        }
-    }
-}
-*/
-
 /**
- * @brief Parse the supplied .tmx file
+ * @brief Parses the supplied .tmx file
  *
  * Map infos are directly parsed, Tileset and Layer parsers of
  * the corresponding classes get called. @p renderer needs to be
@@ -97,35 +74,17 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         }
     }
 
-    /*
-    // First parse possible events
-    XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
-    std::string full_path = m_base_path + "events.tsx";
-    XMLError eResult = sym_ts.LoadFile(full_path.c_str());
-    if(eResult != XML_SUCCESS) {
-        std::cout << "Can't find events.tsx at relative path: " << full_path << "\n";
-        return eResult;
-    }
-    XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
-    if (pSymTs == nullptr) return XML_ERROR_PARSING_ELEMENT;
-    eResult = Tileset::parse_symbolic(pSymTs, *this);
-    if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed at parsing symbolic tileset events.tsx\n";
-        return eResult;
-    }
-    */
-
-
-    // This saves the .tmx file to the member m_mapfile
+    // Read in the .tmx file to mapfile var
     full_path = m_base_path + filename;
-    eResult = m_mapfile.LoadFile(full_path.c_str());
+    tinyxml2::XMLDocument mapfile{true, tinyxml2::COLLAPSE_WHITESPACE};
+    eResult = mapfile.LoadFile(full_path.c_str());
     if(eResult != XML_SUCCESS) {
         std::cout << "Can't find map at relative path: " << full_path << "\n";
         return eResult;
     }
 
     // Map info gets parsed
-    XMLElement* pMap = m_mapfile.FirstChildElement("map");
+    XMLElement* pMap = mapfile.FirstChildElement("map");
     if (pMap == nullptr) return XML_ERROR_PARSING_ELEMENT;
 
     eResult = pMap->QueryUnsignedAttribute("width", &m_width);
@@ -179,6 +138,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     return XML_SUCCESS;
 }
+
 /**
  * @brief Renders all map layers
  * @param camera The rectangular area of the map to be rendered
@@ -192,6 +152,7 @@ bool MapData::render() const{
     return m_layer_collection.render(m_camera);
 
 }
+
 /**
  * @brief Calls update function of all map layers and animates tiles
  */
@@ -428,7 +389,7 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
 }
 
 /**
- * @brief Add event to player if key is pressed
+ * @brief Adds event to player if key is pressed
  * @param e The keypress
  * @return @c bool which indicates if key triggered event
  */
@@ -443,7 +404,7 @@ bool MapData::process_key_down(SDL_Event  e) {
 }
 
 /**
- * @brief Add event to player if key is released
+ * @brief Adds event to player if key is released
  * @param e The keypress
  * @return @c bool which indicates if key triggered event
  */
@@ -471,8 +432,8 @@ void MapData::process_keys_sustained() {
     }
 }
 
-unsigned MapData::get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Return map width in pixels
+unsigned MapData::get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Returns map width in pixels
 
-unsigned MapData::get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Return map height in pixels
+unsigned MapData::get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
 
-SmartEvent<Actor> MapData::get_event(std::string name) const {return m_events.at(name);} ///< Return copy of named event
+SmartEvent<Actor> MapData::get_event(std::string name) const {return m_events.at(name);} ///< Returns copy of named event

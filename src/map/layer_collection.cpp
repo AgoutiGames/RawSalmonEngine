@@ -25,6 +25,9 @@
 #include "map/object_layer.hpp"
 #include "map/layer_collection.hpp"
 
+/**
+ * @brief Deletes all layers because we own each layer by its pointer
+ */
 LayerCollection::~LayerCollection() {
     for(Layer* layer : m_layers) {
         if(layer != nullptr) {
@@ -33,6 +36,12 @@ LayerCollection::~LayerCollection() {
     }
 }
 
+/**
+ * @brief Parses each layer and stores in vector member
+ * @param source The @c XMLElement which stores the layer info
+ * @param base_map The map which we belong to
+ * @return an @c XMLError object which indicates success or error type
+ */
  tinyxml2::XMLError LayerCollection::init(tinyxml2::XMLElement* source, MapData& base_map) {
 
     using namespace tinyxml2;
@@ -69,6 +78,11 @@ LayerCollection::~LayerCollection() {
     return XML_SUCCESS;
  }
 
+ /**
+  * @brief Renders each layer to screen with current camera position and size
+  * @param camera Our active camera
+  * @return @c bool Which indicates sucess or failure of rendering
+  */
 bool LayerCollection::render(const Camera& camera) const{
     bool success = true;
     // Renders all layers
@@ -81,6 +95,9 @@ bool LayerCollection::render(const Camera& camera) const{
     return success;
 }
 
+/**
+ * @brief Updates each layer state
+ */
 void LayerCollection::update() {
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         m_layers[i_layer]->update();
@@ -149,7 +166,7 @@ bool LayerCollection::collide(const SDL_Rect* rect, std::string type) {
 }
 
 /**
- * @brief Fetch all actors which conform the supplied parameters
+ * @brief Fetches all actors which conform the supplied parameters
  * @return Vector of conforming actors
  * @note "invalid" value indicates that a parameter is ignored
  */

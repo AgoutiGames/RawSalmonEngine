@@ -24,14 +24,21 @@
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 
+/// Factory function which retrieves a pointer owning the image layer
 ImageLayer* ImageLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
     return new ImageLayer(source, name, layer_collection, eresult);
 }
 
+/// Constructor which only may be used internally
 ImageLayer::ImageLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) : Layer(name, layer_collection) {
     eresult = init(source);
 }
 
+/**
+ * @brief Initialize the layer by parsing info from source
+ * @param source The @c XMLElement from which information is parsed
+ * @return @c XMLError which indicates failure or sucess of parsing
+ */
 tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
@@ -97,6 +104,11 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Renders the image layer to screen according to camera
+ * @param camera Our active camera
+ * @return @c bool which indicates sucess
+ */
 bool ImageLayer::render(const Camera& camera) const {
     if(m_parallax) {
         MapData& base_map = m_layer_collection->get_base_map();
@@ -120,10 +132,12 @@ bool ImageLayer::render(const Camera& camera) const {
     return true;
 }
 
+/// Updating of ImageLayer is unnecessary
 void ImageLayer::update() {
 
 }
 
+/// ImageLayer usually don't collide
 bool ImageLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
     return false;
 }

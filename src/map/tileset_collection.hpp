@@ -26,12 +26,23 @@
 #include "util/tinyxml2.h"
 #include "util/game_types.hpp"
 
+// The forward declare should work again with c++17/gcc6
 // class Tileset; // forward declaration
 class Tile;
 class MapData;
 
-// This class SHOULD NOT be copy constructable or assignable, only MOVABLE since moving m_tilesets and their internal
-// Tile objects keeps their memory adresses stable and therefore mp_tiles will still be in a valid state
+/**
+ * @brief Manage multiple tilesets and forward to tiles by their global id (gid)
+ *
+ * The class also manages the so called "tile overhang". It's the maximum length of tiles
+ * which each tile could overtop a base tile. The rendering function of all MapLayers need this
+ * information to prevent "pop in artifacts"
+ *
+ *
+ * @warning This class SHOULD NOT be copy constructable or assignable, only MOVABLE since moving m_tilesets with their internal
+ * Tile objects keeps their memory adresses stable and therefore mp_tiles will still be in a valid state. This is NOT the case when copying.
+ */
+
 class TilesetCollection{
     public:
 

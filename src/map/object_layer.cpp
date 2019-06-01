@@ -27,14 +27,21 @@
 #include "map/layer_collection.hpp"
 #include "map/camera.hpp"
 
+/// Factory function which retrieves a pointer owning the object layer
 ObjectLayer* ObjectLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
     return new ObjectLayer(source, name, layer_collection, eresult);
 }
 
+/// Constructor which only may be used internally
 ObjectLayer::ObjectLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) : Layer(name, layer_collection) {
     eresult = init(source);
 }
 
+/**
+ * @brief Initialize the layer by parsing info from source
+ * @param source The @c XMLElement from which information is parsed
+ * @return @c XMLError which indicates failure or sucess of parsing
+ */
 tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
@@ -66,6 +73,11 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Renders the object layer to screen according to camera
+ * @param camera Our active camera
+ * @return @c bool which indicates sucess
+ */
 bool ObjectLayer::render(const Camera& camera) const {
     int x = camera.x() - m_offset_x;
     int y = camera.y() - m_offset_y;
@@ -99,6 +111,10 @@ void ObjectLayer::update() {
     m_obj_grid.sort();
 }
 
+/**
+ * @brief checks collision of objects with supplied rect
+ * @todo Add remaining collision documentation
+ */
 bool ObjectLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
     bool collide = false;
     int x_depth = 0;
@@ -117,6 +133,11 @@ bool ObjectLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vec
     }
     return collide;
 }
+
+/**
+ * @brief checks collision of objects with supplied rect
+ * @todo Add remaining collision documentation
+ */
 bool ObjectLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
     bool collide = false;
     // Iterate through all actors
@@ -130,6 +151,11 @@ bool ObjectLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, s
     }
     return collide;
 }
+
+/**
+ * @brief checks collision of objects with supplied rect
+ * @todo Add remaining collision documentation
+ */
 bool ObjectLayer::collide(const SDL_Rect* rect, std::string type) {
     bool collide = false;
     // Iterate through all actors

@@ -44,34 +44,11 @@ class AteOnGround : public Event<Actor>{
 
         // reimplement/hide inherited function
         void set_cause(Cause x);
-        /*
-        AteOnGround() = default;
-        AteOnGround(const AteOnGround& other) : Event<Actor>(){
-            *this = other;
-        }
-        AteOnGround& operator=(const AteOnGround& other) {
-            Event<Actor>::operator=(other);
-            m_decision = other.m_decision;
-            m_tolerance = other.m_tolerance;
-            m_start = other.m_start;
-            m_continuous = other.m_continuous;
-            m_direction = other.m_direction;
-            if(other.m_success != nullptr) {
-                m_success = std::unique_ptr<Event<Actor>>(other.m_success->clone());
-            }
-            if(other.m_failure != nullptr) {
-                m_failure = std::unique_ptr<Event<Actor>>(other.m_failure->clone());
-            }
-            return *this;
-        }
-        */
 
     private:
         static const bool good;
         static const std::string m_alias; //< Define this!
         // vv Add members with default values
-        //std::unique_ptr<Event<Actor>> m_success = nullptr;
-        //std::unique_ptr<Event<Actor>> m_failure = nullptr;
         SmartEvent<Actor> m_success;
         SmartEvent<Actor> m_failure;
         Direction m_direction = Direction::down;

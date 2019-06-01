@@ -28,6 +28,9 @@
 #include "map/layer.hpp"
 #include "graphics/texture.hpp"
 
+/**
+ * @brief A map layer which consist of an image
+ */
 class ImageLayer : public Layer{
     public:
 

@@ -46,7 +46,7 @@ class Layer {
             undefinied
         };
 
-        Layer(std::string name, LayerCollection* layer_collection);
+        Layer(std::string name, LayerCollection* layer_collection) : m_layer_collection{layer_collection}, m_name{name} {}
 
         Layer(const Layer& other) = default;
         Layer& operator=(const Layer& other) = default;

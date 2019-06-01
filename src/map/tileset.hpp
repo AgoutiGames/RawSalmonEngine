@@ -28,8 +28,6 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-// forward-declare the parts you need in one of the files and leave the #include out of that file.
-
 class Tile; // forward declaration
 class TilesetCollection;
 class MapData;
@@ -37,7 +35,6 @@ class MapData;
 /**
  * @brief Parse, store and manage all tilesets
  *
- * @warning Because m_image can't be copied, initialized tilesets can't be copied either
  * @warning Tiled's "Collection Tileset" are not supported
  */
 

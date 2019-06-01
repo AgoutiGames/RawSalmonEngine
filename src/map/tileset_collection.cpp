@@ -31,6 +31,12 @@
 #include "util/game_types.hpp"
 #include "util/parse.hpp"
 
+/**
+ * @brief Initialize a TilesetCollection from XML info
+ * @param source The @c XMLElement which stores the tileset information
+ * @param mapdata Pointer to map to which these tilesets belong
+ * @return an @c XMLError object which indicates success or error type
+ */
 tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData* mapdata) {
     using namespace tinyxml2;
 

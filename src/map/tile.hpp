@@ -26,12 +26,10 @@
 #include "util/tinyxml2.h"
 #include "util/game_types.hpp"
 
-// forward-declare the parts you need in one of the files and leave the #include out of that file.
-
 class Tileset; // forward declaration
 
 /**
- * @brief Parse, store and manage all tiles
+ * @brief Parse, store and manage an individual tile
  */
 
 class Tile{

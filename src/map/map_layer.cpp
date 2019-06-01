@@ -26,14 +26,21 @@
 #include "map/tileset_collection.hpp"
 #include "util/base64.h"
 
+/// Factory function which retrieves a pointer owning the map layer
 MapLayer* MapLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
     return new MapLayer(source, name, layer_collection, eresult);
 }
 
+/// Constructor which only may be used internally
 MapLayer::MapLayer(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) : Layer(name, layer_collection) {
     eresult = init(source);
 }
 
+/**
+ * @brief Initialize the layer by parsing info from source
+ * @param source The @c XMLElement from which information is parsed
+ * @return @c XMLError which indicates failure or sucess of parsing
+ */
 tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
@@ -102,6 +109,11 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+/**
+ * @brief Renders the map layer to screen according to camera
+ * @param camera Our active camera
+ * @return @c bool which indicates sucess
+ */
 bool MapLayer::render(const Camera& camera) const {
     bool success = true;
     // Cast tile_w and h to int to simplify calculations
@@ -169,10 +181,15 @@ bool MapLayer::render(const Camera& camera) const {
     return success;
 }
 
+/// Updating MapLayers is unnecessary
 void MapLayer::update() {
 
 }
 
+/**
+ * @brief checks collision of tiles with supplied rect
+ * @todo Add remaining collision documentation
+ */
 bool MapLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
     bool collide = false;
     if(type != "COLLIDE") {return collide;}
@@ -217,6 +234,11 @@ bool MapLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector
     }
     return collide;
 }
+
+/**
+ * @brief checks collision of tiles with supplied rect
+ * @todo Add remaining collision documentation
+ */
 bool MapLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
     bool collide = false;
     if(type != "COLLIDE") {return collide;}
@@ -251,6 +273,11 @@ bool MapLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std:
     }
     return collide;
 }
+
+/**
+ * @brief checks collision of tiles with supplied rect
+ * @todo Add remaining collision documentation
+ */
 bool MapLayer::collide(const SDL_Rect* rect, std::string type) {
     bool collide = false;
     if(type != "COLLIDE") {return collide;}

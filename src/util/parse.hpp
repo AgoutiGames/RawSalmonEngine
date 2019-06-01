@@ -39,6 +39,9 @@ namespace parse{
     tinyxml2::XMLError bg_color(tinyxml2::XMLElement* source, SDL_Color& color);
 }
 
+/**
+ * @brief A helper class which parses event properties and passes them to previously added references
+ */
 class Parser{
     public:
         Parser(MapData& base_map);

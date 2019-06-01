@@ -31,6 +31,9 @@ class Actor;
 class GameInfo;
 class MapData;
 
+/**
+ * @brief The game events which carry additional information and operate on their Scope type
+ */
 template<class Scope>
 class Event {
 public:
@@ -75,6 +78,7 @@ private:
 
 };
 
+/// Return the dictionary which translates the event typ name to an empty instace of the event type
 template<class Scope>
 std::map<std::string, Event<Scope>*>& Event<Scope>::get_dict() {
     // Lazy initialization of event_dict
@@ -84,7 +88,7 @@ std::map<std::string, Event<Scope>*>& Event<Scope>::get_dict() {
     return event_dict;
 }
 
-/// Registers the type of event as an actor event
+/// Registers the type of event by its name
 template <class Scope>
 template <class T>
 bool Event<Scope>::register_class() {
@@ -94,6 +98,12 @@ bool Event<Scope>::register_class() {
     return true;
 }
 
+/**
+ * @brief Differentiates events by type, forwards to individual parsing functions and returns the ready event
+ * @param source The @c XMLElement which contains the event information
+ * @param base_map The map to which our event belongs
+ * @return @c Event<Scope>* which owns the parsed event
+ */
 template<class Scope>
 Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;

@@ -113,7 +113,7 @@ bool GameInfo::load_map(std::string mapfile) {
 
 /**
  * @brief Updates the map
- * @return @c bool false if quit
+ * @return @c bool which is false if game ended
  */
 
 bool GameInfo::update() {
@@ -164,7 +164,7 @@ void GameInfo::close() {
 	SDL_Quit();
 }
 
-/// Makes sure everything gets cleaned up upon destruction
+/// Cleans up all resources
 GameInfo::~GameInfo() {
     close();
 }

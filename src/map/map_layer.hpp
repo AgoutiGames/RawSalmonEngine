@@ -29,6 +29,9 @@
 
 class TilesetCollection;
 
+/**
+ * @brief A map layer which consist of 2D tile indices
+ */
 class MapLayer : public Layer{
     public:
 

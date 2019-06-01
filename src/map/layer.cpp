@@ -33,11 +33,13 @@
 #include "util/parse.hpp"
 #include "util/tinyxml2.h"
 
-Layer::Layer(std::string name, LayerCollection* layer_collection) {
-    m_name = name;
-    m_layer_collection = layer_collection;
-}
-
+/**
+ * @brief Differentiates possible layers by name and calls proper parsing function
+ * @param source The @c XMLElement which stores the layer information
+ * @param layer_collection The @c LayerCollection to which the parsed layer belongs
+ * @param eResult The @c XMLError which indicates sucess or failure of parsing
+ * @return @c Layer The pointer to the parsed layer
+ */
 Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult) {
 
     using namespace tinyxml2;

@@ -30,6 +30,9 @@ class Camera;
 class Layer;
 class MapData;
 
+/**
+ * @brief Container for all possible map layers. Inits, updates, draws and deletes layers.
+ */
 class LayerCollection {
     public:
 
@@ -52,8 +55,8 @@ class LayerCollection {
         LayerCollection(const LayerCollection& other) = delete;
         LayerCollection& operator=(const LayerCollection& other) = delete;
 
-        LayerCollection(LayerCollection&& other) = default;
-        LayerCollection& operator=(LayerCollection&& other) = default;
+        LayerCollection(LayerCollection&& other) = delete;
+        LayerCollection& operator=(LayerCollection&& other) = delete;
 
     private:
 

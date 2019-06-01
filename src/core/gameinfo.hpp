@@ -25,7 +25,8 @@
 #include "map/mapdata.hpp"
 
 /**
- * @brief This class manages interaction between player and game modules
+ * @brief Manages the initialization of SDL2 and the game map. Pipe keyboard input to the map.
+ *
  */
 
 class GameInfo {

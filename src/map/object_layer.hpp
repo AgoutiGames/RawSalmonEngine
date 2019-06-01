@@ -28,6 +28,9 @@
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
 
+/**
+ * @brief A map layer which consist of a list of actors
+ */
 class ObjectLayer : public Layer{
     public:
 
