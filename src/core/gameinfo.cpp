@@ -138,6 +138,10 @@ bool GameInfo::update() {
     m_map.process_keys_sustained();
 
     m_map.update();
+
+    // Do nothing with returned signal because we don't have to
+    m_events.process_events(*this);
+
     return true;
 }
 

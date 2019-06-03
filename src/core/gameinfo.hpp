@@ -42,8 +42,11 @@ public:
 
     bool load_map(std::string mapfile);
 
+    DataBlock& get_data() {return m_data;}
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
+
+    EventQueue<GameInfo>& get_event_queue() {return m_events;}
 
 private:
     SDL_Window* m_window = nullptr;
@@ -52,6 +55,9 @@ private:
     unsigned m_screen_w;
     unsigned m_screen_h;
 
+    DataBlock m_data; ///< This holds custom user values by string
+
+    EventQueue<GameInfo> m_events;
 
     MapData m_map; ///< Stores the currently active game map
 };

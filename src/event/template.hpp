@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_TEMPLATE_HPP_INCLUDED //< Change this
-#define AE_TEMPLATE_HPP_INCLUDED //< Change this
+#ifndef TEMPLATE_HPP_INCLUDED
+#define TEMPLATE_HPP_INCLUDED
 
 #include <vector>
 #include <string>
@@ -25,19 +25,19 @@
 #include "event/event.hpp"
 #include "util/game_types.hpp"
 
-class Actor;
+class Scope;
 
 /**
  * @brief Write something
  */
-class AeTemplate : public Event<Actor>{
+class Template : public Event<Scope>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& actor) override;
+        EventSignal process(Scope& scope) override;
 
         // Covariant return type!
-        AeTemplate* create() const override {return new AeTemplate();}
-        AeTemplate* clone() const override {return new AeTemplate(*this);}
+        Template* create() const override {return new Template();}
+        Template* clone() const override {return new Template(*this);}
 
         std::string get_type() const override {return m_alias;}
 
@@ -48,4 +48,4 @@ class AeTemplate : public Event<Actor>{
 
 };
 
-#endif // AE_TEMPLATE_HPP_INCLUDED
+#endif // TEMPLATE_HPP_INCLUDED

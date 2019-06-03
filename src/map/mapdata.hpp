@@ -69,10 +69,10 @@ class MapData {
         DataBlock& get_data() {return m_data;}
 
         template<class Scope=Actor, class Key=std::string>
-        void register_event(std::pair<Key, SmartEvent<Actor>> event) {m_event_archive.register_event<Scope,Key>(event);} ///< Link event name with @c Event<Actor>*
+        void register_event(std::pair<Key, SmartEvent<Scope>> event) {m_event_archive.register_event<Scope,Key>(event);} ///< Link event name with @c Event<Actor>*
 
         template<class Scope=Actor, class Key=std::string>
-        SmartEvent<Actor> get_event(Key name) const {return m_event_archive.get_event<Scope,Key>(name);}
+        SmartEvent<Scope> get_event(Key name) const {return m_event_archive.get_event<Scope,Key>(name);}
 
         template<class Scope=Actor, class Key=std::string>
         bool check_event(Key name) const {return m_event_archive.check_event<Scope,Key>(name);} ///< Return true if event is defined
@@ -93,6 +93,8 @@ class MapData {
         bool process_key_up(SDL_Event e);
         bool process_key_down(SDL_Event e);
         void process_keys_sustained();
+
+        EventQueue<MapData>& get_event_queue() {return m_events;}
 
     private:
 
@@ -119,6 +121,8 @@ class MapData {
         EventCollection<Actor, SDL_Scancode> m_key_sustained;
 
         WideEventCollection m_event_archive;
+
+        EventQueue<MapData> m_events;
 
         SDL_Renderer** mpp_renderer = nullptr;
 };

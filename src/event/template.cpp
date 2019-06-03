@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,37 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_template.hpp" //< Change this!
+#include "event/template.hpp"
 
 #include <string>
 #include <map>
 #include <iostream>
 
-#include "actor/actor.hpp"
+#include "origin"
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-const std::string AeTemplate::m_alias = "AeTemplate";
+const std::string Template::m_alias = "Template";
 
-const bool AeTemplate::good = Event<Actor>::register_class<AeTemplate>();
+const bool Template::good = Event<Scope>::register_class<Template>();
 
 /**
  * @brief Do ...
- * @param actor The actor which should ...
+ * @param Scope The Scope which should ...
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeTemplate::process(Actor& actor) {
+EventSignal Template::process(Scope& scope) {
     // Add stuff!
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param base_map Seldomly used in parser to fetch actors or other events
+ * @param base_map Seldomly used in parser to fetch Scopes or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeTemplate::init(tinyxml2::XMLElement* source, MapData& base_map) {
+tinyxml2::XMLError Template::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
     Parser parser(base_map);

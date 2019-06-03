@@ -356,18 +356,67 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
 
         // Parse events
         else {
-            std::pair<std::string, SmartEvent<Actor>> event;
-            event.second = SmartEvent<Actor>(p_tile, base_map);
-            if(!event.second) {
-                std::cerr << "Failed at parsing symbolic tile yielding an event\n";
-                std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+
+            std::string event_type = p_tile->Attribute("type");
+            if(event_type == "") {
+                std::cerr << "Missing event type at Tile ID: " << p_tile->Attribute("id") << "\n";
                 return XML_ERROR_PARSING;
             }
-            else {
-                event.first = event.second->get_name();
-                base_map.register_event(event);
+            const char identifier = event_type.front();
+            switch (identifier) {
+                case 'A': {
+                    std::pair<std::string, SmartEvent<Actor>> event;
+                    event.second = SmartEvent<Actor>(p_tile, base_map);
+                    if(!event.second) {
+                        std::cerr << "Failed at parsing symbolic tile yielding an event\n";
+                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        return XML_ERROR_PARSING;
+                    }
+                    else {
+                        event.first = event.second->get_name();
+                        base_map.register_event<Actor>(event);
+                    }
+                    std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                    break;
+                }
+
+                case 'M': {
+                    std::pair<std::string, SmartEvent<MapData>> event;
+                    event.second = SmartEvent<MapData>(p_tile, base_map);
+                    if(!event.second) {
+                        std::cerr << "Failed at parsing symbolic tile yielding an event\n";
+                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        return XML_ERROR_PARSING;
+                    }
+                    else {
+                        event.first = event.second->get_name();
+                        base_map.register_event<MapData>(event);
+                    }
+                    std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                    break;
+                }
+
+                case 'G': {
+                    std::pair<std::string, SmartEvent<GameInfo>> event;
+                    event.second = SmartEvent<GameInfo>(p_tile, base_map);
+                    if(!event.second) {
+                        std::cerr << "Failed at parsing symbolic tile yielding an event\n";
+                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        return XML_ERROR_PARSING;
+                    }
+                    else {
+                        event.first = event.second->get_name();
+                        base_map.register_event<GameInfo>(event);
+                    }
+                    std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                    break;
+                }
+
+                default: {
+                    std::cerr << "Unknown event type: " << event_type << " at Tile ID: " << p_tile->Attribute("id") << "\n";
+                    return XML_ERROR_PARSING;
+                }
             }
-            std::cerr << "Just Parsed " << event.second->get_name() << "\n";
         }
         p_tile = p_tile->NextSiblingElement("tile");
     }
