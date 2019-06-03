@@ -33,7 +33,7 @@
 #include "util/parse.hpp"
 
 /// Plain constructor
-MapData::MapData(unsigned screen_w, unsigned screen_h) : m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
+MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
 
 /**
  * @brief Parses the supplied .tmx file

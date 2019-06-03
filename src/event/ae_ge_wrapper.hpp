@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,54 +16,42 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_SET_VAR_HPP_INCLUDED //< Change this
-#define AE_SET_VAR_HPP_INCLUDED //< Change this
+#ifndef AE_GE_WRAPPER_HPP_INCLUDED
+#define AE_GE_WRAPPER_HPP_INCLUDED
 
 #include <vector>
 #include <string>
 
 #include "event/event.hpp"
+#include "event/smart_event.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
+class GameInfo;
 
 /**
- * @brief Sets custom vars of actor or map
+ * @brief Write something
  */
-class AeSetVar : public Event<Actor>{
+class AeGeWrapper : public Event<Actor>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& actor) override;
+        EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AeSetVar* create() const override {return new AeSetVar();}
-        AeSetVar* clone() const override {return new AeSetVar(*this);}
+        AeGeWrapper* create() const override {return new AeGeWrapper();}
+        AeGeWrapper* clone() const override {return new AeGeWrapper(*this);}
 
         std::string get_type() const override {return m_alias;}
+
+        // reimplement/hide inherited function
+        void set_cause(Cause x);
 
     private:
         static const bool good;
         static const std::string m_alias; //< Define this!
         // vv Add members with default values
-        std::string m_val_name = "";
-        bool m_add = false;
-        bool m_mult = false;
-        struct Value {
-            enum Type{
-                Bool,
-                Int,
-                Float,
-                String
-            };
-            Type type = Float;
+        SmartEvent<GameInfo> m_event;
 
-            union{
-                bool b;
-                int i;
-                float f;
-            };
-            std::string s;
-        } m_value;
 };
 
-#endif // AE_SET_VAR_HPP_INCLUDED
+#endif // AE_GE_WRAPPER_HPP_INCLUDED

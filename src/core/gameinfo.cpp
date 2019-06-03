@@ -27,7 +27,7 @@
 
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
-: m_screen_w {screen_w}, m_screen_h {screen_h}, m_map {m_screen_w, m_screen_h}
+: m_screen_w {screen_w}, m_screen_h {screen_h}, m_map {this, m_screen_w, m_screen_h}
 {
     //Start up SDL and create window
 	if( !init() ) {

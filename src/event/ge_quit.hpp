@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_SET_VAR_HPP_INCLUDED //< Change this
-#define AE_SET_VAR_HPP_INCLUDED //< Change this
+#ifndef GE_QUIT_HPP_INCLUDED
+#define GE_QUIT_HPP_INCLUDED
 
 #include <vector>
 #include <string>
@@ -25,19 +25,19 @@
 #include "event/event.hpp"
 #include "util/game_types.hpp"
 
-class Actor;
+class GameInfo;
 
 /**
- * @brief Sets custom vars of actor or map
+ * @brief Write something
  */
-class AeSetVar : public Event<Actor>{
+class GeQuit : public Event<GameInfo>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& actor) override;
+        EventSignal process(GameInfo& scope) override;
 
         // Covariant return type!
-        AeSetVar* create() const override {return new AeSetVar();}
-        AeSetVar* clone() const override {return new AeSetVar(*this);}
+        GeQuit* create() const override {return new GeQuit();}
+        GeQuit* clone() const override {return new GeQuit(*this);}
 
         std::string get_type() const override {return m_alias;}
 
@@ -45,25 +45,7 @@ class AeSetVar : public Event<Actor>{
         static const bool good;
         static const std::string m_alias; //< Define this!
         // vv Add members with default values
-        std::string m_val_name = "";
-        bool m_add = false;
-        bool m_mult = false;
-        struct Value {
-            enum Type{
-                Bool,
-                Int,
-                Float,
-                String
-            };
-            Type type = Float;
 
-            union{
-                bool b;
-                int i;
-                float f;
-            };
-            std::string s;
-        } m_value;
 };
 
-#endif // AE_SET_VAR_HPP_INCLUDED
+#endif // GE_QUIT_HPP_INCLUDED

@@ -48,7 +48,7 @@ class SmartEvent;
 
 class MapData {
     public:
-        MapData(unsigned screen_w, unsigned screen_h);
+        MapData(GameInfo* game, unsigned screen_w, unsigned screen_h);
 
         MapData(const MapData& other) = delete;
         MapData& operator=(const MapData& other) = delete;
@@ -67,6 +67,8 @@ class MapData {
         unsigned get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
 
         DataBlock& get_data() {return m_data;}
+
+        GameInfo& get_game() {return *m_game;}
 
         template<class Scope=Actor, class Key=std::string>
         void register_event(std::pair<Key, SmartEvent<Scope>> event) {m_event_archive.register_event<Scope,Key>(event);} ///< Link event name with @c Event<Actor>*
@@ -97,6 +99,8 @@ class MapData {
         EventQueue<MapData>& get_event_queue() {return m_events;}
 
     private:
+
+        GameInfo* m_game;
 
         std::string m_base_path = "../data/"; ///< Path to folder where .tmx map files are
         unsigned m_width;  // The map dimensions in tiles

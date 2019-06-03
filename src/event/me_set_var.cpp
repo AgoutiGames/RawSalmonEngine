@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,28 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_set_var.hpp" //< Change this!
+#include "event/me_set_var.hpp"
 
 #include <string>
 #include <map>
 #include <iostream>
 
-#include "actor/actor.hpp"
+#include "map/mapdata.hpp"
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-const std::string AeSetVar::m_alias = "AeSetVar";
+const std::string MeSetVar::m_alias = "MeSetVar";
 
-const bool AeSetVar::good = Event<Actor>::register_class<AeSetVar>();
+const bool MeSetVar::good = Event<MapData>::register_class<MeSetVar>();
 
 /**
  * @brief Do ...
- * @param actor The actor which should ...
+ * @param MapData The MapData which should ...
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeSetVar::process(Actor& actor) {
-    DataBlock& data = actor.get_data();
+EventSignal MeSetVar::process(MapData& scope) {
+    DataBlock& data = scope.get_data();
     switch(m_value.type) {
 
         case Value::Bool : {
@@ -86,10 +86,10 @@ EventSignal AeSetVar::process(Actor& actor) {
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param base_map Seldomly used in parser to fetch actors or other events
+ * @param base_map Seldomly used in parser to fetch MapDatas or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_map) {
+tinyxml2::XMLError MeSetVar::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
     Parser parser(base_map);
@@ -153,7 +153,7 @@ tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     }
 
     if(m_value.type == Value::Bool && (m_add || m_mult)) {
-        std::cerr << "ae_set_var of type bool can't handle adding or multiplying instruction!\n";
+        std::cerr << "me_set_var of type bool can't handle adding or multiplying instruction!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

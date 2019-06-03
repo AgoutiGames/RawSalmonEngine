@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_SET_VAR_HPP_INCLUDED //< Change this
-#define AE_SET_VAR_HPP_INCLUDED //< Change this
+#ifndef ME_SET_VAR_HPP_INCLUDED
+#define ME_SET_VAR_HPP_INCLUDED
 
 #include <vector>
 #include <string>
@@ -25,19 +25,19 @@
 #include "event/event.hpp"
 #include "util/game_types.hpp"
 
-class Actor;
+class MapData;
 
 /**
- * @brief Sets custom vars of actor or map
+ * @brief Write something
  */
-class AeSetVar : public Event<Actor>{
+class MeSetVar : public Event<MapData>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& actor) override;
+        EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        AeSetVar* create() const override {return new AeSetVar();}
-        AeSetVar* clone() const override {return new AeSetVar(*this);}
+        MeSetVar* create() const override {return new MeSetVar();}
+        MeSetVar* clone() const override {return new MeSetVar(*this);}
 
         std::string get_type() const override {return m_alias;}
 
@@ -66,4 +66,4 @@ class AeSetVar : public Event<Actor>{
         } m_value;
 };
 
-#endif // AE_SET_VAR_HPP_INCLUDED
+#endif // ME_SET_VAR_HPP_INCLUDED

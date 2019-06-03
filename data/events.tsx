@@ -243,4 +243,15 @@
    <property name="SUCCESS" value="W-Right"/>
   </properties>
  </tile>
+ <tile id="98" type="GeQuit">
+  <properties>
+   <property name="NAME" value="quit_internal"/>
+  </properties>
+ </tile>
+ <tile id="99" type="AeGeWrapper">
+  <properties>
+   <property name="EVENT" value="quit_internal"/>
+   <property name="NAME" value="quit"/>
+  </properties>
+ </tile>
 </tileset>

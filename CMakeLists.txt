@@ -40,6 +40,11 @@ set(EVENT_SOURCES
     src/event/ate_on_ground.cpp
     src/event/ae_set_var.cpp
     src/event/ae_sound.cpp
+    src/event/ae_ge_wrapper.cpp
+    src/event/ae_me_wrapper.cpp
+    src/event/me_set_var.cpp
+    src/event/ge_set_var.cpp
+    src/event/ge_quit.cpp
     )
 
 set(GRAPHICS_SOURCES

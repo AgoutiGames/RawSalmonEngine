@@ -63,6 +63,8 @@
  </tile>
  <tile id="12" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="quit"/>
    <property name="KEYPRESS" value="Escape"/>
   </properties>
  </tile>
