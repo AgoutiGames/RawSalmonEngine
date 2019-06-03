@@ -29,11 +29,36 @@
  * @brief Deletes all layers because we own each layer by its pointer
  */
 LayerCollection::~LayerCollection() {
+    purge();
+}
+
+/**
+ * @brief Deletes all layers because we own each layer by its pointer
+ */
+void LayerCollection::purge() {
     for(Layer* layer : m_layers) {
         if(layer != nullptr) {
             delete layer;
         }
     }
+}
+
+LayerCollection::LayerCollection(LayerCollection&& other) : m_layers{other.m_layers} {
+    for(int i = 0; i < other.m_layers.size(); i++) {
+        other.m_layers[i] = nullptr;
+    }
+}
+
+LayerCollection& LayerCollection::operator=(LayerCollection&& other) {
+    if(this != &other) {
+        purge();
+        m_base_map = other.m_base_map;
+        m_layers = other.m_layers;
+        for(int i = 0; i < other.m_layers.size(); i++) {
+            other.m_layers[i] = nullptr;
+        }
+    }
+    return *this;
 }
 
 /**

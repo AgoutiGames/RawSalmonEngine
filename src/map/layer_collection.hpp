@@ -55,10 +55,12 @@ class LayerCollection {
         LayerCollection(const LayerCollection& other) = delete;
         LayerCollection& operator=(const LayerCollection& other) = delete;
 
-        LayerCollection(LayerCollection&& other) = delete;
-        LayerCollection& operator=(LayerCollection&& other) = delete;
+        LayerCollection(LayerCollection&& other);
+        LayerCollection& operator=(LayerCollection&& other);
 
     private:
+
+        void purge();
 
         MapData* m_base_map;
         std::vector<Layer*> m_layers;

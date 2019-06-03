@@ -27,7 +27,7 @@
 
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
-: m_screen_w {screen_w}, m_screen_h {screen_h}, m_map {this, m_screen_w, m_screen_h}
+: m_screen_w {screen_w}, m_screen_h {screen_h}
 {
     //Start up SDL and create window
 	if( !init() ) {
@@ -106,9 +106,17 @@ bool GameInfo::init() {
  * @warning The SDL2 renderer must be initialized prior loading!
  */
 bool GameInfo::load_map(std::string mapfile) {
-    tinyxml2::XMLError eResult = m_map.init_map(mapfile, &m_renderer);
+    m_maps.emplace(this, m_screen_w, m_screen_h);
+    tinyxml2::XMLError eResult = m_maps.top().init_map(mapfile, &m_renderer);
     if(eResult == tinyxml2::XML_SUCCESS) return true;
     else return false;
+}
+
+/**
+ * @brief Remove the currently active map from map stack
+ */
+void GameInfo::close_map() {
+    m_maps.pop();
 }
 
 /**
@@ -128,16 +136,16 @@ bool GameInfo::update() {
         }
         //User presses a key
         else if( e.type == SDL_KEYDOWN && (m_key_repeat == true || e.key.repeat == false)) {
-            m_map.process_key_down(e);
+            m_maps.top().process_key_down(e);
         }
         else if( e.type == SDL_KEYUP && (m_key_repeat == true || e.key.repeat == false)) {
-            m_map.process_key_up(e);
+            m_maps.top().process_key_up(e);
         }
     }
 
-    m_map.process_keys_sustained();
+    m_maps.top().process_keys_sustained();
 
-    m_map.update();
+    m_maps.top().update();
 
     // Do nothing with returned signal because we don't have to
     m_events.process_events(*this);
@@ -149,7 +157,7 @@ bool GameInfo::update() {
  * @brief Draws the current map to screen
  */
 void GameInfo::render() {
-    m_map.render();
+    m_maps.top().render();
     SDL_RenderPresent(m_renderer);
 }
 

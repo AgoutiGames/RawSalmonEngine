@@ -21,6 +21,7 @@
 
 #include <SDL2/SDL.h>
 #include <string>
+#include <stack>
 
 #include "map/mapdata.hpp"
 
@@ -41,6 +42,7 @@ public:
     bool update();
 
     bool load_map(std::string mapfile);
+    void close_map();
 
     DataBlock& get_data() {return m_data;}
 
@@ -59,7 +61,7 @@ private:
 
     EventQueue<GameInfo> m_events;
 
-    MapData m_map; ///< Stores the currently active game map
+    std::stack<MapData> m_maps; ///< Stores the currently active game map
 };
 
 #endif // GAMEINFO_HPP_INCLUDED

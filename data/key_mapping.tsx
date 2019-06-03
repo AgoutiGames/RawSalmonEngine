@@ -321,6 +321,8 @@
  </tile>
  <tile id="57" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="close_map"/>
    <property name="KEYPRESS" value="Left"/>
   </properties>
  </tile>
@@ -331,7 +333,8 @@
  </tile>
  <tile id="59" type="KEY_MAPPING">
   <properties>
-   <property name="DOWN" type="bool" value="false"/>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="next_map"/>
    <property name="KEYPRESS" value="Right"/>
   </properties>
  </tile>

@@ -243,6 +243,30 @@
    <property name="SUCCESS" value="W-Right"/>
   </properties>
  </tile>
+ <tile id="94" type="GeCloseMap">
+  <properties>
+   <property name="NAME" value="close_map_internal"/>
+  </properties>
+ </tile>
+ <tile id="95" type="AeGeWrapper">
+  <properties>
+   <property name="EVENT" value="close_map_internal"/>
+   <property name="NAME" value="close_map"/>
+  </properties>
+ </tile>
+ <tile id="96" type="GeChangeMap">
+  <properties>
+   <property name="NAME" value="next_map_internal"/>
+   <property name="PATH" value="example_2.tmx"/>
+   <property name="PRESERVE" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="97" type="AeGeWrapper">
+  <properties>
+   <property name="EVENT" value="next_map_internal"/>
+   <property name="NAME" value="next_map"/>
+  </properties>
+ </tile>
  <tile id="98" type="GeQuit">
   <properties>
    <property name="NAME" value="quit_internal"/>
