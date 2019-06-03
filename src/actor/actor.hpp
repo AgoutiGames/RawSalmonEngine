@@ -24,6 +24,7 @@
 #include <map>
 
 #include "actor/data_block.hpp"
+#include "event/event_collection.hpp"
 #include "event/event_queue.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
@@ -37,7 +38,7 @@ struct ActorTemplate {
     Direction direction = Direction::down;
     std::map<std::string, SDL_Rect> hitbox;
     std::map<AnimationType, std::map<Direction, Tile>> animations;
-    std::map<Response, SmartEvent<Actor>> response; ///< Map which yields events for response values
+    EventCollection<Actor, Response> response; ///< Map which yields events for response values
 };
 
 /**
@@ -113,7 +114,8 @@ class Actor{
         ///
         /// New implementation makes manual deletion unnecessary
 
-        std::map<Response, SmartEvent<Actor>> m_response; ///< Map which yields events for response values
+        // std::map<Response, SmartEvent<Actor>> m_response; ///< Map which yields events for response values
+        EventCollection<Actor, Response> m_response;
 
         EventQueue<Actor> m_events;
 

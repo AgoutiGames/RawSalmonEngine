@@ -25,6 +25,8 @@
 
 #include "actor/data_block.hpp"
 #include "actor/actor.hpp"
+#include "event/event_collection.hpp"
+#include "event/wide_event_collection.hpp"
 #include "map/camera.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tileset_collection.hpp"
@@ -61,12 +63,19 @@ class MapData {
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
 
-        unsigned get_w() const;
-        unsigned get_h() const;
+        unsigned get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Returns map width in pixels
+        unsigned get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
+
         DataBlock& get_data() {return m_data;}
-        void register_event(std::pair<std::string, SmartEvent<Actor>> event) {m_events.insert(event);} ///< Link event name with @c Event<Actor>*
-        SmartEvent<Actor> get_event(std::string name) const;
-        bool check_event(std::string name) const {if(m_events.find(name) != m_events.end()) {return true;} else {return false;}} ///< Return true if event is defined
+
+        template<class Scope=Actor, class Key=std::string>
+        void register_event(std::pair<Key, SmartEvent<Actor>> event) {m_event_archive.register_event<Scope,Key>(event);} ///< Link event name with @c Event<Actor>*
+
+        template<class Scope=Actor, class Key=std::string>
+        SmartEvent<Actor> get_event(Key name) const {return m_event_archive.get_event<Scope,Key>(name);}
+
+        template<class Scope=Actor, class Key=std::string>
+        bool check_event(Key name) const {return m_event_archive.check_event<Scope,Key>(name);} ///< Return true if event is defined
 
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
@@ -78,7 +87,7 @@ class MapData {
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
         LayerCollection& get_layer_collection() {return m_layer_collection;}
 
-        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, SmartEvent<Actor>>& resp);
+        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, EventCollection<Actor, Response>& resp);
 
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
         bool process_key_up(SDL_Event e);
@@ -96,7 +105,6 @@ class MapData {
 
         Camera m_camera;
 
-        //std::vector<Layer> m_layers; ///< Contains all used layers
         LayerCollection m_layer_collection;
 
         TilesetCollection m_ts_collection;
@@ -104,12 +112,13 @@ class MapData {
         std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
         std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
-        std::map<std::string, SmartEvent<Actor>> m_events; ///< List of all parsed events by name
         Actor* m_player = nullptr;
 
-        std::map<SDL_Keycode, SmartEvent<Actor>> m_key_up;
-        std::map<SDL_Keycode, SmartEvent<Actor>> m_key_down;
-        std::map<SDL_Scancode, SmartEvent<Actor>> m_key_sustained;
+        EventCollection<Actor, SDL_Keycode> m_key_up;
+        EventCollection<Actor, SDL_Keycode> m_key_down;
+        EventCollection<Actor, SDL_Scancode> m_key_sustained;
+
+        WideEventCollection m_event_archive;
 
         SDL_Renderer** mpp_renderer = nullptr;
 };

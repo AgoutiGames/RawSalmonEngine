@@ -298,11 +298,11 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
  * @return @c bool indication if response is defined/gets triggered
  */
 bool Actor::respond(Response r) {
-    if(m_response.find(r) == m_response.end()) {
+    if(!m_response.check_event(r)) {
         return false;
     }
     else {
-        SmartEvent<Actor> event = m_response.at(r);
+        SmartEvent<Actor> event = m_response.get_event(r);
         m_events.add_event(event);
         return true;
     }
@@ -315,11 +315,11 @@ bool Actor::respond(Response r) {
  * @return @c bool indication if response is defined/gets triggered
  */
 bool Actor::respond(Response r, Actor* a) {
-    if(m_response.find(r) == m_response.end()) {
+    if(!m_response.check_event(r)) {
         return false;
     }
     else {
-        SmartEvent<Actor> event = m_response.at(r);
+        SmartEvent<Actor> event = m_response.get_event(r);
         if(a != nullptr) {event->set_cause(Cause(a));}
         m_events.add_event(event);
         return true;
@@ -335,11 +335,11 @@ bool Actor::respond(Response r, Actor* a) {
  * @return @c bool indication if response is defined/gets triggered
  */
 bool Actor::respond(Response r, Tile* t, int x, int y) {
-    if(m_response.find(r) == m_response.end()) {
+    if(!m_response.check_event(r)) {
         return false;
     }
     else {
-        SmartEvent<Actor> event = m_response.at(r);
+        SmartEvent<Actor> event = m_response.get_event(r);
         if(t != nullptr) {event->set_cause(Cause(t,x,y));}
         m_events.add_event(event);
         return true;
@@ -353,11 +353,11 @@ bool Actor::respond(Response r, Tile* t, int x, int y) {
  * @return @c bool indication if response is defined/gets triggered
  */
 bool Actor::respond(Response r, SDL_Keysym key) {
-    if(m_response.find(r) == m_response.end()) {
+    if(!m_response.check_event(r)) {
         return false;
     }
     else {
-        SmartEvent<Actor> event = m_response.at(r);
+        SmartEvent<Actor> event = m_response.get_event(r);
         if(key.sym != SDLK_UNKNOWN) {event->set_cause(Cause(key));}
         m_events.add_event(event);
         return true;

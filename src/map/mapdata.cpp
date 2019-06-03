@@ -281,7 +281,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
  * @param speed, dir, resp The possible actor member vars which can be defined via properties
  * @return @c XMLError which indicates success or failure
  */
-tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, std::map<Response, SmartEvent<Actor>>& resp) {
+tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, EventCollection<Actor, Response>& resp) {
     using namespace tinyxml2;
     XMLError eResult;
     while(source != nullptr) {
@@ -327,7 +327,7 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
             if(p_event != nullptr) {
                 std::string event(p_event);
                 if(check_event(event)) {
-                    resp[str_to_response(name)] = get_event(event);
+                    resp.register_event(str_to_response(name), get_event(event));
                 }
                 else {
                     std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
@@ -357,7 +357,7 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
  * @param sustained, up, down Booleans which indicate when the event should be sent
  */
 bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down) {
-    if(m_events.find(event) == m_events.end()) {
+    if(!check_event(event)) {
         std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
         return false;
     }
@@ -372,17 +372,20 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
                 std::cerr << "No corresponding scancode to key " << key <<" which is required for checking sustained\n";
                 return false;
             }
-            m_key_sustained[scancode] = get_event(event);
+            SmartEvent<Actor> event_data = get_event(event);
             SDL_Keysym temp;
             temp.sym = key;
             temp.scancode = scancode;
-            m_key_sustained[scancode]->set_cause(Cause(temp));
+            event_data->set_cause(Cause(temp));
+            m_key_sustained.register_event(scancode, event_data);
         }
         if(up) {
-            m_key_up[key] = get_event(event);
+            //m_key_up[key] = get_event(event);
+            m_key_up.register_event(key,get_event(event));
         }
         if(down) {
-            m_key_down[key] = get_event(event);
+            //m_key_down[key] = get_event(event);
+            m_key_down.register_event(key,get_event(event));
         }
         return true;
     }
@@ -394,8 +397,8 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
  * @return @c bool which indicates if key triggered event
  */
 bool MapData::process_key_down(SDL_Event  e) {
-    if(m_player != nullptr && m_key_down.find(e.key.keysym.sym) != m_key_down.end()) {
-        SmartEvent<Actor> event = m_key_down.at(e.key.keysym.sym);
+    if(m_player != nullptr && m_key_down.check_event(e.key.keysym.sym)) {
+        SmartEvent<Actor> event = m_key_down.get_event(e.key.keysym.sym);
         event->set_cause(Cause(e.key.keysym));
         m_player->get_event_queue().add_event(event);
         return true;
@@ -409,8 +412,8 @@ bool MapData::process_key_down(SDL_Event  e) {
  * @return @c bool which indicates if key triggered event
  */
 bool MapData::process_key_up(SDL_Event  e) {
-    if(m_player != nullptr && m_key_up.find(e.key.keysym.sym) != m_key_up.end()) {
-        SmartEvent<Actor> event = m_key_up.at(e.key.keysym.sym);
+    if(m_player != nullptr && m_key_up.check_event(e.key.keysym.sym)) {
+        SmartEvent<Actor> event = m_key_up.get_event(e.key.keysym.sym);
         event->set_cause(Cause(e.key.keysym));
         m_player->get_event_queue().add_event(event);
         return true;
@@ -424,7 +427,7 @@ bool MapData::process_key_up(SDL_Event  e) {
 void MapData::process_keys_sustained() {
     if(m_player != nullptr) {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        for(std::pair<const SDL_Scancode, SmartEvent<Actor>>& x : m_key_sustained) {
+        for(std::pair<const SDL_Scancode, SmartEvent<Actor>>& x : m_key_sustained.get_container()) {
             if(keys[x.first]) {
                 m_player->get_event_queue().add_event(x.second);
             }
@@ -432,8 +435,3 @@ void MapData::process_keys_sustained() {
     }
 }
 
-unsigned MapData::get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Returns map width in pixels
-
-unsigned MapData::get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
-
-SmartEvent<Actor> MapData::get_event(std::string name) const {return m_events.at(name);} ///< Returns copy of named event
