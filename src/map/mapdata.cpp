@@ -25,6 +25,9 @@
 #include <sstream>
 #include <vector>
 
+#include "event/ae_me_wrapper.hpp"
+#include "event/ae_ge_wrapper.hpp"
+#include "event/me_ge_wrapper.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/layer.hpp"
@@ -329,8 +332,8 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
             const char* p_event = source->Attribute("value");
             if(p_event != nullptr) {
                 std::string event(p_event);
-                if(check_event(event)) {
-                    resp.register_event(str_to_response(name), get_event(event));
+                if(check_event_convert_actor(event)) {
+                    resp.register_event(str_to_response(name), get_event_convert_actor(event));
                 }
                 else {
                     std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
@@ -360,7 +363,7 @@ tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source,
  * @param sustained, up, down Booleans which indicate when the event should be sent
  */
 bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down) {
-    if(!check_event(event)) {
+    if(!check_event_convert_actor(event)) {
         std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
         return false;
     }
@@ -375,7 +378,7 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
                 std::cerr << "No corresponding scancode to key " << key <<" which is required for checking sustained\n";
                 return false;
             }
-            SmartEvent<Actor> event_data = get_event(event);
+            SmartEvent<Actor> event_data = get_event_convert_actor(event);
             SDL_Keysym temp;
             temp.sym = key;
             temp.scancode = scancode;
@@ -384,11 +387,11 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
         }
         if(up) {
             //m_key_up[key] = get_event(event);
-            m_key_up.register_event(key,get_event(event));
+            m_key_up.register_event(key,get_event_convert_actor(event));
         }
         if(down) {
             //m_key_down[key] = get_event(event);
-            m_key_down.register_event(key,get_event(event));
+            m_key_down.register_event(key,get_event_convert_actor(event));
         }
         return true;
     }
@@ -437,4 +440,6 @@ void MapData::process_keys_sustained() {
         }
     }
 }
+
+
 

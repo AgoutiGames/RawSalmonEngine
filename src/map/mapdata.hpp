@@ -25,6 +25,9 @@
 
 #include "actor/data_block.hpp"
 #include "actor/actor.hpp"
+#include "event/ae_me_wrapper.hpp"
+#include "event/ae_ge_wrapper.hpp"
+#include "event/me_ge_wrapper.hpp"
 #include "event/event_collection.hpp"
 #include "event/wide_event_collection.hpp"
 #include "map/camera.hpp"
@@ -79,6 +82,18 @@ class MapData {
         template<class Scope=Actor, class Key=std::string>
         bool check_event(Key name) const {return m_event_archive.check_event<Scope,Key>(name);} ///< Return true if event is defined
 
+        template<class Key=std::string>
+        bool check_event_convert_actor(Key name) const;
+
+        template<class Key=std::string>
+        bool check_event_convert_map(Key name) const;
+
+        template<class Key=std::string>
+        SmartEvent<Actor> get_event_convert_actor(Key name) const;
+
+        template<class Key=std::string>
+        SmartEvent<MapData> get_event_convert_map(Key name) const;
+
         const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
         ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
 
@@ -130,6 +145,50 @@ class MapData {
 
         SDL_Renderer** mpp_renderer = nullptr;
 };
+
+/// Return true if event is defined
+template<class Key=std::string>
+bool MapData::check_event_convert_actor(Key name) const {
+    return m_event_archive.check_event<Actor,Key>(name) ||
+    m_event_archive.check_event<MapData,Key>(name) ||
+    m_event_archive.check_event<GameInfo,Key>(name);
+}
+
+/// Return true if event is defined
+template<class Key=std::string>
+bool MapData::check_event_convert_map(Key name) const {
+    return m_event_archive.check_event<MapData,Key>(name) ||
+    m_event_archive.check_event<GameInfo,Key>(name);
+}
+
+template<class Key=std::string>
+SmartEvent<Actor> MapData::get_event_convert_actor(Key name) const {
+    if(m_event_archive.check_event<Actor,Key>(name)) {
+        return m_event_archive.get_event<Actor,Key>(name);
+    }
+    else if(m_event_archive.check_event<MapData,Key>(name)) {
+        return SmartEvent<Actor>(new AeMeWrapper("generated", m_event_archive.get_event<MapData,Key>(name)));
+    }
+    else if(m_event_archive.check_event<GameInfo,Key>(name)) {
+        return SmartEvent<Actor>(new AeGeWrapper("generated", m_event_archive.get_event<GameInfo,Key>(name)));
+    }
+    else {
+        return SmartEvent<Actor>();
+    }
+}
+
+template<class Key=std::string>
+SmartEvent<MapData> MapData::get_event_convert_map(Key name) const {
+    if(m_event_archive.check_event<MapData,Key>(name)) {
+        return m_event_archive.get_event<MapData,Key>(name);
+    }
+    else if(m_event_archive.check_event<GameInfo,Key>(name)) {
+        return SmartEvent<MapData>(new MeGeWrapper("generated", m_event_archive.get_event<GameInfo,Key>(name)));
+    }
+    else {
+        return SmartEvent<MapData>();
+    }
+}
 
 
 #endif // MAPDATA_HPP_INCLUDED

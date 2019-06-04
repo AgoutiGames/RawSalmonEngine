@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_GE_WRAPPER_HPP_INCLUDED
-#define AE_GE_WRAPPER_HPP_INCLUDED
+#ifndef ME_GE_WRAPPER_HPP_INCLUDED
+#define ME_GE_WRAPPER_HPP_INCLUDED
 
 #include <vector>
 #include <string>
@@ -26,28 +26,24 @@
 #include "event/smart_event.hpp"
 #include "util/game_types.hpp"
 
-class Actor;
-class GameInfo;
+class MapData;
 
 /**
  * @brief Write something
  */
-class AeGeWrapper : public Event<Actor>{
+class MeGeWrapper : public Event<MapData>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& scope) override;
+        EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        AeGeWrapper* create() const override {return new AeGeWrapper();}
-        AeGeWrapper* clone() const override {return new AeGeWrapper(*this);}
+        MeGeWrapper* create() const override {return new MeGeWrapper();}
+        MeGeWrapper* clone() const override {return new MeGeWrapper(*this);}
 
         std::string get_type() const override {return m_alias;}
 
-        // reimplement/hide inherited function
-        void set_cause(Cause x);
-
-        AeGeWrapper() = default;
-        AeGeWrapper(std::string name, SmartEvent<GameInfo> event) : Event<Actor>() {m_name = name; m_event = event;}
+        MeGeWrapper() = default;
+        MeGeWrapper(std::string name, SmartEvent<GameInfo> event) : Event<MapData>() {m_name = name; m_event = event;}
 
     private:
         static const bool good;
@@ -57,4 +53,4 @@ class AeGeWrapper : public Event<Actor>{
 
 };
 
-#endif // AE_GE_WRAPPER_HPP_INCLUDED
+#endif // ME_GE_WRAPPER_HPP_INCLUDED

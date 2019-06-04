@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,43 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_multi.hpp" //< Change this!
+#include "event/me_ge_wrapper.hpp"
 
 #include <string>
 #include <map>
 #include <iostream>
 
-#include "actor/actor.hpp"
+#include "core/gameinfo.hpp"
+#include "map/mapdata.hpp"
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-const std::string AeMulti::m_alias = "AeMulti";
+const std::string MeGeWrapper::m_alias = "MeGeWrapper";
 
-const bool AeMulti::good = Event<Actor>::register_class<AeMulti>();
+const bool MeGeWrapper::good = Event<MapData>::register_class<MeGeWrapper>();
 
 /**
- * @brief Process the contained events
- * @param actor The actor which gets processed by each event
+ * @brief Do ...
+ * @param MapData The MapData which should ...
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeMulti::process(Actor& actor) {
-    EventSignal sig = m_events.process_events(actor);
-    switch(sig) {
-    // If all events played without problems
-    case (EventSignal::next) : {return get_signal();}
-    // If something special happened
-    default : {return sig;}
-    }
+EventSignal MeGeWrapper::process(MapData& scope) {
+    scope.get_game().get_event_queue().add_event(m_event);
+    return EventSignal::end;
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param base_map Seldomly used in parser to fetch actors or other events
+ * @param base_map Seldomly used in parser to fetch MapDatas or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
+tinyxml2::XMLError MeGeWrapper::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
     Parser parser(base_map);
@@ -60,8 +56,10 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
-    std::vector<std::string> event_names;
-    parser.add(event_names);
+
+    // Add additional members here
+    std::string event_name = "";
+    parser.add(event_name, "EVENT");
 
     XMLError eResult = parser.parse(source);
 
@@ -75,26 +73,15 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    for(std::string value : event_names) {
-        if(!base_map.check_event_convert_actor(value)) {
-            std::cerr << "Event " << value << " has not been parsed before!\n";
+    if(event_name != "") {
+        if(!base_map.check_event<GameInfo>(event_name)) {
+            std::cerr << "Event " << event_name << " has not been parsed before!\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
-            m_events.add_event(base_map.get_event_convert_actor(value));
+            m_event = base_map.get_event<GameInfo>(event_name);
         }
     }
 
     return XML_SUCCESS;
 }
-
-/**
- * @brief Set cause to every contained event
- */
-void AeMulti::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
-    for(SmartEvent<Actor>& e : m_events.get_events()) {
-        e->set_cause(x);
-    }
-}
-

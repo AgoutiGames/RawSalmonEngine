@@ -30,6 +30,8 @@ template<class Scope>
 class SmartEvent {
 public:
     SmartEvent() : m_internal{nullptr} {}
+    /// Constructor taking ownership of event
+    SmartEvent(Event<Scope>* event) : m_internal{event} {}
     SmartEvent(tinyxml2::XMLElement* source, MapData& base_map) : m_internal{Event<Scope>::parse(source, base_map)} {}
     ~SmartEvent() {purge();}
 

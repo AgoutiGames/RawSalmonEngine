@@ -99,22 +99,22 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
     }
 
     if(sucess_name != "") {
-        if(!base_map.check_event(sucess_name)) {
+        if(!base_map.check_event_convert_actor(sucess_name)) {
             std::cerr << "Event " << sucess_name << " has not been parsed before!\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
-            m_success = base_map.get_event(sucess_name);
+            m_success = base_map.get_event_convert_actor(sucess_name);
         }
     }
 
     if(failure_name != "") {
-        if(!base_map.check_event(failure_name)) {
+        if(!base_map.check_event_convert_actor(failure_name)) {
             std::cerr << "Event " << failure_name << " has not been parsed before!\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
-            m_failure = base_map.get_event(failure_name);
+            m_failure = base_map.get_event_convert_actor(failure_name);
         }
     }
 

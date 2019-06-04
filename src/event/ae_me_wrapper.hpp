@@ -46,6 +46,9 @@ class AeMeWrapper : public Event<Actor>{
         // reimplement/hide inherited function
         void set_cause(Cause x);
 
+        AeMeWrapper() = default;
+        AeMeWrapper(std::string name, SmartEvent<MapData> event) : Event<Actor>() {m_name = name; m_event = event;}
+
     private:
         static const bool good;
         static const std::string m_alias; //< Define this!
