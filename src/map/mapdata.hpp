@@ -147,7 +147,7 @@ class MapData {
 };
 
 /// Return true if event is defined
-template<class Key=std::string>
+template<class Key>
 bool MapData::check_event_convert_actor(Key name) const {
     return m_event_archive.check_event<Actor,Key>(name) ||
     m_event_archive.check_event<MapData,Key>(name) ||
@@ -155,13 +155,13 @@ bool MapData::check_event_convert_actor(Key name) const {
 }
 
 /// Return true if event is defined
-template<class Key=std::string>
+template<class Key>
 bool MapData::check_event_convert_map(Key name) const {
     return m_event_archive.check_event<MapData,Key>(name) ||
     m_event_archive.check_event<GameInfo,Key>(name);
 }
 
-template<class Key=std::string>
+template<class Key>
 SmartEvent<Actor> MapData::get_event_convert_actor(Key name) const {
     if(m_event_archive.check_event<Actor,Key>(name)) {
         return m_event_archive.get_event<Actor,Key>(name);
@@ -177,7 +177,7 @@ SmartEvent<Actor> MapData::get_event_convert_actor(Key name) const {
     }
 }
 
-template<class Key=std::string>
+template<class Key>
 SmartEvent<MapData> MapData::get_event_convert_map(Key name) const {
     if(m_event_archive.check_event<MapData,Key>(name)) {
         return m_event_archive.get_event<MapData,Key>(name);
