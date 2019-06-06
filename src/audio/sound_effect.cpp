@@ -18,11 +18,6 @@
  */
 #include "audio/sound_effect.hpp"
 
-#include <string>
-#include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-
 SoundEffect::SoundEffect(std::string path) :
 m_sound(Mix_LoadWAV(path.c_str()), SoundEffect::Deleter())
 {

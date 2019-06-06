@@ -18,9 +18,7 @@
  */
 #include "actor/data_block.hpp"
 
-#include <string>
 #include <iostream>
-#include <map>
 
 void DataBlock::set_val(std::string name, bool val) {m_data_bool[name] = val;}
 void DataBlock::set_val(std::string name, int val) {m_data_int[name] = val;}

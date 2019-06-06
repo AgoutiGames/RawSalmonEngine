@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef OBJECT_LAYER_HPP_INCLUDED
 #define OBJECT_LAYER_HPP_INCLUDED
 

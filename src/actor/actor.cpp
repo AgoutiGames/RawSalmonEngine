@@ -18,15 +18,9 @@
  */
 #include "actor/actor.hpp"
 
-#include <string>
 #include <iostream>
-#include <map>
 
 #include "map/mapdata.hpp"
-#include "map/tile.hpp"
-#include "util/game_types.hpp"
-#include "util/tinyxml2.h"
-
 
 Actor::Actor(Uint16 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor_template(tile_id), mapdata)
 {

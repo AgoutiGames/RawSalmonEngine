@@ -18,8 +18,6 @@
  */
 #include "map/tile.hpp"
 
-#include <SDL2/SDL.h>
-#include <vector>
 #include <string>
 #include <iostream>
 
@@ -27,9 +25,7 @@
 #include "graphics/texture.hpp"
 #include "map/mapdata.hpp"
 #include "map/tileset.hpp"
-#include "util/game_types.hpp"
 #include "util/parse.hpp"
-#include "util/tinyxml2.h"
 
 /**
  * @brief Construct and registers a fully functional tile

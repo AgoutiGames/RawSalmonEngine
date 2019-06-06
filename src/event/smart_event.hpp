@@ -19,9 +19,12 @@
 #ifndef SMART_EVENT_HPP_INCLUDED
 #define SMART_EVENT_HPP_INCLUDED
 
-#include "event/event.hpp"
+#include "util/tinyxml2.h"
 
 class MapData;
+
+template<class Scope>
+class Event;
 
 /**
  * @brief A container for our game events which adheres to RAII and should be used in favour to raw pointers

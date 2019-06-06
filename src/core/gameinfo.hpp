@@ -23,7 +23,10 @@
 #include <string>
 #include <stack>
 
-#include "map/mapdata.hpp"
+#include "actor/data_block.hpp"
+#include "event/event_queue.hpp"
+
+class MapData;
 
 /**
  * @brief Manages the initialization of SDL2 and the game map. Pipe keyboard input to the map.

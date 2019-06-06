@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "map/camera.hpp"
 
 #include "actor/actor.hpp"
-#include "map/camera.hpp"
 
 Camera::Camera(int x, int y, int w, int h) :
     m_rect{x,y,w,h} {}

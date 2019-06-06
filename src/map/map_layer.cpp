@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include "map/map_layer.hpp"
 
 #include <iostream>
 
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
+#include "map/tile.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/base64.h"
 

@@ -22,8 +22,10 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <SDL2/SDL.h>
 
 #include "event/smart_event.hpp"
+#include "util/game_types.hpp"
 
 /**
  * @brief A field of events which can be processed and sorted according to priorities

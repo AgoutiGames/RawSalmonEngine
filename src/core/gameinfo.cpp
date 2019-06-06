@@ -18,12 +18,15 @@
  */
 #include "core/gameinfo.hpp"
 
-#include <SDL2/SDL.h>
+#include <iostream>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
-#include <iostream>
 
+#include "map/mapdata.hpp"
 #include "util/tinyxml2.h"
+
+// Strangely we have to include this here
+#include "actor/actor.hpp"
 
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)

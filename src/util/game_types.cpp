@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
- #include <iostream>
-
 #include "game_types.hpp"
+
+#include <iostream>
 
 /// Converts a @c string to an @c enum of @c AnimationType
 AnimationType str_to_anim_type(const std::string& name) {

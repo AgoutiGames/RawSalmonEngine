@@ -18,8 +18,6 @@
  */
  #include "actor/cause.hpp"
 
- #include <string>
-
  #include "actor/actor.hpp"
  #include "map/tile.hpp"
 

@@ -47,15 +47,15 @@ class Cause{
         Cause(Actor* actor);
 
         // Checks against tile types
-        bool key() const {if(type == CauseType::key) {return true;} else {return false;}}
-        bool tile() const {if(type == CauseType::tile) {return true;} else {return false;}}
-        bool actor() const {if(type == CauseType::actor) {return true;} else {return false;}}
-        bool none() const {if(type == CauseType::none) {return true;} else {return false;}}
+        bool key() const {return type == CauseType::key;}
+        bool tile() const {return type == CauseType::tile;}
+        bool actor() const {return type == CauseType::actor;}
+        bool none() const {return type == CauseType::none;}
 
         // Return cause objects
-        const SDL_Keysym get_key() const {if(type == CauseType::key) {return data.key;} else {return SDL_Keysym();}}
-        Actor* get_actor() const {if(type == CauseType::actor) {return data.actor;} else {return nullptr;}}
-        Tile* get_tile() const {if(type == CauseType::tile) {return data.tile.pointer;} else {return nullptr;}}
+        const SDL_Keysym get_key() const {return type == CauseType::key ? data.key : SDL_Keysym();}
+        Actor* get_actor() const {return type == CauseType::actor ? data.actor : nullptr;}
+        Tile* get_tile() const {return type == CauseType::tile ? data.tile.pointer : nullptr;}
 
         std::string get_type() const;
         std::pair<int, int> get_pos() const;

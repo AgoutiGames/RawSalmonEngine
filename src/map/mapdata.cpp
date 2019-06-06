@@ -18,21 +18,14 @@
  */
 #include "map/mapdata.hpp"
 
-#include <SDL2/SDL.h>
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
 
-#include "event/ae_me_wrapper.hpp"
-#include "event/ae_ge_wrapper.hpp"
-#include "event/me_ge_wrapper.hpp"
+#include "actor/actor.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/layer.hpp"
-#include "map/layer_collection.hpp"
-#include "util/game_types.hpp"
 #include "util/parse.hpp"
 
 /// Plain constructor
@@ -441,5 +434,11 @@ void MapData::process_keys_sustained() {
     }
 }
 
+const ActorTemplate& MapData::get_actor_template(Uint16 gid) const {
+    return m_templates.at(m_gid_to_temp_name.at(gid));
+}
 
+ActorTemplate& MapData::get_actor_template(std::string actor) {
+    return m_templates[actor];
+}
 

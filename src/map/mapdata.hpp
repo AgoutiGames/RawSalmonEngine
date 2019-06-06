@@ -24,11 +24,11 @@
 #include <string>
 
 #include "actor/data_block.hpp"
-#include "actor/actor.hpp"
 #include "event/ae_me_wrapper.hpp"
 #include "event/ae_ge_wrapper.hpp"
 #include "event/me_ge_wrapper.hpp"
 #include "event/event_collection.hpp"
+#include "event/event_queue.hpp"
 #include "event/wide_event_collection.hpp"
 #include "map/camera.hpp"
 #include "map/layer_collection.hpp"
@@ -36,7 +36,9 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-class Tile; // forward declaration
+class Actor;
+class ActorTemplate;
+class Tile;
 class Layer;
 
 template <class Scope>
@@ -94,8 +96,8 @@ class MapData {
         template<class Key=std::string>
         SmartEvent<MapData> get_event_convert_map(Key name) const;
 
-        const ActorTemplate& get_actor_template(Uint16 gid) const {return m_templates.at(m_gid_to_temp_name.at(gid));}
-        ActorTemplate& get_actor_template(std::string actor) {return m_templates[actor];}
+        const ActorTemplate& get_actor_template(Uint16 gid) const;
+        ActorTemplate& get_actor_template(std::string actor);
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);

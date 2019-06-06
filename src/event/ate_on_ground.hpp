@@ -23,6 +23,7 @@
 #include <string>
 #include <memory>
 
+#include "event/event.hpp"
 #include "event/smart_event.hpp"
 #include "util/game_types.hpp"
 

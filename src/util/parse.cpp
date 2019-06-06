@@ -18,10 +18,6 @@
  */
  #include "util/parse.hpp"
 
-#include <SDL2/SDL.h>
-#include <string>
-#include <vector>
-#include <map>
 #include <iostream>
 
 #include "audio/sound_effect.hpp"

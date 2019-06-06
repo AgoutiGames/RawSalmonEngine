@@ -18,17 +18,13 @@
  */
 #include "map/tileset_collection.hpp"
 
-#include <SDL2/SDL.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
 
 #include "map/tile.hpp"
 #include "map/mapdata.hpp"
-#include "map/tileset.hpp"
-#include "util/game_types.hpp"
 #include "util/parse.hpp"
 
 /**

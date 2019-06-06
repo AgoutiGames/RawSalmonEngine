@@ -18,21 +18,13 @@
  */
 #include "map/tileset.hpp"
 
-#include <SDL2/SDL.h>
-#include <vector>
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <map>
 
-#include "graphics/texture.hpp"
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
-#include "util/game_types.hpp"
 #include "util/parse.hpp"
-#include "util/tinyxml2.h"
-
 
 /**
  * @brief Initialize a tileset from XML info

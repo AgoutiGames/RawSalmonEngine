@@ -27,8 +27,6 @@
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
-class Actor;
-class GameInfo;
 class MapData;
 
 /**

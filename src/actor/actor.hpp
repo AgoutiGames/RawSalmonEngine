@@ -31,6 +31,7 @@
 #include "util/tinyxml2.h"
 
 class MapData;
+class Actor;
 
 struct ActorTemplate {
     std::string template_name = "_";

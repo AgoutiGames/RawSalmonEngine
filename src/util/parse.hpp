@@ -24,12 +24,12 @@
 #include <vector>
 #include <map>
 
-#include "graphics/texture.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
 class MapData;
 class SoundEffect;
+class Texture;
 
 namespace parse{
     tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);

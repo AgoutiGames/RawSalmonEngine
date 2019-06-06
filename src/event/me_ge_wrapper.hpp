@@ -26,6 +26,7 @@
 #include "event/smart_event.hpp"
 #include "util/game_types.hpp"
 
+class GameInfo;
 class MapData;
 
 /**

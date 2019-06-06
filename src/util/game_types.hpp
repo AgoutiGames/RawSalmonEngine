@@ -19,12 +19,8 @@
 #ifndef GAME_TYPES_HPP_INCLUDED
 #define GAME_TYPES_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
 #include <string>
 #include <vector>
-#include <map>
-
-#include "util/tinyxml2.h"
 
 /**
  * @brief A collection of various enums and handy functions for conversion and parsing
