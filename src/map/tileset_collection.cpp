@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include "map/tile.hpp"
+#include "map/tileset.hpp"
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 

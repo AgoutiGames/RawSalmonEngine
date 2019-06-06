@@ -22,12 +22,10 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
-#include "map/tileset.hpp"
 #include "util/tinyxml2.h"
 #include "util/game_types.hpp"
 
-// The forward declare should work again with c++17/gcc6
-// class Tileset; // forward declaration
+class Tileset; // forward declaration
 class Tile;
 class MapData;
 

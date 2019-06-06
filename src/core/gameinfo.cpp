@@ -27,6 +27,7 @@
 
 // Strangely we have to include this here
 #include "actor/actor.hpp"
+#include "map/tileset.hpp"
 
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
