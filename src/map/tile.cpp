@@ -61,10 +61,12 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
             std::string name(p_name);
             if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
+            /*
             else if(name == "SPEED") {
                 eResult = p_property->QueryFloatAttribute("value", &m_speed);
                 if(eResult != XML_SUCCESS) return eResult;
             }
+            */
 
             else if(name == "TYPE") {
                 p_value = source->Attribute("value");
@@ -138,7 +140,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
     XMLError eResult;
 
     // Initalize default trigger frame to 0
-    m_speed = 0;
+    //m_speed = 0;
 
     // Initialize temporary variables
     std::string actor_name = "_";
@@ -223,7 +225,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                     std::cerr << "Trigger frame can't be a negative value!\n";
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
-                m_speed = frame;
+                m_trigger_frame = frame;
             }
 
             else {
@@ -287,8 +289,8 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
         return XML_NO_ATTRIBUTE;
     }
 
-    else if(m_animated && m_speed >= m_anim_ids.size()) {
-        std::cerr << "The trigger frame " << m_speed << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << "\n";
+    else if(m_animated && m_trigger_frame >= m_anim_ids.size()) {
+        std::cerr << "The trigger frame " << m_trigger_frame << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << "\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -411,7 +413,7 @@ AnimSignal Tile::push_anim_trigger() {
             m_current_id = 0;
             return AnimSignal::wrap;
         }
-        if(m_current_id == static_cast<int>(m_speed)) {
+        if(m_current_id == static_cast<int>(m_trigger_frame)) {
             return AnimSignal::trigger;
         }
         return AnimSignal::next;
