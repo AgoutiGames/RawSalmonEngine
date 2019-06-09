@@ -43,14 +43,17 @@ class Cause{
     public:
         Cause();
         Cause(SDL_Keysym key);
-        Cause(Tile* tile, int x = 0, int y = 0);
-        Cause(Actor* actor);
+        Cause(Tile* tile, std::string my_hitbox, int x = 0, int y = 0);
+        Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox);
 
         // Checks against tile types
         bool key() const {return type == CauseType::key;}
         bool tile() const {return type == CauseType::tile;}
         bool actor() const {return type == CauseType::actor;}
         bool none() const {return type == CauseType::none;}
+
+        std::string my_hitbox() {return my_hitbox_name;}
+        std::string other_hitbox() {return other_hitbox_name;}
 
         // Return cause objects
         const SDL_Keysym get_key() const {return type == CauseType::key ? data.key : SDL_Keysym();}
@@ -59,7 +62,6 @@ class Cause{
 
         std::string get_type() const;
         std::pair<int, int> get_pos() const;
-
 
     private:
         CauseType type;
@@ -73,6 +75,9 @@ class Cause{
                 int y;
             } tile;
         } data;
+
+        std::string my_hitbox_name = "";
+        std::string other_hitbox_name = "";
 
 };
 

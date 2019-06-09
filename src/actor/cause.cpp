@@ -36,19 +36,22 @@ Cause::Cause(SDL_Keysym key) :
 }
 
 // Constructor for tile
-Cause::Cause(Tile* tile, int x, int y) :
+Cause::Cause(Tile* tile, std::string my_hitbox, int x, int y) :
  type{CauseType::tile}
 {
     data.tile.pointer = tile;
     data.tile.x = x;
     data.tile.y = y;
+    my_hitbox_name = my_hitbox;
 }
 
 // Constructor for actor
-Cause::Cause(Actor* actor) :
+Cause::Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
  type{CauseType::actor}
 {
     data.actor = actor;
+    my_hitbox_name = my_hitbox;
+    other_hitbox_name = other_hitbox;
 }
 
 /**

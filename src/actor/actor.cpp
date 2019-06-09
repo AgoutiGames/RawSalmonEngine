@@ -160,8 +160,8 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
         }
         // Trigger collision events for each colliding actor, including this one
         for(Actor* a : collided) {
-            a->respond(Response::on_collision, this);
-            respond(Response::on_collision, a);
+            a->respond(Response::on_collision, Cause(this, "COLLIDE","COLLIDE"));
+            respond(Response::on_collision, Cause(a, "COLLIDE","COLLIDE"));
         }
     }
     else {
@@ -289,70 +289,16 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
 /**
  * @brief Triggers event bound to Response value
  * @param r the Response value
+ * @param c the Cause value which shows who triggered this response
  * @return @c bool indication if response is defined/gets triggered
  */
-bool Actor::respond(Response r) {
+bool Actor::respond(Response r, Cause c) {
     if(!m_response.check_event(r)) {
         return false;
     }
     else {
         SmartEvent<Actor> event = m_response.get_event(r);
-        m_events.add_event(event);
-        return true;
-    }
-}
-
-/**
- * @brief Triggers event bound to Response value
- * @param r the Response value
- * @param a Pointer to the Actor which may caused this event
- * @return @c bool indication if response is defined/gets triggered
- */
-bool Actor::respond(Response r, Actor* a) {
-    if(!m_response.check_event(r)) {
-        return false;
-    }
-    else {
-        SmartEvent<Actor> event = m_response.get_event(r);
-        if(a != nullptr) {event->set_cause(Cause(a));}
-        m_events.add_event(event);
-        return true;
-    }
-}
-
-/**
- * @brief Triggers event bound to Response value
- * @param r the Response value
- * @param t Pointer to the Tile which may caused this event
- * @param x X-coordinate of the tile
- * @param y Y-coordinate of the tile
- * @return @c bool indication if response is defined/gets triggered
- */
-bool Actor::respond(Response r, Tile* t, int x, int y) {
-    if(!m_response.check_event(r)) {
-        return false;
-    }
-    else {
-        SmartEvent<Actor> event = m_response.get_event(r);
-        if(t != nullptr) {event->set_cause(Cause(t,x,y));}
-        m_events.add_event(event);
-        return true;
-    }
-}
-
-/**
- * @brief Triggers event bound to Response value
- * @param r the Response value
- * @param key Keypress which may caused this event
- * @return @c bool indication if response is defined/gets triggered
- */
-bool Actor::respond(Response r, SDL_Keysym key) {
-    if(!m_response.check_event(r)) {
-        return false;
-    }
-    else {
-        SmartEvent<Actor> event = m_response.get_event(r);
-        if(key.sym != SDLK_UNKNOWN) {event->set_cause(Cause(key));}
+        event->set_cause(c);
         m_events.add_event(event);
         return true;
     }

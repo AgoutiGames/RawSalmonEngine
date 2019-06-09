@@ -41,42 +41,42 @@ EventSignal GeSetVar::process(GameInfo& scope) {
     switch(m_value.type) {
 
         case Value::Bool : {
-            data.set_val(m_name, m_value.b);
+            data.set_val(m_val_name, m_value.b);
         }
         break;
 
         case Value::Int : {
             if(m_add) {
-                int temp = data.get_val_int(m_name);
-                data.set_val(m_name, temp + m_value.i);
+                int temp = data.get_val_int(m_val_name);
+                data.set_val(m_val_name, temp + m_value.i);
             }
             else if(m_mult) {
-                int temp = data.get_val_int(m_name);
-                data.set_val(m_name, temp * m_value.i);
+                int temp = data.get_val_int(m_val_name);
+                data.set_val(m_val_name, temp * m_value.i);
             }
-            else {data.set_val(m_name, m_value.i);}
+            else {data.set_val(m_val_name, m_value.i);}
         }
         break;
 
         case Value::Float : {
             if(m_add) {
-                float temp = data.get_val_float(m_name);
-                data.set_val(m_name, temp + m_value.f);
+                float temp = data.get_val_float(m_val_name);
+                data.set_val(m_val_name, temp + m_value.f);
             }
             else if(m_mult) {
-                float temp = data.get_val_float(m_name);
-                data.set_val(m_name, temp * m_value.f);
+                float temp = data.get_val_float(m_val_name);
+                data.set_val(m_val_name, temp * m_value.f);
             }
-            else {data.set_val(m_name, m_value.f);}
+            else {data.set_val(m_val_name, m_value.f);}
         }
         break;
 
         case Value::String : {
             if(m_add) {
-                std::string temp = data.get_val_string(m_name);
-                data.set_val(m_name, temp + m_value.s);
+                std::string temp = data.get_val_string(m_val_name);
+                data.set_val(m_val_name, temp + m_value.s);
             }
-            else {data.set_val(m_name, m_value.s);}
+            else {data.set_val(m_val_name, m_value.s);}
         }
         break;
     }
