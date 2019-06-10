@@ -65,12 +65,12 @@ private:
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
     SDL_Rect m_hitbox = {0,0,0,0};
-    Uint16 m_trigger_frame = 0;
     std::string m_type;
     bool m_animated = false;
 
     // Variables required for animated tiles
     Uint16 m_current_id = 0;
+    Uint16 m_trigger_frame = 0;
     std::vector<Uint16> m_anim_ids; // could use Tile* for better performance but greater memory allocation
     std::vector<unsigned> m_durations;
     Uint32 m_anim_timestamp = 0;

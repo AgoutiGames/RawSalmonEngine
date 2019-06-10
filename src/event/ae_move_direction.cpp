@@ -71,6 +71,7 @@ tinyxml2::XMLError AeMoveDirection::init(tinyxml2::XMLElement* source, MapData& 
     parser.add(m_duration, "DURATION");
     parser.add(m_direction, "DIRECTION");
     parser.add(m_animation, "ANIMATION_TYPE");
+    parser.add(m_speed, "SPEED");
 
     XMLError eResult = parser.parse(source);
 

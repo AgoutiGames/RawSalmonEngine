@@ -47,6 +47,7 @@ class AeMoveSustained : public Event<Actor>{
         // vv Add members with default values
         Direction m_direction = Direction::up;
         AnimationType m_animation = AnimationType::walk;
+        float m_speed = 250.0f;
 };
 
 #endif // AE_MOVE_SUSTAINED_HPP_INCLUDED

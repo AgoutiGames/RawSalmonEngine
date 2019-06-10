@@ -44,7 +44,7 @@ EventSignal AeFall::process(Actor& actor) {
     float pos = actor.get_y();
 
     if(!actor.on_ground(m_fall_dir)) {
-        actor.move(way[0] * m_speed / FPS, way[1] * m_speed / FPS, true);
+        actor.move(way[0] * m_speed / FPS, way[1] * m_speed / FPS);
         actor.get_event_queue().block_event(m_alias);
         actor.animate(m_animation, m_anim_dir);
         // std::cerr << "Fall: " << actor.get_y() - pos << " Actor pos x: "<< actor.get_x() << " y: " << actor.get_y() << "\n";

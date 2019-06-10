@@ -48,6 +48,7 @@ class AeMoveDirection : public Event<Actor>{
         Direction m_direction = Direction::up;
         unsigned m_duration = 1; ///< How many frames the movement persists
         AnimationType m_animation = AnimationType::walk;
+        float m_speed = 250.0f;
 };
 
 #endif // AE_MOVE_DIRECTION_HPP_INCLUDED

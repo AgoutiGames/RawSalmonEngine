@@ -106,7 +106,7 @@ class MapData {
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
         LayerCollection& get_layer_collection() {return m_layer_collection;}
 
-        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, EventCollection<Actor, Response>& resp);
+        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, Direction& dir, EventCollection<Actor, Response>& resp);
 
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
         bool process_key_up(SDL_Event e);

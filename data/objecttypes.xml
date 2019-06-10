@@ -8,7 +8,6 @@
  </objecttype>
  <objecttype name="ACTOR_TEMPLATE" color="#00007f">
   <property name="ACTOR_NAME" type="string"/>
-  <property name="BASE_SPEED" type="float" default="250"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
   <property name="ON_ACTIVATION" type="string"/>
   <property name="ON_ALWAYS" type="string"/>
@@ -59,6 +58,11 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeGeWrapper" color="#a0a0a4">
+  <property name="EVENT" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
  <objecttype name="AeJump" color="#a0a0a4">
   <property name="ANIMATION_DIRECTION" type="string" default="CURRENT"/>
   <property name="ANIMATION_TYPE" type="string" default="JUMP"/>
@@ -69,6 +73,11 @@
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="SLOW_FACTOR" type="float" default="0.5"/>
   <property name="SLOW_ON_RELEASE" type="bool" default="true"/>
+ </objecttype>
+ <objecttype name="AeMeWrapper" color="#a0a0a4">
+  <property name="EVENT" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
  </objecttype>
  <objecttype name="AeMove" color="#a0a0a4">
   <property name="NAME" type="string"/>
@@ -86,6 +95,7 @@
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SPEED" type="float" default="250"/>
  </objecttype>
  <objecttype name="AeMoveSustained" color="#a0a0a4">
   <property name="ANIMATION_TYPE" type="string" default="WALK"/>
@@ -93,6 +103,7 @@
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SPEED" type="float" default="250"/>
  </objecttype>
  <objecttype name="AeMulti" color="#a0a0a4">
   <property name="1" type="string"/>
@@ -106,11 +117,8 @@
  <objecttype name="AeSetVar" color="#a0a0a4">
   <property name="*=" type="bool" default="false"/>
   <property name="+=" type="bool" default="false"/>
-  <property name="GLOBAL" type="bool" default="false"/>
-  <property name="LOCAL" type="bool" default="true"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
-  <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="TYPE" type="string" default="FLOAT"/>
   <property name="VAL_NAME" type="string"/>
  </objecttype>
@@ -130,11 +138,46 @@
   <property name="SUCCESS" type="string"/>
   <property name="TOLERANCE" type="int" default="0"/>
  </objecttype>
+ <objecttype name="GeChangeMap" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PATH" type="string"/>
+  <property name="PRESERVE" type="bool" default="false"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="GeCloseMap" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="GeQuit" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="GeSetVar" color="#a0a0a4">
+  <property name="*=" type="bool" default="false"/>
+  <property name="+=" type="bool" default="false"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="TYPE" type="string" default="FLOAT"/>
+  <property name="VAL_NAME" type="string"/>
+ </objecttype>
  <objecttype name="KEY_MAPPING" color="#a0a0a4">
   <property name="DOWN" type="bool" default="false"/>
   <property name="EVENT" type="string"/>
   <property name="KEYPRESS" type="string"/>
   <property name="SUSTAINED" type="bool" default="false"/>
   <property name="UP" type="bool" default="false"/>
+ </objecttype>
+ <objecttype name="MeGeWrapper" color="#a0a0a4">
+  <property name="EVENT" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="MeSetVar" color="#a0a0a4">
+  <property name="*=" type="bool" default="false"/>
+  <property name="+=" type="bool" default="false"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="TYPE" type="string" default="FLOAT"/>
+  <property name="VAL_NAME" type="string"/>
  </objecttype>
 </objecttypes>

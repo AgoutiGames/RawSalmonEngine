@@ -53,7 +53,7 @@ EventSignal AeJump::process(Actor& actor) {
         m_deceleration = m_speed / (FPS * m_duration);
     }
 
-    if(!actor.move(0, -m_speed, true)) {
+    if(!actor.move(0, -m_speed)) {
         actor.get_event_queue().unblock_event(AeFall().get_type());
         return EventSignal::abort;
     }

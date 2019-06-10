@@ -36,7 +36,6 @@ class Actor;
 
 struct ActorTemplate {
     std::string template_name = "_";
-    float speed = 250.0f; // Pixel per second
     Direction direction = Direction::down;
     std::map<std::string, SDL_Rect> hitbox;
     std::map<AnimationType, std::map<Direction, Tile>> animations;
@@ -65,7 +64,7 @@ class Actor{
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         void render(int x_cam, int y_cam) const;
-        bool move(float x_factor, float y_factor, bool absolute = false);
+        bool move(float x_factor, float y_factor);
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
@@ -99,7 +98,6 @@ class Actor{
         unsigned m_height;
         std::string m_name;
         std::string m_type;
-        float m_base_speed;
 
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
         Direction m_direction; ///< Current direction facing

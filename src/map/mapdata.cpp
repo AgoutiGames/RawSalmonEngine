@@ -248,7 +248,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
 
         // Parse user specified properties of the ActorTemplate
         ActorTemplate& a = m_templates[actor_name];
-        eResult = parse_actor_properties(p_property, a.speed, a.direction, a.response);
+        eResult = parse_actor_properties(p_property, a.direction, a.response);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing actor properties for actor template of actor: " << actor_name << "\n";
             return eResult;
@@ -280,23 +280,13 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
  * @param speed, dir, resp The possible actor member vars which can be defined via properties
  * @return @c XMLError which indicates success or failure
  */
-tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, float& speed, Direction& dir, EventCollection<Actor, Response>& resp) {
+tinyxml2::XMLError MapData::parse_actor_properties(tinyxml2::XMLElement* source, Direction& dir, EventCollection<Actor, Response>& resp) {
     using namespace tinyxml2;
-    XMLError eResult;
     while(source != nullptr) {
         const char* p_name;
         p_name = source->Attribute("name");
         std::string name(p_name);
         if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-        // Parse base speed
-        else if(name == "BASE_SPEED") {
-            eResult = source->QueryFloatAttribute("value", &speed);
-            if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed at loading speed value\n";
-                return eResult;
-            }
-        }
 
         // Parse current direction facing
         else if(name == "DIRECTION") {

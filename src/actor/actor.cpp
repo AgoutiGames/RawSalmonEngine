@@ -31,7 +31,6 @@ Actor::Actor(Uint16 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor
 Actor::Actor(const ActorTemplate& templ, MapData* mapdata) :
  m_map {mapdata},
  m_type {templ.template_name},
- m_base_speed {templ.speed},
  m_direction {templ.direction},
  m_hitbox {templ.hitbox},
  m_animations {templ.animations},
@@ -73,7 +72,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
     if(p_tile_properties != nullptr) {
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
-        eResult = m_map->parse_actor_properties(p_property, m_base_speed, m_direction, m_response);
+        eResult = m_map->parse_actor_properties(p_property, m_direction, m_response);
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing actor properties for actor: " << m_name << "\n";
             return eResult;
@@ -101,21 +100,14 @@ void Actor::render(int x_cam, int y_cam) const {
  * @return a @c bool which indicates collision
  * @todo Apply tile speed modifiers
  */
-bool Actor::move(float x_factor, float y_factor, bool absolute) {
+bool Actor::move(float x_factor, float y_factor) {
     bool moved = true;
     // Move the Actor
-    constexpr float FPS = 60;
     SDL_Rect temp = get_hitbox();
     float x_step;
     float y_step;
-    if(absolute) {
-        x_step = x_factor;
-        y_step = y_factor;
-    }
-    else {
-        x_step = x_factor * m_base_speed / FPS;
-        y_step = y_factor * m_base_speed / FPS;
-    }
+    x_step = x_factor;
+    y_step = y_factor;
 
     // Determine if it can collide/ has hitbox
     if(!SDL_RectEmpty(&temp)) {
