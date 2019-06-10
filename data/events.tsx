@@ -96,7 +96,7 @@
  <tile id="12" type="AeSound">
   <properties>
    <property name="NAME" value="Jump_Sound"/>
-   <property name="PATH" value="Ding2.ogg"/>
+   <property name="PATH" type="file" value="audio/Ding2.ogg"/>
   </properties>
  </tile>
  <tile id="13" type="AteOnGround">

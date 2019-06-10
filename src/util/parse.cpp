@@ -435,9 +435,9 @@ tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
 
     std::string value(p_value);
 
-    SoundEffect temp(m_base_map->get_file_path() + "audio/" + value);
+    SoundEffect temp(m_base_map->get_file_path() + value);
     if(!temp.good()) {
-        std::cerr << "Audio file: " << m_base_map->get_file_path() + "audio/" + value << " not found!\n";
+        std::cerr << "Audio file: " << m_base_map->get_file_path() + value << " not found!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

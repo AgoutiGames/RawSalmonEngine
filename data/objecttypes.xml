@@ -124,7 +124,7 @@
  </objecttype>
  <objecttype name="AeSound" color="#a0a0a4">
   <property name="NAME" type="string"/>
-  <property name="PATH" type="string"/>
+  <property name="PATH" type="file" default=""/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
@@ -171,6 +171,14 @@
   <property name="EVENT" type="string"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="MePlayMusic" color="#a0a0a4">
+  <property name="FADE_IN" type="int" default="0"/>
+  <property name="NAME" type="string"/>
+  <property name="PATH" type="file" default=""/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="REPITITIONS" type="int" default="-1"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
  <objecttype name="MeSetVar" color="#a0a0a4">
   <property name="*=" type="bool" default="false"/>

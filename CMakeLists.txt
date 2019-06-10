@@ -20,6 +20,7 @@ set(ACTOR_SOURCES
 
 set(AUDIO_SOURCES
     src/audio/sound_effect.cpp
+    src/audio/music.cpp
     )
 
 set(CORE_SOURCES
@@ -43,6 +44,7 @@ set(EVENT_SOURCES
     src/event/ae_ge_wrapper.cpp
     src/event/ae_me_wrapper.cpp
     src/event/me_ge_wrapper.cpp
+    src/event/me_play_music.cpp
     src/event/me_set_var.cpp
     src/event/ge_change_map.cpp
     src/event/ge_close_map.cpp
