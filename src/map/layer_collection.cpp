@@ -25,42 +25,6 @@
 #include "map/layer_collection.hpp"
 
 /**
- * @brief Deletes all layers because we own each layer by its pointer
- */
-LayerCollection::~LayerCollection() {
-    purge();
-}
-
-/**
- * @brief Deletes all layers because we own each layer by its pointer
- */
-void LayerCollection::purge() {
-    for(Layer* layer : m_layers) {
-        if(layer != nullptr) {
-            delete layer;
-        }
-    }
-}
-
-LayerCollection::LayerCollection(LayerCollection&& other) : m_layers{other.m_layers} {
-    for(int i = 0; i < other.m_layers.size(); i++) {
-        other.m_layers[i] = nullptr;
-    }
-}
-
-LayerCollection& LayerCollection::operator=(LayerCollection&& other) {
-    if(this != &other) {
-        purge();
-        m_base_map = other.m_base_map;
-        m_layers = other.m_layers;
-        for(int i = 0; i < other.m_layers.size(); i++) {
-            other.m_layers[i] = nullptr;
-        }
-    }
-    return *this;
-}
-
-/**
  * @brief Parses each layer and stores in vector member
  * @param source The @c XMLElement which stores the layer info
  * @param base_map The map which we belong to
@@ -88,12 +52,12 @@ LayerCollection& LayerCollection::operator=(LayerCollection&& other) {
     /// Don't forget to implement the new pointer inheritance approach
     // Clear layer vector member of possible old data
     m_layers.clear();
-    m_layers.resize(p_layers.size(), nullptr);
+    m_layers.reserve(p_layers.size());
 
     // Actually parse each layer of the vector of pointers
     for(unsigned i_layer = 0; i_layer < p_layers.size(); i_layer++) {
         XMLError eResult = XML_SUCCESS;
-        m_layers[i_layer] = Layer::parse(p_layers[i_layer], this, eResult);
+        m_layers.emplace_back(Layer::parse(p_layers[i_layer], this, eResult));
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing layer: " << i_layer << "\n";
             return eResult;
@@ -142,7 +106,7 @@ bool LayerCollection::collide(const SDL_Rect* rect, int& x_max, int& y_max, std:
     int x_depth = 0;
     int y_depth = 0;
     // Iterate through all layers
-    for(Layer* layer : m_layers) {
+    for(auto& layer : m_layers) {
         if(layer->collide(rect, x_depth, y_depth, collided, type)) {
             if(x_depth > x_max) {x_max = x_depth;}
             if(y_depth > y_max) {y_max = y_depth;}
@@ -163,7 +127,7 @@ bool LayerCollection::collide(const SDL_Rect* rect, std::vector<Actor*>& collide
     if(SDL_RectEmpty(rect)) {return false;}
     bool collide = false;
     // Iterate through all layers
-    for(Layer* layer : m_layers) {
+    for(auto& layer : m_layers) {
         if(layer->collide(rect, collided, type)) {
             collide = true;
         }
@@ -181,7 +145,7 @@ bool LayerCollection::collide(const SDL_Rect* rect, std::string type) {
     if(SDL_RectEmpty(rect)) {return false;}
     bool collide = false;
     // Iterate through all layers
-    for(Layer* layer : m_layers) {
+    for(auto& layer : m_layers) {
         if(layer->collide(rect, type)) {
             collide = true;
         }
@@ -196,9 +160,9 @@ bool LayerCollection::collide(const SDL_Rect* rect, std::string type) {
  */
 std::vector<Actor*> LayerCollection::get_actors(std::string name, Direction direction, AnimationType animation) {
     std::vector<Actor*> actor_list;
-    for(Layer* layer : m_layers) {
+    for(auto& layer : m_layers) {
         if(layer->get_type() == Layer::object) {
-            ObjectLayer* ob_layer = static_cast<ObjectLayer*>(layer);
+            ObjectLayer* ob_layer = static_cast<ObjectLayer*>(layer.get());
             std::vector<Actor*> sublist = ob_layer->get_actors(name, direction, animation);
             actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
         }

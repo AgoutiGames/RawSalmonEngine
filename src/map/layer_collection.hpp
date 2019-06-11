@@ -20,6 +20,7 @@
 #define LAYER_COLLECTION_HPP_INCLUDED
 
 #include <vector>
+#include <memory>
 #include <SDL2/SDL.h>
 
 #include "util/tinyxml2.h"
@@ -37,7 +38,6 @@ class LayerCollection {
     public:
 
         LayerCollection() = default;
-        ~LayerCollection();
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
@@ -55,15 +55,13 @@ class LayerCollection {
         LayerCollection(const LayerCollection& other) = delete;
         LayerCollection& operator=(const LayerCollection& other) = delete;
 
-        LayerCollection(LayerCollection&& other);
-        LayerCollection& operator=(LayerCollection&& other);
+        LayerCollection(LayerCollection&& other) = default;
+        LayerCollection& operator=(LayerCollection&& other) = default;
 
     private:
 
-        void purge();
-
         MapData* m_base_map;
-        std::vector<Layer*> m_layers;
+        std::vector<std::unique_ptr<Layer>> m_layers;
 
 };
 
