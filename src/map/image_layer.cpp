@@ -131,19 +131,3 @@ bool ImageLayer::render(const Camera& camera) const {
     return true;
 }
 
-/// Updating of ImageLayer is unnecessary
-void ImageLayer::update() {
-
-}
-
-/// ImageLayer usually don't collide
-bool ImageLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
-    return false;
-}
-bool ImageLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
-    return false;
-}
-bool ImageLayer::collide(const SDL_Rect* rect, std::string type) {
-    return false;
-}
-

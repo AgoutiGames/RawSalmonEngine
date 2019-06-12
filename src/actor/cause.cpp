@@ -36,13 +36,12 @@ Cause::Cause(SDL_Keysym key) :
 }
 
 // Constructor for tile
-Cause::Cause(Tile* tile, std::string my_hitbox, int x, int y) :
+Cause::Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox) :
  type{CauseType::tile}
 {
-    data.tile.pointer = tile;
-    data.tile.x = x;
-    data.tile.y = y;
+    data.tile = tile;
     my_hitbox_name = my_hitbox;
+    other_hitbox_name = other_hitbox;
 }
 
 // Constructor for actor
@@ -62,7 +61,7 @@ Cause::Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
  */
 std::string Cause::get_type() const {
     if(type == CauseType::tile) {
-        return data.tile.pointer->get_type();
+        return data.tile->get_type();
     }
     else if(type == CauseType::actor) {
         return data.actor->get_type();
@@ -77,7 +76,7 @@ std::string Cause::get_type() const {
  * @return X and Y-coordinates
  * @note Only actor and tiles return their coords,
  *       key returns 0, 0
- */
+ *
 std::pair<int, int> Cause::get_pos() const {
     if(type == CauseType::tile) {
         return {data.tile.x, data.tile.y};
@@ -88,4 +87,4 @@ std::pair<int, int> Cause::get_pos() const {
         return {x, y};
     }
     else {return {0,0};}
-}
+}*/

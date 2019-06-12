@@ -38,6 +38,8 @@ const bool GeQuit::good = Event<GameInfo>::register_class<GeQuit>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal GeQuit::process(GameInfo& scope) {
+    // Mute unused parameter warning
+    (void)scope;
     SDL_Event sdlevent;
     sdlevent.type = SDL_QUIT;
     sdlevent.quit.timestamp = SDL_GetTicks();

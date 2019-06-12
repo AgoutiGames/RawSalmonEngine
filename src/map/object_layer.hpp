@@ -34,16 +34,12 @@ class ObjectLayer : public Layer{
     public:
 
         bool render(const Camera& camera) const override;
-        void update() override;
-
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
-        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
-        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
+        void update();
 
         LayerType get_type() override {return LayerType::object;}
 
-        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
-                                      AnimationType animation = AnimationType::invalid);
+        std::vector<Actor*> get_actors(std::string name);
+        Actor* get_actor(std::string name);
         static ObjectLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
         ObjectLayer(const ObjectLayer& other) = delete;

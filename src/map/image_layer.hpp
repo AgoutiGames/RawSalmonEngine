@@ -34,11 +34,6 @@ class ImageLayer : public Layer{
     public:
 
         bool render(const Camera& camera) const override;
-        void update() override;
-
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
-        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") override;
-        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") override;
 
         LayerType get_type() override {return LayerType::image;}
 

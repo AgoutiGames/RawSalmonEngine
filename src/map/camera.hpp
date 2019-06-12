@@ -35,6 +35,7 @@ class Camera{
         int y() const {return m_rect.y;}
         int w() const {return m_rect.w;}
         int h() const {return m_rect.h;}
+        const SDL_Rect& get_rect() const {return m_rect;}
 
         void set_size(unsigned w, unsigned h) {m_rect.w = w; m_rect.h = h;}
         void set_crop(int l, int r, int u, int d);

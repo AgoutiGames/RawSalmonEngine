@@ -30,6 +30,9 @@ class Actor;
 class Camera;
 class Layer;
 class MapData;
+class MapLayer;
+class ObjectLayer;
+class ImageLayer;
 
 /**
  * @brief Container for all possible map layers. Inits, updates, draws and deletes layers.
@@ -43,11 +46,19 @@ class LayerCollection {
 
         bool render(const Camera& camera) const;
         void update();
-        std::vector<Actor*> get_actors(std::string name = "", Direction direction = Direction::invalid,
-                                      AnimationType animation = AnimationType::invalid);
-        bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE");
-        bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE");
-        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE");
+
+        std::vector<Actor*> get_actors(std::string name);
+        Actor* get_actor(std::string name);
+
+        bool collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify = false);
+        bool collide_terrain(Actor* actor, bool notify = false);
+
+        bool collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max);
+        bool collide_terrain(const SDL_Rect& rect);
+
+        std::vector<MapLayer*> get_map_layers();
+        std::vector<ImageLayer*> get_image_layers();
+        std::vector<ObjectLayer*> get_object_layers();
 
         MapData& get_base_map() {return *m_base_map;}
 

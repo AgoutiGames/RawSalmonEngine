@@ -18,11 +18,14 @@
  */
 #include <iostream>
 
+#include "actor/actor.hpp"
 #include "map/layer.hpp"
+#include "map/mapdata.hpp"
 #include "map/map_layer.hpp"
 #include "map/image_layer.hpp"
 #include "map/object_layer.hpp"
 #include "map/layer_collection.hpp"
+#include "map/tile.hpp"
 
 /**
  * @brief Parses each layer and stores in vector member
@@ -87,85 +90,153 @@ bool LayerCollection::render(const Camera& camera) const{
  * @brief Updates each layer state
  */
 void LayerCollection::update() {
-    for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
-        m_layers[i_layer]->update();
+    for(auto layer : get_object_layers()) {
+        layer->update();
     }
 }
 
-/**
- * @brief Checks if given rect collides with any layer present in this map
- * @param rect The rect to check against
- * @param x_max, y_max The maximum depth of intersection by axis
- * @param collided A container to which colliding actors are added
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool LayerCollection::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
-    if(SDL_RectEmpty(rect)) {return false;}
+bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max) {
+    if(SDL_RectEmpty(&rect)) {return false;}
     bool collide = false;
-    int x_depth = 0;
-    int y_depth = 0;
-    // Iterate through all layers
-    for(auto& layer : m_layers) {
-        if(layer->collide(rect, x_depth, y_depth, collided, type)) {
-            if(x_depth > x_max) {x_max = x_depth;}
-            if(y_depth > y_max) {y_max = y_depth;}
-            collide = true;
+    // Iterate through all map_layers
+    for(auto layer : get_map_layers()) {
+        for(auto t : layer->clip(rect)) {
+            if(std::get<0>(t) != 0) {
+                Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
+                SDL_Rect tile_rect = tile->get_hitbox();
+                // Only check collision for tiles with valid hitbox
+                if(!SDL_RectEmpty(&tile_rect)) {
+                    // Move tile hitbox to tile coordinates
+                    tile_rect.x += std::get<1>(t);
+                    tile_rect.y += std::get<2>(t);
+
+                    SDL_Rect relative {0,0,rect.w,rect.h};
+                    SDL_Rect intersect;
+                    // Get intersection from supplied rect and tile rect
+                    if(SDL_IntersectRect(&relative, &tile_rect, &intersect)) {
+                        // Possibly overwrite maximum collision depth value
+                        if(intersect.w > x_max) {x_max = intersect.w;}
+                        if(intersect.h > y_max) {y_max = intersect.h;}
+
+                        collide = true;
+                    }
+                }
+            }
         }
     }
     return collide;
 }
 
-/**
- * @brief Checks if given rect collides with any layer present in this map
- * @param rect The rect to check against
- * @param collided A container to which colliding actors are added
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool LayerCollection::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
-    if(SDL_RectEmpty(rect)) {return false;}
+bool LayerCollection::collide_terrain(const SDL_Rect& rect) {
+    int x,y;
+    return collide_terrain(rect, x,y);
+}
+
+bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify) {
+    SDL_Rect rect = actor->get_hitbox("COLLIDE");
+    if(SDL_RectEmpty(&rect)) {return false;}
     bool collide = false;
-    // Iterate through all layers
-    for(auto& layer : m_layers) {
-        if(layer->collide(rect, collided, type)) {
-            collide = true;
+    // Iterate through all map_layers
+    for(auto layer : get_map_layers()) {
+        for(auto t : layer->clip(rect)) {
+            if(std::get<0>(t) != 0) {
+                Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
+                SDL_Rect tile_rect = tile->get_hitbox();
+                // Only check collision for tiles with valid hitbox
+                if(!SDL_RectEmpty(&tile_rect)) {
+                    // Move tile hitbox to tile coordinates
+                    tile_rect.x += std::get<1>(t);
+                    tile_rect.y += std::get<2>(t);
+
+                    SDL_Rect relative {0,0,rect.w,rect.h};
+                    SDL_Rect intersect;
+                    // Get intersection from supplied rect and tile rect
+                    if(SDL_IntersectRect(&relative, &tile_rect, &intersect)) {
+                        // Possibly overwrite maximum collision depth value
+                        if(intersect.w > x_max) {x_max = intersect.w;}
+                        if(intersect.h > y_max) {y_max = intersect.h;}
+
+                        collide = true;
+                        if(notify) {
+                            Cause c = Cause(tile, "COLLIDE", "COLLIDE");
+                            actor->respond(Response::on_collision, c);
+                        }
+                    }
+                }
+            }
         }
     }
     return collide;
 }
 
-/**
- * @brief Checks if given rect collides with any layer present in this map
- * @param rect The rect to check against
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool LayerCollection::collide(const SDL_Rect* rect, std::string type) {
-    if(SDL_RectEmpty(rect)) {return false;}
-    bool collide = false;
-    // Iterate through all layers
-    for(auto& layer : m_layers) {
-        if(layer->collide(rect, type)) {
-            collide = true;
-        }
-    }
-    return collide;
+bool LayerCollection::collide_terrain(Actor* actor, bool notify) {
+    int x,y;
+    return collide_terrain(actor, x,y, notify);
 }
 
 /**
  * @brief Fetches all actors which conform the supplied parameters
  * @return Vector of conforming actors
- * @note "invalid" value indicates that a parameter is ignored
  */
-std::vector<Actor*> LayerCollection::get_actors(std::string name, Direction direction, AnimationType animation) {
+std::vector<Actor*> LayerCollection::get_actors(std::string name) {
     std::vector<Actor*> actor_list;
-    for(auto& layer : m_layers) {
-        if(layer->get_type() == Layer::object) {
-            ObjectLayer* ob_layer = static_cast<ObjectLayer*>(layer.get());
-            std::vector<Actor*> sublist = ob_layer->get_actors(name, direction, animation);
-            actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
-        }
+    for(auto& layer : get_object_layers()) {
+        std::vector<Actor*> sublist = layer->get_actors(name);
+        actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
     }
     return actor_list;
+}
+
+/**
+ * @brief Fetches first actor which conforms the supplied parameter
+ * @return Confirming Actor
+ */
+Actor* LayerCollection::get_actor(std::string name) {
+    for(auto& layer : get_object_layers()) {
+        Actor* a = layer->get_actor(name);
+        if(a != nullptr) {return a;}
+    }
+    return nullptr;
+}
+
+/**
+ * @brief Fetches all MapLayers
+ * @return Vector of MapLayer pointers
+ */
+std::vector<MapLayer*> LayerCollection::get_map_layers() {
+    std::vector<MapLayer*> layer_list;
+    for(auto& layer : m_layers) {
+        if(layer->get_type() == Layer::map) {
+            layer_list.push_back(static_cast<MapLayer*>(layer.get()));
+        }
+    }
+    return layer_list;
+}
+
+/**
+ * @brief Fetches all ImageLayer
+ * @return Vector of ImageLayer pointers
+ */
+std::vector<ImageLayer*> LayerCollection::get_image_layers() {
+    std::vector<ImageLayer*> layer_list;
+    for(auto& layer : m_layers) {
+        if(layer->get_type() == Layer::image) {
+            layer_list.push_back(static_cast<ImageLayer*>(layer.get()));
+        }
+    }
+    return layer_list;
+}
+
+/**
+ * @brief Fetches all ObjectLayers
+ * @return Vector of ObjectLayer pointers
+ */
+std::vector<ObjectLayer*> LayerCollection::get_object_layers() {
+    std::vector<ObjectLayer*> layer_list;
+    for(auto& layer : m_layers) {
+        if(layer->get_type() == Layer::object) {
+            layer_list.push_back(static_cast<ObjectLayer*>(layer.get()));
+        }
+    }
+    return layer_list;
 }

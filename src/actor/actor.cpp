@@ -103,47 +103,42 @@ void Actor::render(int x_cam, int y_cam) const {
 bool Actor::move(float x_factor, float y_factor) {
     bool moved = true;
     // Move the Actor
-    SDL_Rect temp = get_hitbox();
+    //SDL_Rect temp = get_hitbox();
     float x_step;
     float y_step;
     x_step = x_factor;
     y_step = y_factor;
 
     // Determine if it can collide/ has hitbox
+    SDL_Rect temp = get_hitbox();
     if(!SDL_RectEmpty(&temp)) {
 
-        std::vector<Actor*> collided;
+        // std::vector<Actor*> collided;
 
         // Apply position of actor to hitbox
         m_x += x_step;
-        // Apply x movement
-        temp.x += static_cast<int>(m_x);
         // Check for x_axis collision
         if(x_factor != 0) {
-            // Apply y movement
-            temp.y += static_cast<int>(m_y) - m_height;
             // Check for x-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->get_layer_collection().collide(&temp, x_inter_depth, y_inter_depth, collided)) {
+            temp = get_hitbox();
+            if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
                 // Do stuff with the intersection depth
                 if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
                 m_x -= x_inter_depth;
-                temp.x -= x_inter_depth;
                 moved = false;
             }
-            // Undo y movement
-            temp.y = get_hitbox().y;
         }
         // Check for y_axis collision
         if(y_factor != 0){
             // Apply y movement
             m_y += y_step;
-            temp.y += static_cast<int>(m_y) - m_height;
             // Check for y-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            if(m_map->get_layer_collection().collide(&temp, x_inter_depth, y_inter_depth, collided)) {
+            temp = get_hitbox();
+            if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
                 // Do stuff with the intersection depth
                 if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
                 m_y -= y_inter_depth;
@@ -151,10 +146,11 @@ bool Actor::move(float x_factor, float y_factor) {
             }
         }
         // Trigger collision events for each colliding actor, including this one
+        /*
         for(Actor* a : collided) {
             a->respond(Response::on_collision, Cause(this, "COLLIDE","COLLIDE"));
             respond(Response::on_collision, Cause(a, "COLLIDE","COLLIDE"));
-        }
+        }*/
     }
     else {
         m_x += x_step;
@@ -242,8 +238,6 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
 bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type) const{
     SDL_Rect temp = get_hitbox(type);
     if(SDL_RectEmpty(&temp)) {return false;}
-    temp.x += static_cast<int>(m_x);
-    temp.y += static_cast<int>(m_y) - m_height;
     SDL_Rect inter;
     if(SDL_IntersectRect(&temp, rect, &inter) && !SDL_RectEquals(&temp, rect)) {
         x_depth = inter.w;
@@ -270,8 +264,6 @@ bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::strin
 bool Actor::collide(const SDL_Rect* rect, std::string type) const{
     SDL_Rect temp = get_hitbox(type);
     if(SDL_RectEmpty(&temp)) {return false;}
-    temp.x += static_cast<int>(m_x);
-    temp.y += static_cast<int>(m_y) - m_height;
     if(SDL_HasIntersection(&temp, rect) && !SDL_RectEquals(&temp, rect)) {
         return true;
     }
@@ -308,7 +300,10 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
         return SDL_Rect{0,0,0,0};
     }
     else{
-        return m_hitbox.at(type);
+        SDL_Rect rect = m_hitbox.at(type);
+        rect.x += get_x();
+        rect.y += get_y() - get_h();
+        return rect;
     }
 }
 
@@ -319,8 +314,6 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
  */
 bool Actor::on_ground(Direction dir, int tolerance) const {
     SDL_Rect pos = get_hitbox();
-    pos.x += get_x();
-    pos.y += get_y() - get_h();
     SDL_Rect temp;
     if(dir == Direction::up) {
         temp.x = pos.x;
@@ -349,6 +342,6 @@ bool Actor::on_ground(Direction dir, int tolerance) const {
     else {
         return false;
     }
-    return m_map->get_layer_collection().collide(&temp);
+    return m_map->get_layer_collection().collide_terrain(temp);
 }
 

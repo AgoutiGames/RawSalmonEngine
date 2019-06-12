@@ -111,78 +111,29 @@ void ObjectLayer::update() {
 }
 
 /**
- * @brief checks collision of objects with supplied rect
- * @todo Add remaining collision documentation
- */
-bool ObjectLayer::collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type) {
-    bool collide = false;
-    int x_depth = 0;
-    int y_depth = 0;
-    // Iterate through all actors
-    for(Actor& actor : m_obj_grid) {
-        // Check collision against each
-        if(actor.collide(rect, x_depth, y_depth, type)) {
-            // Possibly overwrite maximum collision depth value
-            if(x_depth > x_max) {x_max = x_depth;}
-            if(y_depth > y_max) {y_max = y_depth;}
-            // Add actor as collided
-            collided.push_back(&actor);
-            collide = true;
-        }
-    }
-    return collide;
-}
-
-/**
- * @brief checks collision of objects with supplied rect
- * @todo Add remaining collision documentation
- */
-bool ObjectLayer::collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type) {
-    bool collide = false;
-    // Iterate through all actors
-    for(Actor& actor : m_obj_grid) {
-        // Check collision against each
-        if(actor.collide(rect, type)) {
-            // Add actor as collided
-            collided.push_back(&actor);
-            collide = true;
-        }
-    }
-    return collide;
-}
-
-/**
- * @brief checks collision of objects with supplied rect
- * @todo Add remaining collision documentation
- */
-bool ObjectLayer::collide(const SDL_Rect* rect, std::string type) {
-    bool collide = false;
-    // Iterate through all actors
-    for(Actor& actor : m_obj_grid) {
-        // Check collision against each
-        if(actor.collide(rect, type)) {
-            collide = true;
-        }
-    }
-    return collide;
-}
-
-/**
  * @brief Fetch all actors which conform the supplied parameters
  * @return Vector of conforming actors
- * @note "invalid" value indicates that a parameter is ignored
  */
-std::vector<Actor*> ObjectLayer::get_actors(std::string name, Direction direction, AnimationType animation) {
+std::vector<Actor*> ObjectLayer::get_actors(std::string name) {
     std::vector<Actor*> actor_list;
     for(Actor& actor : m_obj_grid) {
-        bool match = true;
-
-        if(name != "" && actor.get_name() != name) {match = false;}
-        if(direction != Direction::invalid && actor.get_direction() != direction) {match = false;}
-        if(animation != AnimationType::invalid && actor.get_animation() != animation) {match = false;}
-
-        if(match) {actor_list.push_back(&actor);}
+        if(actor.get_name() == name) {
+            actor_list.push_back(&actor);
+        }
     }
     return actor_list;
+}
+
+/**
+ * @brief Fetch first actor which conforms the supplied parameters
+ * @return Confirming actor
+ */
+Actor* ObjectLayer::get_actor(std::string name) {
+    for(Actor& actor : m_obj_grid) {
+        if(actor.get_name() == name) {
+            return &actor;
+        }
+    }
+    return nullptr;
 }
 

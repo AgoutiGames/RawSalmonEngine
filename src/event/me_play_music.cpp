@@ -37,6 +37,8 @@ const bool MePlayMusic::good = Event<MapData>::register_class<MePlayMusic>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal MePlayMusic::process(MapData& scope) {
+    // Mute unused parameter warning
+    (void)scope;
     m_music.play(m_repititions, m_fade_in);
     return EventSignal::end;
 }

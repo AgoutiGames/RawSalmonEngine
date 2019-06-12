@@ -58,11 +58,6 @@ class Layer {
         virtual ~Layer() = default;
 
         virtual bool render(const Camera& camera) const = 0;
-        virtual void update() = 0;
-
-        virtual bool collide(const SDL_Rect* rect, int& x_max, int& y_max, std::vector<Actor*>& collided, std::string type = "COLLIDE") = 0;
-        virtual bool collide(const SDL_Rect* rect, std::vector<Actor*>& collided, std::string type = "COLLIDE") = 0;
-        virtual bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") = 0;
 
         virtual LayerType get_type() {return LayerType::undefinied;}
 
