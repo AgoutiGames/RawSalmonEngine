@@ -108,15 +108,14 @@
  <tile id="14" type="AeAccelerate">
   <properties>
    <property name="NAME" value="AccLeft"/>
-   <property name="XFACTOR" type="float" value="-40"/>
-   <property name="XMAX_SPEED" type="float" value="-500"/>
+   <property name="XFACTOR" type="float" value="-33"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
  <tile id="15" type="AeAccelerate">
   <properties>
    <property name="NAME" value="AccRight"/>
-   <property name="XFACTOR" type="float" value="40"/>
+   <property name="XFACTOR" type="float" value="33"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
@@ -243,6 +242,15 @@
    <property name="SUCCESS" value="W-Right"/>
   </properties>
  </tile>
+ <tile id="93" type="AeAnimate">
+  <properties>
+   <property name="ANIMATION_TYPE" value="WALK"/>
+   <property name="DIRECTION" value="CURRENT"/>
+   <property name="GAME_FRAMES" type="int" value="17"/>
+   <property name="NAME" value="Pickup_Anim"/>
+   <property name="SIGNAL" value="STOP"/>
+  </properties>
+ </tile>
  <tile id="94" type="GeCloseMap">
   <properties>
    <property name="NAME" value="close_map_internal"/>
@@ -257,7 +265,7 @@
  <tile id="96" type="GeChangeMap">
   <properties>
    <property name="NAME" value="next_map_internal"/>
-   <property name="PATH" value="example_2.tmx"/>
+   <property name="PATH" value="main.tmx"/>
    <property name="PRESERVE" type="bool" value="true"/>
   </properties>
  </tile>
