@@ -78,6 +78,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
  * @return @c bool which indicates sucess
  */
 bool ObjectLayer::render(const Camera& camera) const {
+    /*
     int x = camera.x() - m_offset_x;
     int y = camera.y() - m_offset_y;
     TilesetCollection& ts_collection = m_layer_collection->get_base_map().get_ts_collection();
@@ -88,6 +89,10 @@ bool ObjectLayer::render(const Camera& camera) const {
         int feet = it->get_y();
         int head = feet - it->get_h();
         if(feet > from && head < to) {it->render(x,y);}
+    }
+    */
+    for(const Actor* actor : get_clip(camera.get_rect())) {
+        actor->render(camera.x(), camera.y());
     }
     return true;
 }
@@ -108,6 +113,17 @@ void ObjectLayer::update() {
     }
     // Establish correct rendering order
     m_obj_grid.sort();
+}
+
+/**
+ * @brief return a vector of all actors
+ */
+std::vector<Actor*> ObjectLayer::get_actors() {
+    std::vector<Actor*> actor_list;
+    for(Actor& actor : m_obj_grid) {
+        actor_list.push_back(&actor);
+    }
+    return actor_list;
 }
 
 /**
@@ -137,3 +153,46 @@ Actor* ObjectLayer::get_actor(std::string name) {
     return nullptr;
 }
 
+std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
+
+    TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
+    SDL_Rect window = rect;
+    window.w += tsc.get_tile_w() + (tsc.get_overhang(Direction::left) + tsc.get_overhang(Direction::right)) * tsc.get_tile_w();
+    window.h += tsc.get_tile_h() + (tsc.get_overhang(Direction::up) + tsc.get_overhang(Direction::down)) * tsc.get_tile_h();
+    window.x -= tsc.get_tile_w() + tsc.get_overhang(Direction::left) * tsc.get_tile_w();
+    // Because origin of actor isn't upper left, but lower left, we don't need this
+    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up) * tsc.get_tile_h();
+
+    std::vector<Actor*> actor_list;
+    for(Actor& actor : m_obj_grid) {
+        if(actor.get_x() > window.x &&
+           actor.get_x() < window.x + window.w &&
+           actor.get_y() > window.y &&
+           actor.get_y() < window.y + window.h)
+           {
+            actor_list.push_back(&actor);
+           }
+    }
+    return actor_list;
+}
+
+std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
+    TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
+    SDL_Rect window = rect;
+    window.w += tsc.get_tile_w() + (tsc.get_overhang(Direction::left) + tsc.get_overhang(Direction::right)) * tsc.get_tile_w();
+    window.h += tsc.get_tile_h() + (tsc.get_overhang(Direction::up) + tsc.get_overhang(Direction::down)) * tsc.get_tile_h();
+    window.x -= tsc.get_tile_w() + tsc.get_overhang(Direction::left) * tsc.get_tile_w();
+    // Because origin of actor isn't upper left, but lower left, we don't need this
+    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up) * tsc.get_tile_h();
+
+    std::vector<const Actor*> actor_list;
+    for(const Actor& actor : m_obj_grid) {
+        if(actor.get_x() > window.x &&
+           actor.get_x() < window.x + window.w &&
+           actor.get_y() > window.y &&
+           actor.get_y() < window.y + window.h) {
+            actor_list.push_back(&actor);
+        }
+    }
+    return actor_list;
+}

@@ -41,8 +41,9 @@ public:
     void render(SDL_Rect& dest) const; // Resizable render
 
     // Avoids daisy chaining of animated tiles
-    const SDL_Rect& get_clip_self() const {return m_clip;}
-    const SDL_Rect& get_hitbox() const {return m_hitbox;}
+
+    SDL_Rect get_hitbox(std::string name = "COLLIDE", bool aligned = false) const;
+    const std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
@@ -60,11 +61,15 @@ public:
     Tileset& get_tileset() {return *mp_tileset;}
 
 private:
+    SDL_Rect get_hitbox_self(std::string name = "COLLIDE", bool aligned = false) const;
+    const std::map<std::string, SDL_Rect> get_hitboxes_self(bool aligned = false) const;
+
+    const SDL_Rect& get_clip_self() const {return m_clip;}
     const SDL_Rect& get_clip() const;
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
-    SDL_Rect m_hitbox = {0,0,0,0};
+    std::map<std::string, SDL_Rect> m_hitboxes;
     std::string m_type;
     bool m_animated = false;
 

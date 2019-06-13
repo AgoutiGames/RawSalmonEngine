@@ -38,8 +38,13 @@ class ObjectLayer : public Layer{
 
         LayerType get_type() override {return LayerType::object;}
 
+        std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);
         Actor* get_actor(std::string name);
+
+        std::vector<Actor*> get_clip(const SDL_Rect& rect);
+        std::vector<const Actor*> get_clip(const SDL_Rect& rect) const;
+
         static ObjectLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
         ObjectLayer(const ObjectLayer& other) = delete;

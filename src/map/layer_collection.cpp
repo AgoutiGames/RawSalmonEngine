@@ -87,7 +87,7 @@ bool LayerCollection::render(const Camera& camera) const{
 }
 
 /**
- * @brief Updates each layer state
+ * @brief Updates each object layer state
  */
 void LayerCollection::update() {
     for(auto layer : get_object_layers()) {
@@ -95,6 +95,9 @@ void LayerCollection::update() {
     }
 }
 
+/**
+ * @brief checks if a given rect collides with the default hitboxes of the map layer
+ */
 bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max) {
     if(SDL_RectEmpty(&rect)) {return false;}
     bool collide = false;
@@ -103,7 +106,7 @@ bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_m
         for(auto t : layer->clip(rect)) {
             if(std::get<0>(t) != 0) {
                 Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
-                SDL_Rect tile_rect = tile->get_hitbox();
+                SDL_Rect tile_rect = tile->get_hitbox("COLLIDE",true);
                 // Only check collision for tiles with valid hitbox
                 if(!SDL_RectEmpty(&tile_rect)) {
                     // Move tile hitbox to tile coordinates
@@ -127,11 +130,17 @@ bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_m
     return collide;
 }
 
+/**
+ * @brief checks if a given rect collides with the default hitboxes of the map layer
+ */
 bool LayerCollection::collide_terrain(const SDL_Rect& rect) {
     int x,y;
     return collide_terrain(rect, x,y);
 }
 
+/**
+ * @brief checks if a given actor collides with the default hitboxes of the map layer
+ */
 bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify) {
     SDL_Rect rect = actor->get_hitbox("COLLIDE");
     if(SDL_RectEmpty(&rect)) {return false;}
@@ -141,7 +150,7 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
         for(auto t : layer->clip(rect)) {
             if(std::get<0>(t) != 0) {
                 Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
-                SDL_Rect tile_rect = tile->get_hitbox();
+                SDL_Rect tile_rect = tile->get_hitbox("COLLIDE", true);
                 // Only check collision for tiles with valid hitbox
                 if(!SDL_RectEmpty(&tile_rect)) {
                     // Move tile hitbox to tile coordinates
@@ -169,9 +178,25 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
     return collide;
 }
 
+/**
+ * @brief checks if a given actor collides with the default hitboxes of the map layer
+ */
 bool LayerCollection::collide_terrain(Actor* actor, bool notify) {
     int x,y;
     return collide_terrain(actor, x,y, notify);
+}
+
+/**
+ * @brief Fetches all actors
+ * @return Vector of all actors
+ */
+std::vector<Actor*> LayerCollection::get_actors() {
+    std::vector<Actor*> actor_list;
+    for(auto& layer : get_object_layers()) {
+        std::vector<Actor*> sublist = layer->get_actors();
+        actor_list.insert(actor_list.end(),sublist.begin(),sublist.end());
+    }
+    return actor_list;
 }
 
 /**

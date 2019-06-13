@@ -65,6 +65,7 @@ class Actor{
         AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor);
+        bool unstuck();
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
@@ -86,6 +87,7 @@ class Actor{
         DataBlock& get_data() {return m_data;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
+        const std::map<std::string, SDL_Rect> get_hitboxes() const;
 
         EventQueue<Actor>& get_event_queue() {return m_events;}
 

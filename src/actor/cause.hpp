@@ -61,7 +61,6 @@ class Cause{
         Tile* get_tile() const {return type == CauseType::tile ? data.tile : nullptr;}
 
         std::string get_type() const;
-        // std::pair<int, int> get_pos() const;
 
     private:
         CauseType type;

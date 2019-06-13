@@ -61,13 +61,6 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
             std::string name(p_name);
             if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-            /*
-            else if(name == "SPEED") {
-                eResult = p_property->QueryFloatAttribute("value", &m_speed);
-                if(eResult != XML_SUCCESS) return eResult;
-            }
-            */
-
             else if(name == "TYPE") {
                 p_value = source->Attribute("value");
                 if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
@@ -87,7 +80,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
     if(p_objgroup != nullptr) {
         XMLElement* p_object = p_objgroup->FirstChildElement("object");
         if(p_object != nullptr) {
-            eResult = parse::hitbox(p_object, m_hitbox);
+            eResult = parse::hitboxes(p_object, m_hitboxes);
             if(eResult != XML_SUCCESS) {
                 std::cerr << "Failed at parsing hitbox for tile\n";
                 return eResult;
@@ -138,9 +131,6 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
 tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
-
-    // Initalize default trigger frame to 0
-    //m_speed = 0;
 
     // Initialize temporary variables
     std::string actor_name = "_";
@@ -295,24 +285,29 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
     }
 
     else {
-        MapData& base_map = mp_tileset->get_ts_collection().get_mapdata();
+
         // Add this animated tile to the actor template
-        base_map.add_actor_animation(actor_name, anim, dir, this);
+        // base_map.add_actor_animation(actor_name, anim, dir, this);
 
         // Parse the hitboxes of the actor animation
         XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
         if(p_objgroup != nullptr) {
             XMLElement* p_object = p_objgroup->FirstChildElement("object");
             if(p_object != nullptr) {
-                ActorTemplate& temp = base_map.get_actor_template(actor_name);
-                eResult = parse::hitboxes(p_object, temp.hitbox);
+                // ActorTemplate& temp = base_map.get_actor_template(actor_name);
+                // eResult = parse::hitboxes(p_object, temp.hitbox);
+                eResult = parse::hitboxes(p_object, m_hitboxes);
                 if(eResult != XML_SUCCESS) {
                     std::cerr << "Failed at parsing hitboxes of actor animation for actor " << actor_name << "\n";
                     return eResult;
                 }
             }
         }
+
     }
+
+    MapData& base_map = mp_tileset->get_ts_collection().get_mapdata();
+    base_map.add_actor_animation(actor_name, anim, dir, this);
 
     return XML_SUCCESS;
 }
@@ -443,6 +438,10 @@ void Tile::push_anim(Uint32 time) {
  * @brief Render a tile object to a coordinate
  * @param x, y The specified coordinates
  * @param tsc Reference to map for getting clip and renderer
+ *
+ * @note The coordinates are the upper left origin of the BASE tile
+ *       this means that smaller or bigger tiles get shifted up or down
+ *       to be aligned to the bottom left corner of the BASE tile
  */
 void Tile::render(int x, int y) const {
     const TilesetCollection& tsc = mp_tileset->get_ts_collection();
@@ -459,7 +458,7 @@ void Tile::render(int x, int y) const {
  * @param dest The rendering rect
  * @param tsc Reference to map for getting clip and renderer
  *
- * This function can resize the tile image
+ * @note This function can resize the tile image
  */
 void Tile::render(SDL_Rect& dest) const {
     dest.x += mp_tileset->get_x_offset();
@@ -468,5 +467,71 @@ void Tile::render(SDL_Rect& dest) const {
 
     image->render_resize(&get_clip(), &dest);
     return;
+}
+
+/**
+ * @brief return copy of hitbox via name
+ */
+SDL_Rect Tile::get_hitbox(std::string name, bool aligned) const {
+    if(m_animated) {
+        const TilesetCollection& tsc = mp_tileset->get_ts_collection();
+        // Animation frame which is an animation itself doesn't make sense!
+        // Explicitly request own hitbox
+        SDL_Rect hitbox = tsc.get_tile(m_anim_ids[m_current_id])->get_hitbox_self(name, aligned);
+        if(!SDL_RectEmpty(&hitbox)) {
+            return hitbox;
+        }
+    }
+    return get_hitbox_self(name, aligned);
+}
+
+/**
+ * @brief return copy of hitbox via name
+ */
+SDL_Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
+    if(m_hitboxes.find(name) == m_hitboxes.end()) {
+        // std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
+        return SDL_Rect{0,0,0,0};
+    }
+    else{
+        if(aligned) {
+            SDL_Rect hitbox = m_hitboxes.at(name);
+            const TilesetCollection& tsc = mp_tileset->get_ts_collection();
+            hitbox.x += mp_tileset->get_x_offset();
+            hitbox.y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
+            return hitbox;
+        }
+        else {
+            return m_hitboxes.at(name);
+        }
+    }
+}
+
+const std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
+    if(m_animated) {
+        std::map<std::string, SDL_Rect> hitboxes = get_hitboxes_self(aligned);
+
+        const TilesetCollection& tsc = mp_tileset->get_ts_collection();
+        // Animation frame which is an animation itself doesn't make sense!
+        // Explicitly request own hitbox
+        for(const auto& hitbox_pair: tsc.get_tile(m_anim_ids[m_current_id])->get_hitboxes_self(aligned)) {
+            hitboxes[hitbox_pair.first] = hitbox_pair.second;
+        }
+        return hitboxes;
+    }
+    return get_hitboxes_self(aligned);
+}
+
+const std::map<std::string, SDL_Rect> Tile::get_hitboxes_self(bool aligned) const {
+    if(aligned) {
+        std::map<std::string, SDL_Rect> hitboxes;
+        for(auto& hb : m_hitboxes) {
+            hitboxes[hb.first] = get_hitbox_self(hb.first, true);
+        }
+        return hitboxes;
+    }
+    else {
+        return m_hitboxes;
+    }
 }
 

@@ -47,6 +47,7 @@ class LayerCollection {
         bool render(const Camera& camera) const;
         void update();
 
+        std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);
         Actor* get_actor(std::string name);
 

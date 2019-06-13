@@ -71,20 +71,3 @@ std::string Cause::get_type() const {
     }
 }
 
-/**
- * @brief Return the position of the cause
- * @return X and Y-coordinates
- * @note Only actor and tiles return their coords,
- *       key returns 0, 0
- *
-std::pair<int, int> Cause::get_pos() const {
-    if(type == CauseType::tile) {
-        return {data.tile.x, data.tile.y};
-    }
-    else if(type == CauseType::actor) {
-        int x = data.actor->get_x();
-        int y = data.actor->get_y() - data.actor->get_h();
-        return {x, y};
-    }
-    else {return {0,0};}
-}*/

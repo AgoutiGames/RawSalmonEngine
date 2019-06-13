@@ -89,9 +89,28 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
 void Actor::render(int x_cam, int y_cam) const {
     SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
     m_animations.at(m_anim_state).at(m_direction).render(dest);
+}
 
-    // Alternative which doesnt do any resizing
-    //m_animations.at(m_anim_state).at(m_direction).render(static_cast<int>(x_cam + m_x), static_cast<int>(y_cam + m_y - m_height), base_map);
+bool Actor::unstuck() {
+    int x_inter_depth = 0;
+    int y_inter_depth = 0;
+    if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
+        // Do stuff with the intersection depth
+        if(x_inter_depth < y_inter_depth) {
+            m_x += x_inter_depth;
+            if(m_map->get_layer_collection().collide_terrain(this, false)) {
+                m_x -= 2 * x_inter_depth;
+            }
+        }
+        else {
+            m_y += y_inter_depth;
+            if(m_map->get_layer_collection().collide_terrain(this, false)) {
+                m_y -= 2 * y_inter_depth;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -101,9 +120,12 @@ void Actor::render(int x_cam, int y_cam) const {
  * @todo Apply tile speed modifiers
  */
 bool Actor::move(float x_factor, float y_factor) {
+
+    // Somewhat hacky approach to fix runtime switch of actor hitboxes via animation
+    unstuck();
+
     bool moved = true;
     // Move the Actor
-    //SDL_Rect temp = get_hitbox();
     float x_step;
     float y_step;
     x_step = x_factor;
@@ -113,8 +135,6 @@ bool Actor::move(float x_factor, float y_factor) {
     SDL_Rect temp = get_hitbox();
     if(!SDL_RectEmpty(&temp)) {
 
-        // std::vector<Actor*> collided;
-
         // Apply position of actor to hitbox
         m_x += x_step;
         // Check for x_axis collision
@@ -122,7 +142,6 @@ bool Actor::move(float x_factor, float y_factor) {
             // Check for x-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            temp = get_hitbox();
             if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
                 // Do stuff with the intersection depth
                 if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
@@ -137,7 +156,6 @@ bool Actor::move(float x_factor, float y_factor) {
             // Check for y-axis collision
             int x_inter_depth = 0;
             int y_inter_depth = 0;
-            temp = get_hitbox();
             if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
                 // Do stuff with the intersection depth
                 if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
@@ -145,12 +163,6 @@ bool Actor::move(float x_factor, float y_factor) {
                 moved = false;
             }
         }
-        // Trigger collision events for each colliding actor, including this one
-        /*
-        for(Actor* a : collided) {
-            a->respond(Response::on_collision, Cause(this, "COLLIDE","COLLIDE"));
-            respond(Response::on_collision, Cause(a, "COLLIDE","COLLIDE"));
-        }*/
     }
     else {
         m_x += x_step;
@@ -242,12 +254,6 @@ bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::strin
     if(SDL_IntersectRect(&temp, rect, &inter) && !SDL_RectEquals(&temp, rect)) {
         x_depth = inter.w;
         y_depth = inter.h;
-        /*
-        std::cerr << "check " << temp.x << " " << temp.y << " " << temp.w << " " << temp.h << "\n";
-        std::cerr << "check " << rect->x << " " << rect->y << " " << rect->w << " " << rect->h << "\n";
-        std::cerr << "x depth: " << x_depth << "\n";
-        std::cerr << "y_depth: " << y_depth << "\n";
-        */
         return true;
     }
     return false;
@@ -295,16 +301,32 @@ bool Actor::respond(Response r, Cause c) {
  * @note If there is no valid hitbox an empty one gets returned
  */
 SDL_Rect Actor::get_hitbox(std::string type) const {
-    if(m_hitbox.find(type) == m_hitbox.end()) {
-        std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
-        return SDL_Rect{0,0,0,0};
+    SDL_Rect hitbox = m_animations.at(m_anim_state).at(m_direction).get_hitbox(type);
+    if(SDL_RectEmpty(&hitbox)) {
+        if(m_hitbox.find(type) == m_hitbox.end()) {
+            std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
+            return SDL_Rect{0,0,0,0};
+        }
+        else{
+            hitbox = m_hitbox.at(type);
+            hitbox.x += get_x();
+            hitbox.y += get_y() - get_h();
+            return hitbox;
+        }
     }
-    else{
-        SDL_Rect rect = m_hitbox.at(type);
-        rect.x += get_x();
-        rect.y += get_y() - get_h();
-        return rect;
+    else {
+        hitbox.x += get_x();
+        hitbox.y += get_y() - get_h();
+        return hitbox;
     }
+}
+
+const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
+    std::map<std::string, SDL_Rect> hitboxes = m_hitbox;
+    for(const auto& hitbox_pair: m_animations.at(m_anim_state).at(m_direction).get_hitboxes()) {
+        hitboxes[hitbox_pair.first] = hitbox_pair.second;
+    }
+    return hitboxes;
 }
 
 /**
