@@ -495,7 +495,7 @@ tinyxml2::XMLError Parser::parse(tinyxml2::XMLElement* source) {
     for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
         bool no_match = true;
 
-        std::cerr << "Now Parsing " << source->Attribute("name") << "\n";
+        // std::cerr << "Now Parsing " << source->Attribute("name") << "\n";
         if(source->Attribute("name") == nullptr) {
             std::cerr << "Name of event property number: " << counter << " yields null!\n";
             return XML_ERROR_PARSING_ATTRIBUTE;
@@ -557,7 +557,7 @@ tinyxml2::XMLError Parser::parse_ignore_unknown(tinyxml2::XMLElement* source) {
         }
     }
     if(no_match) {
-        std::cerr << "No single event got parsed!\n";
+        // std::cerr << "No single event got parsed!\n";
         return XML_NO_ATTRIBUTE;
     }
     return XML_SUCCESS;

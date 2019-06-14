@@ -40,8 +40,6 @@ public:
     void render(int x, int y) const;
     void render(SDL_Rect& dest) const; // Resizable render
 
-    // Avoids daisy chaining of animated tiles
-
     SDL_Rect get_hitbox(std::string name = "COLLIDE", bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
 
@@ -57,7 +55,6 @@ public:
     void push_anim(Uint32 time);
 
     std::string get_type() const {return m_type;}
-
     Tileset& get_tileset() {return *mp_tileset;}
 
 private:

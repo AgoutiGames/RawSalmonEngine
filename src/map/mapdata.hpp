@@ -65,16 +65,18 @@ class MapData {
         bool render() const;
         void update();
 
+        // Trivial Getters
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
-
         unsigned get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Returns map width in pixels
         unsigned get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
-
         DataBlock& get_data() {return m_data;}
-
         GameInfo& get_game() {return *m_game;}
+        TilesetCollection& get_ts_collection() {return m_ts_collection;}
+        LayerCollection& get_layer_collection() {return m_layer_collection;}
+        EventQueue<MapData>& get_event_queue() {return m_events;}
 
+        // Event management
         template<class Scope=Actor, class Key=std::string>
         void register_event(std::pair<Key, SmartEvent<Scope>> event) {m_event_archive.register_event<Scope,Key>(event);} ///< Link event name with @c Event<Actor>*
 
@@ -96,6 +98,7 @@ class MapData {
         template<class Key=std::string>
         SmartEvent<MapData> get_event_convert_map(Key name) const;
 
+        // Actor management
         const ActorTemplate& get_actor_template(Uint16 gid) const;
         ActorTemplate& get_actor_template(std::string actor);
 
@@ -103,17 +106,13 @@ class MapData {
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
         bool add_actor_hitbox(std::string actor, std::string hitbox, const SDL_Rect& rect);
 
-        TilesetCollection& get_ts_collection() {return m_ts_collection;}
-        LayerCollection& get_layer_collection() {return m_layer_collection;}
-
         tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, Direction& dir, EventCollection<Actor, Response>& resp);
 
+        // Key input management
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
         bool process_key_up(SDL_Event e);
         bool process_key_down(SDL_Event e);
         void process_keys_sustained();
-
-        EventQueue<MapData>& get_event_queue() {return m_events;}
 
     private:
 
@@ -148,7 +147,7 @@ class MapData {
         SDL_Renderer** mpp_renderer = nullptr;
 };
 
-/// Return true if event is defined
+/// Return true if event is defined as either Game/Map or ActorEvent
 template<class Key>
 bool MapData::check_event_convert_actor(Key name) const {
     return m_event_archive.check_event<Actor,Key>(name) ||
@@ -156,13 +155,14 @@ bool MapData::check_event_convert_actor(Key name) const {
     m_event_archive.check_event<GameInfo,Key>(name);
 }
 
-/// Return true if event is defined
+/// Return true if event is defined as either Game or MapEvent
 template<class Key>
 bool MapData::check_event_convert_map(Key name) const {
     return m_event_archive.check_event<MapData,Key>(name) ||
     m_event_archive.check_event<GameInfo,Key>(name);
 }
 
+/// Return ActorEvent and if needed wrap Game or MapEvent as an ActorEvent
 template<class Key>
 SmartEvent<Actor> MapData::get_event_convert_actor(Key name) const {
     if(m_event_archive.check_event<Actor,Key>(name)) {
@@ -179,6 +179,7 @@ SmartEvent<Actor> MapData::get_event_convert_actor(Key name) const {
     }
 }
 
+/// Return MapEvent and if needed wrap GameEvent as a MapEvent
 template<class Key>
 SmartEvent<MapData> MapData::get_event_convert_map(Key name) const {
     if(m_event_archive.check_event<MapData,Key>(name)) {
@@ -191,6 +192,5 @@ SmartEvent<MapData> MapData::get_event_convert_map(Key name) const {
         return SmartEvent<MapData>();
     }
 }
-
 
 #endif // MAPDATA_HPP_INCLUDED

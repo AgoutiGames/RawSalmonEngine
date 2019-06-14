@@ -147,7 +147,6 @@ bool TilesetCollection::register_tile(Tile* tile, unsigned gid) {
     return true;
 }
 
-
 /// Adds tile to the "always animate" list
 void TilesetCollection::set_tile_animated(unsigned gid) {
     m_anim_tiles.push_back(gid);

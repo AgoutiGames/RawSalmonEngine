@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -39,7 +39,6 @@ class ImageLayer;
  */
 class LayerCollection {
     public:
-
         LayerCollection() = default;
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
@@ -57,6 +56,8 @@ class LayerCollection {
         bool collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max);
         bool collide_terrain(const SDL_Rect& rect);
 
+        void collision_check();
+
         std::vector<MapLayer*> get_map_layers();
         std::vector<ImageLayer*> get_image_layers();
         std::vector<ObjectLayer*> get_object_layers();
@@ -71,10 +72,8 @@ class LayerCollection {
         LayerCollection& operator=(LayerCollection&& other) = default;
 
     private:
-
         MapData* m_base_map;
         std::vector<std::unique_ptr<Layer>> m_layers;
-
 };
 
 

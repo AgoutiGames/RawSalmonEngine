@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -26,7 +26,6 @@ Actor::Actor(Uint16 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor
 {
 
 }
-
 
 Actor::Actor(const ActorTemplate& templ, MapData* mapdata) :
  m_map {mapdata},
@@ -91,6 +90,12 @@ void Actor::render(int x_cam, int y_cam) const {
     m_animations.at(m_anim_state).at(m_direction).render(dest);
 }
 
+/**
+ * @brief Checks if actor collides with tiles and moves it away
+ * @note This approach has to check for collision twice because we don't know if the actor is
+ *       left or right/ontop or below the tile. We try either way and check for collision again.
+ *       With another collide function providing this information we could increase the performance.
+ */
 bool Actor::unstuck() {
     int x_inter_depth = 0;
     int y_inter_depth = 0;
@@ -117,7 +122,10 @@ bool Actor::unstuck() {
  * @brief Move actor to a direction by float factors
  * @param x_factor, y_factor Which indicate direction and extent of movement
  * @return a @c bool which indicates collision
- * @todo Apply tile speed modifiers
+ *
+ * The algorithm applies the movement seperately for each axis and thus checks twice for collision.
+ * This approach is pretty bugged if actor is already stuck in another hitbox.
+ * The only way to solve this is to additionally check for collision and move away before the actual movement via unstuck()
  */
 bool Actor::move(float x_factor, float y_factor) {
 
@@ -295,10 +303,13 @@ bool Actor::respond(Response r, Cause c) {
 }
 
 /**
- * @brief Returns the hitbox of the supplied type
+ * @brief Returns the active hitbox of the supplied type
  * @param type The supplied type
  * @return @c SDL_Rect The hitbox
  * @note If there is no valid hitbox an empty one gets returned
+ *
+ * First the actor checks if the active animation has the hitbox with the name
+ * and returns it instead.
  */
 SDL_Rect Actor::get_hitbox(std::string type) const {
     SDL_Rect hitbox = m_animations.at(m_anim_state).at(m_direction).get_hitbox(type);
@@ -321,10 +332,20 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     }
 }
 
+/**
+ * @brief Returns all active hitboxes
+ *
+ * To the hitboxes of the actor tile, possible hitboxes of the active
+ * animation and its animation frame are added. Specific ones may override general ones.
+ */
 const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
     std::map<std::string, SDL_Rect> hitboxes = m_hitbox;
     for(const auto& hitbox_pair: m_animations.at(m_anim_state).at(m_direction).get_hitboxes()) {
         hitboxes[hitbox_pair.first] = hitbox_pair.second;
+    }
+    for(auto& hitbox_pair : hitboxes) {
+        hitbox_pair.second.x += get_x();
+        hitbox_pair.second.y += get_y() - get_h();
     }
     return hitboxes;
 }

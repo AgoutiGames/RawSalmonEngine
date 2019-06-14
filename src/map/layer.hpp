@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -66,7 +66,7 @@ class Layer {
     protected:
         LayerCollection* m_layer_collection;
         std::string m_name;
-        int m_offset_x = 0; // Taken as position for "image"
+        int m_offset_x = 0;
         int m_offset_y = 0;
 };
 

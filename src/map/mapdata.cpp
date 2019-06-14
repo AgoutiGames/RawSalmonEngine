@@ -424,10 +424,12 @@ void MapData::process_keys_sustained() {
     }
 }
 
+/// Return ActorTemplate which was parsed with tile with the given tile ID
 const ActorTemplate& MapData::get_actor_template(Uint16 gid) const {
     return m_templates.at(m_gid_to_temp_name.at(gid));
 }
 
+/// Return ActorTemplate by name
 ActorTemplate& MapData::get_actor_template(std::string actor) {
     return m_templates[actor];
 }

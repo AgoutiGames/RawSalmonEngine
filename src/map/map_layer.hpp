@@ -56,9 +56,8 @@ class MapLayer : public Layer{
     private:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source);
 
-        // members for m_type map
         TilesetCollection* m_ts_collection;
-        unsigned m_width;   // Measured in tiles for "map" and pixels for "image"
+        unsigned m_width;   // Measured in tiles
         unsigned m_height;
 
         std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information

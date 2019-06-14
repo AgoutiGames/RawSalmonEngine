@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -93,10 +93,15 @@ void LayerCollection::update() {
     for(auto layer : get_object_layers()) {
         layer->update();
     }
+    // Send possible on_collide per actors
+    collision_check();
 }
 
 /**
  * @brief checks if a given rect collides with the default hitboxes of the map layer
+ * @param rect The rect which is checked for collision
+ * @param x_max The maximum x-axis intersection depth between the rect and tile hitboxes
+ * @param y_max The maximum y-axis intersection depth between the rect and tile hitboxes
  */
 bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max) {
     if(SDL_RectEmpty(&rect)) {return false;}
@@ -132,6 +137,8 @@ bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_m
 
 /**
  * @brief checks if a given rect collides with the default hitboxes of the map layer
+ * @note This function could have better performance if it wouldn't just wrap the more
+ *       granular function discarding some of its information
  */
 bool LayerCollection::collide_terrain(const SDL_Rect& rect) {
     int x,y;
@@ -140,6 +147,10 @@ bool LayerCollection::collide_terrain(const SDL_Rect& rect) {
 
 /**
  * @brief checks if a given actor collides with the default hitboxes of the map layer
+ * @param actor The actor which is checked for collision
+ * @param x_max The maximum x-axis intersection depth between the rect and tile hitboxes
+ * @param y_max The maximum y-axis intersection depth between the rect and tile hitboxes
+ * @param notify If true the actors on_collide callback is triggered on collision
  */
 bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify) {
     SDL_Rect rect = actor->get_hitbox("COLLIDE");
@@ -180,6 +191,8 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
 
 /**
  * @brief checks if a given actor collides with the default hitboxes of the map layer
+ * @note This function could have better performance if it wouldn't just wrap the more
+ *       granular function discarding some of its information
  */
 bool LayerCollection::collide_terrain(Actor* actor, bool notify) {
     int x,y;
@@ -187,8 +200,7 @@ bool LayerCollection::collide_terrain(Actor* actor, bool notify) {
 }
 
 /**
- * @brief Fetches all actors
- * @return Vector of all actors
+ * @brief return a vector of pointers to each actor of each object layer
  */
 std::vector<Actor*> LayerCollection::get_actors() {
     std::vector<Actor*> actor_list;
@@ -200,8 +212,8 @@ std::vector<Actor*> LayerCollection::get_actors() {
 }
 
 /**
- * @brief Fetches all actors which conform the supplied parameters
- * @return Vector of conforming actors
+ * @brief Fetch all actors which have the given name
+ * @return Vector of pointers to actor
  */
 std::vector<Actor*> LayerCollection::get_actors(std::string name) {
     std::vector<Actor*> actor_list;
@@ -213,8 +225,8 @@ std::vector<Actor*> LayerCollection::get_actors(std::string name) {
 }
 
 /**
- * @brief Fetches first actor which conforms the supplied parameter
- * @return Confirming Actor
+ * @brief Fetch first actor which has the name
+ * @return Pointer to matching actor
  */
 Actor* LayerCollection::get_actor(std::string name) {
     for(auto& layer : get_object_layers()) {
@@ -264,4 +276,58 @@ std::vector<ObjectLayer*> LayerCollection::get_object_layers() {
         }
     }
     return layer_list;
+}
+
+/**
+ * @brief Checks for actor -- actor and actor -- tile(without default hitboxes) collision
+ * and then calls the on_collision callback of each actor
+ */
+void LayerCollection::collision_check() {
+    // Iterate over the hitboxes of all actors
+    for(Actor* left_actor : get_actors()) {
+        for(auto& hitbox_left : left_actor->get_hitboxes()) {
+
+            // Iterate over all actors possibly bounding with the hitbox
+            for(ObjectLayer* layer : get_object_layers()) {
+                for(Actor* right_actor : layer->get_clip(hitbox_left.second)) {
+                    if(left_actor == right_actor) {continue;}
+
+                    // Iterate over the hitboxes of the other actor and check each for collision
+                    for(auto& hitbox_right : right_actor->get_hitboxes()) {
+                        SDL_Rect intersect;
+                        if(SDL_IntersectRect(&hitbox_left.second, &hitbox_right.second, &intersect)) {
+                            // Trigger callback of left actor
+                            Cause c = Cause(right_actor, hitbox_left.first, hitbox_right.first);
+                            left_actor->respond(Response::on_collision, c);
+                            //std::cerr << left_actor->get_name() << " " << hitbox_left.first << " collide with " << right_actor->get_name() << " " << hitbox_right.first << "\n";
+                        }
+                    }
+                }
+            }
+
+            // Iterate over all tiles possibly bounding with the hitbox
+            for(MapLayer* layer : get_map_layers()) {
+                for(auto& tile : layer->clip(hitbox_left.second)) {
+                    const TilesetCollection& tsc = m_base_map->get_ts_collection();
+                    Tile* tile_pointer = tsc.get_tile(std::get<0>(tile));
+                    auto hitboxes = tile_pointer->get_hitboxes(true);
+                    hitboxes.erase("COLLIDE");
+
+                    // Iterate over the hitboxes of the tile and check each for collision
+                    for(auto& hitbox_right : hitboxes) {
+                        hitbox_right.second.x += std::get<1>(tile);
+                        hitbox_right.second.y += std::get<2>(tile);
+                        SDL_Rect relative_left {0,0,hitbox_left.second.w,hitbox_left.second.h};
+                        SDL_Rect intersect;
+                        if(SDL_IntersectRect(&relative_left, &hitbox_right.second, &intersect)) {
+                            // Trigger callback of actor
+                            Cause c = Cause(tile_pointer, hitbox_left.first, hitbox_right.first);
+                            left_actor->respond(Response::on_collision, c);
+                            // std::cerr << left_actor->get_name() << " " << hitbox_left.first << " collide with " << "TILE" << " " << hitbox_right.first << "\n";
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

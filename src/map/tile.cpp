@@ -470,7 +470,13 @@ void Tile::render(SDL_Rect& dest) const {
 }
 
 /**
- * @brief return copy of hitbox via name
+ * @brief Return the active hitbox by name
+ * @param name The name/type of the hitbox
+ * @param aligned Sets the origin of hitbox relative to tile grid
+ *
+ * The active hitbox is usually the hitbox stored within the m_hitbox member variable
+ * but if the tile is animated it first checks if the currently active frame has the
+ * hitbox of the given name and returns it instead
  */
 SDL_Rect Tile::get_hitbox(std::string name, bool aligned) const {
     if(m_animated) {
@@ -486,7 +492,9 @@ SDL_Rect Tile::get_hitbox(std::string name, bool aligned) const {
 }
 
 /**
- * @brief return copy of hitbox via name
+ * @brief Return the hitbox of this tile by name
+ * @param name The name/type of the hitbox
+ * @param aligned Sets the origin of hitbox relative to tile grid
  */
 SDL_Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
     if(m_hitboxes.find(name) == m_hitboxes.end()) {
@@ -507,6 +515,14 @@ SDL_Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
     }
 }
 
+/**
+ * @brief Return the active hitboxes
+ * @param aligned Sets the origin of hitboxes relative to tile grid
+ *
+ * The active hitboxes are usually stored within the m_hitbox member variable
+ * but if the tile is animated the hitboxes of the active frame get added and
+ * may override the hitboxes of the base tile
+ */
 const std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
     if(m_animated) {
         std::map<std::string, SDL_Rect> hitboxes = get_hitboxes_self(aligned);
@@ -522,6 +538,10 @@ const std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
     return get_hitboxes_self(aligned);
 }
 
+/**
+ * @brief Return the hitboxes of this tile
+ * @param aligned Sets the origin of hitboxes relative to tile grid
+ */
 const std::map<std::string, SDL_Rect> Tile::get_hitboxes_self(bool aligned) const {
     if(aligned) {
         std::map<std::string, SDL_Rect> hitboxes;

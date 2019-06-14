@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -78,19 +78,6 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
  * @return @c bool which indicates sucess
  */
 bool ObjectLayer::render(const Camera& camera) const {
-    /*
-    int x = camera.x() - m_offset_x;
-    int y = camera.y() - m_offset_y;
-    TilesetCollection& ts_collection = m_layer_collection->get_base_map().get_ts_collection();
-    int from = y - ts_collection.get_overhang(Direction::up) * ts_collection.get_tile_h();
-    int to = y + camera.h() + ts_collection.get_overhang(Direction::down) * ts_collection.get_tile_h();
-    // Has y-axis offscreen culling
-    for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
-        int feet = it->get_y();
-        int head = feet - it->get_h();
-        if(feet > from && head < to) {it->render(x,y);}
-    }
-    */
     for(const Actor* actor : get_clip(camera.get_rect())) {
         actor->render(camera.x(), camera.y());
     }
@@ -116,7 +103,7 @@ void ObjectLayer::update() {
 }
 
 /**
- * @brief return a vector of all actors
+ * @brief return a vector of pointers to each actor
  */
 std::vector<Actor*> ObjectLayer::get_actors() {
     std::vector<Actor*> actor_list;
@@ -127,8 +114,8 @@ std::vector<Actor*> ObjectLayer::get_actors() {
 }
 
 /**
- * @brief Fetch all actors which conform the supplied parameters
- * @return Vector of conforming actors
+ * @brief Fetch all actors which have the given name
+ * @return Vector of pointers to actor
  */
 std::vector<Actor*> ObjectLayer::get_actors(std::string name) {
     std::vector<Actor*> actor_list;
@@ -141,8 +128,8 @@ std::vector<Actor*> ObjectLayer::get_actors(std::string name) {
 }
 
 /**
- * @brief Fetch first actor which conforms the supplied parameters
- * @return Confirming actor
+ * @brief Fetch first actor which has the name
+ * @return Pointer to matching actor
  */
 Actor* ObjectLayer::get_actor(std::string name) {
     for(Actor& actor : m_obj_grid) {
@@ -153,6 +140,9 @@ Actor* ObjectLayer::get_actor(std::string name) {
     return nullptr;
 }
 
+/**
+ * @brief Returns a vector of pointers to actor which contains all actors which are within or intersect with the given rect
+ */
 std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
 
     TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
@@ -165,6 +155,7 @@ std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
 
     std::vector<Actor*> actor_list;
     for(Actor& actor : m_obj_grid) {
+        // This could possibly refactored for performance gain
         if(actor.get_x() > window.x &&
            actor.get_x() < window.x + window.w &&
            actor.get_y() > window.y &&
@@ -176,6 +167,7 @@ std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
     return actor_list;
 }
 
+/// Const variant of get_clip(), needed for constant render() function
 std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
     TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
     SDL_Rect window = rect;

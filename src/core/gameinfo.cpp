@@ -38,7 +38,6 @@ GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
 	if( !init() ) {
 		std::cerr << "Failed to initialize!\n";
 	}
-
 }
 
 /**
@@ -128,7 +127,6 @@ void GameInfo::close_map() {
  * @brief Updates the map
  * @return @c bool which is false if game ended
  */
-
 bool GameInfo::update() {
 
     //Event handler

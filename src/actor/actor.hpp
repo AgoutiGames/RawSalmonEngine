@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -47,7 +47,6 @@ struct ActorTemplate {
  *
  * @note Actors can only be constructed from parsed @c ActorTemplate
  */
-
 class Actor{
 
     public:
@@ -71,7 +70,7 @@ class Actor{
         bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
         bool respond(Response r, Cause c = Cause());
 
-        // Getters
+        // Trivial Getters
         AnimationType get_animation() const {return m_anim_state;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
@@ -83,13 +82,11 @@ class Actor{
         unsigned get_h() const {return m_height;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
-
+        EventQueue<Actor>& get_event_queue() {return m_events;}
         DataBlock& get_data() {return m_data;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
-
-        EventQueue<Actor>& get_event_queue() {return m_events;}
 
     private:
         MapData* m_map;

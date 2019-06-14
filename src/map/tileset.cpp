@@ -368,7 +368,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                         event.first = event.second->get_name();
                         base_map.register_event<Actor>(event);
                     }
-                    std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                    // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
                     break;
                 }
 
@@ -384,7 +384,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                         event.first = event.second->get_name();
                         base_map.register_event<MapData>(event);
                     }
-                    std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                    // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
                     break;
                 }
 
@@ -400,7 +400,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                         event.first = event.second->get_name();
                         base_map.register_event<GameInfo>(event);
                     }
-                    std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                    // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
                     break;
                 }
 

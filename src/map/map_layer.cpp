@@ -117,8 +117,8 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
 bool MapLayer::render(const Camera& camera) const {
     bool success = true;
     for(auto& t : clip(camera.get_rect())) {
-        if(std::get<0>(t) != 0) {
-            if(!m_ts_collection->render(std::get<0>(t),std::get<1>(t),std::get<2>(t))) success = false;
+        if(!m_ts_collection->render(std::get<0>(t),std::get<1>(t),std::get<2>(t))) {
+            success = false;
         }
     }
     return success;
@@ -181,7 +181,10 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
 
                     // Get tile id from map layer data and draw at current position if tile_id is not 0
                     Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
-                    tiles.emplace_back(tile_id, x, y);
+                    // Scrap empty tiles!
+                    if(tile_id != 0) {
+                        tiles.emplace_back(tile_id, x, y);
+                    }
                 }
                 // Move to next horizontal tile position
                 x += tile_w;

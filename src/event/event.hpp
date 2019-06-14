@@ -92,7 +92,7 @@ template <class T>
 bool Event<Scope>::register_class() {
     Event<Scope>* event = new T();
     get_dict()[event->get_type()] = event;
-    std::cerr << "Just registered " << event->get_type() << "\n";
+    // std::cerr << "Just registered " << event->get_type() << "\n";
     return true;
 }
 
