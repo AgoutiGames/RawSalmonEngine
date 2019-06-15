@@ -75,6 +75,10 @@ class MapData {
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
         LayerCollection& get_layer_collection() {return m_layer_collection;}
         EventQueue<MapData>& get_event_queue() {return m_events;}
+        Camera& get_camera() {return m_camera;}
+
+        // Binds or unbinds camera from player position
+        void bind_camera_to_player(bool state) {if(!state) {m_camera.unbind_player();} m_player_to_camera = state;}
 
         // Event management
         template<class Scope=Actor, class Key=std::string>
@@ -126,6 +130,7 @@ class MapData {
         DataBlock m_data; ///< This holds custom user values by string
 
         Camera m_camera;
+        bool m_player_to_camera = true;
 
         LayerCollection m_layer_collection;
 

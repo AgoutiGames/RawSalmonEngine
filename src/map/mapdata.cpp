@@ -126,7 +126,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     else {
         m_player = actor_list[0];
 
-        m_camera.bind_player(m_player);
+        if(m_player_to_camera) {m_camera.bind_player(m_player);}
     }
 
     // By default bind the camera to the map borders
@@ -162,6 +162,20 @@ void MapData::update() {
 
     // Do nothing with returned signal because we don't have to
     m_events.process_events(*this);
+
+    // Check for active actor called PLAYER because it may change during execution
+    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string("PLAYER"));
+    if(actor_list.size() > 1) {
+        std::cerr << "Error: More than one actor called PLAYER!\n";
+    }
+    else if(actor_list.size() == 0) {
+        std::cerr << "Error: No actor called PLAYER found!\n";
+    }
+    else {
+        m_player = actor_list[0];
+
+        if(m_player_to_camera) {m_camera.bind_player(m_player);}
+    }
 }
 
 /**
