@@ -50,26 +50,6 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     XMLError eResult;
     std::string full_path;
 
-    // Better read this from the tiled map as a custom property
-    std::vector<std::string> symbolic_tilesets{"events.tsx", "key_mapping.tsx"};
-
-    for(std::string name : symbolic_tilesets) {
-        XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
-        full_path = m_base_path + name;
-        eResult = sym_ts.LoadFile(full_path.c_str());
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Can't find" << name << " at relative path: " << full_path << "\n";
-            return eResult;
-        }
-        XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
-        if (pSymTs == nullptr) {return XML_ERROR_PARSING_ELEMENT;}
-        eResult = Tileset::parse_symbolic(pSymTs, *this);
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at parsing symbolic tileset " << name << "\n";
-            return eResult;
-        }
-    }
-
     // Read in the .tmx file to mapfile var
     full_path = m_base_path + filename;
     tinyxml2::XMLDocument mapfile{true, tinyxml2::COLLAPSE_WHITESPACE};
@@ -92,6 +72,53 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     // Parse possible backgroundcolor
     parse::bg_color(pMap, m_bg_color); // Discard Result since missing bg_color is generally okay
+
+    // Parse properties containing symbolic tilesets or the on_load callback
+    std::vector<std::string> symbolic_tilesets;
+    std::string on_load = "";
+    XMLElement* pProp = pMap->FirstChildElement("properties");
+    if (pMap != nullptr) {
+        pProp = pProp->FirstChildElement("property");
+        while(pProp != nullptr) {
+            if(std::string("ON_LOAD") == pProp->Attribute("name")) {
+                on_load = pProp->Attribute("value");
+            }
+            else {
+                symbolic_tilesets.push_back(pProp->Attribute("value"));
+                // std::cerr << "parsed " << pProp->Attribute("value") << "\n";
+            }
+            pProp = pProp->NextSiblingElement();
+        }
+    }
+
+    // Parse all symbolic tilesets
+    for(std::string name : symbolic_tilesets) {
+        XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
+        full_path = m_base_path + name;
+        eResult = sym_ts.LoadFile(full_path.c_str());
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Can't find " << name << " at relative path: " << full_path << "\n";
+            return eResult;
+        }
+        XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
+        if (pSymTs == nullptr) {return XML_ERROR_PARSING_ELEMENT;}
+        eResult = Tileset::parse_symbolic(pSymTs, *this);
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at parsing symbolic tileset " << name << "\n";
+            return eResult;
+        }
+    }
+
+    if(on_load != "") {
+        if(check_event_convert_map(on_load) != true) {
+            std::cerr << "The event: " << on_load << " couldn't be found / is no valid game or map event\n";
+            std::cerr << "Failed adding " << on_load << " as the ON_LOAD callback to map\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_on_load = get_event_convert_map(on_load);
+        }
+    }
 
     // First parse tilesets, then layers, because layers depend on tileset information
 
@@ -131,6 +158,11 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     // By default bind the camera to the map borders
     m_camera.bind_map(get_w(),get_h());
+
+    // Trigger the ON_LOAD callback event
+    if(m_on_load.valid()) {
+        m_events.add_event(m_on_load);
+    }
 
     return XML_SUCCESS;
 }

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="18">
+ <properties>
+  <property name="EVENT1" type="file" value="events.tsx"/>
+  <property name="KEY1" type="file" value="key_mapping.tsx"/>
+ </properties>
  <tileset firstgid="1" name="basic_blocks" tilewidth="16" tileheight="16" tilecount="6" columns="3">
   <image source="tilesets/mini_ts.png" width="48" height="32"/>
   <tile id="0">

@@ -148,6 +148,7 @@ class MapData {
         WideEventCollection m_event_archive;
 
         EventQueue<MapData> m_events;
+        SmartEvent<MapData> m_on_load;
 
         SDL_Renderer** mpp_renderer = nullptr;
 };
