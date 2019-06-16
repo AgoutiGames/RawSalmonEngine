@@ -35,7 +35,9 @@ class EventQueue {
     public:
         EventSignal process_events(Scope& target);
 
-        void add_event(SmartEvent<Scope> event);
+        void add_event(SmartEvent<Scope> event) {m_event_buffer.push_back(event);}
+        void add_event_internal(SmartEvent<Scope> event);
+        void release_buffer();
         unsigned scrap_event(std::string name, SmartEvent<Scope>* except = nullptr);
 
         void set_cooldown(std::string name, float dur_sec) {m_timestamp[name] = SDL_GetTicks() + dur_sec * 1000;}
@@ -62,6 +64,8 @@ class EventQueue {
         std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
         std::vector<SmartEvent<Scope>> m_event_pipeline; ///< Vector of current events to be processed
 
+        std::vector<SmartEvent<Scope>> m_event_buffer; ///< Added events are buffered and released right before processing
+
 };
 
 /**
@@ -71,6 +75,7 @@ class EventQueue {
  */
 template<class Scope>
 EventSignal EventQueue<Scope>::process_events(Scope& target) {
+    release_buffer();
     for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
         SmartEvent<Scope>& event = m_event_pipeline[i];
         EventSignal signal = event->process(target);
@@ -98,7 +103,7 @@ EventSignal EventQueue<Scope>::process_events(Scope& target) {
  * @note We assume that the passed in events are cloned/we manage their memory now!
  */
 template<class Scope>
-void EventQueue<Scope>::add_event(SmartEvent<Scope> event) {
+void EventQueue<Scope>::add_event_internal(SmartEvent<Scope> event) {
     if(!is_blocked(event->get_type()) && !is_blocked(event->get_name())
        && !is_blocked(event->get_cause().get_key())
        && !in_cooldown(event->get_type()) && !in_cooldown(event->get_name())) {
@@ -181,6 +186,17 @@ bool EventQueue<Scope>::in_cooldown(std::string name) const {
         return true;
     }
     else {return false;}
+}
+
+/**
+ * @brief Adds all buffered events to the pipeline
+ */
+template<class Scope>
+void EventQueue<Scope>::release_buffer() {
+    for(SmartEvent<Scope>& event : m_event_buffer) {
+        add_event_internal(event);
+    }
+    m_event_buffer.clear();
 }
 
 

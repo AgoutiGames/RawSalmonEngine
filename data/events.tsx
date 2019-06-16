@@ -242,6 +242,21 @@
    <property name="SUCCESS" value="W-Right"/>
   </properties>
  </tile>
+ <tile id="90" type="AeDecelerate">
+  <properties>
+   <property name="NAME" value="lava_float"/>
+   <property name="XFACTOR" type="float" value="5"/>
+   <property name="YFACTOR" type="float" value="33"/>
+  </properties>
+ </tile>
+ <tile id="91" type="AeSwitchCollision">
+  <properties>
+   <property name="MY_HITBOX" value="COLLIDE"/>
+   <property name="NAME" value="actor_lava"/>
+   <property name="OTHER_HITBOX" value="LAVA"/>
+   <property name="TRIGGER_EVENT" value="lava_float"/>
+  </properties>
+ </tile>
  <tile id="93" type="AeAnimate">
   <properties>
    <property name="ANIMATION_TYPE" value="WALK"/>

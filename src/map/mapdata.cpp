@@ -92,6 +92,8 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     }
 
     // Parse all symbolic tilesets
+    /// @warning Dont mix key mapping and event mapping .tsx files
+    /// @warning Watch for valid ordering of symbolic tilesets (You can bind a event to a key only after it already got parsed)
     for(std::string name : symbolic_tilesets) {
         XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
         full_path = m_base_path + name;

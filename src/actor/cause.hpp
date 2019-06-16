@@ -52,8 +52,8 @@ class Cause{
         bool actor() const {return type == CauseType::actor;}
         bool none() const {return type == CauseType::none;}
 
-        std::string my_hitbox() {return my_hitbox_name;}
-        std::string other_hitbox() {return other_hitbox_name;}
+        std::string my_hitbox() const {return my_hitbox_name;}
+        std::string other_hitbox() const {return other_hitbox_name;}
 
         // Return cause objects
         const SDL_Keysym get_key() const {return type == CauseType::key ? data.key : SDL_Keysym();}

@@ -57,7 +57,7 @@ public:
     EventSignal get_signal() const {return m_signal;}
 
     void set_cause(Cause x) {m_cause = x;}
-    Cause get_cause() const {return m_cause;}
+    const Cause& get_cause() const {return m_cause;}
 
     static Event<Scope>* parse(tinyxml2::XMLElement* source, MapData& base_map);
 

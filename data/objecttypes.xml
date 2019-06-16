@@ -128,6 +128,15 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeSwitchCollision" color="#a0a0a4">
+  <property name="MY_HITBOX" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="OTHER_HITBOX" type="string"/>
+  <property name="OTHER_NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="TRIGGER_EVENT" type="string"/>
+ </objecttype>
  <objecttype name="AteOnGround" color="#a0a0a4">
   <property name="CONTINUOUS" type="bool" default="false"/>
   <property name="DIRECTION" type="string" default="DOWN"/>

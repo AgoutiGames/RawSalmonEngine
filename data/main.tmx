@@ -13,7 +13,7 @@
   </tile>
   <tile id="4">
    <objectgroup draworder="index">
-    <object id="1" name="Lava" x="0" y="0" width="16" height="16"/>
+    <object id="1" name="LAVA" x="0" y="0" width="16" height="16"/>
    </objectgroup>
   </tile>
  </tileset>

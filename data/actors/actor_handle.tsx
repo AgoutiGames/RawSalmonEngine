@@ -6,6 +6,7 @@
    <property name="ACTOR_NAME" value="BLOCKY"/>
    <property name="DIRECTION" value="RIGHT"/>
    <property name="ON_ALWAYS" value="Physics"/>
+   <property name="ON_COLLISION" value="actor_lava"/>
    <property name="ON_IDLE" value="IdleLast"/>
   </properties>
   <objectgroup draworder="index">
