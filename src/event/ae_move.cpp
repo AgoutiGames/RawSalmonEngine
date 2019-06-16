@@ -38,7 +38,8 @@ const bool AeMove::good = Event<Actor>::register_class<AeMove>();
  */
 EventSignal AeMove::process(Actor& actor) {
 
-    constexpr float FPS = 60;
+    // constexpr float FPS = 60;
+    float delta = actor.get_map().get_delta_time();
 
     DataBlock& values = actor.get_data();
 
@@ -46,7 +47,7 @@ EventSignal AeMove::process(Actor& actor) {
     if(m_x_factor != 0.0f) {
         float temp = values.get_val_float(m_x_speed_name);
         if(temp != 0.0f) {
-            if(!actor.move((temp * m_x_factor) / FPS, 0.0f)) {
+            if(!actor.move((temp * m_x_factor) * delta, 0.0f)) {
                 values.set_val(m_x_speed_name, 0.0f);
                 collided = true;
             }
@@ -56,7 +57,7 @@ EventSignal AeMove::process(Actor& actor) {
     if(m_y_factor != 0.0f) {
         float temp = values.get_val_float(m_y_speed_name);
         if(temp != 0.0f) {
-            if(!actor.move(0.0f, (temp * m_y_factor) / FPS)) {
+            if(!actor.move(0.0f, (temp * m_y_factor) * delta)) {
                 values.set_val(m_y_speed_name, 0.0f);
                 collided = true;
             }

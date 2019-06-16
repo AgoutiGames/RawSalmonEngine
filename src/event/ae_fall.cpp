@@ -37,14 +37,16 @@ const bool AeFall::good = Event<Actor>::register_class<AeFall>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeFall::process(Actor& actor) {
-    constexpr float FPS = 60;
-    m_speed += m_acceleration / FPS;
+    // constexpr float FPS = 60;
+    float delta = actor.get_map().get_delta_time();
+
+    m_speed += m_acceleration * delta;
     if(m_speed > m_max_velocity) {m_speed = m_max_velocity;}
     std::vector<float> way = dir_to_mov(m_fall_dir);
     float pos = actor.get_y();
 
     if(!actor.on_ground(m_fall_dir)) {
-        actor.move(way[0] * m_speed / FPS, way[1] * m_speed / FPS);
+        actor.move(way[0] * m_speed * delta, way[1] * m_speed * delta);
         actor.get_event_queue().block_event(m_alias);
         actor.animate(m_animation, m_anim_dir);
         // std::cerr << "Fall: " << actor.get_y() - pos << " Actor pos x: "<< actor.get_x() << " y: " << actor.get_y() << "\n";

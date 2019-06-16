@@ -39,27 +39,31 @@ const bool AeDecelerate::good = Event<Actor>::register_class<AeDecelerate>();
 EventSignal AeDecelerate::process(Actor& actor) {
     bool at_zero_speed = false;
     DataBlock& values = actor.get_data();
-    if(m_x_factor != 0.0f) {
+
+    float x_factor = m_x_factor * actor.get_map().get_delta_time();
+    float y_factor = m_y_factor * actor.get_map().get_delta_time();
+
+    if(x_factor != 0.0f) {
         float temp = values.get_val_float(m_x_speed_name);
         if(temp > 0.0f) {
-            if(temp > m_x_factor) {values.set_val(m_x_speed_name, temp - m_x_factor);}
+            if(temp > x_factor) {values.set_val(m_x_speed_name, temp - x_factor);}
             else {values.set_val(m_x_speed_name, 0.0f);}
         }
         else if(temp < 0.0f) {
-            if(temp < -m_x_factor) {values.set_val(m_x_speed_name, temp + m_x_factor);}
+            if(temp < -x_factor) {values.set_val(m_x_speed_name, temp + x_factor);}
             else {values.set_val(m_x_speed_name, 0.0f);}
         }
         else {at_zero_speed = true;}
     }
 
-    if(m_y_factor != 0.0f) {
+    if(y_factor != 0.0f) {
         float temp = values.get_val_float(m_y_speed_name);
         if(temp > 0.0f) {
-            if(temp > m_y_factor) {values.set_val(m_y_speed_name, temp - m_y_factor);}
+            if(temp > y_factor) {values.set_val(m_y_speed_name, temp - y_factor);}
             else {values.set_val(m_y_speed_name, 0.0f);}
         }
         else if(temp < 0.0f) {
-            if(temp < -m_y_factor) {values.set_val(m_y_speed_name, temp + m_y_factor);}
+            if(temp < -y_factor) {values.set_val(m_y_speed_name, temp + y_factor);}
             else {values.set_val(m_y_speed_name, 0.0f);}
         }
         else {at_zero_speed = true;}

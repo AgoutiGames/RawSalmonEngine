@@ -187,6 +187,11 @@ bool MapData::render() const{
  * @brief Calls update function of all map layers and animates tiles
  */
 void MapData::update() {
+    static Uint32 time = SDL_GetTicks();
+
+    Uint32 new_time = SDL_GetTicks();
+    m_delta_time = (new_time - time) / 1000.f;
+    time = new_time;
 
     m_layer_collection.update();
 

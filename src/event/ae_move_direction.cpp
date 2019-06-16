@@ -38,11 +38,12 @@ const bool AeMoveDirection::good = Event<Actor>::register_class<AeMoveDirection>
  */
 EventSignal AeMoveDirection::process(Actor& actor) {
     // process stuff
+    float speed = m_speed * actor.get_map().get_delta_time();
     if (m_duration != 0) {
         std::vector<float> mov_factors;
         if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
         else {mov_factors = dir_to_mov(m_direction);}
-        if(actor.move(mov_factors[0], mov_factors[1])) {
+        if(actor.move(mov_factors[0] * speed, mov_factors[1] * speed)) {
             actor.animate(m_animation, m_direction);
             m_duration--;
         }

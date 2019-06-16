@@ -108,14 +108,16 @@
  <tile id="14" type="AeAccelerate">
   <properties>
    <property name="NAME" value="AccLeft"/>
-   <property name="XFACTOR" type="float" value="-33"/>
+   <property name="XFACTOR" type="float" value="-500"/>
+   <property name="XMAX_SPEED" type="float" value="-300"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
  <tile id="15" type="AeAccelerate">
   <properties>
    <property name="NAME" value="AccRight"/>
-   <property name="XFACTOR" type="float" value="33"/>
+   <property name="XFACTOR" type="float" value="500"/>
+   <property name="XMAX_SPEED" type="float" value="300"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
@@ -127,7 +129,7 @@
  <tile id="17" type="AeDecelerate">
   <properties>
    <property name="NAME" value="Decelerate"/>
-   <property name="XFACTOR" type="float" value="30"/>
+   <property name="XFACTOR" type="float" value="300"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
@@ -151,15 +153,15 @@
   <properties>
    <property name="NAME" value="Jump_Dyn"/>
    <property name="XFACTOR" type="float" value="0"/>
-   <property name="YFACTOR" type="float" value="-1250"/>
-   <property name="YMAX_SPEED" type="float" value="-1250"/>
+   <property name="YFACTOR" type="float" value="-999999999"/>
+   <property name="YMAX_SPEED" type="float" value="-500"/>
   </properties>
  </tile>
  <tile id="21" type="AeAccelerate">
   <properties>
    <property name="NAME" value="Fall_Dyn"/>
    <property name="XFACTOR" type="float" value="0"/>
-   <property name="YFACTOR" type="float" value="50"/>
+   <property name="YFACTOR" type="float" value="1000"/>
    <property name="YMAX_SPEED" type="float" value="10000"/>
   </properties>
  </tile>
@@ -181,21 +183,23 @@
  <tile id="24" type="AeAccelerate">
   <properties>
    <property name="NAME" value="AccLeftAir"/>
-   <property name="XFACTOR" type="float" value="-15"/>
-   <property name="XMAX_SPEED" type="float" value="-500"/>
+   <property name="XFACTOR" type="float" value="-200"/>
+   <property name="XMAX_SPEED" type="float" value="-300"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
  <tile id="25" type="AeAccelerate">
   <properties>
    <property name="NAME" value="AccRightAir"/>
-   <property name="XFACTOR" type="float" value="15"/>
+   <property name="XFACTOR" type="float" value="200"/>
+   <property name="XMAX_SPEED" type="float" value="300"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
  <tile id="27" type="AeDecelerate">
   <properties>
    <property name="NAME" value="DecelerateAir"/>
+   <property name="XFACTOR" type="float" value="100"/>
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
@@ -245,8 +249,8 @@
  <tile id="90" type="AeDecelerate">
   <properties>
    <property name="NAME" value="lava_float"/>
-   <property name="XFACTOR" type="float" value="5"/>
-   <property name="YFACTOR" type="float" value="33"/>
+   <property name="XFACTOR" type="float" value="45"/>
+   <property name="YFACTOR" type="float" value="300"/>
   </properties>
  </tile>
  <tile id="91" type="AeSwitchCollision">

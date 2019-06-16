@@ -70,6 +70,7 @@ class MapData {
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
         unsigned get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Returns map width in pixels
         unsigned get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
+        float get_delta_time() const {return m_delta_time;}
         DataBlock& get_data() {return m_data;}
         GameInfo& get_game() {return *m_game;}
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
@@ -128,6 +129,7 @@ class MapData {
         SDL_Color m_bg_color;
 
         DataBlock m_data; ///< This holds custom user values by string
+        float m_delta_time = 0.f;
 
         Camera m_camera;
         bool m_player_to_camera = true;

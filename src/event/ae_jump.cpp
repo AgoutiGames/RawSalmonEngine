@@ -45,12 +45,13 @@ EventSignal AeJump::process(Actor& actor) {
     }
 
     constexpr float FPS = 60;
+    float delta = actor.get_map().get_delta_time() * FPS;
 
     if(m_deceleration == 0) {
-        float steps = FPS * m_duration;
+        float steps = delta * m_duration;
         steps = m_jump_height / steps;
         m_speed = steps * 2;
-        m_deceleration = m_speed / (FPS * m_duration);
+        m_deceleration = m_speed / (delta * m_duration);
     }
 
     if(!actor.move(0, -m_speed)) {

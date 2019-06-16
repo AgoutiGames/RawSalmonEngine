@@ -38,12 +38,13 @@ const bool AeMoveSustained::good = Event<Actor>::register_class<AeMoveSustained>
  */
 EventSignal AeMoveSustained::process(Actor& actor) {
     // process stuff
+    float speed = m_speed * actor.get_map().get_delta_time();
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     if (keys[get_cause().get_key().scancode]) {
         std::vector<float> mov_factors;
         if(m_direction == Direction::current) {mov_factors = dir_to_mov(actor.get_direction());}
         else {mov_factors = dir_to_mov(m_direction);}
-        if(actor.move(mov_factors[0], mov_factors[1])) {
+        if(actor.move(mov_factors[0] * speed, mov_factors[1] * speed)) {
             actor.animate(m_animation, m_direction);
         }
         else {
