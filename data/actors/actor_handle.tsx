@@ -11,8 +11,6 @@
   </properties>
   <objectgroup draworder="index">
    <object id="1" x="6" y="12" width="20" height="20"/>
-   <object id="4" name="HEAD" x="8" y="13.5625" width="16.3125" height="6.875"/>
-   <object id="5" name="MOUTH" x="11.5625" y="23.9375" width="8" height="6.75"/>
   </objectgroup>
  </tile>
 </tileset>

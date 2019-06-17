@@ -203,6 +203,39 @@
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
+ <tile id="60" type="AeSound">
+  <properties>
+   <property name="NAME" value="PickupSound"/>
+   <property name="PATH" type="file" value="audio/Collectible.ogg"/>
+  </properties>
+ </tile>
+ <tile id="61" type="AeAnimate">
+  <properties>
+   <property name="ANIMATION_FRAMES" type="int" value="4"/>
+   <property name="ANIMATION_TYPE" value="WALK"/>
+   <property name="NAME" value="Disappear"/>
+   <property name="SIGNAL" value="STOP"/>
+  </properties>
+ </tile>
+ <tile id="62" type="AeEraseThis">
+  <properties>
+   <property name="NAME" value="kill"/>
+  </properties>
+ </tile>
+ <tile id="63" type="AeMulti">
+  <properties>
+   <property name="1" value="PickupSound"/>
+   <property name="2" value="Disappear"/>
+   <property name="3" value="kill"/>
+   <property name="NAME" value="CoinPickup"/>
+  </properties>
+ </tile>
+ <tile id="64" type="AteSingle">
+  <properties>
+   <property name="EVENT_NAME" value="CoinPickup"/>
+   <property name="NAME" value="CoinPickupSafe"/>
+  </properties>
+ </tile>
  <tile id="79" type="AteOnGround">
   <properties>
    <property name="FAILURE" value="DecelerateAir"/>

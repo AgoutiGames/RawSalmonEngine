@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_multi.hpp" //< Change this!
+#include "event/ae_wait.hpp"
 
 #include <string>
 #include <map>
@@ -27,41 +27,49 @@
 #include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-const std::string AeMulti::m_alias = "AeMulti";
+const std::string AeWait::m_alias = "AeWait";
 
-const bool AeMulti::good = Event<Actor>::register_class<AeMulti>();
+const bool AeWait::good = Event<Actor>::register_class<AeWait>();
 
 /**
- * @brief Process the contained events
- * @param actor The actor which gets processed by each event
+ * @brief Do ...
+ * @param Actor The Actor which should ...
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeMulti::process(Actor& actor) {
-    EventSignal sig = m_events.process_events(actor);
-    switch(sig) {
-    // If all events played without problems
-    case (EventSignal::next) : {return get_signal();}
-    // If something special happened
-    default : {return sig;}
+EventSignal AeWait::process(Actor& scope) {
+    // Skip first delta time
+    if(m_first) {
+        m_first = false;
     }
+    else {
+        m_time -= scope.get_map().get_delta_time();
+        if(m_time <= 0.0f) {
+            return EventSignal::end;
+        }
+    }
+    return m_signal;
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param base_map Seldomly used in parser to fetch actors or other events
+ * @param base_map Seldomly used in parser to fetch Actors or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
+tinyxml2::XMLError AeWait::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
+
+    m_signal = EventSignal::stop;
 
     Parser parser(base_map);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
-    std::vector<std::string> event_names;
-    parser.add(event_names);
+    parser.add(m_time, "TIME");
+
+    // Add additional members here
+    //parser.add(m_STUFF, "STUFF");
 
     XMLError eResult = parser.parse(source);
 
@@ -75,26 +83,5 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    for(std::string value : event_names) {
-        if(!base_map.check_event_convert_actor(value)) {
-            std::cerr << "Event " << value << " has not been parsed before!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_events.add_event_internal(base_map.get_event_convert_actor(value));
-        }
-    }
-
     return XML_SUCCESS;
 }
-
-/**
- * @brief Set cause to every contained event
- */
-void AeMulti::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
-    for(SmartEvent<Actor>& e : m_events.get_events()) {
-        e->set_cause(x);
-    }
-}
-

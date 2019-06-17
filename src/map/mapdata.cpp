@@ -191,6 +191,8 @@ void MapData::update() {
 
     Uint32 new_time = SDL_GetTicks();
     m_delta_time = (new_time - time) / 1000.f;
+    // If debugging use this
+    // m_delta_time = 1.0f / 60.0f;
     time = new_time;
 
     m_layer_collection.update();

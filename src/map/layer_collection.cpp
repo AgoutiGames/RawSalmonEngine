@@ -331,3 +331,31 @@ void LayerCollection::collision_check() {
         }
     }
 }
+
+/// Returns true if the given actor exists
+bool LayerCollection::check_actor(const Actor* actor) {
+    for(Actor* a : get_actors()) {
+        if(a == actor) {return true;}
+    }
+    return false;
+}
+
+/// Erase the actor from object layer
+bool LayerCollection::erase_actor(Actor* pointer) {
+    for(ObjectLayer* l : get_object_layers()) {
+        if(l->erase_actor(pointer)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// Erase the actor from object layer
+bool LayerCollection::erase_actor(std::string name) {
+    for(ObjectLayer* l : get_object_layers()) {
+        if(l->erase_actor(name)) {
+            return true;
+        }
+    }
+    return false;
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,52 +16,60 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "event/ae_multi.hpp" //< Change this!
+#include "event/me_erase_actor.hpp"
 
 #include <string>
 #include <map>
 #include <iostream>
 
-#include "actor/actor.hpp"
+#include "map/mapdata.hpp"
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 #include "util/game_types.hpp"
 
-const std::string AeMulti::m_alias = "AeMulti";
+const std::string MeEraseActor::m_alias = "MeEraseActor";
 
-const bool AeMulti::good = Event<Actor>::register_class<AeMulti>();
+const bool MeEraseActor::good = Event<MapData>::register_class<MeEraseActor>();
 
 /**
- * @brief Process the contained events
- * @param actor The actor which gets processed by each event
+ * @brief Do ...
+ * @param MapData The MapData which should ...
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
-EventSignal AeMulti::process(Actor& actor) {
-    EventSignal sig = m_events.process_events(actor);
-    switch(sig) {
-    // If all events played without problems
-    case (EventSignal::next) : {return get_signal();}
-    // If something special happened
-    default : {return sig;}
+EventSignal MeEraseActor::process(MapData& scope) {
+    if(m_actor_pointer != nullptr) {
+        if(scope.get_layer_collection().erase_actor(m_actor_pointer)) {
+            return EventSignal::end;
+        }
+        else {
+            return EventSignal::abort;
+        }
+    }
+    else if(scope.get_layer_collection().erase_actor(m_actor_name)) {
+        return EventSignal::end;
+    }
+    else {
+        return EventSignal::abort;
     }
 }
 
 /**
  * @brief Parse event from symbolic tile
  * @param source The symbolic tile XMLElement
- * @param base_map Seldomly used in parser to fetch actors or other events
+ * @param base_map Seldomly used in parser to fetch MapDatas or other events
  * @return @c XMLError indication sucess or failure of parsing
  */
-tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
+tinyxml2::XMLError MeEraseActor::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
     Parser parser(base_map);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
-    parser.add(m_signal, "SIGNAL");
-    std::vector<std::string> event_names;
-    parser.add(event_names);
+    parser.add(m_actor_name, "ACTOR_NAME");
+
+    // Add additional members here
+    //parser.add(m_STUFF, "STUFF");
 
     XMLError eResult = parser.parse(source);
 
@@ -75,26 +83,5 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    for(std::string value : event_names) {
-        if(!base_map.check_event_convert_actor(value)) {
-            std::cerr << "Event " << value << " has not been parsed before!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_events.add_event_internal(base_map.get_event_convert_actor(value));
-        }
-    }
-
     return XML_SUCCESS;
 }
-
-/**
- * @brief Set cause to every contained event
- */
-void AeMulti::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
-    for(SmartEvent<Actor>& e : m_events.get_events()) {
-        e->set_cause(x);
-    }
-}
-

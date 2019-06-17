@@ -31,6 +31,7 @@ set(CORE_SOURCES
 set(EVENT_SOURCES
     src/event/ae_accelerate.cpp
     src/event/ae_decelerate.cpp
+    src/event/ae_erase_this.cpp
     src/event/ae_move.cpp
     src/event/ae_move_direction.cpp
     src/event/ae_move_sustained.cpp
@@ -39,11 +40,14 @@ set(EVENT_SOURCES
     src/event/ae_fall.cpp
     src/event/ae_multi.cpp
     src/event/ate_on_ground.cpp
+    src/event/ate_single.cpp
     src/event/ae_set_var.cpp
     src/event/ae_sound.cpp
     src/event/ae_ge_wrapper.cpp
     src/event/ae_me_wrapper.cpp
     src/event/ae_switch_collision.cpp
+    src/event/ae_wait.cpp
+    src/event/me_erase_actor.cpp
     src/event/me_ge_wrapper.cpp
     src/event/me_play_music.cpp
     src/event/me_set_var.cpp

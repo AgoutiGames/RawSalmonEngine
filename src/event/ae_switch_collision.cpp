@@ -51,7 +51,7 @@ EventSignal AeSwitchCollision::process(Actor& scope) {
     }
     else if(c.actor()) {
         const Actor* a = c.get_actor();
-        if( (m_other_name == "" || m_other_name == a->get_name() || m_other_name == a->get_type()) &&
+        if( (m_other_name == "" || !scope.get_map().get_layer_collection().check_actor(a) || m_other_name == a->get_name() || m_other_name == a->get_type()) &&
             (m_my_hitbox == "" || m_my_hitbox == c.my_hitbox()) &&
             (m_other_hitbox == "" || m_other_hitbox == c.other_hitbox())) {
             return m_trigger_event->process(scope);

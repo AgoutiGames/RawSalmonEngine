@@ -188,3 +188,43 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
     }
     return actor_list;
 }
+
+/// Remove actor with given name from layer
+bool ObjectLayer::erase_actor(std::string name) {
+    for (auto itr = m_obj_grid.begin(); itr != m_obj_grid.end(); itr++) {
+        if ((*itr).get_name() == name) {
+            itr = m_obj_grid.erase(itr);
+            return true;
+        }
+    }
+    return false;
+/*
+    for(Actor& a : m_obj_grid) {
+        if(a.get_name() == name) {
+            m_obj_grid.remove(a);
+            return true;
+        }
+    }
+    return false;
+    */
+}
+
+/// Remove actor with given pointer from layer
+bool ObjectLayer::erase_actor(Actor* actor) {
+    for (auto itr = m_obj_grid.begin(); itr != m_obj_grid.end(); itr++) {
+        if (&(*itr) == actor) {
+            itr = m_obj_grid.erase(itr);
+            return true;
+        }
+    }
+    return false;
+
+    /*
+    for(Actor& a : m_obj_grid) {
+        if(&a == actor) {
+            m_obj_grid.remove(a);
+            return true;
+        }
+    }
+    return false;*/
+}

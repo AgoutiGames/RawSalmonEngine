@@ -116,7 +116,7 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
     }
 
     if(get_dict().find(event_type) == get_dict().end()) {
-        std::cerr << "Error: Cant parse event of unknown type\n";
+        std::cerr << "Error: Cant parse event of unknown type: " << event_type << "\n";
         return nullptr;
     }
 

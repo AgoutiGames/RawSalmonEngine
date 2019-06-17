@@ -41,6 +41,8 @@ class ObjectLayer : public Layer{
         std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);
         Actor* get_actor(std::string name);
+        bool erase_actor(std::string name);
+        bool erase_actor(Actor* pointer);
 
         std::vector<Actor*> get_clip(const SDL_Rect& rect);
         std::vector<const Actor*> get_clip(const SDL_Rect& rect) const;

@@ -49,6 +49,9 @@ class LayerCollection {
         std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);
         Actor* get_actor(std::string name);
+        bool check_actor(const Actor* actor);
+        bool erase_actor(std::string name);
+        bool erase_actor(Actor* pointer);
 
         bool collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify = false);
         bool collide_terrain(Actor* actor, bool notify = false);

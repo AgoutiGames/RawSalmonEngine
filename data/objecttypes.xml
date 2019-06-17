@@ -47,6 +47,10 @@
   <property name="YFACTOR" type="float" default="10"/>
   <property name="YSPEED_NAME" type="string" default="__YSPEED"/>
  </objecttype>
+ <objecttype name="AeEraseThis" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
  <objecttype name="AeFall" color="#a0a0a4">
   <property name="ACCELERATION" type="float" default="500"/>
   <property name="ANIMATION_DIRECTION" type="string" default="CURRENT"/>
@@ -137,6 +141,12 @@
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="TRIGGER_EVENT" type="string"/>
  </objecttype>
+ <objecttype name="AeWait" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="STOP"/>
+  <property name="TIME" type="float" default="1"/>
+ </objecttype>
  <objecttype name="AteOnGround" color="#a0a0a4">
   <property name="CONTINUOUS" type="bool" default="false"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
@@ -146,6 +156,11 @@
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="SUCCESS" type="string"/>
   <property name="TOLERANCE" type="int" default="0"/>
+ </objecttype>
+ <objecttype name="AteSingle" color="#a0a0a4">
+  <property name="EVENT_NAME" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
  </objecttype>
  <objecttype name="GeChangeMap" color="#a0a0a4">
   <property name="NAME" type="string"/>
@@ -175,6 +190,11 @@
   <property name="KEYPRESS" type="string"/>
   <property name="SUSTAINED" type="bool" default="false"/>
   <property name="UP" type="bool" default="false"/>
+ </objecttype>
+ <objecttype name="MeEraseActor" color="#a0a0a4">
+  <property name="ACTOR_NAME" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
  </objecttype>
  <objecttype name="MeGeWrapper" color="#a0a0a4">
   <property name="EVENT" type="string"/>

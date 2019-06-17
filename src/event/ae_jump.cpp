@@ -39,6 +39,8 @@ const bool AeJump::good = Event<Actor>::register_class<AeJump>();
  */
 EventSignal AeJump::process(Actor& actor) {
     if(!m_started) {
+        /// @warning This is really really unsafe code!!!
+        /// Better don't use this event at all
         actor.get_event_queue().scrap_event(AeFall().get_type());
         actor.get_event_queue().block_event(AeFall().get_type());
         m_started = true;
