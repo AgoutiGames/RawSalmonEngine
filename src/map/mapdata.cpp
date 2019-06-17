@@ -166,6 +166,8 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         m_events.add_event(m_on_load);
     }
 
+    m_last_update = SDL_GetTicks();
+
     return XML_SUCCESS;
 }
 
@@ -187,13 +189,11 @@ bool MapData::render() const{
  * @brief Calls update function of all map layers and animates tiles
  */
 void MapData::update() {
-    static Uint32 time = SDL_GetTicks();
-
-    Uint32 new_time = SDL_GetTicks();
-    m_delta_time = (new_time - time) / 1000.f;
+    Uint32 current_time = SDL_GetTicks();
+    m_delta_time = (current_time - m_last_update) / 1000.f;
     // If debugging use this
     // m_delta_time = 1.0f / 60.0f;
-    time = new_time;
+    m_last_update = current_time;
 
     m_layer_collection.update();
 

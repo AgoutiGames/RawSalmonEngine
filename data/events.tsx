@@ -203,6 +203,15 @@
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
+ <tile id="59" type="MeSetVar">
+  <properties>
+   <property name="+=" type="bool" value="true"/>
+   <property name="NAME" value="CoinCount"/>
+   <property name="TYPE" value="INT"/>
+   <property name="VALUE" type="int" value="1"/>
+   <property name="VAL_NAME" value="CointCount"/>
+  </properties>
+ </tile>
  <tile id="60" type="AeSound">
   <properties>
    <property name="NAME" value="PickupSound"/>
@@ -226,7 +235,8 @@
   <properties>
    <property name="1" value="PickupSound"/>
    <property name="2" value="Disappear"/>
-   <property name="3" value="kill"/>
+   <property name="3" value="CoinCount"/>
+   <property name="4" value="kill"/>
    <property name="NAME" value="CoinPickup"/>
   </properties>
  </tile>

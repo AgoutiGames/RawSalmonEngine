@@ -121,6 +121,9 @@ bool GameInfo::load_map(std::string mapfile) {
  */
 void GameInfo::close_map() {
     m_maps.pop();
+    if(!m_maps.empty()) {
+        m_maps.top().resume();
+    }
 }
 
 /**

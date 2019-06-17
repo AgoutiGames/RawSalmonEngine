@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="22">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="38">
  <properties>
   <property name="EVENT1" type="file" value="events.tsx"/>
   <property name="KEY1" type="file" value="key_mapping.tsx"/>
@@ -43,5 +43,21 @@
   <object id="19" name="Test Coin 1" gid="27" x="370.667" y="6112.67" width="16" height="16"/>
   <object id="20" name="Test Coin 1" gid="27" x="436" y="6104" width="16" height="16"/>
   <object id="21" name="Test Coin 1" gid="27" x="397.333" y="6136.67" width="16" height="16"/>
+  <object id="22" name="Test Coin 1" gid="27" x="446.666" y="6503" width="16" height="16"/>
+  <object id="23" name="Test Coin 1" gid="27" x="492" y="6479" width="16" height="16"/>
+  <object id="24" name="Test Coin 1" gid="27" x="557.333" y="6470.33" width="16" height="16"/>
+  <object id="25" name="Test Coin 1" gid="27" x="518.666" y="6503" width="16" height="16"/>
+  <object id="26" name="Test Coin 1" gid="27" x="524.666" y="6533" width="16" height="16"/>
+  <object id="27" name="Test Coin 1" gid="27" x="570" y="6509" width="16" height="16"/>
+  <object id="28" name="Test Coin 1" gid="27" x="635.333" y="6500.33" width="16" height="16"/>
+  <object id="29" name="Test Coin 1" gid="27" x="596.666" y="6533" width="16" height="16"/>
+  <object id="30" name="Test Coin 1" gid="27" x="586" y="6563.67" width="16" height="16"/>
+  <object id="31" name="Test Coin 1" gid="27" x="631.334" y="6539.67" width="16" height="16"/>
+  <object id="32" name="Test Coin 1" gid="27" x="696.667" y="6531" width="16" height="16"/>
+  <object id="33" name="Test Coin 1" gid="27" x="658" y="6563.67" width="16" height="16"/>
+  <object id="34" name="Test Coin 1" gid="27" x="802.667" y="6628.34" width="16" height="16"/>
+  <object id="35" name="Test Coin 1" gid="27" x="696" y="6615.67" width="16" height="16"/>
+  <object id="36" name="Test Coin 1" gid="27" x="761.333" y="6607" width="16" height="16"/>
+  <object id="37" name="Test Coin 1" gid="27" x="730" y="6564.34" width="16" height="16"/>
  </objectgroup>
 </map>
