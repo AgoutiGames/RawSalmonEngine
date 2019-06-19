@@ -47,7 +47,7 @@ class AeFall : public Event<Actor>{
         // vv Add members with default values
         float m_acceleration = 500.0f;
         float m_max_velocity = 1000.0f;
-        unsigned m_death_height = 0.0f;
+        int m_death_height = 0.0f;
         Direction m_fall_dir = Direction::down;
 
         AnimationType m_animation = AnimationType::fall;

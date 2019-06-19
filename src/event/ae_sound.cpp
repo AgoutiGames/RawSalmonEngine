@@ -57,7 +57,8 @@ tinyxml2::XMLError AeSound::init(tinyxml2::XMLElement* source, MapData& base_map
     parser.add(m_signal, "SIGNAL");
 
     // Add additional members here
-    parser.add(m_sound, "PATH");
+    std::string m_sound_path = "";
+    parser.add(m_sound_path, "PATH");
 
     XMLError eResult = parser.parse(source);
 
@@ -71,8 +72,14 @@ tinyxml2::XMLError AeSound::init(tinyxml2::XMLElement* source, MapData& base_map
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    if(!m_sound.good()) {
+    if(m_sound_path == "") {
         std::cerr << "Missing sound path property!\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
+    m_sound = SoundEffect(base_map.get_file_path() + m_sound_path);
+    if(!m_sound.good()) {
+        std::cerr << "Audio file: " << base_map.get_file_path() + m_sound_path << " not found!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

@@ -50,9 +50,9 @@ class AeAnimate : public Event<Actor>{
         // vv Add members with default values
         AnimationType m_animation = AnimationType::idle;
         Direction m_direction = Direction::current;
-        unsigned m_cycles = 0;
-        unsigned m_anim_frames = 0;
-        unsigned m_game_frames = 0;
+        int m_cycles = 0;
+        int m_anim_frames = 0;
+        int m_game_frames = 0;
         // Members
 };
 

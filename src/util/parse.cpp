@@ -219,24 +219,6 @@ tinyxml2::XMLError Parser::parse_int(tinyxml2::XMLElement* source) {
  *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
  *                              other XML_ERROR if something went wrong during parsing
  */
-tinyxml2::XMLError Parser::parse_unsigned(tinyxml2::XMLElement* source) {
-    using namespace tinyxml2;
-
-    std::string name(source->Attribute("name"));
-
-    if(m_unsigned.find(name) == m_unsigned.end()) {
-        return XML_ERROR_MISMATCHED_ELEMENT;
-    }
-    return source->QueryUnsignedAttribute("value", m_unsigned.at(name));
-}
-
-/**
- * @brief Check if attribute is known and parse by specified type
- * @param source The @c XMLElement which stores possibly matching attribute
- * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
- *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
- *                              other XML_ERROR if something went wrong during parsing
- */
 tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -246,24 +228,6 @@ tinyxml2::XMLError Parser::parse_float(tinyxml2::XMLElement* source) {
         return XML_ERROR_MISMATCHED_ELEMENT;
     }
     return source->QueryFloatAttribute("value", m_float.at(name));
-}
-
-/**
- * @brief Check if attribute is known and parse by specified type
- * @param source The @c XMLElement which stores possibly matching attribute
- * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
- *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
- *                              other XML_ERROR if something went wrong during parsing
- */
-tinyxml2::XMLError Parser::parse_double(tinyxml2::XMLElement* source) {
-    using namespace tinyxml2;
-
-    std::string name(source->Attribute("name"));
-
-    if(m_double.find(name) == m_double.end()) {
-        return XML_ERROR_MISMATCHED_ELEMENT;
-    }
-    return source->QueryDoubleAttribute("value", m_double.at(name));
 }
 
 /**
@@ -421,37 +385,6 @@ tinyxml2::XMLError Parser::parse_bool(tinyxml2::XMLElement* source) {
  *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
  *                              other XML_ERROR if something went wrong during parsing
  */
-tinyxml2::XMLError Parser::parse_sound(tinyxml2::XMLElement* source) {
-    using namespace tinyxml2;
-
-    std::string name(source->Attribute("name"));
-
-    if(m_sound.find(name) == m_sound.end()) {
-        return XML_ERROR_MISMATCHED_ELEMENT;
-    }
-
-    const char* p_value = source->Attribute("value");
-    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-    std::string value(p_value);
-
-    SoundEffect temp(m_base_map->get_file_path() + value);
-    if(!temp.good()) {
-        std::cerr << "Audio file: " << m_base_map->get_file_path() + value << " not found!\n";
-        return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-
-    *m_sound.at(name) = temp;
-    return XML_SUCCESS;
-}
-
-/**
- * @brief Check if attribute is known and parse by specified type
- * @param source The @c XMLElement which stores possibly matching attribute
- * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
- *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
- *                              other XML_ERROR if something went wrong during parsing
- */
 tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -470,17 +403,14 @@ tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
 /// The constructor makes iteration through all parsing functions possible by adding them to a member function array
 Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
     parsers[0] = &Parser::parse_int;
-    parsers[1] = &Parser::parse_unsigned;
-    parsers[2] = &Parser::parse_float;
-    parsers[3] = &Parser::parse_double;
-    parsers[4] = &Parser::parse_string;
-    parsers[5] = &Parser::parse_priority;
-    parsers[6] = &Parser::parse_signal;
-    parsers[7] = &Parser::parse_direction;
-    parsers[8] = &Parser::parse_animation_type;
-    parsers[9] = &Parser::parse_bool;
-    parsers[10] = &Parser::parse_sound;
-    parsers[11] = &Parser::parse_iteration;
+    parsers[1] = &Parser::parse_float;
+    parsers[2] = &Parser::parse_string;
+    parsers[3] = &Parser::parse_priority;
+    parsers[4] = &Parser::parse_signal;
+    parsers[5] = &Parser::parse_direction;
+    parsers[6] = &Parser::parse_animation_type;
+    parsers[7] = &Parser::parse_bool;
+    parsers[8] = &Parser::parse_iteration;
     /// ! Don't forget adding new parsing member function here!
 }
 
