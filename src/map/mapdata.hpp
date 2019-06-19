@@ -64,7 +64,7 @@ class MapData {
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
         bool render() const;
         void update();
-        void resume() {m_last_update = SDL_GetTicks();} ///< Reset the last timestamp so the map doesn't take the time idling into account
+        void resume();
 
         // Trivial Getters
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
@@ -153,6 +153,8 @@ class MapData {
 
         EventQueue<MapData> m_events;
         SmartEvent<MapData> m_on_load;
+        SmartEvent<MapData> m_on_always;
+        SmartEvent<MapData> m_on_resume;
 
         SDL_Renderer** mpp_renderer = nullptr;
 };

@@ -76,12 +76,20 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     // Parse properties containing symbolic tilesets or the on_load callback
     std::vector<std::string> symbolic_tilesets;
     std::string on_load = "";
+    std::string on_always = "";
+    std::string on_resume = "";
     XMLElement* pProp = pMap->FirstChildElement("properties");
     if (pMap != nullptr) {
         pProp = pProp->FirstChildElement("property");
         while(pProp != nullptr) {
             if(std::string("ON_LOAD") == pProp->Attribute("name")) {
                 on_load = pProp->Attribute("value");
+            }
+            else if(std::string("ON_ALWAYS") == pProp->Attribute("name")) {
+                on_always = pProp->Attribute("value");
+            }
+            else if(std::string("ON_RESUME") == pProp->Attribute("name")) {
+                on_resume = pProp->Attribute("value");
             }
             else {
                 symbolic_tilesets.push_back(pProp->Attribute("value"));
@@ -111,6 +119,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         }
     }
 
+    // Extract method from this! Tidying up parsers is important but absolutely no fun :-(
     if(on_load != "") {
         if(check_event_convert_map(on_load) != true) {
             std::cerr << "The event: " << on_load << " couldn't be found / is no valid game or map event\n";
@@ -119,6 +128,28 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         }
         else {
             m_on_load = get_event_convert_map(on_load);
+        }
+    }
+
+    if(on_always != "") {
+        if(check_event_convert_map(on_always) != true) {
+            std::cerr << "The event: " << on_always << " couldn't be found / is no valid game or map event\n";
+            std::cerr << "Failed adding " << on_always << " as the ON_ALWAYS callback to map\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_on_always = get_event_convert_map(on_always);
+        }
+    }
+
+    if(on_resume != "") {
+        if(check_event_convert_map(on_resume) != true) {
+            std::cerr << "The event: " << on_resume << " couldn't be found / is no valid game or map event\n";
+            std::cerr << "Failed adding " << on_resume << " as the ON_RESUME callback to map\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_on_resume = get_event_convert_map(on_resume);
         }
     }
 
@@ -201,6 +232,9 @@ void MapData::update() {
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
 
+    if(m_on_always.valid()) {
+        m_events.add_event(m_on_always);
+    }
     // Do nothing with returned signal because we don't have to
     m_events.process_events(*this);
 
@@ -487,5 +521,15 @@ const ActorTemplate& MapData::get_actor_template(Uint16 gid) const {
 /// Return ActorTemplate by name
 ActorTemplate& MapData::get_actor_template(std::string actor) {
     return m_templates[actor];
+}
+
+/**
+ * @brief Sets up the map for properly resuming after another map loaded and closed again
+ */
+void MapData::resume() {
+    m_last_update = SDL_GetTicks();
+    if(m_on_resume.valid()) {
+        m_events.add_event(m_on_resume);
+    }
 }
 
