@@ -37,6 +37,9 @@ const bool Template::good = Event<Scope>::register_class<Template>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal Template::process(Scope& scope) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(scope);
+    
     // Add stuff!
 }
 

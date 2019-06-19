@@ -37,6 +37,9 @@ const bool AeAccelerate::good = Event<Actor>::register_class<AeAccelerate>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeAccelerate::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
+
     bool hit_limit = false;
     DataBlock& values = actor.get_data();
 

@@ -38,6 +38,9 @@ const bool AeAnimate::good = Event<Actor>::register_class<AeAnimate>();
  * @note Adds up cycles, anim frames and game frames
  */
 EventSignal AeAnimate::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
+
     AnimSignal sig = actor.animate_trigger(m_animation, m_direction);
     if(sig == AnimSignal::missing) {return EventSignal::abort;}
     if(m_cycles > 0) {

@@ -34,10 +34,16 @@ class DataBlock{
         void set_val(std::string name, std::string val);
         //void set_val(std::string name, Actor& val);
 
-        bool get_val_bool(std::string name);
-        int get_val_int(std::string name);
-        float get_val_float(std::string name);
-        std::string get_val_string(std::string name);
+        bool check_val_bool(std::string name) const;
+        bool check_val_int(std::string name) const;
+        bool check_val_float(std::string name) const;
+        bool check_val_string(std::string name) const;
+        //Actor& check_val_actor(std::string name);
+
+        bool get_val_bool(std::string name) const;
+        int get_val_int(std::string name) const;
+        float get_val_float(std::string name) const;
+        std::string get_val_string(std::string name) const;
         //Actor& get_val_actor(std::string name);
 
     private:

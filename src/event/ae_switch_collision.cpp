@@ -37,6 +37,9 @@ const bool AeSwitchCollision::good = Event<Actor>::register_class<AeSwitchCollis
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeSwitchCollision::process(Actor& scope) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(scope);
+
     const Cause& c = get_cause();
     if(c.tile()) {
         const Tile* t = c.get_tile();

@@ -37,6 +37,9 @@ const bool AeWait::good = Event<Actor>::register_class<AeWait>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeWait::process(Actor& scope) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(scope);
+
     // Skip first delta time
     if(m_first) {
         m_first = false;

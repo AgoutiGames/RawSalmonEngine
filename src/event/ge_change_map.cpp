@@ -37,6 +37,9 @@ const bool GeChangeMap::good = Event<GameInfo>::register_class<GeChangeMap>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal GeChangeMap::process(GameInfo& scope) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(scope);
+
     if(!m_preserve) {scope.close_map();}
     if(!scope.load_map(m_path)) {
         std::cerr << "Fatal Error! Failed at loading map at path: " << m_path << "\n";

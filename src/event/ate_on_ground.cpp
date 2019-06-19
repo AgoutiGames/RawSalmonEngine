@@ -37,6 +37,9 @@ const bool AteOnGround::good = Event<Actor>::register_class<AteOnGround>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AteOnGround::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
+
     EventSignal sig;
     if(m_start) {
         if(!m_continuous) {

@@ -67,7 +67,7 @@ private:
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
     std::map<std::string, SDL_Rect> m_hitboxes;
-    std::string m_type;
+    std::string m_type = "";
     bool m_animated = false;
 
     // Variables required for animated tiles

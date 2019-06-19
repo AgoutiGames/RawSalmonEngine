@@ -37,6 +37,9 @@ const bool MeEraseActor::good = Event<MapData>::register_class<MeEraseActor>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal MeEraseActor::process(MapData& scope) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(scope);
+
     if(m_actor_pointer != nullptr) {
         if(scope.get_layer_collection().erase_actor(m_actor_pointer)) {
             return EventSignal::end;

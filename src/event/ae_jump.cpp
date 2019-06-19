@@ -38,6 +38,9 @@ const bool AeJump::good = Event<Actor>::register_class<AeJump>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeJump::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
+
     if(!m_started) {
         /// @warning This is really really unsafe code!!!
         /// Better don't use this event at all

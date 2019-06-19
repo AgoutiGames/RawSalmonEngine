@@ -37,6 +37,9 @@ const bool AeMoveDirection::good = Event<Actor>::register_class<AeMoveDirection>
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeMoveDirection::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
+
     // process stuff
     float speed = m_speed * actor.get_map().get_delta_time();
     if (m_duration != 0) {

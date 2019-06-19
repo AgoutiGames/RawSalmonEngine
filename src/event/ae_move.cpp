@@ -37,6 +37,8 @@ const bool AeMove::good = Event<Actor>::register_class<AeMove>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeMove::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
 
     // constexpr float FPS = 60;
     float delta = actor.get_map().get_delta_time();

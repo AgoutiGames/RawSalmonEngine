@@ -37,6 +37,9 @@ const bool AeMoveSustained::good = Event<Actor>::register_class<AeMoveSustained>
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeMoveSustained::process(Actor& actor) {
+    // Syncs members with possibly linked DataBlock variables
+    m_property_listener.listen(actor);
+
     // process stuff
     float speed = m_speed * actor.get_map().get_delta_time();
     const Uint8 *keys = SDL_GetKeyboardState(NULL);

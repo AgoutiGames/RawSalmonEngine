@@ -55,6 +55,7 @@ set(EVENT_SOURCES
     src/event/ge_close_map.cpp
     src/event/ge_set_var.cpp
     src/event/ge_quit.cpp
+    src/event/property_listener.cpp
     )
 
 set(GRAPHICS_SOURCES
