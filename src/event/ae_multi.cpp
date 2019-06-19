@@ -55,7 +55,7 @@ EventSignal AeMulti::process(Actor& actor) {
 tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map);
+    Parser parser(base_map, m_property_listener);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");

@@ -401,7 +401,7 @@ tinyxml2::XMLError Parser::parse_iteration(tinyxml2::XMLElement* source) {
 }
 
 /// The constructor makes iteration through all parsing functions possible by adding them to a member function array
-Parser::Parser(MapData& base_map) : m_base_map{&base_map} {
+Parser::Parser(MapData& base_map, PropertyListener& property_listener) : m_base_map{&base_map}, m_property_listener{&property_listener} {
     parsers[0] = &Parser::parse_int;
     parsers[1] = &Parser::parse_float;
     parsers[2] = &Parser::parse_string;

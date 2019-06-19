@@ -30,6 +30,7 @@
 class MapData;
 class SoundEffect;
 class Texture;
+class PropertyListener;
 
 namespace parse{
     tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
@@ -44,7 +45,7 @@ namespace parse{
  */
 class Parser{
     public:
-        Parser(MapData& base_map);
+        Parser(MapData& base_map, PropertyListener& property_listener);
 
         void add(bool& value, std::string name) {m_bool[name] = &value;}
         void add(int& value, std::string name) {m_int[name] = &value;}
@@ -64,6 +65,7 @@ class Parser{
     private:
         static constexpr int type_count = 9;
         MapData* m_base_map;
+        PropertyListener* m_property_listener;
 
         std::map<std::string, bool*> m_bool;
         tinyxml2::XMLError parse_bool(tinyxml2::XMLElement* source);

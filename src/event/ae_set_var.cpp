@@ -92,7 +92,7 @@ EventSignal AeSetVar::process(Actor& actor) {
 tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map);
+    Parser parser(base_map, m_property_listener);
 
     std::string str_type;
     parser.add(str_type, "TYPE");

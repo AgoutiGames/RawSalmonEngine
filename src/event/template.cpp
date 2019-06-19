@@ -39,7 +39,7 @@ const bool Template::good = Event<Scope>::register_class<Template>();
 EventSignal Template::process(Scope& scope) {
     // Syncs members with possibly linked DataBlock variables
     m_property_listener.listen(scope);
-    
+
     // Add stuff!
 }
 
@@ -52,7 +52,7 @@ EventSignal Template::process(Scope& scope) {
 tinyxml2::XMLError Template::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map);
+    Parser parser(base_map, m_property_listener);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
