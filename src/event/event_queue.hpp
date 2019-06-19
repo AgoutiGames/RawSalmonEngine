@@ -79,11 +79,10 @@ EventSignal EventQueue<Scope>::process_events(Scope& target) {
     for(unsigned i = 0; i < m_event_pipeline.size(); i++) {
         SmartEvent<Scope>& event = m_event_pipeline[i];
         EventSignal signal = event->process(target);
-        if(signal == EventSignal::stop || signal == EventSignal::erase) {
+        if(signal == EventSignal::stop) {
             return signal;
         }
         else if(signal == EventSignal::end || signal == EventSignal::abort) {
-            // delete m_event_pipeline[i];
             m_event_pipeline.erase(m_event_pipeline.begin() + i);
             i--;
         }

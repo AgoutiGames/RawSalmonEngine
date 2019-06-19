@@ -92,11 +92,8 @@ bool ObjectLayer::render(const Camera& camera) const {
  * a signal to delete the object.
  */
 void ObjectLayer::update() {
-    for(auto it=m_obj_grid.begin(); it != m_obj_grid.end(); ++it) {
-        if(it->update() == false) {
-            it--;
-            m_obj_grid.erase(++it);
-        }
+    for(Actor& a : m_obj_grid) {
+        a.update();
     }
     // Establish correct rendering order
     m_obj_grid.sort();

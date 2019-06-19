@@ -58,7 +58,7 @@ enum class EventSignal{
     stop, ///< Stop processing events here
     end,  ///< The event succesfully finished, needs to be deleted
     abort,///< The event preemtively finished, needs to be deleted
-    erase,///< Erase the actor who processed this event
+//    erase,///< Erase the actor who processed this event
     invalid, ///< EventSignal did not properly parse
 };
 

@@ -181,16 +181,13 @@ bool Actor::move(float x_factor, float y_factor) {
 
 /**
  * @brief Update the actor state
- * @return @c bool which returns true if actor is alive
  */
-bool Actor::update() {
+void Actor::update() {
     respond(Response::on_always);
     EventSignal sig = m_events.process_events(*this);
 
-    switch(sig) {
-        case(EventSignal::end) : {respond(Response::on_idle); return true;}
-        case(EventSignal::erase) : {return false;}
-        default : {return true;}
+    if(sig == EventSignal::end) {
+        respond(Response::on_idle);
     }
 }
 

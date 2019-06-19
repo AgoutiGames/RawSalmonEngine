@@ -56,7 +56,6 @@ EventSignal str_to_event_signal(const std::string& name) {
     if(name == "STOP") return EventSignal::stop;
     if(name == "END") return EventSignal::end;
     if(name == "ABORT") return EventSignal::abort;
-    if(name == "ERASE") return EventSignal::erase;
     else return EventSignal::invalid;
 }
 
