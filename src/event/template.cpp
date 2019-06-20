@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "origin"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string Template::m_alias = "Template";
@@ -38,7 +39,7 @@ const bool Template::good = Event<Scope>::register_class<Template>();
  */
 EventSignal Template::process(Scope& scope) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(scope);
+    listen(m_property_listener, *this, actor);
 
     // Add stuff!
 }
@@ -50,9 +51,11 @@ EventSignal Template::process(Scope& scope) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError Template::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<Template> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");

@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "core/gameinfo.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string GeCloseMap::m_alias = "GeCloseMap";
@@ -48,15 +49,14 @@ EventSignal GeCloseMap::process(GameInfo& scope) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError GeCloseMap::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<GeCloseMap> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
-
-    // Add additional members here
-    //parser.add(m_STUFF, "STUFF");
 
     XMLError eResult = parser.parse(source);
 

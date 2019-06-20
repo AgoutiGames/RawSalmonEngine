@@ -23,8 +23,8 @@
 #include <iostream>
 
 #include "map/mapdata.hpp"
-#include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_parser.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string MeEraseActor::m_alias = "MeEraseActor";
@@ -38,7 +38,7 @@ const bool MeEraseActor::good = Event<MapData>::register_class<MeEraseActor>();
  */
 EventSignal MeEraseActor::process(MapData& scope) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(scope);
+    listen(m_property_listener, *this, scope);
 
     if(m_actor_pointer != nullptr) {
         if(scope.get_layer_collection().erase_actor(m_actor_pointer)) {
@@ -63,16 +63,15 @@ EventSignal MeEraseActor::process(MapData& scope) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError MeEraseActor::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<MeEraseActor> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
-    parser.add(m_actor_name, "ACTOR_NAME");
-
-    // Add additional members here
-    //parser.add(m_STUFF, "STUFF");
+    parser.add(&MeEraseActor::m_actor_name, "ACTOR_NAME");
 
     XMLError eResult = parser.parse(source);
 

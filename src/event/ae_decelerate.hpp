@@ -23,6 +23,7 @@
 #include <string>
 
 #include "event/event.hpp"
+#include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -43,7 +44,8 @@ class AeDecelerate : public Event<Actor>{
 
     private:
         static const bool good;
-        static const std::string m_alias; //< Define this!
+        static const std::string m_alias;
+        PropertyListener<AeDecelerate> m_property_listener;
         // vv Add members with default values
         float m_x_factor = 10.0f;
         float m_y_factor = 10.0f;

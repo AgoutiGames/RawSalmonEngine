@@ -209,7 +209,7 @@
    <property name="NAME" value="CoinCount"/>
    <property name="TYPE" value="INT"/>
    <property name="VALUE" type="int" value="1"/>
-   <property name="VAL_NAME" value="CointCount"/>
+   <property name="VAL_NAME" value="CoinCount"/>
   </properties>
  </tile>
  <tile id="60" type="AeSound">
@@ -220,7 +220,7 @@
  </tile>
  <tile id="61" type="AeAnimate">
   <properties>
-   <property name="ANIMATION_FRAMES" type="int" value="4"/>
+   <property name="ANIMATION_FRAMES" value="*CoinCount"/>
    <property name="ANIMATION_TYPE" value="WALK"/>
    <property name="NAME" value="Disappear"/>
    <property name="SIGNAL" value="STOP"/>

@@ -23,8 +23,8 @@
 #include <iostream>
 
 #include "map/mapdata.hpp"
-#include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_parser.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string MePlayMusic::m_alias = "MePlayMusic";
@@ -38,7 +38,7 @@ const bool MePlayMusic::good = Event<MapData>::register_class<MePlayMusic>();
  */
 EventSignal MePlayMusic::process(MapData& scope) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(scope);
+    listen(m_property_listener, *this, scope);
 
     m_music.play(m_repititions, m_fade_in);
     return EventSignal::end;
@@ -53,7 +53,7 @@ EventSignal MePlayMusic::process(MapData& scope) {
 tinyxml2::XMLError MePlayMusic::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<MePlayMusic> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
@@ -62,8 +62,8 @@ tinyxml2::XMLError MePlayMusic::init(tinyxml2::XMLElement* source, MapData& base
     // Add additional members here
     std::string path;
     parser.add(path, "PATH");
-    parser.add(m_repititions, "REPITITIONS");
-    parser.add(m_fade_in, "FADE IN");
+    parser.add(&MePlayMusic::m_repititions, "REPITITIONS");
+    parser.add(&MePlayMusic::m_fade_in, "FADE IN");
 
     XMLError eResult = parser.parse(source);
 

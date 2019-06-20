@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeWait::m_alias = "AeWait";
@@ -37,11 +38,11 @@ const bool AeWait::good = Event<Actor>::register_class<AeWait>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeWait::process(Actor& scope) {
-    // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(scope);
 
     // Skip first delta time
     if(m_first) {
+        // Syncs members with possibly linked DataBlock variables
+        listen(m_property_listener, *this, scope);
         m_first = false;
     }
     else {
@@ -60,19 +61,18 @@ EventSignal AeWait::process(Actor& scope) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AeWait::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
     m_signal = EventSignal::stop;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeWait> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
-    parser.add(m_time, "TIME");
-
-    // Add additional members here
-    //parser.add(m_STUFF, "STUFF");
+    parser.add(&AeWait::m_time, "TIME");
 
     XMLError eResult = parser.parse(source);
 

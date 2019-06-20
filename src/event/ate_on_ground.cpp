@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AteOnGround::m_alias = "AteOnGround";
@@ -38,7 +39,7 @@ const bool AteOnGround::good = Event<Actor>::register_class<AteOnGround>();
  */
 EventSignal AteOnGround::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(actor);
+    listen(m_property_listener, *this, actor);
 
     EventSignal sig;
     if(m_start) {
@@ -74,7 +75,7 @@ EventSignal AteOnGround::process(Actor& actor) {
 tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AteOnGround> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
@@ -82,8 +83,8 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
 
     // Add additional members here
     parser.add(m_direction, "DIRECTION");
-    parser.add(m_continuous, "CONTINUOUS");
-    parser.add(m_tolerance, "TOLERANCE");
+    parser.add(&AteOnGround::m_continuous, "CONTINUOUS");
+    parser.add(&AteOnGround::m_tolerance, "TOLERANCE");
     std::string sucess_name = "";
     parser.add(sucess_name, "SUCCESS");
     std::string failure_name = "";

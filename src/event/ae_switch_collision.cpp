@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeSwitchCollision::m_alias = "AeSwitchCollision";
@@ -38,7 +39,7 @@ const bool AeSwitchCollision::good = Event<Actor>::register_class<AeSwitchCollis
  */
 EventSignal AeSwitchCollision::process(Actor& scope) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(scope);
+    listen(m_property_listener, *this, scope);
 
     const Cause& c = get_cause();
     if(c.tile()) {
@@ -79,16 +80,16 @@ EventSignal AeSwitchCollision::process(Actor& scope) {
 tinyxml2::XMLError AeSwitchCollision::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeSwitchCollision> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
 
     // Add additional members here
-    parser.add(m_other_name, "OTHER_NAME");
-    parser.add(m_my_hitbox, "MY_HITBOX");
-    parser.add(m_other_hitbox, "OTHER_HITBOX");
+    parser.add(&AeSwitchCollision::m_other_name, "OTHER_NAME");
+    parser.add(&AeSwitchCollision::m_my_hitbox, "MY_HITBOX");
+    parser.add(&AeSwitchCollision::m_other_hitbox, "OTHER_HITBOX");
     std::string trigger_event;
     parser.add(trigger_event, "TRIGGER_EVENT");
 

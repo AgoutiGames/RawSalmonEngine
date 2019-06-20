@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeMulti::m_alias = "AeMulti";
@@ -37,6 +38,7 @@ const bool AeMulti::good = Event<Actor>::register_class<AeMulti>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal AeMulti::process(Actor& actor) {
+
     EventSignal sig = m_events.process_events(actor);
     switch(sig) {
     // If all events played without problems
@@ -55,7 +57,7 @@ EventSignal AeMulti::process(Actor& actor) {
 tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeMulti> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");

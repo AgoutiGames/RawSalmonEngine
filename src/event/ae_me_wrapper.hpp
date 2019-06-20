@@ -23,6 +23,7 @@
 #include <string>
 
 #include "event/event.hpp"
+#include "event/property_listener.hpp"
 #include "event/smart_event.hpp"
 #include "util/game_types.hpp"
 
@@ -51,7 +52,8 @@ class AeMeWrapper : public Event<Actor>{
 
     private:
         static const bool good;
-        static const std::string m_alias; //< Define this!
+        static const std::string m_alias;
+        PropertyListener<AeMeWrapper> m_property_listener;
         // vv Add members with default values
         SmartEvent<MapData> m_event;
 

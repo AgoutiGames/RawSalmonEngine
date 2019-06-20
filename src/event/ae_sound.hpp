@@ -24,6 +24,7 @@
 
 #include "audio/sound_effect.hpp"
 #include "event/event.hpp"
+#include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -44,7 +45,8 @@ class AeSound : public Event<Actor>{
 
     private:
         static const bool good;
-        static const std::string m_alias; //< Define this!
+        static const std::string m_alias;
+        PropertyListener<AeSound> m_property_listener;
         // vv Add members with default values
         SoundEffect m_sound;
 

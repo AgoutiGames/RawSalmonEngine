@@ -24,6 +24,7 @@
 
 #include "event/event.hpp"
 #include "event/smart_event.hpp"
+#include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
@@ -44,7 +45,8 @@ class AteSingle : public Event<Actor>{
 
     private:
         static const bool good;
-        static const std::string m_alias; //< Define this!
+        static const std::string m_alias;
+        PropertyListener<AteSingle> m_property_listener;
         // vv Add members with default values
         SmartEvent<Actor> m_event;
         bool m_first_execution = true;

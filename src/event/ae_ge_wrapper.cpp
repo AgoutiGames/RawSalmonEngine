@@ -24,8 +24,9 @@
 
 #include "actor/actor.hpp"
 #include "core/gameinfo.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeGeWrapper::m_alias = "AeGeWrapper";
@@ -51,7 +52,7 @@ EventSignal AeGeWrapper::process(Actor& scope) {
 tinyxml2::XMLError AeGeWrapper::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeGeWrapper> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");

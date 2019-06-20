@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "core/gameinfo.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string GeChangeMap::m_alias = "GeChangeMap";
@@ -38,7 +39,7 @@ const bool GeChangeMap::good = Event<GameInfo>::register_class<GeChangeMap>();
  */
 EventSignal GeChangeMap::process(GameInfo& scope) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(scope);
+    listen(m_property_listener, *this, scope);
 
     if(!m_preserve) {scope.close_map();}
     if(!scope.load_map(m_path)) {
@@ -55,15 +56,17 @@ EventSignal GeChangeMap::process(GameInfo& scope) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError GeChangeMap::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<GeChangeMap> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
 
-    parser.add(m_path, "PATH");
-    parser.add(m_preserve, "PRESERVE");
+    parser.add(&GeChangeMap::m_path, "PATH");
+    parser.add(&GeChangeMap::m_preserve, "PRESERVE");
 
     XMLError eResult = parser.parse(source);
 

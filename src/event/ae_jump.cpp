@@ -25,7 +25,8 @@
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
 #include "event/ae_fall.hpp"
-#include "util/parse.hpp"
+#include "event/property_parser.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeJump::m_alias = "AeJump";
@@ -39,7 +40,7 @@ const bool AeJump::good = Event<Actor>::register_class<AeJump>();
  */
 EventSignal AeJump::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(actor);
+    listen(m_property_listener, *this, actor);
 
     if(!m_started) {
         /// @warning This is really really unsafe code!!!
@@ -90,19 +91,21 @@ EventSignal AeJump::process(Actor& actor) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AeJump::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeJump> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
 
     // Add additional members here
-    parser.add(m_duration, "JUMP_DURATION");
-    parser.add(m_jump_height, "JUMP_HEIGHT");
-    parser.add(m_slow_on_release, "SLOW_ON_RELEASE");
-    parser.add(m_slow_factor, "SLOW_FACTOR");
+    parser.add(&AeJump::m_duration, "JUMP_DURATION");
+    parser.add(&AeJump::m_jump_height, "JUMP_HEIGHT");
+    parser.add(&AeJump::m_slow_on_release, "SLOW_ON_RELEASE");
+    parser.add(&AeJump::m_slow_factor, "SLOW_FACTOR");
     parser.add(m_animation, "ANIMATION_TYPE");
     parser.add(m_anim_dir, "ANIMATION_DIRECTION");
 

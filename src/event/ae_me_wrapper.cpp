@@ -24,7 +24,8 @@
 
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_parser.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeMeWrapper::m_alias = "AeMeWrapper";
@@ -50,7 +51,7 @@ EventSignal AeMeWrapper::process(Actor& scope) {
 tinyxml2::XMLError AeMeWrapper::init(tinyxml2::XMLElement* source, MapData& base_map) {
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeMeWrapper> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");

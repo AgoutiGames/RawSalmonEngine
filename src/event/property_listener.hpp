@@ -23,29 +23,85 @@
 #include <vector>
 #include <string>
 
-class DataBlock;
-class Actor;
-class MapData;
-class GameInfo;
+#include "actor/data_block.hpp"
+// #include "actor/actor.hpp"
+// #include "map/mapdata.hpp"
+// #include "core/gameinfo.hpp"
 
+template<class EventType>
 class PropertyListener {
     public:
-        void register_variable(std::string variable, int* member) {m_int_link.push_back(std::make_pair(variable, member));}
-        void register_variable(std::string variable, float* member) {m_float_link.push_back(std::make_pair(variable, member));}
-        void register_variable(std::string variable, bool* member) {m_bool_link.push_back(std::make_pair(variable, member));}
-        void register_variable(std::string variable, std::string* member) {m_string_link.push_back(std::make_pair(variable, member));}
+        void register_variable(std::string variable, int EventType::* member) {m_int_link.push_back(std::make_pair(variable, member));}
+        void register_variable(std::string variable, float EventType::* member) {m_float_link.push_back(std::make_pair(variable, member));}
+        void register_variable(std::string variable, bool EventType::* member) {m_bool_link.push_back(std::make_pair(variable, member));}
+        void register_variable(std::string variable, std::string EventType::* member) {m_string_link.push_back(std::make_pair(variable, member));}
 
-        void listen(const DataBlock& data) const;
+        void listen(const DataBlock& data, EventType& event) const;
 
-        void listen(Actor& data) const;
-        void listen(MapData& data) const;
-        void listen(GameInfo& data) const;
+        /*
+        void listen(Actor& data, EventType& event) const;
+        void listen(MapData& data, EventType& event) const;
+        void listen(GameInfo& data, EventType& event) const;
+        */
     private:
-        std::vector<std::pair<std::string, int*>> m_int_link;
-        std::vector<std::pair<std::string, float*>> m_float_link;
-        std::vector<std::pair<std::string, bool*>> m_bool_link;
-        std::vector<std::pair<std::string, std::string*>> m_string_link;
+        std::vector<std::pair<std::string, int EventType::*>> m_int_link;
+        std::vector<std::pair<std::string, float EventType::*>> m_float_link;
+        std::vector<std::pair<std::string, bool EventType::*>> m_bool_link;
+        std::vector<std::pair<std::string, std::string EventType::*>> m_string_link;
 };
 
+template<class EventType>
+void PropertyListener<EventType>::listen(const DataBlock& data, EventType& event) const {
+    for(auto& i : m_int_link) {
+        if(data.check_val_int(i.first)) {
+            event.*(i.second) = data.get_val_int(i.first);
+        }
+        else if(data.check_val_float(i.first)) {
+            event.*(i.second) = static_cast<int>(data.get_val_float(i.first));
+        }
+    }
+
+    for(auto& f : m_float_link) {
+        if(data.check_val_float(f.first)) {
+            event.*(f.second) = data.get_val_float(f.first);
+        }
+        else if(data.check_val_int(f.first)) {
+            event.*(f.second) = static_cast<float>(data.get_val_int(f.first));
+        }
+    }
+    for(auto& b : m_bool_link) {
+        if(data.check_val_int(b.first)) {
+            event.*(b.second) = data.get_val_bool(b.first);
+        }
+    }
+    for(auto& s : m_string_link) {
+        if(data.check_val_int(s.first)) {
+            event.*(s.second) = data.get_val_string(s.first);
+        }
+    }
+}
+
+/*
+template<class EventType>
+void PropertyListener<EventType>::listen(Actor& data, EventType& event) const {
+    MapData& map_data = data.get_map();
+    GameInfo& game_data = map_data.get_game();
+    listen(game_data, event);
+    listen(map_data, event);
+    listen(data.get_data(), event);
+}
+
+template<class EventType>
+void PropertyListener<EventType>::listen(MapData& data, EventType& event) const {
+    GameInfo& game_data = data.get_game();
+    listen(game_data, event);
+    listen(data.get_data(), event);
+}
+
+template<class EventType>
+void PropertyListener<EventType>::listen(GameInfo& data, EventType& event) const {
+    listen(data.get_data(), event);
+}
+*/
 
 #endif // PROPERTY_LISTENER_HPP_INCLUDED

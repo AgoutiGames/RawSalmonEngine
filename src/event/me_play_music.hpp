@@ -24,6 +24,7 @@
 
 #include "audio/music.hpp"
 #include "event/event.hpp"
+#include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 
 class MapData;
@@ -44,7 +45,8 @@ class MePlayMusic : public Event<MapData>{
 
     private:
         static const bool good;
-        static const std::string m_alias; //< Define this!
+        static const std::string m_alias;
+        PropertyListener<MePlayMusic> m_property_listener;
         // vv Add members with default values
         Music m_music;
         int m_repititions = -1;

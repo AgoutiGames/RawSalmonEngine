@@ -24,7 +24,6 @@
 #include <map>
 
 #include "actor/cause.hpp"
-#include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 #include "util/tinyxml2.h"
 
@@ -67,7 +66,6 @@ protected:
     Priority m_priority = Priority::medium;
     EventSignal m_signal = EventSignal::next;
     Cause m_cause;
-    PropertyListener m_property_listener;
 
     template <class T>
     static bool register_class();

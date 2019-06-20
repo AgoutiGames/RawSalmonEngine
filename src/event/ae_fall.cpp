@@ -24,8 +24,9 @@
 #include <cmath>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeFall::m_alias = "AeFall";
@@ -38,7 +39,7 @@ const bool AeFall::good = Event<Actor>::register_class<AeFall>();
  */
 EventSignal AeFall::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(actor);
+    listen(m_property_listener, *this, actor);
 
     // constexpr float FPS = 60;
     float delta = actor.get_map().get_delta_time();
@@ -70,18 +71,20 @@ EventSignal AeFall::process(Actor& actor) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AeFall::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeFall> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
 
     // Add additional members here
-    parser.add(m_acceleration, "ACCELERATION");
-    parser.add(m_max_velocity, "MAX_VELOCITY");
-    parser.add(m_death_height, "DEATH_HEIGHT");
+    parser.add(&AeFall::m_acceleration, "ACCELERATION");
+    parser.add(&AeFall::m_max_velocity, "MAX_VELOCITY");
+    parser.add(&AeFall::m_death_height, "DEATH_HEIGHT");
     parser.add(m_fall_dir, "FALL_DIRECTION");
     parser.add(m_animation, "ANIMATION_TYPE");
     parser.add(m_anim_dir, "ANIMATION_DIRECTION");

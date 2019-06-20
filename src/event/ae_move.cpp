@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeMove::m_alias = "AeMove";
@@ -38,7 +39,7 @@ const bool AeMove::good = Event<Actor>::register_class<AeMove>();
  */
 EventSignal AeMove::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(actor);
+    listen(m_property_listener, *this, actor);
 
     // constexpr float FPS = 60;
     float delta = actor.get_map().get_delta_time();
@@ -77,18 +78,20 @@ EventSignal AeMove::process(Actor& actor) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AeMove::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeMove> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
     parser.add(m_signal, "SIGNAL");
 
-    parser.add(m_x_factor, "XFACTOR");
-    parser.add(m_y_factor, "YFACTOR");
-    parser.add(m_x_speed_name, "XSPEED_NAME");
-    parser.add(m_y_speed_name, "YSPEED_NAME");
+    parser.add(&AeMove::m_x_factor, "XFACTOR");
+    parser.add(&AeMove::m_y_factor, "YFACTOR");
+    parser.add(&AeMove::m_x_speed_name, "XSPEED_NAME");
+    parser.add(&AeMove::m_y_speed_name, "YSPEED_NAME");
 
     XMLError eResult = parser.parse(source);
 

@@ -23,8 +23,9 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
-#include "util/parse.hpp"
+#include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
 const std::string AeMoveSustained::m_alias = "AeMoveSustained";
@@ -38,7 +39,7 @@ const bool AeMoveSustained::good = Event<Actor>::register_class<AeMoveSustained>
  */
 EventSignal AeMoveSustained::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
-    m_property_listener.listen(actor);
+    listen(m_property_listener, *this, actor);
 
     // process stuff
     float speed = m_speed * actor.get_map().get_delta_time();
@@ -67,9 +68,11 @@ EventSignal AeMoveSustained::process(Actor& actor) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AeMoveSustained::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
-    Parser parser(base_map, m_property_listener);
+    PropertyParser<AeMoveSustained> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
@@ -78,7 +81,7 @@ tinyxml2::XMLError AeMoveSustained::init(tinyxml2::XMLElement* source, MapData& 
     // Add additional members here
     parser.add(m_direction, "DIRECTION");
     parser.add(m_animation, "ANIMATION_TYPE");
-    parser.add(m_speed, "SPEED");
+    parser.add(&AeMoveSustained::m_speed, "SPEED");
 
     XMLError eResult = parser.parse(source);
 
