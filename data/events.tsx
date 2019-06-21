@@ -207,7 +207,6 @@
   <properties>
    <property name="+=" type="bool" value="true"/>
    <property name="NAME" value="CoinCount"/>
-   <property name="TYPE" value="INT"/>
    <property name="VALUE" type="int" value="1"/>
    <property name="VAL_NAME" value="CoinCount"/>
   </properties>

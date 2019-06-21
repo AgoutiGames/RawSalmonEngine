@@ -24,6 +24,7 @@
 #include <map>
 
 #include "event/property_listener.hpp"
+#include "util/game_types.hpp"
 
 /**
  * @brief A helper class which parses event properties and passes them to previously added references
@@ -37,11 +38,17 @@ class PropertyParser{
         void add(int EventType::* value, std::string name) {m_int_e[name] = value;}
         void add(float EventType::* value, std::string name) {m_float_e[name] = value;}
         void add(std::string EventType::* value, std::string name) {m_string_e[name] = value;}
+        void add(PropertyType EventType::* type, bool EventType::* b, int EventType::* i, float EventType::* f, std::string EventType::* s, std::string name) {
+            m_multi_e[name] = std::make_tuple(type, b, i, f, s);
+        }
 
         void add(bool& value, std::string name) {m_bool[name] = &value;}
         void add(int& value, std::string name) {m_int[name] = &value;}
         void add(float& value, std::string name) {m_float[name] = &value;}
         void add(std::string& value, std::string name) {m_string[name] = &value;}
+        void add(PropertyType& type, bool& b, int& i, float& f, std::string& s, std::string name) {
+            m_multi[name] = std::make_tuple(&type, &b, &i, &f, &s);
+        }
 
         void add(Priority& value, std::string name) {m_priority[name] = &value;}
         void add(EventSignal& value, std::string name) {m_signal[name] = &value;}
@@ -54,7 +61,7 @@ class PropertyParser{
         tinyxml2::XMLError parse_ignore_unknown(tinyxml2::XMLElement* source);
 
     private:
-        static constexpr int type_count = 13;
+        static constexpr int type_count = 14;
         PropertyListener<EventType>* m_property_listener;
         EventType* m_event;
 
@@ -70,6 +77,14 @@ class PropertyParser{
         std::map<std::string, std::string EventType::*> m_string_e;
         tinyxml2::XMLError parse_string_e(tinyxml2::XMLElement* source);
 
+        std::map<std::string, std::tuple<PropertyType EventType::*,
+                                         bool EventType::*,
+                                         int EventType::*,
+                                         float EventType::*,
+                                         std::string EventType::*>> m_multi_e;
+
+        tinyxml2::XMLError parse_multi_e(tinyxml2::XMLElement* source);
+
 
         std::map<std::string, bool*> m_bool;
         tinyxml2::XMLError parse_bool(tinyxml2::XMLElement* source);
@@ -82,6 +97,9 @@ class PropertyParser{
 
         std::map<std::string, std::string*> m_string;
         tinyxml2::XMLError parse_string(tinyxml2::XMLElement* source);
+
+        std::map<std::string, std::tuple<PropertyType*,bool*,int*,float*,std::string*>> m_multi;
+        tinyxml2::XMLError parse_multi(tinyxml2::XMLElement* source);
 
 
         std::map<std::string, Priority*> m_priority;
@@ -309,6 +327,52 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_string(tinyxml2::XMLElement*
  *                              other XML_ERROR if something went wrong during parsing
  */
  template<class EventType>
+tinyxml2::XMLError PropertyParser<EventType>::parse_multi(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
+    std::string name(source->Attribute("name"));
+
+    if(m_multi.find(name) == m_multi.end()) {
+        return XML_ERROR_MISMATCHED_ELEMENT;
+    }
+
+    auto& property = m_multi.at(name);
+    std::string type(source->Attribute("type"));
+    if(type == "bool") {
+        *std::get<0>(property) = PropertyType::Boolean;
+        return source->QueryBoolAttribute("value", std::get<1>(property));
+    }
+    else if(type == "int") {
+        *std::get<0>(m_multi.at(name)) = PropertyType::Integer;
+        return source->QueryIntAttribute("value", std::get<2>(property));
+    }
+    else if(type == "float") {
+        *std::get<0>(m_multi.at(name)) = PropertyType::Float;
+        return source->QueryFloatAttribute("value", std::get<3>(property));
+    }
+    else if(type == "" || type == "file") {
+        *std::get<0>(m_multi.at(name)) = PropertyType::String;
+        const char* p_value = source->Attribute("value");
+        if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+        *std::get<4>(property) = std::string(p_value);
+        return XML_SUCCESS;
+    }
+    else {
+        std::cerr << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up\n";
+        return XML_ERROR_PARSING_ATTRIBUTE;
+    }
+
+    return XML_SUCCESS;
+}
+
+/**
+ * @brief Check if attribute is known and parse by specified type
+ * @param source The @c XMLElement which stores possibly matching attribute
+ * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
+ *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
+ *                              other XML_ERROR if something went wrong during parsing
+ */
+ template<class EventType>
 tinyxml2::XMLError PropertyParser<EventType>::parse_priority(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
 
@@ -444,17 +508,19 @@ PropertyParser<EventType>::PropertyParser(PropertyListener<EventType>& property_
     parsers[2] = &PropertyParser::parse_float;
     parsers[3] = &PropertyParser::parse_string;
 
-    parsers[4] = &PropertyParser::parse_int_e;
-    parsers[5] = &PropertyParser::parse_float_e;
-    parsers[6] = &PropertyParser::parse_string_e;
-    parsers[7] = &PropertyParser::parse_bool_e;
+    parsers[4] = &PropertyParser::parse_multi;
 
-    parsers[8] = &PropertyParser::parse_priority;
-    parsers[9] = &PropertyParser::parse_signal;
-    parsers[10] = &PropertyParser::parse_direction;
-    parsers[11] = &PropertyParser::parse_animation_type;
+    parsers[5] = &PropertyParser::parse_int_e;
+    parsers[6] = &PropertyParser::parse_float_e;
+    parsers[7] = &PropertyParser::parse_string_e;
+    parsers[8] = &PropertyParser::parse_bool_e;
 
-    parsers[12] = &PropertyParser::parse_iteration;
+    parsers[9] = &PropertyParser::parse_priority;
+    parsers[10] = &PropertyParser::parse_signal;
+    parsers[11] = &PropertyParser::parse_direction;
+    parsers[12] = &PropertyParser::parse_animation_type;
+
+    parsers[13] = &PropertyParser::parse_iteration;
     /// ! Don't forget adding new parsing member function here!
 }
 

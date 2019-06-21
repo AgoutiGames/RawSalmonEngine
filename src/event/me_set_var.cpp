@@ -37,46 +37,52 @@ const bool MeSetVar::good = Event<MapData>::register_class<MeSetVar>();
  * @return @c EventSignal which can halt event processing, delete this event, etc.
  */
 EventSignal MeSetVar::process(MapData& scope) {
+
+    if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
+        std::cerr << "me_set_var of type bool can't handle adding or multiplying instruction!\n";
+        return EventSignal::abort;
+    }
+
     DataBlock& data = scope.get_data();
-    switch(m_value.type) {
+    switch(m_type) {
 
-        case Value::Bool : {
-            data.set_val(m_val_name, m_value.b);
+        case PropertyType::Boolean : {
+            data.set_val(m_val_name, m_bool);
         }
         break;
 
-        case Value::Int : {
+        case PropertyType::Integer : {
             if(m_add) {
                 int temp = data.get_val_int(m_val_name);
-                data.set_val(m_val_name, temp + m_value.i);
+                data.set_val(m_val_name, temp + m_int);
             }
             else if(m_mult) {
                 int temp = data.get_val_int(m_val_name);
-                data.set_val(m_val_name, temp * m_value.i);
+                data.set_val(m_val_name, temp * m_int);
             }
-            else {data.set_val(m_val_name, m_value.i);}
+            else {data.set_val(m_val_name, m_int);}
         }
         break;
 
-        case Value::Float : {
+        case PropertyType::Float : {
             if(m_add) {
                 float temp = data.get_val_float(m_val_name);
-                data.set_val(m_val_name, temp + m_value.f);
+                data.set_val(m_val_name, temp + m_float);
             }
             else if(m_mult) {
                 float temp = data.get_val_float(m_val_name);
-                data.set_val(m_val_name, temp * m_value.f);
+                data.set_val(m_val_name, temp * m_float);
             }
-            else {data.set_val(m_val_name, m_value.f);}
+            else {data.set_val(m_val_name, m_float);}
         }
         break;
 
-        case Value::String : {
+        case PropertyType::String : {
             if(m_add) {
                 std::string temp = data.get_val_string(m_val_name);
-                data.set_val(m_val_name, temp + m_value.s);
+                data.set_val(m_val_name, temp + m_string);
             }
-            else {data.set_val(m_val_name, m_value.s);}
+            else {data.set_val(m_val_name, m_string);}
         }
         break;
     }
@@ -96,31 +102,6 @@ tinyxml2::XMLError MeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
 
     PropertyParser<MeSetVar> parser(m_property_listener, *this);
 
-    std::string str_type;
-    parser.add(str_type, "TYPE");
-
-    XMLError eResult = parser.parse_ignore_unknown(source);
-    if(eResult != XML_SUCCESS && eResult != XML_NO_ATTRIBUTE) {
-        std::cerr << "Failed at parsing value type!\n";
-        return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-
-    if(str_type == "BOOL") {
-        m_value.type = Value::Bool;
-    }
-    else if(str_type == "INT") {
-        m_value.type = Value::Int;
-    }
-    else if(str_type == "FLOAT") {
-        m_value.type = Value::Float;
-    }
-    else if(str_type == "STRING") {
-        m_value.type = Value::String;
-    }
-    else {
-        // Do nothing, default value is set to FLOAT
-    }
-
     parser.add(m_name, "NAME");
     parser.add(m_priority, "PRIORITY");
 
@@ -128,16 +109,9 @@ tinyxml2::XMLError MeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     parser.add(m_add, "+=");
     parser.add(m_mult, "*=");
     parser.add(m_val_name, "VAL_NAME");
+    parser.add(m_type, m_bool, m_int, m_float, m_string, "VALUE");
 
-    const std::string tag = "VALUE";
-    switch(m_value.type) {
-    case(Value::Bool) : {parser.add(m_value.b, tag); break;}
-    case(Value::Int) : {parser.add(m_value.i, tag); break;}
-    case(Value::Float) : {parser.add(m_value.f, tag); break;}
-    case(Value::String) : {parser.add(m_value.s, tag); break;}
-    }
-
-    eResult = parser.parse(source);
+    XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
         std::cerr << "Missing name property!\n";
@@ -151,11 +125,6 @@ tinyxml2::XMLError MeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
 
     if(m_val_name == "") {
         std::cerr << "Missing value name property!\n";
-        return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-
-    if(m_value.type == Value::Bool && (m_add || m_mult)) {
-        std::cerr << "me_set_var of type bool can't handle adding or multiplying instruction!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

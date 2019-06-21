@@ -50,22 +50,12 @@ class GeSetVar : public Event<GameInfo>{
         std::string m_val_name = "";
         bool m_add = false;
         bool m_mult = false;
-        struct Value {
-            enum Type{
-                Bool,
-                Int,
-                Float,
-                String
-            };
-            Type type = Float;
 
-            union{
-                bool b;
-                int i;
-                float f;
-            };
-            std::string s;
-        } m_value;
+        PropertyType m_type = PropertyType::Float;
+        bool m_bool = false;
+        int m_int = 0;
+        float m_float = 0.0f;
+        std::string m_string = "";
 };
 
 #endif // GE_SET_VAR_HPP_INCLUDED

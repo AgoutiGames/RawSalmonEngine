@@ -81,6 +81,13 @@ enum class AnimSignal{
     missing,
 };
 
+enum class PropertyType{
+    Boolean,
+    Integer,
+    Float,
+    String,
+};
+
 AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);
