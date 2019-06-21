@@ -110,7 +110,7 @@ tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     parser.add(m_add, "+=");
     parser.add(m_mult, "*=");
     parser.add(m_val_name, "VAL_NAME");
-    parser.add(m_type, m_bool, m_int, m_float, m_string, "VALUE");
+    parser.add(&AeSetVar::m_type, &AeSetVar::m_bool, &AeSetVar::m_int, &AeSetVar::m_float, &AeSetVar::m_string, "VALUE");
 
     XMLError eResult = parser.parse(source);
 

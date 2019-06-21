@@ -35,6 +35,11 @@ class PropertyListener {
         void register_variable(std::string variable, float EventType::* member) {m_float_link.push_back(std::make_pair(variable, member));}
         void register_variable(std::string variable, bool EventType::* member) {m_bool_link.push_back(std::make_pair(variable, member));}
         void register_variable(std::string variable, std::string EventType::* member) {m_string_link.push_back(std::make_pair(variable, member));}
+        void register_variable(std::string variable, std::tuple<PropertyType EventType::*,
+                                         bool EventType::*,
+                                         int EventType::*,
+                                         float EventType::*,
+                                         std::string EventType::*> member) {m_multi_link.push_back(std::make_pair(variable, member));}
 
         void listen(const DataBlock& data, EventType& event) const;
 
@@ -48,10 +53,34 @@ class PropertyListener {
         std::vector<std::pair<std::string, float EventType::*>> m_float_link;
         std::vector<std::pair<std::string, bool EventType::*>> m_bool_link;
         std::vector<std::pair<std::string, std::string EventType::*>> m_string_link;
+        std::vector<std::pair<std::string, std::tuple<PropertyType EventType::*,
+                                         bool EventType::*,
+                                         int EventType::*,
+                                         float EventType::*,
+                                         std::string EventType::*>>> m_multi_link;
 };
 
 template<class EventType>
 void PropertyListener<EventType>::listen(const DataBlock& data, EventType& event) const {
+    for(auto& i : m_multi_link) {
+        if(data.check_val_bool(i.first)) {
+            event.*(std::get<0>(i.second)) = PropertyType::Boolean;
+            event.*(std::get<1>(i.second)) = data.get_val_bool(i.first);
+        }
+        else if(data.check_val_int(i.first)) {
+            event.*(std::get<0>(i.second)) = PropertyType::Integer;
+            event.*(std::get<2>(i.second)) = data.get_val_int(i.first);
+        }
+        else if(data.check_val_float(i.first)) {
+            event.*(std::get<0>(i.second)) = PropertyType::Float;
+            event.*(std::get<3>(i.second)) = data.get_val_float(i.first);
+        }
+        else if(data.check_val_string(i.first)) {
+            event.*(std::get<0>(i.second)) = PropertyType::String;
+            event.*(std::get<4>(i.second)) = data.get_val_string(i.first);
+        }
+    }
+
     for(auto& i : m_int_link) {
         if(data.check_val_int(i.first)) {
             event.*(i.second) = data.get_val_int(i.first);
