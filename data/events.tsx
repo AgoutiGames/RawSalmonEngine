@@ -203,6 +203,13 @@
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
+ <tile id="58" type="MeSetVar">
+  <properties>
+   <property name="NAME" value="CoinCountDupe"/>
+   <property name="VALUE" value="*CoinCount"/>
+   <property name="VAL_NAME" value="CoinCountDupe"/>
+  </properties>
+ </tile>
  <tile id="59" type="MeSetVar">
   <properties>
    <property name="+=" type="bool" value="true"/>
@@ -219,7 +226,7 @@
  </tile>
  <tile id="61" type="AeAnimate">
   <properties>
-   <property name="ANIMATION_FRAMES" value="*CoinCount"/>
+   <property name="ANIMATION_FRAMES" value="*CoinCountDupe"/>
    <property name="ANIMATION_TYPE" value="WALK"/>
    <property name="NAME" value="Disappear"/>
    <property name="SIGNAL" value="STOP"/>
@@ -235,7 +242,8 @@
    <property name="1" value="PickupSound"/>
    <property name="2" value="Disappear"/>
    <property name="3" value="CoinCount"/>
-   <property name="4" value="kill"/>
+   <property name="4" value="CoinCountDupe"/>
+   <property name="5" value="kill"/>
    <property name="NAME" value="CoinPickup"/>
   </properties>
  </tile>

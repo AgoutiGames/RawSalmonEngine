@@ -265,7 +265,10 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi_e(tinyxml2::XMLElement
     }
 
     auto& property = m_multi_e.at(name);
-    std::string type(source->Attribute("type"));
+    std::string type = "";
+    const char* p_type = source->Attribute("type");
+    if(p_type != nullptr) {type = p_type;}
+
     if(type == "bool") {
         m_event->*std::get<0>(property) = PropertyType::Boolean;
         return source->QueryBoolAttribute("value", &(m_event->*std::get<1>(property)));

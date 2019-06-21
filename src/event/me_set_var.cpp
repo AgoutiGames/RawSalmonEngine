@@ -38,6 +38,9 @@ const bool MeSetVar::good = Event<MapData>::register_class<MeSetVar>();
  */
 EventSignal MeSetVar::process(MapData& scope) {
 
+    // Syncs members with possibly linked DataBlock variables
+    listen(m_property_listener, *this, scope);
+
     if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
         std::cerr << "me_set_var of type bool can't handle adding or multiplying instruction!\n";
         return EventSignal::abort;

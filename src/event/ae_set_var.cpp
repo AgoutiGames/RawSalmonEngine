@@ -39,8 +39,11 @@ const bool AeSetVar::good = Event<Actor>::register_class<AeSetVar>();
  */
 EventSignal AeSetVar::process(Actor& actor) {
 
+    // Syncs members with possibly linked DataBlock variables
+    listen(m_property_listener, *this, actor);
+
     if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
-        std::cerr << "me_set_var of type bool can't handle adding or multiplying instruction!\n";
+        std::cerr << "ae_set_var of type bool can't handle adding or multiplying instruction!\n";
         return EventSignal::abort;
     }
 
