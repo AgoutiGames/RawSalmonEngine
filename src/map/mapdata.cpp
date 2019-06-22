@@ -117,7 +117,18 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         }
         XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
         if (pSymTs == nullptr) {return XML_ERROR_PARSING_ELEMENT;}
+
+        // Temporarily set base path to symbolic ts path so events can load files properly
+        std::string temp = m_base_path;
+        m_base_path = full_path;
+        m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
+
         eResult = Tileset::parse_symbolic(pSymTs, *this);
+
+        //reset base path
+        m_base_path = temp;
+
+
         if(eResult != XML_SUCCESS) {
             std::cerr << "Failed at parsing symbolic tileset " << name << "\n";
             return eResult;
