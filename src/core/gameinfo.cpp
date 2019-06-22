@@ -111,8 +111,11 @@ bool GameInfo::init() {
  */
 bool GameInfo::load_map(std::string mapfile) {
     m_maps.emplace(this, m_screen_w, m_screen_h);
-    tinyxml2::XMLError eResult = m_maps.top().init_map(mapfile, &m_renderer);
-    if(eResult == tinyxml2::XML_SUCCESS) return true;
+    tinyxml2::XMLError eResult = m_maps.top().init_map(m_current_path + mapfile, &m_renderer);
+    if(eResult == tinyxml2::XML_SUCCESS) {
+        update_path();
+        return true;
+    }
     else return false;
 }
 
@@ -123,6 +126,7 @@ void GameInfo::close_map() {
     m_maps.pop();
     if(!m_maps.empty()) {
         m_maps.top().resume();
+        update_path();
     }
 }
 
@@ -165,6 +169,11 @@ bool GameInfo::update() {
 void GameInfo::render() {
     m_maps.top().render();
     SDL_RenderPresent(m_renderer);
+}
+
+void GameInfo::update_path() {
+    m_current_path = m_maps.top().get_file_path();
+    m_current_path.erase(m_current_path.find_last_of('/') + 1);
 }
 
 /// Cleans up SDL2 stuff

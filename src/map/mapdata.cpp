@@ -51,7 +51,12 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     std::string full_path;
 
     // Read in the .tmx file to mapfile var
-    full_path = m_base_path + filename;
+    full_path = filename;
+
+    // Set the base path by trimming filename off path
+    m_base_path = full_path;
+    m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
+
     tinyxml2::XMLDocument mapfile{true, tinyxml2::COLLAPSE_WHITESPACE};
     eResult = mapfile.LoadFile(full_path.c_str());
     if(eResult != XML_SUCCESS) {
@@ -241,10 +246,10 @@ void MapData::update() {
     // Check for active actor called PLAYER because it may change during execution
     std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string("PLAYER"));
     if(actor_list.size() > 1) {
-        std::cerr << "Error: More than one actor called PLAYER!\n";
+        // std::cerr << "Error: More than one actor called PLAYER!\n";
     }
     else if(actor_list.size() == 0) {
-        std::cerr << "Error: No actor called PLAYER found!\n";
+        // std::cerr << "Error: No actor called PLAYER found!\n";
     }
     else {
         m_player = actor_list[0];

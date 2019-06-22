@@ -47,6 +47,8 @@ public:
     bool load_map(std::string mapfile);
     void close_map();
 
+
+
     DataBlock& get_data() {return m_data;}
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
@@ -54,6 +56,8 @@ public:
     EventQueue<GameInfo>& get_event_queue() {return m_events;}
 
 private:
+    void update_path();
+
     SDL_Window* m_window = nullptr;
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
@@ -63,6 +67,8 @@ private:
     DataBlock m_data; ///< This holds custom user values by string
 
     EventQueue<GameInfo> m_events;
+
+    std::string m_current_path = "../data/";
 
     std::stack<MapData> m_maps; ///< Stores the currently active game map
 };

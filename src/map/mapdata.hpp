@@ -124,7 +124,7 @@ class MapData {
 
         GameInfo* m_game;
 
-        std::string m_base_path = "../data/"; ///< Path to folder where .tmx map files are
+        std::string m_base_path = ""; ///< Path to folder where .tmx map files are
         unsigned m_width;  // The map dimensions in tiles
         unsigned m_height;
         SDL_Color m_bg_color;
