@@ -37,6 +37,7 @@
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SPEED" type="float" default="1"/>
  </objecttype>
  <objecttype name="AeDecelerate" color="#a0a0a4">
   <property name="NAME" type="string"/>
@@ -164,7 +165,7 @@
  </objecttype>
  <objecttype name="GeChangeMap" color="#a0a0a4">
   <property name="NAME" type="string"/>
-  <property name="PATH" type="string"/>
+  <property name="PATH" type="file" default=""/>
   <property name="PRESERVE" type="bool" default="false"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
  </objecttype>

@@ -181,7 +181,7 @@ void TilesetCollection::init_anim_tiles() {
 void TilesetCollection::push_all_anim() {
     Uint32 time = SDL_GetTicks();
     for(unsigned tile : m_anim_tiles) {
-        mp_tiles[tile]->push_anim(time);
+        mp_tiles[tile]->push_anim(1.0f, time);
     }
 }
 

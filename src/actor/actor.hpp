@@ -60,8 +60,8 @@ class Actor{
         // Core functions
         tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
         void update();
-        bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
-        AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current);
+        bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
+        AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor);
         bool unstuck();

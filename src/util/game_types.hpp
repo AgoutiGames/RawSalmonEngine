@@ -74,11 +74,11 @@ enum class Response{
 };
 
 enum class AnimSignal{
-    trigger,
-    wrap,
-    next,
-    none,
-    missing,
+    missing = -1,
+    none = 0,
+    next = 1,
+    trigger = 2,
+    wrap = 3,
 };
 
 enum class PropertyType{

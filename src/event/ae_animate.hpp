@@ -56,6 +56,7 @@ class AeAnimate : public Event<Actor>{
         int m_cycles = 0;
         int m_anim_frames = 0;
         int m_game_frames = 0;
+        float m_speed = 1.0f;
         // Members
 };
 

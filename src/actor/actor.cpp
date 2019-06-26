@@ -197,7 +197,7 @@ void Actor::update() {
  * @param dir The direction of the animation
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
  */
-bool Actor::animate(AnimationType anim, Direction dir) {
+bool Actor::animate(AnimationType anim, Direction dir, float speed) {
     if(anim == AnimationType::none) {return false;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
@@ -214,7 +214,7 @@ bool Actor::animate(AnimationType anim, Direction dir) {
         m_direction = dir;
         m_animations[m_anim_state][m_direction].init_anim();
     }
-    return m_animations[m_anim_state][m_direction].push_anim();
+    return m_animations[m_anim_state][m_direction].push_anim(speed);
 }
 
 /**
@@ -223,7 +223,7 @@ bool Actor::animate(AnimationType anim, Direction dir) {
  * @param dir The direction of the animation
  * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger frame
  */
-AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
+AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir, float speed) {
     if(anim == AnimationType::none) {return AnimSignal::none;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
@@ -240,7 +240,7 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir) {
         m_direction = dir;
         m_animations[m_anim_state][m_direction].init_anim();
     }
-    return m_animations[m_anim_state][m_direction].push_anim_trigger();
+    return m_animations[m_anim_state][m_direction].push_anim_trigger(speed);
 }
 
 /**

@@ -46,7 +46,7 @@ EventSignal AeAnimate::process(Actor& actor) {
         m_first = false;
     }
 
-    AnimSignal sig = actor.animate_trigger(m_animation, m_direction);
+    AnimSignal sig = actor.animate_trigger(m_animation, m_direction, m_speed);
     if(sig == AnimSignal::missing) {return EventSignal::abort;}
     if(m_cycles > 0) {
         if(sig == AnimSignal::wrap) {
@@ -86,6 +86,7 @@ tinyxml2::XMLError AeAnimate::init(tinyxml2::XMLElement* source, MapData& base_m
     // Add additional members here
     parser.add(m_animation, "ANIMATION_TYPE");
     parser.add(m_direction, "DIRECTION");
+    parser.add(&AeAnimate::m_speed, "SPEED");
     parser.add(&AeAnimate::m_cycles, "CYCLES");
     parser.add(&AeAnimate::m_anim_frames, "ANIMATION_FRAMES");
     parser.add(&AeAnimate::m_game_frames, "GAME_FRAMES");

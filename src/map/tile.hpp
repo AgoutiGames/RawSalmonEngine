@@ -47,12 +47,10 @@ public:
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
     tinyxml2::XMLError parse_actor_templ(tinyxml2::XMLElement* source);
 
-    void init_anim();
-    void init_anim(Uint32 time);
+    void init_anim(Uint32 time = SDL_GetTicks());
 
-    bool push_anim();
-    AnimSignal push_anim_trigger();
-    void push_anim(Uint32 time);
+    bool push_anim(float speed = 1.0f, Uint32 time = SDL_GetTicks());
+    AnimSignal push_anim_trigger(float speed = 1.0f, Uint32 time = SDL_GetTicks());
 
     std::string get_type() const {return m_type;}
     Tileset& get_tileset() {return *mp_tileset;}
@@ -76,6 +74,7 @@ private:
     std::vector<Uint16> m_anim_ids; // could use Tile* for better performance but greater memory allocation
     std::vector<unsigned> m_durations;
     Uint32 m_anim_timestamp = 0;
+    float m_time_delta = 0;
 };
 
 

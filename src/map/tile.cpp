@@ -353,12 +353,6 @@ const SDL_Rect& Tile::get_clip() const {
     }
 }
 
-/// Initialize the tile to the current timestamp and first frame
-void Tile::init_anim() {
-    m_current_id = 0;
-    m_anim_timestamp = SDL_GetTicks();
-}
-
 /// Initialize the tile to the supplied timestamp and first frame
 void Tile::init_anim(Uint32 time) {
     m_current_id = 0;
@@ -371,21 +365,14 @@ void Tile::init_anim(Uint32 time) {
  *
  * Checks if next frame of animated tile is due, changes to next frame
  * and wraps around if required.
- * @note This code effectively quantizes animation to 1000ms/FPS steps
  */
-bool Tile::push_anim() {
+bool Tile::push_anim(float speed, Uint32 time) {
     if(!m_animated) {return true;}
-    bool wrap_around = false;
-    Uint32 time = SDL_GetTicks();
-    if(time - m_anim_timestamp >= m_durations[m_current_id]) {
-        m_current_id++;
-        m_anim_timestamp = time;
-        if(m_current_id >= m_anim_ids.size()) {
-            m_current_id = 0;
-            wrap_around = true;
-        }
+    AnimSignal sig = push_anim_trigger(speed, time);
+    if(sig == AnimSignal::wrap) {
+        return true;
     }
-    return wrap_around;
+    return false;
 }
 
 /**
@@ -395,43 +382,49 @@ bool Tile::push_anim() {
  *
  * Checks if next frame of animated tile is due, changes to next frame
  * and wraps around if required.
- * @note This code effectively quantizes animation to 1000ms/FPS steps
  * @note The wrap around signal has precedence over the trigger signal
  */
-AnimSignal Tile::push_anim_trigger() {
+AnimSignal Tile::push_anim_trigger(float speed, Uint32 time) {
     if(!m_animated) {return AnimSignal::wrap;}
-    Uint32 time = SDL_GetTicks();
-    if(time - m_anim_timestamp >= m_durations[m_current_id]) {
+    // if(speed < 0.0f) {speed = 0.0f;}
+    m_time_delta += speed * (time - m_anim_timestamp);
+    m_anim_timestamp = time;
+    AnimSignal sig = AnimSignal::none;
+
+    // Backwards animation
+    if(m_time_delta < 0) {
+        while(-m_time_delta >= m_durations[m_current_id - 1]) {
+            m_time_delta += m_durations[m_current_id - 1];
+
+            if(m_current_id == 0) {
+                m_current_id = m_anim_ids.size() - 1;
+                if(sig < AnimSignal::wrap) {sig = AnimSignal::wrap;}
+            }
+            else {
+                m_current_id--;
+            }
+
+            if(m_current_id == static_cast<int>(m_trigger_frame)) {
+                if(sig < AnimSignal::trigger) {sig = AnimSignal::trigger;}
+            }
+            if(sig < AnimSignal::next) {sig = AnimSignal::next;}
+        }
+    }
+
+    // Forward animation
+    while(m_time_delta >= m_durations[m_current_id]) {
+        m_time_delta -= m_durations[m_current_id];
         m_current_id++;
-        m_anim_timestamp = time;
         if(m_current_id >= m_anim_ids.size()) {
             m_current_id = 0;
-            return AnimSignal::wrap;
+            if(sig < AnimSignal::wrap) {sig = AnimSignal::wrap;}
         }
         if(m_current_id == static_cast<int>(m_trigger_frame)) {
-            return AnimSignal::trigger;
+            if(sig < AnimSignal::trigger) {sig = AnimSignal::trigger;}
         }
-        return AnimSignal::next;
+        if(sig < AnimSignal::next) {sig = AnimSignal::next;}
     }
-    return AnimSignal::none;
-}
-
-/**
- * @brief Animates a tile with supplied timestamp
- *
- * Checks if next frame of animated tile is due, changes to next frame
- * and wraps around if required.
- * @note This code effectively quantizes animation to 1000ms/FPS steps
- */
-void Tile::push_anim(Uint32 time) {
-    if(!m_animated) {return;}
-    if(time - m_anim_timestamp >= m_durations[m_current_id]) {
-        m_current_id++;
-        m_anim_timestamp = time;
-        if(m_current_id >= m_anim_ids.size()) {
-            m_current_id = 0;
-        }
-    }
+    return sig;
 }
 
 /**
