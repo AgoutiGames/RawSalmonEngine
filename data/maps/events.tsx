@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset name="events_symbol" tilewidth="60" tileheight="60" tilecount="100" columns="10">
- <image source="tilesets/symbol_numbers.png" width="600" height="600"/>
+ <image source="../tilesets/symbol_numbers.png" width="600" height="600"/>
  <tile id="0" type="AeMoveSustained">
   <properties>
    <property name="DIRECTION" value="UP"/>
@@ -96,7 +96,7 @@
  <tile id="12" type="AeSound">
   <properties>
    <property name="NAME" value="Jump_Sound"/>
-   <property name="PATH" type="file" value="audio/Ding2.ogg"/>
+   <property name="PATH" type="file" value="../audio/Ding2.ogg"/>
   </properties>
  </tile>
  <tile id="13" type="AteOnGround">
@@ -221,7 +221,7 @@
  <tile id="60" type="AeSound">
   <properties>
    <property name="NAME" value="PickupSound"/>
-   <property name="PATH" type="file" value="audio/Collectible.ogg"/>
+   <property name="PATH" type="file" value="../audio/Collectible.ogg"/>
   </properties>
  </tile>
  <tile id="61" type="AeAnimate">

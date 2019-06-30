@@ -144,9 +144,9 @@ std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
 
     TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
     SDL_Rect window = rect;
-    window.w += tsc.get_tile_w() + (tsc.get_overhang(Direction::left) + tsc.get_overhang(Direction::right)) * tsc.get_tile_w();
-    window.h += tsc.get_tile_h() + (tsc.get_overhang(Direction::up) + tsc.get_overhang(Direction::down)) * tsc.get_tile_h();
-    window.x -= tsc.get_tile_w() + tsc.get_overhang(Direction::left) * tsc.get_tile_w();
+    window.w += tsc.get_tile_w() + tsc.get_overhang(Direction::left) + tsc.get_overhang(Direction::right);
+    window.h += tsc.get_tile_h() + tsc.get_overhang(Direction::up) + tsc.get_overhang(Direction::down);
+    window.x -= tsc.get_tile_w() + tsc.get_overhang(Direction::left);
     // Because origin of actor isn't upper left, but lower left, we don't need this
     //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up) * tsc.get_tile_h();
 
@@ -168,11 +168,11 @@ std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
 std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
     TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
     SDL_Rect window = rect;
-    window.w += tsc.get_tile_w() + (tsc.get_overhang(Direction::left) + tsc.get_overhang(Direction::right)) * tsc.get_tile_w();
-    window.h += tsc.get_tile_h() + (tsc.get_overhang(Direction::up) + tsc.get_overhang(Direction::down)) * tsc.get_tile_h();
-    window.x -= tsc.get_tile_w() + tsc.get_overhang(Direction::left) * tsc.get_tile_w();
+    window.w += tsc.get_tile_w() + tsc.get_overhang(Direction::left) + tsc.get_overhang(Direction::right);
+    window.h += tsc.get_tile_h() + tsc.get_overhang(Direction::up) + tsc.get_overhang(Direction::down);
+    window.x -= tsc.get_tile_w() + tsc.get_overhang(Direction::left);
     // Because origin of actor isn't upper left, but lower left, we don't need this
-    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up) * tsc.get_tile_h();
+    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up);
 
     std::vector<const Actor*> actor_list;
     for(const Actor& actor : m_obj_grid) {

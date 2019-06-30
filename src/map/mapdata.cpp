@@ -132,7 +132,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     std::string on_always = "";
     std::string on_resume = "";
     XMLElement* pProp = pMap->FirstChildElement("properties");
-    if (pMap != nullptr) {
+    if (pProp != nullptr) {
         pProp = pProp->FirstChildElement("property");
         while(pProp != nullptr) {
             if(std::string("ON_LOAD") == pProp->Attribute("name")) {
@@ -285,9 +285,9 @@ bool MapData::render() const{
  */
 void MapData::update() {
     Uint32 current_time = SDL_GetTicks();
-    m_delta_time = (current_time - m_last_update) / 1000.f;
+    //m_delta_time = (current_time - m_last_update) / 1000.f;
     // If debugging use this
-    // m_delta_time = 1.0f / 60.0f;
+     m_delta_time = 1.0f / 60.0f;
     m_last_update = current_time;
 
     m_layer_collection.update();
@@ -596,4 +596,28 @@ void MapData::resume() {
         m_events.add_event(m_on_resume);
     }
 }
+
+unsigned MapData::get_w() const {
+    int width = m_width * m_ts_collection.get_tile_w();
+    if(m_tile_layout.orientation != "orthogonal") {
+        if(!m_tile_layout.stagger_axis_y) {
+            width /= 2;
+            width += m_width * m_tile_layout.hexsidelength / 2;
+        }
+        width += m_ts_collection.get_tile_w() / 2;
+    }
+    return width;
+} ///< Returns map width in pixels
+
+unsigned MapData::get_h() const {
+    int height = m_height * m_ts_collection.get_tile_h();
+    if(m_tile_layout.orientation != "orthogonal") {
+        if(m_tile_layout.stagger_axis_y) {
+            height /= 2;
+            height += m_height * m_tile_layout.hexsidelength / 2;
+        }
+        height += m_ts_collection.get_tile_h() / 2;
+    }
+    return height;
+} ///< Returns map height in pixels
 

@@ -231,6 +231,7 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     // @todo? Using the pixel values, the rendering could
     // be slightly faster if there are many oversized tiles
     // which are not divisible by the base tile size
+    /*
     unsigned loc_up = pix_up / tile_h;
     if(pix_up % tile_h > 0) loc_up++;
     unsigned loc_down = pix_down / tile_h;
@@ -239,12 +240,13 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     if(pix_left % tile_w > 0) loc_left++;
     unsigned loc_right = pix_right / tile_w;
     if(pix_right % tile_w > 0) loc_right++;
+    */
 
     std::map<Direction, unsigned> oh_map;
-    oh_map[Direction::up] = loc_up;
-    oh_map[Direction::down] = loc_down;
-    oh_map[Direction::left] = loc_left;
-    oh_map[Direction::right] = loc_right;
+    oh_map[Direction::up] = pix_up;
+    oh_map[Direction::down] = pix_down;
+    oh_map[Direction::left] = pix_left;
+    oh_map[Direction::right] = pix_right;
 
     return oh_map;
 }

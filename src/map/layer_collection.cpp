@@ -41,8 +41,9 @@
     // Collect all layers to a vector of pointers
     std::vector<XMLElement*> p_layers;
     if (source == nullptr) {
-        std::cerr << "Mapfile has no layers\n";
-        return XML_ERROR_PARSING_ELEMENT;
+        // std::cerr << "Mapfile has no layers\n";
+        /// @note Empty layer_collection is okay now
+        return XML_SUCCESS;
     }
 
     do{

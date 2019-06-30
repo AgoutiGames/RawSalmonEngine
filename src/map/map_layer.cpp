@@ -19,12 +19,14 @@
 #include "map/map_layer.hpp"
 
 #include <iostream>
+#include <math.h>
 
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tile.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/base64.h"
+#include "util/game_types.hpp"
 
 /// Factory function which retrieves a pointer owning the map layer
 MapLayer* MapLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -134,8 +136,27 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
 
     const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
-    int tile_w = static_cast<int>(m_ts_collection->get_tile_w());
-    int tile_h = static_cast<int>(m_ts_collection->get_tile_h());
+    bool staggered = false;
+    if(layout.orientation != "orthogonal") {
+        staggered = true;
+    }
+
+    int base_tile_w = static_cast<int>(m_ts_collection->get_tile_w());
+    int base_tile_h = static_cast<int>(m_ts_collection->get_tile_h());
+
+    int tile_w = base_tile_w;
+    int tile_h = base_tile_h;
+
+    if(staggered) {
+        if(layout.stagger_axis_y) {
+            tile_h /= 2;
+            tile_h += layout.hexsidelength / 2;
+        }
+        else {
+            tile_w /= 2;
+            tile_w += layout.hexsidelength / 2;
+        }
+    }
 
     // Apply the layer offset
     int x_camera = rect.x - m_offset_x;
@@ -155,15 +176,30 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
     // Vertical pixel offset to full tile
     int y_tile_offset = y_camera % tile_h;
 
+    float left_oh = m_ts_collection->get_overhang(Direction::left);
+    float right_oh = m_ts_collection->get_overhang(Direction::right);
+    float up_oh = m_ts_collection->get_overhang(Direction::up);
+    float down_oh = m_ts_collection->get_overhang(Direction::down);
+
+    if(staggered) {
+        left_oh += base_tile_w / 2;
+        up_oh += base_tile_h / 2;
+    }
+
+    left_oh = ceil(left_oh / tile_w);
+    right_oh = ceil(right_oh / tile_w);
+    up_oh = ceil(up_oh / tile_h);
+    down_oh = ceil(down_oh / tile_h);
+
     // Apply the margin which makes up for oversized tiles and tileset offset
-    x_tile_from -= m_ts_collection->get_overhang(Direction::left);
-    x_tile_to += m_ts_collection->get_overhang(Direction::right);
-    y_tile_from -= m_ts_collection->get_overhang(Direction::up);
-    y_tile_to += m_ts_collection->get_overhang(Direction::down);
+    x_tile_from -= left_oh;
+    x_tile_to += right_oh;
+    y_tile_from -= up_oh;
+    y_tile_to += down_oh;
 
     // Pixel perfect position of the first upper left tile
-    int x_start = -x_tile_offset - (m_ts_collection->get_overhang(Direction::left) * tile_w);
-    int y_start = -y_tile_offset - (m_ts_collection->get_overhang(Direction::up) * tile_h);
+    int x_start = -x_tile_offset - (left_oh * tile_w);
+    int y_start = -y_tile_offset - (up_oh * tile_h);
 
     int x = x_start;
     int y = y_start;
@@ -171,14 +207,20 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
     int x_step = tile_w;
     int y_step = tile_h;
 
-    // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
-
     std::vector< std::tuple<Uint16, int, int> > tiles;
-    tiles.reserve((y_tile_to - y_tile_from) * (x_tile_to - x_tile_from));
+    tiles.reserve((y_tile_to - y_tile_from + 1) * (x_tile_to - x_tile_from + 1));
 
     // Iterates through vertical rows tile by tile
     for(int i_y_tile = y_tile_from; i_y_tile <= y_tile_to; i_y_tile++) {
-
+        // Reset horizontal tile position
+        x = x_start;
+        if(staggered) {
+            if(layout.stagger_axis_y) {
+                if((!layout.stagger_index_odd && i_y_tile % 2 == 0) || (layout.stagger_index_odd && i_y_tile % 2 != 0)) {
+                    x = x_start + (tile_w / 2);
+                }
+            }
+        }
         // Skips vertical rows if position is off map/layer
         if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
 
@@ -192,16 +234,22 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
                     Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
                     // Scrap empty tiles!
                     if(tile_id != 0) {
-                        tiles.emplace_back(tile_id, x, y);
+                        int temp_y = y;
+
+                        if(staggered) {
+                            if(!layout.stagger_axis_y) {
+                                if((!layout.stagger_index_odd && i_x_tile % 2 == 0) || (layout.stagger_index_odd && i_x_tile % 2 != 0)) {
+                                    temp_y = y + (tile_h / 2);
+                                }
+                            }
+                        }
+                        tiles.emplace_back(tile_id, x, temp_y);
                     }
                 }
                 // Move to next horizontal tile position
                 x += x_step;
             }
         }
-        // Reset horizontal tile position
-        x = x_start;
-
         // Move to next vertical tile position
         y += y_step;
     }

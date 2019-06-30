@@ -51,9 +51,10 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
 
     XMLElement* pTs = source->FirstChildElement("tileset");
     if (pTs == nullptr) {
-        std::cout << "Error: Parsing Mapfile without any Tileset!\n";
-        return XML_ERROR_PARSING_ELEMENT;
-        }
+        //std::cout << "Error: Parsing Mapfile without any Tileset!\n";
+        /// @note Empty tileset_collection is okay now
+        return XML_SUCCESS;
+    }
 
     // Collect all tilesets to a vector of pointers
     do{
