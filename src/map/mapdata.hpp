@@ -69,8 +69,6 @@ class MapData {
         // Trivial Getters
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
-        // unsigned get_w() const {return m_width * m_ts_collection.get_tile_w();} ///< Returns map width in pixels
-        // unsigned get_h() const {return m_height * m_ts_collection.get_tile_h();} ///< Returns map height in pixels
 
         unsigned get_w() const;
         unsigned get_h() const;

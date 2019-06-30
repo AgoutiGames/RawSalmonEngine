@@ -176,6 +176,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
     // Vertical pixel offset to full tile
     int y_tile_offset = y_camera % tile_h;
 
+    // Calculate tile offset by pixel basis
     float left_oh = m_ts_collection->get_overhang(Direction::left);
     float right_oh = m_ts_collection->get_overhang(Direction::right);
     float up_oh = m_ts_collection->get_overhang(Direction::up);
