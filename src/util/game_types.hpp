@@ -88,6 +88,13 @@ enum class PropertyType{
     String,
 };
 
+struct TileLayout{
+    std::string orientation = "";
+    int hexsidelength = 0;
+    bool stagger_axis_y = true;
+    bool stagger_index_odd = true;
+};
+
 AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);

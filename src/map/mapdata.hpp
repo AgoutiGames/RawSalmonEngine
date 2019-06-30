@@ -78,6 +78,7 @@ class MapData {
         LayerCollection& get_layer_collection() {return m_layer_collection;}
         EventQueue<MapData>& get_event_queue() {return m_events;}
         Camera& get_camera() {return m_camera;}
+        const TileLayout get_tile_layout() {return m_tile_layout;}
 
         // Binds or unbinds camera from player position
         void bind_camera_to_player(bool state) {if(!state) {m_camera.unbind_player();} m_player_to_camera = state;}
@@ -137,6 +138,8 @@ class MapData {
         bool m_player_to_camera = true;
 
         LayerCollection m_layer_collection;
+
+        TileLayout m_tile_layout;
 
         TilesetCollection m_ts_collection;
 

@@ -75,6 +75,54 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     if(eResult != XML_SUCCESS) return eResult;
     std::cout << "Map height: " << m_height << "\n";
 
+    const char* p_orientation = pMap->Attribute("orientation");
+    if(p_orientation == nullptr) {
+        std::cerr << "Missing map orientation value!\n";
+        return XMLError::XML_NO_ATTRIBUTE;
+    }
+    std::string orientation = p_orientation;
+    if(orientation != "orthogonal" && orientation != "hexagonal" && orientation != "staggered") {
+        std::cerr << "Tile orientation " << orientation << " isn't supported!\n";
+        return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    m_tile_layout.orientation = orientation;
+
+    const char* p_stagger_axis = pMap->Attribute("staggeraxis");
+    if(p_stagger_axis != nullptr) {
+        if(std::string("x") == p_stagger_axis) {
+            m_tile_layout.stagger_axis_y = false;
+        }
+        else if(std::string("y") == p_stagger_axis) {
+            m_tile_layout.stagger_axis_y = true;
+        }
+        else {
+            std::cerr << "Stagger axis " << p_stagger_axis << " isn't supported!\n";
+            std::cerr << "Use x or y!\n";
+            return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+        }
+    }
+
+    const char* p_stagger_index = pMap->Attribute("staggerindex");
+    if(p_stagger_index != nullptr) {
+        if(std::string("odd") == p_stagger_index) {
+            m_tile_layout.stagger_index_odd = true;
+        }
+        else if(std::string("even") == p_stagger_index) {
+            m_tile_layout.stagger_index_odd = false;
+        }
+        else {
+            std::cerr << "Stagger index " << p_stagger_index << " isn't supported!\n";
+            std::cerr << "Use odd or even!\n";
+            return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+        }
+    }
+
+    int hexsidelength;
+    eResult = pMap->QueryIntAttribute("hexsidelength", &hexsidelength);
+    if(eResult == XML_SUCCESS) {
+        m_tile_layout.hexsidelength = hexsidelength;
+    }
+
     // Parse possible backgroundcolor
     parse::bg_color(pMap, m_bg_color); // Discard Result since missing bg_color is generally okay
 

@@ -68,7 +68,8 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     // Only base64 encoding is supported right now
     const char* p_encoding = p_data->Attribute("encoding");
     if(p_encoding == nullptr || std::string("base64") != p_encoding) {
-        std::cerr << "wrong encoding type: " << p_encoding << " !\n";
+        std::cerr << "Encoding type: " << p_encoding << " is not supported !\n";
+        std::cerr << "Use base64!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -131,6 +132,8 @@ bool MapLayer::render(const Camera& camera) const {
  */
 std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect) const {
 
+    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+
     int tile_w = static_cast<int>(m_ts_collection->get_tile_w());
     int tile_h = static_cast<int>(m_ts_collection->get_tile_h());
 
@@ -159,8 +162,14 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
     y_tile_to += m_ts_collection->get_overhang(Direction::down);
 
     // Pixel perfect position of the first upper left tile
-    int x = -x_tile_offset - (m_ts_collection->get_overhang(Direction::left) * tile_w);
-    int y = -y_tile_offset - (m_ts_collection->get_overhang(Direction::up) * tile_h);
+    int x_start = -x_tile_offset - (m_ts_collection->get_overhang(Direction::left) * tile_w);
+    int y_start = -y_tile_offset - (m_ts_collection->get_overhang(Direction::up) * tile_h);
+
+    int x = x_start;
+    int y = y_start;
+
+    int x_step = tile_w;
+    int y_step = tile_h;
 
     // if(m_opacity < 1.0f) Tileset::set_opacity(m_opacity);
 
@@ -187,14 +196,14 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(const SDL_Rect& rect)
                     }
                 }
                 // Move to next horizontal tile position
-                x += tile_w;
+                x += x_step;
             }
         }
         // Reset horizontal tile position
-        x = -x_tile_offset - (m_ts_collection->get_overhang(Direction::left) * tile_w);
+        x = x_start;
 
         // Move to next vertical tile position
-        y += tile_h;
+        y += y_step;
     }
     return tiles;
 }
