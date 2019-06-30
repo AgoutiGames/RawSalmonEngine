@@ -13,7 +13,8 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
 ## Features ![Salmon Jump](/icons/RawSalmonLogo_Ver1_128px.png)
 * Supported map orientations 
   - [x] Orthogonal
-  - [ ] Isometric
+  - [x] Isometric (staggered)
+  - [x] Hexagonal
 * Supported map formats
   - [ ] CSV
   - [x] base64
