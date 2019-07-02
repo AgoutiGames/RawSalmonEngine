@@ -98,13 +98,13 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
                 byte = data[counter + 3];
                 tile_id += byte * 256 * 256 * 256;
                 counter += 4;
-
+                /*
                 if(tile_id > 65535) {
                     std::cerr << "Tile Id is out of Uint16 Limit!\n";
                     return XML_ERROR_PARSING_TEXT;
                 }
-
-                m_map_grid[i_y].push_back(static_cast<Uint16>(tile_id));
+                */
+                m_map_grid[i_y].push_back(tile_id);
             }
         }
     }
@@ -118,14 +118,14 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
                 if(ss.good()){
                     std::string tile_id_str;
                     getline( ss, tile_id_str, ',' );
-                    int tile_id = std::stoi(tile_id_str);
-
+                    Uint32 tile_id = static_cast<Uint32>(std::stoul(tile_id_str));
+                    /*
                     if(tile_id > 65535) {
                         std::cerr << "Tile Id is out of Uint16 Limit!\n";
                         return XML_ERROR_PARSING_TEXT;
                     }
-
-                    m_map_grid[i_y].push_back(static_cast<Uint16>(tile_id));
+                    */
+                    m_map_grid[i_y].push_back(tile_id);
                 }
                 else {
                     std::cerr << "Tile ids ended prematurely at x: " << i_x << " y: " << i_y << "\n";
@@ -159,9 +159,9 @@ bool MapLayer::render(const Camera& camera) const {
     return success;
 }
 
-std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const {
     const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
-    std::vector< std::tuple<Uint16, int, int> > tiles;
+    std::vector< std::tuple<Uint32, int, int> > tiles;
     if(layout.orientation == "orthogonal") {
         tiles = clip_ortho(rect);
     }
@@ -182,7 +182,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(SDL_Rect rect) const 
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(SDL_Rect rect) const {
 
     const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -192,7 +192,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
     int x_tile_from, x_tile_to, y_tile_from, y_tile_to, x_start, y_start;
     calc_tile_range(rect, tile_w, tile_h, x_tile_from, x_tile_to, y_tile_from, y_tile_to, x_start, y_start);
 
-    std::vector< std::tuple<Uint16, int, int> > tiles;
+    std::vector< std::tuple<Uint32, int, int> > tiles;
     tiles.reserve((y_tile_to - y_tile_from + 1) * (x_tile_to - x_tile_from + 1));
 
     int y = y_start;
@@ -203,7 +203,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
         // Skips vertical rows if position is off map/layer
         if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
 
-            std::vector< std::tuple<Uint16, int, int> > x_tiles;
+            std::vector< std::tuple<Uint32, int, int> > x_tiles;
             x_tiles.reserve(x_tile_to - x_tile_from + 1);
 
             // Iterates through horizontal rows tile by tile
@@ -213,7 +213,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
                 if(i_x_tile >= 0 && i_x_tile < static_cast<int>(m_width)) {
 
                     // Get tile id from map layer data and draw at current position if tile_id is not 0
-                    Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
+                    Uint32 tile_id = m_map_grid[i_y_tile][i_x_tile];
                     // Scrap empty tiles!
                     if(tile_id != 0) {
                         x_tiles.emplace_back(tile_id, x, y);
@@ -240,7 +240,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(SDL_Rect rect) const {
 
     const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -254,7 +254,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
     int x_tile_from, x_tile_to, y_tile_from, y_tile_to, x_start, y_start;
     calc_tile_range(rect, tile_w, tile_h, x_tile_from, x_tile_to, y_tile_from, y_tile_to, x_start, y_start);
 
-    std::vector< std::tuple<Uint16, int, int> > tiles;
+    std::vector< std::tuple<Uint32, int, int> > tiles;
     tiles.reserve((y_tile_to - y_tile_from + 1) * (x_tile_to - x_tile_from + 1));
 
     int y = y_start;
@@ -269,7 +269,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
         // Skips vertical rows if position is off map/layer
         if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
 
-            std::vector< std::tuple<Uint16, int, int> > x_tiles;
+            std::vector< std::tuple<Uint32, int, int> > x_tiles;
             x_tiles.reserve(x_tile_to - x_tile_from + 1);
 
             // Iterates through horizontal rows tile by tile
@@ -279,7 +279,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
                 if(i_x_tile >= 0 && i_x_tile < static_cast<int>(m_width)) {
 
                     // Get tile id from map layer data and draw at current position if tile_id is not 0
-                    Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
+                    Uint32 tile_id = m_map_grid[i_y_tile][i_x_tile];
                     // Scrap empty tiles!
                     if(tile_id != 0) {
                         x_tiles.emplace_back(tile_id, x, y);
@@ -306,7 +306,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_x_stagger(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(SDL_Rect rect) const {
 
     const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -325,7 +325,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_x_stagger(SDL_Rect re
     // Split each row into two
     int y_step = tile_h / 2;
 
-    std::vector< std::tuple<Uint16, int, int> > tiles;
+    std::vector< std::tuple<Uint32, int, int> > tiles;
     tiles.reserve((y_tile_to - y_tile_from + 1) * (x_tile_to - x_tile_from + 1));
 
     // Determine if first half row starts odd or even
@@ -342,7 +342,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_x_stagger(SDL_Rect re
             // Fetch row in two passes for correct rendering order
             for(int i_odd_even = 0; i_odd_even < 2; i_odd_even++) {
 
-                std::vector< std::tuple<Uint16, int, int> > x_tiles;
+                std::vector< std::tuple<Uint32, int, int> > x_tiles;
                 x_tiles.reserve((x_tile_to - x_tile_from + 1) / 2);
 
                 // Reset horizontal tile position
@@ -357,7 +357,7 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_x_stagger(SDL_Rect re
                     if(i_x_tile >= 0 && i_x_tile < static_cast<int>(m_width)) {
 
                         // Get tile id from map layer data and draw at current position if tile_id is not 0
-                        Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
+                        Uint32 tile_id = m_map_grid[i_y_tile][i_x_tile];
                         // Scrap empty tiles!
                         if(tile_id != 0) {
                             x_tiles.emplace_back(tile_id, x, y);

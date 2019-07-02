@@ -54,7 +54,7 @@ class Actor{
         // I have no idea why but with a default constructor
         // this won't compile properly
         // This probably has something to do with members lacking one
-        Actor(Uint16 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
+        Actor(Uint32 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
         Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
         // Core functions

@@ -176,7 +176,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
  * @param local_tile_id The ID of the tile corresponding to it's tileset
  * @return @c bool which indicates success or failure
  */
-bool Tileset::render(Uint16 local_tile_id, int x, int y) const {
+bool Tileset::render(Uint32 local_tile_id, int x, int y) const {
     bool success = true;
     if(local_tile_id >= m_tiles.size()) {
         std::cerr << "Local tileset tile id " << local_tile_id << " is out of bounds\n";

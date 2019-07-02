@@ -38,7 +38,7 @@ class MapLayer : public Layer{
 
         bool render(const Camera& camera) const override;
 
-        std::vector< std::tuple<Uint16, int, int> > clip(SDL_Rect rect) const;
+        std::vector< std::tuple<Uint32, int, int> > clip(SDL_Rect rect) const;
 
         LayerType get_type() override {return LayerType::map;}
 
@@ -56,16 +56,16 @@ class MapLayer : public Layer{
     private:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source);
 
-        std::vector< std::tuple<Uint16, int, int> > clip_ortho(SDL_Rect rect) const;
-        std::vector< std::tuple<Uint16, int, int> > clip_y_stagger(SDL_Rect rect) const;
-        std::vector< std::tuple<Uint16, int, int> > clip_x_stagger(SDL_Rect rect) const;
+        std::vector< std::tuple<Uint32, int, int> > clip_ortho(SDL_Rect rect) const;
+        std::vector< std::tuple<Uint32, int, int> > clip_y_stagger(SDL_Rect rect) const;
+        std::vector< std::tuple<Uint32, int, int> > clip_x_stagger(SDL_Rect rect) const;
         void calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_from, int& x_to, int& y_from, int& y_to, int& x_start, int& y_start) const;
 
         TilesetCollection* m_ts_collection;
         unsigned m_width;   // Measured in tiles
         unsigned m_height;
 
-        std::vector<std::vector<Uint16> > m_map_grid; ///< The actual map layer information
+        std::vector<std::vector<Uint32> > m_map_grid; ///< The actual map layer information
 };
 
 

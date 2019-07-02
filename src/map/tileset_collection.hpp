@@ -59,8 +59,8 @@ class TilesetCollection{
 
         unsigned get_overhang(Direction dir) const;
 
-        Uint16 get_gid(Tile* tile)  const;
-        Tile* get_tile(Uint16 tile_id) const;
+        Uint32 get_gid(Tile* tile)  const;
+        Tile* get_tile(Uint32 tile_id) const;
 
         bool register_tile(Tile* tile, unsigned gid);
         void set_tile_animated(unsigned gid);
@@ -69,8 +69,8 @@ class TilesetCollection{
         void init_anim_tiles();
         void push_all_anim();
 
-        bool render(Uint16 tile_id, int x, int y) const;
-        bool render(Uint16 tile_id, SDL_Rect& dest) const;
+        bool render(Uint32 tile_id, int x, int y) const;
+        bool render(Uint32 tile_id, SDL_Rect& dest) const;
 
         MapData& get_mapdata() {return *mp_base_map;}
 
@@ -89,7 +89,7 @@ class TilesetCollection{
         std::vector<Tileset> m_tilesets; ///< Contains all used Tilesets
 
         std::vector<Tile*> mp_tiles;      ///< List of pointers to all tiles in order
-        std::vector<Uint16> m_anim_tiles; ///< List of ids of all animated tiles
+        std::vector<Uint32> m_anim_tiles; ///< List of ids of all animated tiles
 };
 
 

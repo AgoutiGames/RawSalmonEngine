@@ -108,7 +108,7 @@ class MapData {
         SmartEvent<MapData> get_event_convert_map(Key name) const;
 
         // Actor management
-        const ActorTemplate& get_actor_template(Uint16 gid) const;
+        const ActorTemplate& get_actor_template(Uint32 gid) const;
         ActorTemplate& get_actor_template(std::string actor);
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
@@ -146,7 +146,7 @@ class MapData {
         TilesetCollection m_ts_collection;
 
         std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
-        std::map<Uint16, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
+        std::map<Uint32, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
         Actor* m_player = nullptr;
 

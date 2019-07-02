@@ -69,9 +69,9 @@ private:
     bool m_animated = false;
 
     // Variables required for animated tiles
-    Uint16 m_current_id = 0;
-    Uint16 m_trigger_frame = 0;
-    std::vector<Uint16> m_anim_ids; // could use Tile* for better performance but greater memory allocation
+    Uint32 m_current_id = 0;
+    Uint32 m_trigger_frame = 0;
+    std::vector<Uint32> m_anim_ids; // could use Tile* for better performance but greater memory allocation
     std::vector<unsigned> m_durations;
     Uint32 m_anim_timestamp = 0;
     float m_time_delta = 0;

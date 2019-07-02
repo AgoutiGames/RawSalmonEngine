@@ -119,8 +119,8 @@ unsigned TilesetCollection::get_overhang(Direction dir) const{
 }
 
 /// Return global Id of a tile if it's registered or 0 if not
-Uint16 TilesetCollection::get_gid(Tile* tile)  const{
-    for(Uint16 i = 0; i < mp_tiles.size(); i++) {
+Uint32 TilesetCollection::get_gid(Tile* tile)  const{
+    for(Uint32 i = 0; i < mp_tiles.size(); i++) {
         if(mp_tiles[i] == tile) {
             return i;
         }
@@ -130,7 +130,7 @@ Uint16 TilesetCollection::get_gid(Tile* tile)  const{
 }
 
 /// Returns the pointer to a tile from it's tile id
-Tile* TilesetCollection::get_tile(Uint16 tile_id) const{
+Tile* TilesetCollection::get_tile(Uint32 tile_id) const{
     if(tile_id >= mp_tiles.size()) {
         std::cerr << "Tile id " << tile_id << " is out of bounds\n";
         return nullptr;
@@ -215,7 +215,7 @@ void TilesetCollection::write_overhang() {
  *
  * Before rendering it checks if the tile id is valid
  */
-bool TilesetCollection::render(Uint16 tile_id, int x, int y) const{
+bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
     bool success = true;
 
     // Check if id is valid
@@ -238,7 +238,7 @@ bool TilesetCollection::render(Uint16 tile_id, int x, int y) const{
  * Before rendering it checks if the tile id is valid.
  * This function can resize the tile image
  */
-bool TilesetCollection::render(Uint16 tile_id, SDL_Rect& dest) const{
+bool TilesetCollection::render(Uint32 tile_id, SDL_Rect& dest) const{
     bool success = true;
     if(tile_id >= mp_tiles.size()) {
         std::cerr << "Tile id " << tile_id << " is out of bounds\n";

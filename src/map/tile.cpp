@@ -109,7 +109,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
             anim_tile_id += mp_tileset->get_first_gid();
 
             // The actual registration of the frame
-            m_anim_ids.push_back(static_cast<Uint16>(anim_tile_id));
+            m_anim_ids.push_back(static_cast<Uint32>(anim_tile_id));
             m_durations.push_back(duration);
 
             // Go to next frame
@@ -252,7 +252,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
             anim_tile_id += mp_tileset->get_first_gid();
 
             // The actual registration of the frame
-            m_anim_ids.push_back(static_cast<Uint16>(anim_tile_id));
+            m_anim_ids.push_back(static_cast<Uint32>(anim_tile_id));
             m_durations.push_back(duration);
 
             // Go to next frame
@@ -404,7 +404,7 @@ AnimSignal Tile::push_anim_trigger(float speed, Uint32 time) {
                 m_current_id--;
             }
 
-            if(m_current_id == static_cast<int>(m_trigger_frame)) {
+            if(m_current_id == m_trigger_frame) {
                 if(sig < AnimSignal::trigger) {sig = AnimSignal::trigger;}
             }
             if(sig < AnimSignal::next) {sig = AnimSignal::next;}
@@ -419,7 +419,7 @@ AnimSignal Tile::push_anim_trigger(float speed, Uint32 time) {
             m_current_id = 0;
             if(sig < AnimSignal::wrap) {sig = AnimSignal::wrap;}
         }
-        if(m_current_id == static_cast<int>(m_trigger_frame)) {
+        if(m_current_id == m_trigger_frame) {
             if(sig < AnimSignal::trigger) {sig = AnimSignal::trigger;}
         }
         if(sig < AnimSignal::next) {sig = AnimSignal::next;}

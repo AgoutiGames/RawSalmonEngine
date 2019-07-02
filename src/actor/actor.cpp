@@ -22,7 +22,7 @@
 
 #include "map/mapdata.hpp"
 
-Actor::Actor(Uint16 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor_template(tile_id), mapdata)
+Actor::Actor(Uint32 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor_template(tile_id), mapdata)
 {
 
 }
