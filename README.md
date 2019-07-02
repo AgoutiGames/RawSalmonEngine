@@ -21,9 +21,9 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
   - [ ] base64(zlib)
 * Supported draw order
   - [x] right-down
-  - [ ] right-up
-  - [ ] left-down
-  - [ ] left-up
+  - [x] right-up
+  - [x] left-down
+  - [x] left-up
 * A scriptable actor-event system, focussing on reusability, driving all higher level game logic
 * Adaptive offscreen tile culling *(means: Better perfomance with huge maps or many Layers)*
 * Static and dynamic animation support

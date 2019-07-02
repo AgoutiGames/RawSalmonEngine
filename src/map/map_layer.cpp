@@ -18,6 +18,7 @@
  */
 #include "map/map_layer.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <math.h>
 
@@ -129,15 +130,20 @@ bool MapLayer::render(const Camera& camera) const {
 
 std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(SDL_Rect rect) const {
     const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+    std::vector< std::tuple<Uint16, int, int> > tiles;
     if(layout.orientation == "orthogonal") {
-        return clip_ortho(rect);
+        tiles = clip_ortho(rect);
     }
     else if(layout.stagger_axis_y) {
-        return clip_y_stagger(rect);
+        tiles = clip_y_stagger(rect);
     }
     else {
-        return clip_x_stagger(rect);
+        tiles = clip_x_stagger(rect);
     }
+    if(layout.render_order == "left-up" || layout.render_order == "right-up") {
+        std::reverse(tiles.begin(), tiles.end());
+    }
+    return tiles;
 }
 
 /**
@@ -146,6 +152,8 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip(SDL_Rect rect) const 
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
 std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) const {
+
+    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
     int tile_w = static_cast<int>(m_ts_collection->get_tile_w());
     int tile_h = static_cast<int>(m_ts_collection->get_tile_h());
@@ -164,6 +172,9 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
         // Skips vertical rows if position is off map/layer
         if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
 
+            std::vector< std::tuple<Uint16, int, int> > x_tiles;
+            x_tiles.reserve(x_tile_to - x_tile_from + 1);
+
             // Iterates through horizontal rows tile by tile
             for(int i_x_tile = x_tile_from; i_x_tile <= x_tile_to; i_x_tile++) {
 
@@ -174,12 +185,18 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
                     Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
                     // Scrap empty tiles!
                     if(tile_id != 0) {
-                        tiles.emplace_back(tile_id, x, y);
+                        x_tiles.emplace_back(tile_id, x, y);
                     }
                 }
                 // Move to next horizontal tile position
                 x += tile_w;
             }
+
+            if(layout.render_order == "left-down" || layout.render_order == "right-up") {
+                std::reverse(x_tiles.begin(), x_tiles.end());
+            }
+            tiles.insert(tiles.end(),x_tiles.begin(),x_tiles.end());
+
         }
         // Move to next vertical tile position
         y += tile_h;
@@ -221,6 +238,9 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
         // Skips vertical rows if position is off map/layer
         if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
 
+            std::vector< std::tuple<Uint16, int, int> > x_tiles;
+            x_tiles.reserve(x_tile_to - x_tile_from + 1);
+
             // Iterates through horizontal rows tile by tile
             for(int i_x_tile = x_tile_from; i_x_tile <= x_tile_to; i_x_tile++) {
 
@@ -231,12 +251,18 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
                     Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
                     // Scrap empty tiles!
                     if(tile_id != 0) {
-                        tiles.emplace_back(tile_id, x, y);
+                        x_tiles.emplace_back(tile_id, x, y);
                     }
                 }
                 // Move to next horizontal tile position
                 x += tile_w;
             }
+
+            if(layout.render_order == "left-down" || layout.render_order == "right-up") {
+                std::reverse(x_tiles.begin(), x_tiles.end());
+            }
+            tiles.insert(tiles.end(),x_tiles.begin(),x_tiles.end());
+
         }
         // Move to next vertical tile position
         y += tile_h;
@@ -284,6 +310,10 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_x_stagger(SDL_Rect re
         if(i_y_tile >= 0 && i_y_tile < static_cast<int>(m_height)) {
             // Fetch row in two passes for correct rendering order
             for(int i_odd_even = 0; i_odd_even < 2; i_odd_even++) {
+
+                std::vector< std::tuple<Uint16, int, int> > x_tiles;
+                x_tiles.reserve((x_tile_to - x_tile_from + 1) / 2);
+
                 // Reset horizontal tile position
                 int x = x_start;
                 int x_offset = (i_odd_even + odd_even) % 2;
@@ -299,12 +329,18 @@ std::vector< std::tuple<Uint16, int, int> > MapLayer::clip_x_stagger(SDL_Rect re
                         Uint16 tile_id = m_map_grid[i_y_tile][i_x_tile];
                         // Scrap empty tiles!
                         if(tile_id != 0) {
-                            tiles.emplace_back(tile_id, x, y);
+                            x_tiles.emplace_back(tile_id, x, y);
                         }
                     }
                     // Move to next horizontal tile position
                     x += x_step;
                 }
+
+                if(layout.render_order == "left-down" || layout.render_order == "right-up") {
+                    std::reverse(x_tiles.begin(), x_tiles.end());
+                }
+                tiles.insert(tiles.end(),x_tiles.begin(),x_tiles.end());
+
                 // Move down half a row
                 y += y_step;
             }

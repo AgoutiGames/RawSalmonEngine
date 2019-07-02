@@ -90,6 +90,7 @@ enum class PropertyType{
 
 struct TileLayout{
     std::string orientation = "";
+    std::string render_order = "";
     int hexsidelength = 0;
     bool stagger_axis_y = true;
     bool stagger_index_odd = true;

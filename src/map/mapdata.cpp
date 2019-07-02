@@ -87,6 +87,18 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     }
     m_tile_layout.orientation = orientation;
 
+    const char* p_render_order = pMap->Attribute("renderorder");
+    if(p_render_order == nullptr) {
+        std::cerr << "Missing map render order value!\n";
+        return XMLError::XML_NO_ATTRIBUTE;
+    }
+    std::string render_order = p_render_order;
+    if(render_order != "right-down" && render_order != "right-up" && render_order != "left-down" && render_order != "left-up") {
+        std::cerr << "Tile render_order " << render_order << " isn't supported!\n";
+        return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    m_tile_layout.render_order = render_order;
+
     const char* p_stagger_axis = pMap->Attribute("staggeraxis");
     if(p_stagger_axis != nullptr) {
         if(std::string("x") == p_stagger_axis) {
