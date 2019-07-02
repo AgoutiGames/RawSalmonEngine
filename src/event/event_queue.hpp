@@ -22,7 +22,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "event/smart_event.hpp"
 #include "util/game_types.hpp"
