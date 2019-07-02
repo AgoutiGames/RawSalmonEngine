@@ -19,7 +19,7 @@
 #ifndef SMART_EVENT_HPP_INCLUDED
 #define SMART_EVENT_HPP_INCLUDED
 
-#include "util/tinyxml2.h"
+#include <tinyxml2.h>
 
 class MapData;
 

@@ -23,8 +23,7 @@
 #include <vector>
 #include <list>
 #include <string>
-
-#include "util/tinyxml2.h"
+#include <tinyxml2.h>
 
 class Actor;
 class Camera;

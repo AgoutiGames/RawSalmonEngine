@@ -23,10 +23,10 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <tinyxml2.h>
 
 #include "graphics/texture.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class Tile; // forward declaration
 class TilesetCollection;

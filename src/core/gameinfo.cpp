@@ -21,9 +21,9 @@
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <tinyxml2.h>
 
 #include "map/mapdata.hpp"
-#include "util/tinyxml2.h"
 
 // Strangely we have to include this here
 #include "actor/actor.hpp"

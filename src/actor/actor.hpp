@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <tinyxml2.h>
 
 #include "actor/cause.hpp"
 #include "actor/data_block.hpp"
@@ -29,7 +30,6 @@
 #include "event/event_queue.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class MapData;
 class Actor;

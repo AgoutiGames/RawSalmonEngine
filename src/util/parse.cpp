@@ -19,9 +19,9 @@
  #include "util/parse.hpp"
 
 #include <iostream>
+#include <tinyxml2.h>
 
 #include "graphics/texture.hpp"
-#include "util/tinyxml2.h"
 
  /**
  * @brief Converts the xmlelement to a proper SDL_Rect with checking

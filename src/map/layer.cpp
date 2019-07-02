@@ -22,6 +22,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <tinyxml2.h>
 
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
@@ -31,7 +32,6 @@
 #include "map/tile.hpp"
 #include "util/base64.h"
 #include "util/parse.hpp"
-#include "util/tinyxml2.h"
 
 /**
  * @brief Differentiates possible layers by name and calls proper parsing function

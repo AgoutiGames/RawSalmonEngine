@@ -22,10 +22,10 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <tinyxml2.h>
 
 #include "actor/cause.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class MapData;
 

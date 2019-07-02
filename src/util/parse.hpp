@@ -23,9 +23,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <tinyxml2.h>
 
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class Texture;
 class Actor;

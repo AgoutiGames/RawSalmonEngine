@@ -22,6 +22,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
+#include <tinyxml2.h>
 
 #include "actor/data_block.hpp"
 #include "event/ae_me_wrapper.hpp"
@@ -34,7 +35,6 @@
 #include "map/layer_collection.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
-#include "util/tinyxml2.h"
 
 class Actor;
 class ActorTemplate;

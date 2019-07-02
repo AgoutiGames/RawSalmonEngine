@@ -21,8 +21,8 @@
 
 #include <vector>
 #include <SDL2/SDL.h>
+#include <tinyxml2.h>
 
-#include "util/tinyxml2.h"
 #include "util/game_types.hpp"
 
 class Tileset; // forward declaration
