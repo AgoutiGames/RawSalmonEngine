@@ -36,10 +36,11 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
 ## Dependencies
 * **[SDL](http://www.libsdl.org/)** **2.0.0**+
 * **[ZLIB](https://zlib.net)**
+
 For Debian/Ubuntu run:
 
     $ sudo apt install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev  
-    
+
 ## Compile and install
 For Linux run:
 
