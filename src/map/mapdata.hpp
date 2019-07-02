@@ -19,7 +19,7 @@
 #ifndef MAPDATA_HPP_INCLUDED
 #define MAPDATA_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
 #include <string>
 #include <tinyxml2.h>

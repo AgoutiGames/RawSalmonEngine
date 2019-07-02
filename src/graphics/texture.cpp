@@ -18,7 +18,7 @@
  */
 #include "graphics/texture.hpp"
 
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <iostream>
 
 Texture::Texture()

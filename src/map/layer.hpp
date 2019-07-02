@@ -19,7 +19,7 @@
 #ifndef LAYER_HPP_INCLUDED
 #define LAYER_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
 #include <list>
 #include <string>

@@ -21,7 +21,7 @@
 #include <string>
 #include <map>
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "core/gameinfo.hpp"
 #include "event/property_parser.hpp"

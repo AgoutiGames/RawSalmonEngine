@@ -19,7 +19,7 @@
 #ifndef GAMEINFO_HPP_INCLUDED
 #define GAMEINFO_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <stack>
 

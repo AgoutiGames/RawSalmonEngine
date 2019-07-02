@@ -19,7 +19,7 @@
 #ifndef TILESET_HPP_INCLUDED
 #define TILESET_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
 #include <string>
 #include <map>

@@ -20,7 +20,7 @@
 #define TILESET_COLLECTION_HPP_INCLUDED
 
 #include <vector>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <tinyxml2.h>
 
 #include "util/game_types.hpp"

@@ -19,7 +19,7 @@
 #ifndef PARSE_HPP_INCLUDED
 #define PARSE_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <vector>
 #include <map>

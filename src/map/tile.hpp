@@ -19,7 +19,7 @@
 #ifndef TILE_HPP_INCLUDED
 #define TILE_HPP_INCLUDED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
 #include <map>
 #include <tinyxml2.h>

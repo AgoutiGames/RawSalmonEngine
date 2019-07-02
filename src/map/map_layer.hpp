@@ -23,7 +23,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <tuple>
 
 #include "map/layer.hpp"

@@ -20,7 +20,7 @@
 #define CAUSE_HPP_INCLUDED
 
 #include <string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class Actor;
 class Tile;

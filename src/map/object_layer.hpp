@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
