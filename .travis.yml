@@ -17,7 +17,10 @@ install:
     - sudo apt-get install libsdl2-image-dev
     - sudo apt-get install libsdl2-ttf-dev
     - sudo apt-get install libsdl2-mixer-dev
-
+# Install tinyxml2
+    - sudo apt-get install libtinyxml2-dev
+# Install ZLIB
+    - sudo apt-get install zlib1g-dev
 script:
     - mkdir build
     - cd build
