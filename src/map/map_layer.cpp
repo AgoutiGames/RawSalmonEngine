@@ -22,6 +22,7 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
+#include <zlib.h>
 
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
@@ -76,9 +77,31 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
 
         // Store raw map data
         std::string raw_map(p_data->GetText());
-
         // Decode the raw map data
-        std::string data(base64_decode(raw_map));
+        raw_map = base64_decode(raw_map);
+
+        std::vector<Uint8> bytes;
+        for(char c : raw_map) {bytes.push_back(c);}
+
+        const char* p_compression = p_data->Attribute("compression");
+        if(p_compression == nullptr) {;} // Skip decompress altogether
+        else if(std::string("zlib") == p_compression) {
+            uLongf decomp_size = m_height * m_width * 4;
+            std::vector<Uint8> decomp_bytes(decomp_size);
+
+            int result = uncompress(decomp_bytes.data(), &decomp_size, bytes.data(), bytes.size());
+            if(result != Z_OK) {
+                std::cerr << "Error at decompressing zlip map data!\n";
+                std::cerr << "Error code: " << result << "\n";
+                return XML_ERROR_PARSING_TEXT;
+            }
+            bytes = decomp_bytes;
+        }
+
+        else {
+            std::cerr << "Unsupported compression " << p_compression << " for base64 encoded map\n";
+            return XML_WRONG_ATTRIBUTE_TYPE;
+        }
 
         // Clear map from old data
         m_map_grid.resize(m_height);
@@ -89,21 +112,15 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
         for(unsigned i_y = 0; i_y < m_height; i_y++) {
             for(unsigned i_x = 0; i_x < m_width; i_x++) {
                 Uint32 tile_id = 0;
-                Uint8 byte = data[counter];
+                Uint8 byte = bytes[counter];
                 tile_id += byte;
-                byte = data[counter + 1];
+                byte = bytes[counter + 1];
                 tile_id += byte * 256;
-                byte = data[counter + 2];
+                byte = bytes[counter + 2];
                 tile_id += byte * 256 * 256;
-                byte = data[counter + 3];
+                byte = bytes[counter + 3];
                 tile_id += byte * 256 * 256 * 256;
                 counter += 4;
-                /*
-                if(tile_id > 65535) {
-                    std::cerr << "Tile Id is out of Uint16 Limit!\n";
-                    return XML_ERROR_PARSING_TEXT;
-                }
-                */
                 m_map_grid[i_y].push_back(tile_id);
             }
         }
@@ -119,12 +136,6 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
                     std::string tile_id_str;
                     getline( ss, tile_id_str, ',' );
                     Uint32 tile_id = static_cast<Uint32>(std::stoul(tile_id_str));
-                    /*
-                    if(tile_id > 65535) {
-                        std::cerr << "Tile Id is out of Uint16 Limit!\n";
-                        return XML_ERROR_PARSING_TEXT;
-                    }
-                    */
                     m_map_grid[i_y].push_back(tile_id);
                 }
                 else {
@@ -137,7 +148,6 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
 
     else {
         std::cerr << "Encoding type: " << p_encoding << " is not supported !\n";
-        std::cerr << "Use base64!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
