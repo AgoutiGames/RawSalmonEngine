@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <iostream>
 #include <math.h>
+#include <sstream>
 
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
@@ -70,44 +71,74 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     // Check encoding of data
     // Only base64 encoding is supported right now
     const char* p_encoding = p_data->Attribute("encoding");
-    if(p_encoding == nullptr || std::string("base64") != p_encoding) {
+
+    if(std::string("base64") == p_encoding) {
+
+        // Store raw map data
+        std::string raw_map(p_data->GetText());
+
+        // Decode the raw map data
+        std::string data(base64_decode(raw_map));
+
+        // Clear map from old data
+        m_map_grid.resize(m_height);
+
+        unsigned counter = 0; ///< This stores the currently read byte
+
+        // Reassemble each tile id from 4 bytes and store in the 2d vector
+        for(unsigned i_y = 0; i_y < m_height; i_y++) {
+            for(unsigned i_x = 0; i_x < m_width; i_x++) {
+                Uint32 tile_id = 0;
+                Uint8 byte = data[counter];
+                tile_id += byte;
+                byte = data[counter + 1];
+                tile_id += byte * 256;
+                byte = data[counter + 2];
+                tile_id += byte * 256 * 256;
+                byte = data[counter + 3];
+                tile_id += byte * 256 * 256 * 256;
+                counter += 4;
+
+                if(tile_id > 65535) {
+                    std::cerr << "Tile Id is out of Uint16 Limit!\n";
+                    return XML_ERROR_PARSING_TEXT;
+                }
+
+                m_map_grid[i_y].push_back(static_cast<Uint16>(tile_id));
+            }
+        }
+    }
+
+    else if(std::string("csv") == p_encoding) {
+        std::stringstream ss(p_data->GetText());
+        // Clear map from old data
+        m_map_grid.resize(m_height);
+        for(unsigned i_y = 0; i_y < m_height; i_y++) {
+            for(unsigned i_x = 0; i_x < m_width; i_x++) {
+                if(ss.good()){
+                    std::string tile_id_str;
+                    getline( ss, tile_id_str, ',' );
+                    int tile_id = std::stoi(tile_id_str);
+
+                    if(tile_id > 65535) {
+                        std::cerr << "Tile Id is out of Uint16 Limit!\n";
+                        return XML_ERROR_PARSING_TEXT;
+                    }
+
+                    m_map_grid[i_y].push_back(static_cast<Uint16>(tile_id));
+                }
+                else {
+                    std::cerr << "Tile ids ended prematurely at x: " << i_x << " y: " << i_y << "\n";
+                    return XML_ERROR_PARSING_TEXT;
+                }
+            }
+        }
+    }
+
+    else {
         std::cerr << "Encoding type: " << p_encoding << " is not supported !\n";
         std::cerr << "Use base64!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-
-    // Store raw map data
-    std::string raw_map(p_data->GetText());
-
-    // Decode the raw map data
-    std::string data(base64_decode(raw_map));
-
-    // Clear map from old data
-    m_map_grid.resize(m_height);
-
-    unsigned counter = 0; ///< This stores the currently read byte
-
-    // Reassemble each tile id from 4 bytes and store in the 2d vector
-    for(unsigned i_y = 0; i_y < m_height; i_y++) {
-        for(unsigned i_x = 0; i_x < m_width; i_x++) {
-            Uint32 tile_id = 0;
-            Uint8 byte = data[counter];
-            tile_id += byte;
-            byte = data[counter + 1];
-            tile_id += byte * 256;
-            byte = data[counter + 2];
-            tile_id += byte * 256 * 256;
-            byte = data[counter + 3];
-            tile_id += byte * 256 * 256 * 256;
-            counter += 4;
-
-            if(tile_id > 65535) {
-                std::cerr << "Tile Id is out of Uint16 Limit!\n";
-                return XML_ERROR_PARSING_TEXT;
-            }
-
-            m_map_grid[i_y].push_back(static_cast<Uint16>(tile_id));
-        }
     }
 
     return XML_SUCCESS;

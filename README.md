@@ -16,7 +16,7 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
   - [x] Isometric (staggered)
   - [x] Hexagonal
 * Supported map formats
-  - [ ] CSV
+  - [x] CSV
   - [x] base64
   - [ ] base64(zlib)
 * Supported draw order
