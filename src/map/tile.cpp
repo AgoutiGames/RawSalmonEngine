@@ -446,6 +446,17 @@ void Tile::render(int x, int y) const {
     return;
 }
 
+/// @todo Add documentation
+void Tile::render_extra(int x, int y, double angle, bool x_flip, bool y_flip) const {
+    const TilesetCollection& tsc = mp_tileset->get_ts_collection();
+    x += mp_tileset->get_x_offset();
+    y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
+    const Texture* image = mp_tileset->get_image_pointer();
+
+    image->render_extra(x, y, &get_clip(), angle, x_flip, y_flip);
+    return;
+}
+
 /**
  * @brief Render a tile object to a rect
  * @param dest The rendering rect

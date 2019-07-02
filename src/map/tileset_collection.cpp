@@ -131,6 +131,11 @@ Uint32 TilesetCollection::get_gid(Tile* tile)  const{
 
 /// Returns the pointer to a tile from it's tile id
 Tile* TilesetCollection::get_tile(Uint32 tile_id) const{
+    const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+    const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+    const Uint32 FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+    // Clear the flags
+    tile_id &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
     if(tile_id >= mp_tiles.size()) {
         std::cerr << "Tile id " << tile_id << " is out of bounds\n";
         return nullptr;
@@ -218,15 +223,48 @@ void TilesetCollection::write_overhang() {
 bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
     bool success = true;
 
-    // Check if id is valid
-    if(tile_id >= mp_tiles.size()) {
-        std::cerr << "Tile id " << tile_id << " is out of bounds\n";
-        success = false;
+    const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+    const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+    const Uint32 FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+
+    if(tile_id > FLIPPED_DIAGONALLY_FLAG) {
+        // Read out flags
+        bool flipped_horizontally = (tile_id & FLIPPED_HORIZONTALLY_FLAG);
+        bool flipped_vertically = (tile_id & FLIPPED_VERTICALLY_FLAG);
+        bool flipped_diagonally = (tile_id & FLIPPED_DIAGONALLY_FLAG);
+        double angle = 0;
+        // This snippet was determined via trial and error
+        // I have no idea why this even works, but it does
+        if(flipped_diagonally) {
+            angle = 270;
+            if(flipped_horizontally == flipped_vertically) {
+                angle = 90;
+            }
+            flipped_vertically = !flipped_vertically;
+        }
+        // Clear the flags
+        tile_id &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
+        // Check if id is valid
+        if(tile_id >= mp_tiles.size()) {
+            std::cerr << "Tile id " << tile_id << " is out of bounds\n";
+            success = false;
+        }
+        else {
+            mp_tiles[tile_id]->render_extra(x,y,angle, flipped_horizontally, flipped_vertically);
+        }
+        return success;
     }
     else {
-        mp_tiles[tile_id]->render(x,y);
+        // Check if id is valid
+        if(tile_id >= mp_tiles.size()) {
+            std::cerr << "Tile id " << tile_id << " is out of bounds\n";
+            success = false;
+        }
+        else {
+            mp_tiles[tile_id]->render(x,y);
+        }
+        return success;
     }
-    return success;
 }
 
 /**

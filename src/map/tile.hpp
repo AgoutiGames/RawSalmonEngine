@@ -38,6 +38,7 @@ public:
     Tile(Tileset* ts, SDL_Rect& clp); // The initializing constructor
 
     void render(int x, int y) const;
+    void render_extra(int x, int y, double angle, bool x_flip, bool y_flip) const;
     void render(SDL_Rect& dest) const; // Resizable render
 
     SDL_Rect get_hitbox(std::string name = "COLLIDE", bool aligned = false) const;

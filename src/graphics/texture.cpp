@@ -181,6 +181,23 @@ void Texture::render_resize(const SDL_Rect* clip, const SDL_Rect* dest) const
     SDL_RenderCopy(mRenderer, mTexture.get(), clip, dest);
 }
 
+/// @todo Add documentation
+void Texture::render_extra(int x, int y, const SDL_Rect* clip, double angle, bool x_flip, bool y_flip) const {
+    //Set rendering space and render to screen
+	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+
+	//Set clip rendering dimensions
+	if( clip != nullptr )
+	{
+		renderQuad.w = clip->w;
+		renderQuad.h = clip->h;
+	}
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	if(x_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_HORIZONTAL);}
+	if(y_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_VERTICAL);}
+    SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, &renderQuad, angle, nullptr, flip);
+}
+
 int Texture::getWidth() const
 {
 	return mWidth;
