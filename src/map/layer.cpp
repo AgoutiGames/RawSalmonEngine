@@ -30,7 +30,6 @@
 #include "map/image_layer.hpp"
 #include "map/object_layer.hpp"
 #include "map/tile.hpp"
-#include "util/base64.h"
 #include "util/parse.hpp"
 
 /**

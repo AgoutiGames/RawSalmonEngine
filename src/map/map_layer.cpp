@@ -23,12 +23,12 @@
 #include <math.h>
 #include <sstream>
 #include <zlib.h>
+#include <b64/decode.h>
 
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tile.hpp"
 #include "map/tileset_collection.hpp"
-#include "util/base64.h"
 #include "util/game_types.hpp"
 
 /// Factory function which retrieves a pointer owning the map layer
@@ -70,7 +70,6 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     if(p_data == nullptr) return XML_ERROR_PARSING_ELEMENT;
 
     // Check encoding of data
-    // Only base64 encoding is supported right now
     const char* p_encoding = p_data->Attribute("encoding");
 
     if(std::string("base64") == p_encoding) {
@@ -78,10 +77,13 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
         // Store raw map data
         std::string raw_map(p_data->GetText());
         // Decode the raw map data
-        raw_map = base64_decode(raw_map);
+        base64::decoder dec;
+        std::stringstream is(raw_map);
+        std::stringstream os;
+        dec.decode(is, os);
+        const std::string& tmp = os.str();
 
-        std::vector<Uint8> bytes;
-        for(char c : raw_map) {bytes.push_back(c);}
+        std::vector<Uint8> bytes(tmp.begin(), tmp.end());
 
         const char* p_compression = p_data->Attribute("compression");
         if(p_compression == nullptr) {;} // Skip decompress altogether
