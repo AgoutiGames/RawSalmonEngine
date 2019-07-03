@@ -35,7 +35,7 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
 * *It actually works!*
 ## Dependencies
 * **[SDL](http://www.libsdl.org/)** **2.0.0**+
-* **[TinyXML2](https://github.com/leethomason/tinyxml2)**
+* **[TinyXML2](https://github.com/leethomason/tinyxml2)** **2.2.0**+
 * **[ZLIB](https://zlib.net)**
 
 For Debian/Ubuntu run:
