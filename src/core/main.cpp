@@ -20,6 +20,11 @@
 
 #include "core/gameinfo.hpp"
 
+#if defined(_WIN32)
+#include <SDL.h>
+#undef main
+#endif
+
 /// The game Loop!
 int main()
 {

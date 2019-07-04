@@ -15,16 +15,34 @@ compiler: gcc
 
 matrix:
     include:
-        - os: linux
-          env: CONFIG=Release Toolchain=
-          install: sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+        - env: CONFIG=Release       Toolchain=
+          install: 
+            - sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
           
-        - os: linux
-          env: CONFIG=Release Toolchain=../cmake/linux32-toolchain.cmake
+        - env: CONFIG=Release       Toolchain=../cmake/linux32-toolchain.cmake
           install: 
             - sudo apt-get install libglib2.0-dev:i386
             - sudo apt-get install libpulse-dev:i386
-            - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386 libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
+            - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386
+            - sudo apt-get install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
+            
+        - env: CONFIG=Release       Toolchaim=../cmake/win32-toolchain.cmake
+          install:
+            - sudo apt-get install mingw-w64
+            
+        - env: CONFIG=Release       Toolchaim=../cmake/win64-toolchain.cmake
+          install:
+            - sudo apt-get install mingw-w64
+            
+    allow_failures:
+        - env: CONFIG=Release       Toolchaim=../cmake/win32-toolchain.cmake
+          install:
+            - sudo apt-get install mingw-w64
+            
+        - env: CONFIG=Release       Toolchaim=../cmake/win64-toolchain.cmake
+          install:
+            - sudo apt-get install mingw-w64
+            
 script:
     - mkdir build
     - cd build
