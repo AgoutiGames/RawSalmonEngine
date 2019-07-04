@@ -26,20 +26,20 @@ matrix:
             - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386
             - sudo apt-get install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
             
-        - env: CONFIG=Release       Toolchaim=../cmake/win32-toolchain.cmake
+        - env: CONFIG=Release       Toolchain=../cmake/win32-toolchain.cmake
           install:
             - sudo apt-get install mingw-w64
             
-        - env: CONFIG=Release       Toolchaim=../cmake/win64-toolchain.cmake
+        - env: CONFIG=Release       Toolchain=../cmake/win64-toolchain.cmake
           install:
             - sudo apt-get install mingw-w64
             
     allow_failures:
-        - env: CONFIG=Release       Toolchaim=../cmake/win32-toolchain.cmake
+        - env: CONFIG=Release       Toolchain=../cmake/win32-toolchain.cmake
           install:
             - sudo apt-get install mingw-w64
             
-        - env: CONFIG=Release       Toolchaim=../cmake/win64-toolchain.cmake
+        - env: CONFIG=Release       Toolchain=../cmake/win64-toolchain.cmake
           install:
             - sudo apt-get install mingw-w64
             
