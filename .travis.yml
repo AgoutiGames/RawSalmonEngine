@@ -17,11 +17,11 @@ matrix:
     include:
         - os: linux
           env: CONFIG=Release Toolchain=
-          install: sudo apt install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+          install: sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
           
         - os: linux
           env: CONFIG=Release Toolchain=linux32
-          install: sudo apt install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386 libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
+          install: sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386 libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
 script:
     - mkdir build
     - cd build
