@@ -1,0 +1,7 @@
+For Linux 32bit cross-compilation:
+    $ sudo apt install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386
+    
+    This may break your 64bit SDL2 install which you'll typically want to reinstall after
+    $ sudo apt install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386 
+    
+    cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/linux32-toolchain.cmake" ../
