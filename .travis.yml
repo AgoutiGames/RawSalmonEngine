@@ -22,6 +22,7 @@ matrix:
         - os: linux
           env: CONFIG=Release Toolchain=../cmake/linux32-toolchain.cmake
           install: 
+            - sudo apt-get install libglib2.0-dev:i386
             - sudo apt-get install libpulse-dev:i386
             - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386 libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
 script:
