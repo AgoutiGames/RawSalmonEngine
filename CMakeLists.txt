@@ -8,13 +8,38 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Salmon_SOURCE_DIR}/cmake")
 
+if(NOT MSVC)
+    # Add custom profile build type
+    set (CMAKE_C_FLAGS_PROFILE "${CMAKE_C_FLAGS_RELEASE} -pg" CACHE STRING
+        "Flags used by the C compiler during PROFILE builds."
+        FORCE )
+    set (CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE} -pg" CACHE STRING
+        "Flags used by the C++ compiler during PROFILE builds."
+        FORCE )
+    set (CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -pg" CACHE STRING
+        "Flags used for linking binaries during PROFILE builds."
+        FORCE )
+    set (CMAKE_SHARED_LINKER_FLAGS_PROFILE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -pg" CACHE STRING
+        "Flags used by the shared libraries linker during maintainer builds."
+        FORCE )
+    MARK_AS_ADVANCED(
+        CMAKE_C_FLAGS_PROFILE
+        CMAKE_CXX_FLAGS_PROFILE
+        CMAKE_EXE_LINKER_FLAGS_PROFILE
+        CMAKE_SHARED_LINKER_FLAGS_PROFILE)
+    # Update the documentation string of CMAKE_BUILD_TYPE for GUIs
+    SET( CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Profile."
+        FORCE )
+endif()
+
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Debug")
   set(CMAKE_BUILD_TYPE DEBUG)
 endif()
 
 if (NOT MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wfatal-errors -pg")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wfatal-errors")
 endif()
 
 include_directories(src)
