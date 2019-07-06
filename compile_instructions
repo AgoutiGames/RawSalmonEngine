@@ -1,3 +1,5 @@
+
+
 For Linux 32bit cross-compilation:
     $ sudo apt install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386
     
@@ -5,3 +7,18 @@ For Linux 32bit cross-compilation:
     $ sudo apt install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386 
     
     cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/linux32-toolchain.cmake" ../
+    
+For Linux windows cross compilation with mingw-w64:
+    make sure to pull "dependencies" submodule or build libraries yourself
+    
+    $ sudo apt-get install mingw-w64
+    
+    $ cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/linux64-toolchain.cmake" ../
+    or
+    $ cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/linux32-toolchain.cmake" ../
+    
+    Dont' forget: To run the executable you'll have to put all dlls into the
+    same folder as the exe. Also you need the libgcc_s_sjlj-1.dll for 32 bit,
+    libgcc_s_seh-1.dll for 64 bit systems and the libstdc++-6.dll for both.
+    
+    (maybe add -static-libgcc -static-libstdc++ to linker options to prevent this)
