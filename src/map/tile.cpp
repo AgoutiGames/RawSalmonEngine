@@ -393,15 +393,24 @@ AnimSignal Tile::push_anim_trigger(float speed, Uint32 time) {
 
     // Backwards animation
     if(m_time_delta < 0) {
-        while(-m_time_delta >= m_durations[m_current_id - 1]) {
-            m_time_delta += m_durations[m_current_id - 1];
+
+        unsigned id_before = m_current_id - 1;
+        if(m_current_id == 0) {id_before = m_anim_ids.size() - 1;}
+
+        while(-m_time_delta >= m_durations[id_before]) {
+            m_time_delta += m_durations[id_before];
 
             if(m_current_id == 0) {
                 m_current_id = m_anim_ids.size() - 1;
                 if(sig < AnimSignal::wrap) {sig = AnimSignal::wrap;}
+
+                id_before = m_current_id - 1;
             }
             else {
                 m_current_id--;
+
+                id_before = m_current_id - 1;
+                if(m_current_id == 0) {id_before = m_anim_ids.size() - 1;}
             }
 
             if(m_current_id == m_trigger_frame) {
