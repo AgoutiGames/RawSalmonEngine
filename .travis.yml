@@ -1,40 +1,54 @@
-#dist: trusty
 dist: xenial
 sudo: required
 language: cpp
 compiler: gcc
-
-#before_install:
-#    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-#    - sudo apt-get update -qq
-
-#install:
-#   - sudo apt-get install libegl1-mesa-dev libgles2-mesa-dev
-#   - sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
-#   - sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev
-
 matrix:
-    include:
-        - env: CONFIG=Release       Toolchain=
-          install: 
-            - sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
-          
-        - env: CONFIG=Release       Toolchain=../cmake/linux32-toolchain.cmake
-          install: 
-            - sudo apt-get install libglib2.0-dev:i386
-            - sudo apt-get install libpulse-dev:i386
-            - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386
-            - sudo apt-get install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386
-            
-        - env: CONFIG=Release       Toolchain=../cmake/win32-toolchain.cmake
-          install:
-            - sudo apt-get install mingw-w64
-            
-        - env: CONFIG=Release       Toolchain=../cmake/win64-toolchain.cmake
-          install:
-            - sudo apt-get install mingw-w64            
+  include:
+  - env: CONFIG=Release       Toolchain=linux64
+    install:
+    - sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev
+      libsdl2-ttf-dev libsdl2-mixer-dev
+    before_deploy:
+    - sh ../cmake/pack-${Toolchain}.sh
+    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.tar.gz
+  - env: CONFIG=Release       Toolchain=linux32
+    install:
+    - sudo apt-get install libglib2.0-dev:i386
+    - sudo apt-get install libpulse-dev:i386
+    - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386
+      libtinyxml2-dev:i386
+    - sudo apt-get install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386
+      libsdl2-ttf-dev:i386
+    before_deploy:
+    - sh ../cmake/pack-${Toolchain}.sh
+    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.tar.gz
+  - env: CONFIG=Release       Toolchain=win32
+    install:
+    - sudo apt-get install mingw-w64
+    before_deploy:
+    - sh ../cmake/pack-${Toolchain}.sh
+    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.zip
+  - env: CONFIG=Release       Toolchain=win64
+    install:
+    - sudo apt-get install mingw-w64
+    before_deploy:
+    - sh ../cmake/pack-${Toolchain}.sh
+    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.zip
 script:
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_TOOLCHAIN_FILE="${Toolchain}" ..
-    - make
+- mkdir build
+- cd build
+- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_TOOLCHAIN_FILE="../cmake/${Toolchain}-toolchain.cmake" ..
+- make
+deploy:
+  provider: releases
+  skip_cleanup: true
+  draft: true
+  file_glob: true
+  on:
+      tags: true
+      condition: $CONFIG = Release
+      branch: master
+      repo: AgoutiGames/RawSalmonEngine
+  api_key:
+    secure: RN+Wgtl5VulBoFqwwjnJQ49CImrqNBYLmxcAaPjguTA+wsuAgGGyt8z84fl8D0mdU2ZxFRGrAQkXI9i9RjLi8uU/EA/yUEBW2f3A4Q/haQHplo9OyCC2roBOdz5I/zYtlKmAunX0NG6Mpu/vnyQbAqcndYhS+Wz3HVmZQ2xmH70i3Rj/l+p9MA/KzH2AM8kR18sBkpL6tbkNx+WVGhDFLNrR6VBDl8DGTOGBsrQYfxlu2064EZv16qa2HrwAFdE+5QUaY5ESsScCIbkaz5/XwIoR6hNLSN2ltmoUOruSvqL8iP/B/mJD3xIdRH9hwEhXL3PkJG3xScorfGYFwhW48+Vt5br0Writ5QOJpPtkz57KPoC6R6rSM8g6K7LLcvt+DXnRcSCjC9JkwlBRsEe70zBrT11nTe0SdBZitwsc3qPxJrox2LHf0PEqcC2qypNuSG6CdTXVbGqnDE+0MGsurLKNcF142Md8cknFC4DplYgKsIk+u49s2DGhAkigeALyWr326Cg2VdhO2aFaSLAL012BlnaUuHscWDx66/DHbTkg4U2NEKOpwB/JLw70GDNarjyrWrD/FQtmquGITxtSi/cQkxsRK781q9FYb+9UpK+OZpO9yTD/BlEqt2wGeNbS7QqTtdM0Zb3pFpJjjRqwy8Ufsbgx4fvzBQHFKuViIzM=
+  file: RawSalmonEngine-*

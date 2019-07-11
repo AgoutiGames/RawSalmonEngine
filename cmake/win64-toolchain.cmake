@@ -5,7 +5,9 @@ set(TOOLCHAIN_PREFIX x86_64-w64-mingw32)
 
 # which compilers to use for C and C++
 set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
+set(CMAKE_C_FLAGS -static-libgcc -static-libstdc++)
 set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
+set(CMAKE_CXX_FLAGS -static-libgcc -static-libstdc++)
 
 # here is the target environment located
 set(CMAKE_FIND_ROOT_PATH "/usr/${TOOLCHAIN_PREFIX}/" "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win64/")
