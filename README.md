@@ -56,7 +56,11 @@ For Linux run:
 ## Usage
 * ./Salmon
 * Loads template map at /data/main.tmx
-* Move via wasd, jump via space.
+* Move via wasd, jump via space
+
+* Linux Releases are for Ubuntu Bionic and newer, but also work for Xenial if manually built (because of libtinyxml2 version)
+* Windows Releases should work for Vista and newer
+
 ## Contact
 * [Agouti Games (EN)](http://game.moonlighthiker.de/index.php/en/)
 * [Agouti Games (DE)](http://game.moonlighthiker.de/index.php/de/)

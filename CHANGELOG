@@ -1,8 +1,0 @@
-Next version:
-- Grouped layers with intertwined rendering, which allows masking objects 
-  by environment tiles
-- Object layers which sort themselves each update for correct render order
-
-0.1.6 (Pre-Alpha) (First public release on github)
-- Support for .tsx tileset files
-- Implementations of Actors via Tile Objects
