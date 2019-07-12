@@ -39,7 +39,7 @@ const bool Template::good = Event<Scope>::register_class<Template>();
  */
 EventSignal Template::process(Scope& scope) {
     // Syncs members with possibly linked DataBlock variables
-    listen(m_property_listener, *this, actor);
+    listen(m_property_listener, *this, scope);
 
     // Add stuff!
 }
