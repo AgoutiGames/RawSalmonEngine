@@ -57,6 +57,7 @@ class ImageLayer : public Layer{
         unsigned m_height;
         float m_opacity = 1.0f; ///< @warning value only works with image layers!
         bool m_parallax = false;
+        bool m_static = false;
 };
 
 

@@ -91,6 +91,10 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
                 eResult = p_property->QueryBoolAttribute("value", &m_parallax);
                 if(eResult != XML_SUCCESS) return eResult;
             }
+            else if(name == "STATIC") {
+                eResult = p_property->QueryBoolAttribute("value", &m_static);
+                if(eResult != XML_SUCCESS) return eResult;
+            }
             else{
                 std::cerr << "Unknown image layer property " << p_name << " occured\n";
                 return XML_ERROR_PARSING;
@@ -118,7 +122,9 @@ bool ImageLayer::render(const Camera& camera) const {
         x_trans_fact = x_trans_fact * (m_width - camera.w());
         y_trans_fact = y_trans_fact * (m_height - camera.h());
         m_img.render(-x_trans_fact, -y_trans_fact);
-
+    }
+    else if(m_static) {
+        m_img.render(m_offset_x,m_offset_y);
     }
     else{
         int x = m_offset_x - camera.x();
