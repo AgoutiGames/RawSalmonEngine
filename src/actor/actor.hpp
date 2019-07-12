@@ -54,6 +54,8 @@ class Actor{
         // I have no idea why but with a default constructor
         // this won't compile properly
         // This probably has something to do with members lacking one
+        // Actor() = default;
+        Actor(MapData* map);
         Actor(Uint32 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
         Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
@@ -108,6 +110,7 @@ class Actor{
         EventQueue<Actor> m_events;
 
         DataBlock m_data; ///< This holds custom user values by string
+        bool m_first = true;
 };
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list

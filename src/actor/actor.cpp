@@ -22,6 +22,8 @@
 
 #include "map/mapdata.hpp"
 
+Actor::Actor(MapData* map) : m_map{map} {}
+
 Actor::Actor(Uint32 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor_template(tile_id), mapdata)
 {
 
@@ -77,7 +79,7 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
             return eResult;
         }
     }
-    respond(Response::on_spawn);
+
     return XML_SUCCESS;
 }
 
@@ -189,6 +191,10 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
  * @brief Update the actor state
  */
 void Actor::update() {
+    if(m_first) {
+        m_first = false;
+        respond(Response::on_spawn);
+    }
     respond(Response::on_always);
     EventSignal sig = m_events.process_events(*this);
 
