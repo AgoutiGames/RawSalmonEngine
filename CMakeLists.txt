@@ -67,6 +67,7 @@ set(EVENT_SOURCES
     src/event/ae_move.cpp
     src/event/ae_move_direction.cpp
     src/event/ae_move_sustained.cpp
+    src/event/ae_move_static.cpp
     src/event/ae_animate.cpp
     src/event/ae_jump.cpp
     src/event/ae_fall.cpp

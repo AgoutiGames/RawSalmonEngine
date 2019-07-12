@@ -28,7 +28,7 @@ class SmartEvent;
 template<class Scope, class Key=std::string>
 class EventCollection {
     public:
-        void register_event(std::pair<Key, SmartEvent<Scope>> key_event_pair) {m_events.insert(key_event_pair);}
+        void register_event(std::pair<Key, SmartEvent<Scope>> key_event_pair) {m_events[key_event_pair.first] = key_event_pair.second;}
         void register_event(Key name, SmartEvent<Scope> event) {register_event(std::make_pair(name, event));}
         SmartEvent<Scope> get_event(Key name) const {return m_events.at(name);}
         bool check_event(Key name) const { return m_events.find(name) != m_events.end(); }

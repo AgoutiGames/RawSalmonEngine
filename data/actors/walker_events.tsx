@@ -50,4 +50,11 @@
    <property name="NAME" value="Movement"/>
   </properties>
  </tile>
+ <tile id="9" type="AeMoveStatic">
+  <properties>
+   <property name="NAME" value="PositionUpLeft"/>
+   <property name="X_POS" type="float" value="0.3"/>
+   <property name="Y_POS" type="float" value="0.3"/>
+  </properties>
+ </tile>
 </tileset>

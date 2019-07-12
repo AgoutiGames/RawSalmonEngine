@@ -102,6 +102,13 @@
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="SPEED" type="float" default="250"/>
  </objecttype>
+ <objecttype name="AeMoveStatic" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="X_POS" type="float" default="0"/>
+  <property name="Y_POS" type="float" default="0"/>
+ </objecttype>
  <objecttype name="AeMoveSustained" color="#a0a0a4">
   <property name="ANIMATION_TYPE" type="string" default="WALK"/>
   <property name="DIRECTION" type="string" default="UP"/>

@@ -127,7 +127,7 @@ bool Actor::unstuck() {
  * This approach is pretty bugged if actor is already stuck in another hitbox.
  * The only way to solve this is to additionally check for collision and move away before the actual movement via unstuck()
  */
-bool Actor::move(float x_factor, float y_factor) {
+bool Actor::move(float x_factor, float y_factor, bool absolute) {
 
     // Somewhat hacky approach to fix runtime switch of actor hitboxes via animation
     unstuck();
@@ -138,6 +138,12 @@ bool Actor::move(float x_factor, float y_factor) {
     float y_step;
     x_step = x_factor;
     y_step = y_factor;
+
+    // Position actor exactly at the word coords of x and y
+    if(absolute) {
+        x_step = x_factor - m_x;
+        y_step = y_factor - m_y;
+    }
 
     // Determine if it can collide/ has hitbox
     SDL_Rect temp = get_hitbox();

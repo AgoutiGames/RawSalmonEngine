@@ -63,7 +63,7 @@ class Actor{
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
         AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
         void render(int x_cam, int y_cam) const;
-        bool move(float x_factor, float y_factor);
+        bool move(float x_factor, float y_factor, bool absolute = false);
         bool unstuck();
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
