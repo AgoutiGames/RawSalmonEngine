@@ -324,7 +324,7 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     SDL_Rect hitbox = m_animations.at(m_anim_state).at(m_direction).get_hitbox(type);
     if(SDL_RectEmpty(&hitbox)) {
         if(m_hitbox.find(type) == m_hitbox.end()) {
-            std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
+            // std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
             return SDL_Rect{0,0,0,0};
         }
         else{

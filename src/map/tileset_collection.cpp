@@ -219,6 +219,7 @@ void TilesetCollection::write_overhang() {
  * @return @c bool which indicates success or failure
  *
  * Before rendering it checks if the tile id is valid
+ * @note Additionally performs flipping by reading the last three bits of the id as flags
  */
 bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
     bool success = true;
@@ -275,6 +276,7 @@ bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
  *
  * Before rendering it checks if the tile id is valid.
  * This function can resize the tile image
+ * @note Doesn't work with tile ids with set flip_flags
  */
 bool TilesetCollection::render(Uint32 tile_id, SDL_Rect& dest) const{
     bool success = true;

@@ -127,6 +127,7 @@ class MapData {
         bool process_key_up(SDL_Event e);
         bool process_key_down(SDL_Event e);
         void process_keys_sustained();
+        Actor* fetch_actor(std::string name);
 
     private:
 
@@ -143,7 +144,7 @@ class MapData {
 
         Camera m_camera;
         bool m_bind_camera_to_actor = true;
-        std::string camera_target = "PLAYER";
+        std::string m_camera_target = "PLAYER";
 
         LayerCollection m_layer_collection;
 
@@ -154,7 +155,7 @@ class MapData {
         std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
         std::map<Uint32, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
-        Actor* m_player = nullptr;
+        std::string m_key_target = "PLAYER";
 
         EventCollection<Actor, SDL_Keycode> m_key_up;
         EventCollection<Actor, SDL_Keycode> m_key_down;

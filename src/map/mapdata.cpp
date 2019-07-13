@@ -103,20 +103,6 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         return eResult;
     }
 
-    // Fetch player
-    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string("PLAYER"));
-    if(actor_list.size() > 1) {
-        std::cerr << "Error: More than one actor called PLAYER!\n";
-    }
-    else if(actor_list.size() == 0) {
-        std::cerr << "Error: No actor called PLAYER found!\n";
-    }
-    else {
-        m_player = actor_list[0];
-
-        if(m_bind_camera_to_actor) {m_camera.bind_actor(m_player);}
-    }
-
     // By default bind the camera to the map borders
     m_camera.bind_map(get_w(),get_h());
 
@@ -345,7 +331,7 @@ void MapData::update() {
 
     m_layer_collection.update();
 
-    m_camera.update();
+    update_camera();
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
 
@@ -358,19 +344,8 @@ void MapData::update() {
 
 /// If necessary binds camera to actor target and updates the camera position
 void MapData::update_camera() {
-    // Check for active actor called PLAYER because it may change during execution
-    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(camera_target);
-    if(actor_list.size() > 1) {
-        // std::cerr << "Error: More than one actor called PLAYER!\n";
-    }
-    else if(actor_list.size() == 0) {
-        // std::cerr << "Error: No actor called PLAYER found!\n";
-    }
-    else {
-        m_player = actor_list[0];
-
-        if(m_bind_camera_to_actor) {m_camera.bind_actor(m_player);}
-    }
+    Actor* target = fetch_actor(m_camera_target);
+    if(m_bind_camera_to_actor && target != nullptr) {m_camera.bind_actor(target);}
     m_camera.update();
 }
 
@@ -633,10 +608,11 @@ bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, b
  * @return @c bool which indicates if key triggered event
  */
 bool MapData::process_key_down(SDL_Event  e) {
-    if(m_player != nullptr && m_key_down.check_event(e.key.keysym.sym)) {
+    Actor* target = fetch_actor(m_key_target);
+    if(target != nullptr && m_key_down.check_event(e.key.keysym.sym)) {
         SmartEvent<Actor> event = m_key_down.get_event(e.key.keysym.sym);
         event->set_cause(Cause(e.key.keysym));
-        m_player->get_event_queue().add_event(event);
+        target->get_event_queue().add_event(event);
         return true;
     }
     return false;
@@ -648,10 +624,11 @@ bool MapData::process_key_down(SDL_Event  e) {
  * @return @c bool which indicates if key triggered event
  */
 bool MapData::process_key_up(SDL_Event  e) {
-    if(m_player != nullptr && m_key_up.check_event(e.key.keysym.sym)) {
+    Actor* target = fetch_actor(m_key_target);
+    if(target != nullptr && m_key_up.check_event(e.key.keysym.sym)) {
         SmartEvent<Actor> event = m_key_up.get_event(e.key.keysym.sym);
         event->set_cause(Cause(e.key.keysym));
-        m_player->get_event_queue().add_event(event);
+        target->get_event_queue().add_event(event);
         return true;
     }
     return false;
@@ -661,14 +638,30 @@ bool MapData::process_key_up(SDL_Event  e) {
  * @brief Checks if key is down and sends associated event to player
  */
 void MapData::process_keys_sustained() {
-    if(m_player != nullptr) {
+    Actor* target = fetch_actor(m_key_target);
+    if(target != nullptr) {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         for(std::pair<const SDL_Scancode, SmartEvent<Actor>>& x : m_key_sustained.get_container()) {
             if(keys[x.first]) {
-                m_player->get_event_queue().add_event(x.second);
+                target->get_event_queue().add_event(x.second);
             }
         }
     }
+}
+
+/// @brief Returns the first actor with the given name
+Actor* MapData::fetch_actor(std::string name) {
+    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string(name));
+    if(actor_list.size() > 1) {
+        std::cerr << "Error: More than one actor called " << name<< " !\n";;
+    }
+    else if(actor_list.size() == 0) {
+        std::cerr << "Error: No actor called " << name << " found!\n";
+    }
+    else {
+        return actor_list[0];
+    }
+    return nullptr;
 }
 
 /// Return ActorTemplate which was parsed with tile with the given tile ID
