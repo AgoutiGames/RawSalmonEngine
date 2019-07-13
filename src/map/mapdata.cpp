@@ -48,189 +48,41 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
 
     mpp_renderer = renderer;
     XMLError eResult;
-    std::string full_path;
-
-    // Read in the .tmx file to mapfile var
-    full_path = filename;
 
     // Set the base path by trimming filename off path
-    m_base_path = full_path;
+    m_base_path = filename;
     m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
 
+    // Load the .tmx mapfile from disk
     tinyxml2::XMLDocument mapfile{true, tinyxml2::COLLAPSE_WHITESPACE};
-    eResult = mapfile.LoadFile(full_path.c_str());
+    eResult = mapfile.LoadFile(filename.c_str());
     if(eResult != XML_SUCCESS) {
-        std::cout << "Can't find map at relative path: " << full_path << "\n";
+        std::cout << "Can't find map at relative path: " << filename << "\n";
         return eResult;
     }
 
-    // Map info gets parsed
+    // Check for map base element
     XMLElement* pMap = mapfile.FirstChildElement("map");
-    if (pMap == nullptr) return XML_ERROR_PARSING_ELEMENT;
-
-    eResult = pMap->QueryUnsignedAttribute("width", &m_width);
-    if(eResult != XML_SUCCESS) return eResult;
-    std::cout << "Map width: " << m_width << "\n";
-    eResult = pMap->QueryUnsignedAttribute("height", &m_height);
-    if(eResult != XML_SUCCESS) return eResult;
-    std::cout << "Map height: " << m_height << "\n";
-
-    const char* p_orientation = pMap->Attribute("orientation");
-    if(p_orientation == nullptr) {
-        std::cerr << "Missing map orientation value!\n";
-        return XMLError::XML_NO_ATTRIBUTE;
-    }
-    std::string orientation = p_orientation;
-    if(orientation != "orthogonal" && orientation != "hexagonal" && orientation != "staggered") {
-        std::cerr << "Tile orientation " << orientation << " isn't supported!\n";
-        return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
-    }
-    m_tile_layout.orientation = orientation;
-
-    const char* p_render_order = pMap->Attribute("renderorder");
-    if(p_render_order == nullptr) {
-        std::cerr << "Missing map render order value!\n";
-        return XMLError::XML_NO_ATTRIBUTE;
-    }
-    std::string render_order = p_render_order;
-    if(render_order != "right-down" && render_order != "right-up" && render_order != "left-down" && render_order != "left-up") {
-        std::cerr << "Tile render_order " << render_order << " isn't supported!\n";
-        return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
-    }
-    m_tile_layout.render_order = render_order;
-
-    const char* p_stagger_axis = pMap->Attribute("staggeraxis");
-    if(p_stagger_axis != nullptr) {
-        if(std::string("x") == p_stagger_axis) {
-            m_tile_layout.stagger_axis_y = false;
-        }
-        else if(std::string("y") == p_stagger_axis) {
-            m_tile_layout.stagger_axis_y = true;
-        }
-        else {
-            std::cerr << "Stagger axis " << p_stagger_axis << " isn't supported!\n";
-            std::cerr << "Use x or y!\n";
-            return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
-        }
+    if (pMap == nullptr)  {
+        std::cerr << "Missing base node \"map\" inside .tmx file " << filename << "\n";
+        return XML_ERROR_PARSING_ELEMENT;
     }
 
-    const char* p_stagger_index = pMap->Attribute("staggerindex");
-    if(p_stagger_index != nullptr) {
-        if(std::string("odd") == p_stagger_index) {
-            m_tile_layout.stagger_index_odd = true;
-        }
-        else if(std::string("even") == p_stagger_index) {
-            m_tile_layout.stagger_index_odd = false;
-        }
-        else {
-            std::cerr << "Stagger index " << p_stagger_index << " isn't supported!\n";
-            std::cerr << "Use odd or even!\n";
-            return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
-        }
+    // Parse map info
+    eResult = parse_map_info(pMap);
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Couldn't parse essential map info of map " << filename << "\n";
+        return eResult;
     }
 
-    int hexsidelength;
-    eResult = pMap->QueryIntAttribute("hexsidelength", &hexsidelength);
-    if(eResult == XML_SUCCESS) {
-        m_tile_layout.hexsidelength = hexsidelength;
+    // Parse map properties
+    eResult = parse_map_properties(pMap);
+    if(eResult != XML_SUCCESS) {
+        std::cerr << "Failed at parsing map properties of map " << filename << "\n";
+        return eResult;
     }
 
-    // Parse possible backgroundcolor
-    parse::bg_color(pMap, m_bg_color); // Discard Result since missing bg_color is generally okay
-
-    // Parse properties containing symbolic tilesets or the on_load callback
-    std::vector<std::string> symbolic_tilesets;
-    std::string on_load = "";
-    std::string on_always = "";
-    std::string on_resume = "";
-    XMLElement* pProp = pMap->FirstChildElement("properties");
-    if (pProp != nullptr) {
-        pProp = pProp->FirstChildElement("property");
-        while(pProp != nullptr) {
-            if(std::string("ON_LOAD") == pProp->Attribute("name")) {
-                on_load = pProp->Attribute("value");
-            }
-            else if(std::string("ON_ALWAYS") == pProp->Attribute("name")) {
-                on_always = pProp->Attribute("value");
-            }
-            else if(std::string("ON_RESUME") == pProp->Attribute("name")) {
-                on_resume = pProp->Attribute("value");
-            }
-            else {
-                symbolic_tilesets.push_back(pProp->Attribute("value"));
-                // std::cerr << "parsed " << pProp->Attribute("value") << "\n";
-            }
-            pProp = pProp->NextSiblingElement();
-        }
-    }
-
-    // Parse all symbolic tilesets
-    /// @warning Dont mix key mapping and event mapping .tsx files
-    /// @warning Watch for valid ordering of symbolic tilesets (You can bind a event to a key only after it already got parsed)
-    for(std::string name : symbolic_tilesets) {
-        XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
-        full_path = m_base_path + name;
-        eResult = sym_ts.LoadFile(full_path.c_str());
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Can't find " << name << " at relative path: " << full_path << "\n";
-            return eResult;
-        }
-        XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
-        if (pSymTs == nullptr) {return XML_ERROR_PARSING_ELEMENT;}
-
-        // Temporarily set base path to symbolic ts path so events can load files properly
-        std::string temp = m_base_path;
-        m_base_path = full_path;
-        m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
-
-        eResult = Tileset::parse_symbolic(pSymTs, *this);
-
-        //reset base path
-        m_base_path = temp;
-
-
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at parsing symbolic tileset " << name << "\n";
-            return eResult;
-        }
-    }
-
-    // Extract method from this! Tidying up parsers is important but absolutely no fun :-(
-    if(on_load != "") {
-        if(check_event_convert_map(on_load) != true) {
-            std::cerr << "The event: " << on_load << " couldn't be found / is no valid game or map event\n";
-            std::cerr << "Failed adding " << on_load << " as the ON_LOAD callback to map\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_on_load = get_event_convert_map(on_load);
-        }
-    }
-
-    if(on_always != "") {
-        if(check_event_convert_map(on_always) != true) {
-            std::cerr << "The event: " << on_always << " couldn't be found / is no valid game or map event\n";
-            std::cerr << "Failed adding " << on_always << " as the ON_ALWAYS callback to map\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_on_always = get_event_convert_map(on_always);
-        }
-    }
-
-    if(on_resume != "") {
-        if(check_event_convert_map(on_resume) != true) {
-            std::cerr << "The event: " << on_resume << " couldn't be found / is no valid game or map event\n";
-            std::cerr << "Failed adding " << on_resume << " as the ON_RESUME callback to map\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_on_resume = get_event_convert_map(on_resume);
-        }
-    }
-
-    // First parse tilesets, then layers, because layers depend on tileset information
-
+    /// @note First parse tilesets, then layers, because layers depend on tileset information
     // This initiates the parsing of all tilesets
     eResult = m_ts_collection.init(pMap, this);
     if(eResult != XML_SUCCESS) {
@@ -262,7 +114,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     else {
         m_player = actor_list[0];
 
-        if(m_player_to_camera) {m_camera.bind_player(m_player);}
+        if(m_bind_camera_to_actor) {m_camera.bind_actor(m_player);}
     }
 
     // By default bind the camera to the map borders
@@ -273,8 +125,198 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         m_events.add_event(m_on_load);
     }
 
+    // Initialize last_update timestamp
     m_last_update = SDL_GetTicks();
 
+    return XML_SUCCESS;
+}
+
+/**
+ * @brief Parse map dimensions, orientation, stagger-axis, stagger-index, hexsidelength and bg-color
+ * @param pMap @c XMLElement* which points to the first map file element called "map"
+ * @return @c XMLError which indicates sucess or failure
+ */
+tinyxml2::XMLError MapData::parse_map_info(tinyxml2::XMLElement* pMap) {
+    using namespace tinyxml2;
+
+    // Parse map dimensions in tiles
+    XMLError eResult = pMap->QueryUnsignedAttribute("width", &m_width);
+    if(eResult != XML_SUCCESS) return eResult;
+    std::cout << "Map width: " << m_width << "\n";
+    eResult = pMap->QueryUnsignedAttribute("height", &m_height);
+    if(eResult != XML_SUCCESS) return eResult;
+    std::cout << "Map height: " << m_height << "\n";
+
+    // Parse map orientation, check for unsupported orientations
+    const char* p_orientation = pMap->Attribute("orientation");
+    if(p_orientation == nullptr) {
+        std::cerr << "Missing map orientation value!\n";
+        return XMLError::XML_NO_ATTRIBUTE;
+    }
+    std::string orientation = p_orientation;
+    if(orientation != "orthogonal" && orientation != "hexagonal" && orientation != "staggered") {
+        std::cerr << "Tile orientation " << orientation << " isn't supported!\n";
+        return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    m_tile_layout.orientation = orientation;
+
+    // Parse the render order of the tiles and again check for illegal values
+    const char* p_render_order = pMap->Attribute("renderorder");
+    if(p_render_order == nullptr) {
+        std::cerr << "Missing map render order value!\n";
+        return XMLError::XML_NO_ATTRIBUTE;
+    }
+    std::string render_order = p_render_order;
+    if(render_order != "right-down" && render_order != "right-up" && render_order != "left-down" && render_order != "left-up") {
+        std::cerr << "Tile render_order " << render_order << " isn't supported!\n";
+        return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+    }
+    m_tile_layout.render_order = render_order;
+
+    // Parse the (optional) stagger-axi of the map and check it
+    const char* p_stagger_axis = pMap->Attribute("staggeraxis");
+    if(p_stagger_axis != nullptr) {
+        if(std::string("x") == p_stagger_axis) {
+            m_tile_layout.stagger_axis_y = false;
+        }
+        else if(std::string("y") == p_stagger_axis) {
+            m_tile_layout.stagger_axis_y = true;
+        }
+        else {
+            std::cerr << "Stagger axis " << p_stagger_axis << " isn't supported!\n";
+            std::cerr << "Use x or y!\n";
+            return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+        }
+    }
+
+    // Parse the (optional) stagger index and check for illegal values
+    const char* p_stagger_index = pMap->Attribute("staggerindex");
+    if(p_stagger_index != nullptr) {
+        if(std::string("odd") == p_stagger_index) {
+            m_tile_layout.stagger_index_odd = true;
+        }
+        else if(std::string("even") == p_stagger_index) {
+            m_tile_layout.stagger_index_odd = false;
+        }
+        else {
+            std::cerr << "Stagger index " << p_stagger_index << " isn't supported!\n";
+            std::cerr << "Use odd or even!\n";
+            return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
+        }
+    }
+
+    // Parse the (optional) hexsidelength i case of a hexagonal orientation
+    int hexsidelength;
+    eResult = pMap->QueryIntAttribute("hexsidelength", &hexsidelength);
+    if(eResult == XML_SUCCESS) {
+        m_tile_layout.hexsidelength = hexsidelength;
+    }
+
+    // Parse possible backgroundcolor
+    parse::bg_color(pMap, m_bg_color); // Discard Result since missing bg_color is generally okay
+
+    return XML_SUCCESS;
+}
+
+/**
+ * @brief Parse on_* callbacks of map and possible symbolic tilesets yielding events
+ * @param pMap @c XMLElement* which points to the first map file element called "map"
+ * @return @c XMLError which indicates sucess or failure
+ */
+tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
+    using namespace tinyxml2;
+
+    std::vector<std::string> symbolic_tilesets;
+    std::string on_load = "";
+    std::string on_always = "";
+    std::string on_resume = "";
+
+    // Parse names of possible on_* callbacks and filenames of possible symbolic tilesets
+    XMLElement* pProp = pMap->FirstChildElement("properties");
+    if (pProp != nullptr) {
+        pProp = pProp->FirstChildElement("property");
+        while(pProp != nullptr) {
+            if(std::string("ON_LOAD") == pProp->Attribute("name")) {
+                on_load = pProp->Attribute("value");
+            }
+            else if(std::string("ON_ALWAYS") == pProp->Attribute("name")) {
+                on_always = pProp->Attribute("value");
+            }
+            else if(std::string("ON_RESUME") == pProp->Attribute("name")) {
+                on_resume = pProp->Attribute("value");
+            }
+            else {
+                symbolic_tilesets.push_back(pProp->Attribute("value"));
+            }
+            pProp = pProp->NextSiblingElement();
+        }
+    }
+
+    // Parse all symbolic tilesets
+    /// @warning Dont mix key mapping and event mapping .tsx files
+    /// @warning Watch for valid ordering of symbolic tilesets (You can bind a event to a key only after it already got parsed)
+    for(std::string name : symbolic_tilesets) {
+        XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
+        std::string full_path = m_base_path + name;
+        XMLError eResult = sym_ts.LoadFile(full_path.c_str());
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Can't find symbolic tileset " << name << " at relative path: " << full_path << "\n";
+            return eResult;
+        }
+        XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
+        if (pSymTs == nullptr) {
+            std::cerr << "Symbolic tileset " << full_path << " is of wrong type/has no \"tileset\" node!\n";
+            return XML_ERROR_PARSING_ELEMENT;
+        }
+
+        // Temporarily set base path to symbolic ts path so events can load files from their base path
+        std::string path_backup = m_base_path;
+        m_base_path = full_path;
+        m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
+
+        // Static function of Tileset class actually takes care of parsing the symbolic tileset
+        eResult = Tileset::parse_symbolic(pSymTs, *this);
+
+        //reset base path
+        m_base_path = path_backup;
+
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at parsing symbolic tileset " << name << "\n";
+            return eResult;
+        }
+    }
+
+    // Parse actual events from the on_* callback names
+    if(on_load != "") {
+        if(check_event_convert_map(on_load) != true) {
+            std::cerr << "The event: " << on_load << " couldn't be found / is no valid game or map event\n";
+            std::cerr << "Failed adding " << on_load << " as the ON_LOAD callback to map\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_on_load = get_event_convert_map(on_load);
+        }
+    }
+    if(on_always != "") {
+        if(check_event_convert_map(on_always) != true) {
+            std::cerr << "The event: " << on_always << " couldn't be found / is no valid game or map event\n";
+            std::cerr << "Failed adding " << on_always << " as the ON_ALWAYS callback to map\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_on_always = get_event_convert_map(on_always);
+        }
+    }
+    if(on_resume != "") {
+        if(check_event_convert_map(on_resume) != true) {
+            std::cerr << "The event: " << on_resume << " couldn't be found / is no valid game or map event\n";
+            std::cerr << "Failed adding " << on_resume << " as the ON_RESUME callback to map\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        else {
+            m_on_resume = get_event_convert_map(on_resume);
+        }
+    }
     return XML_SUCCESS;
 }
 
@@ -289,7 +331,6 @@ bool MapData::render() const{
     SDL_RenderClear(*mpp_renderer);
 
     return m_layer_collection.render(m_camera);
-
 }
 
 /**
@@ -313,9 +354,12 @@ void MapData::update() {
     }
     // Do nothing with returned signal because we don't have to
     m_events.process_events(*this);
+}
 
+/// If necessary binds camera to actor target and updates the camera position
+void MapData::update_camera() {
     // Check for active actor called PLAYER because it may change during execution
-    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(std::string("PLAYER"));
+    std::vector<Actor*> actor_list =  m_layer_collection.get_actors(camera_target);
     if(actor_list.size() > 1) {
         // std::cerr << "Error: More than one actor called PLAYER!\n";
     }
@@ -325,9 +369,47 @@ void MapData::update() {
     else {
         m_player = actor_list[0];
 
-        if(m_player_to_camera) {m_camera.bind_player(m_player);}
+        if(m_bind_camera_to_actor) {m_camera.bind_actor(m_player);}
+    }
+    m_camera.update();
+}
+
+/**
+ * @brief Sets up the map for properly resuming after another map loaded and closed again
+ */
+void MapData::resume() {
+    m_last_update = SDL_GetTicks();
+    if(m_on_resume.valid()) {
+        m_events.add_event(m_on_resume);
     }
 }
+
+/// Returns map width in pixels
+unsigned MapData::get_w() const {
+    int width = m_width * m_ts_collection.get_tile_w();
+    if(m_tile_layout.orientation != "orthogonal") {
+        if(!m_tile_layout.stagger_axis_y) {
+            width /= 2;
+            width += m_width * m_tile_layout.hexsidelength / 2;
+        }
+        width += m_ts_collection.get_tile_w() / 2;
+    }
+    return width;
+}
+
+/// Returns map height in pixels
+unsigned MapData::get_h() const {
+    int height = m_height * m_ts_collection.get_tile_h();
+    if(m_tile_layout.orientation != "orthogonal") {
+        if(m_tile_layout.stagger_axis_y) {
+            height /= 2;
+            height += m_height * m_tile_layout.hexsidelength / 2;
+        }
+        height += m_ts_collection.get_tile_h() / 2;
+    }
+    return height;
+}
+
 
 /**
  * @brief Adds a copy of an animation tile to an actor template
@@ -597,40 +679,4 @@ const ActorTemplate& MapData::get_actor_template(Uint32 gid) const {
 /// Return ActorTemplate by name
 ActorTemplate& MapData::get_actor_template(std::string actor) {
     return m_templates[actor];
-}
-
-/**
- * @brief Sets up the map for properly resuming after another map loaded and closed again
- */
-void MapData::resume() {
-    m_last_update = SDL_GetTicks();
-    if(m_on_resume.valid()) {
-        m_events.add_event(m_on_resume);
-    }
-}
-
-/// Returns map width in pixels
-unsigned MapData::get_w() const {
-    int width = m_width * m_ts_collection.get_tile_w();
-    if(m_tile_layout.orientation != "orthogonal") {
-        if(!m_tile_layout.stagger_axis_y) {
-            width /= 2;
-            width += m_width * m_tile_layout.hexsidelength / 2;
-        }
-        width += m_ts_collection.get_tile_w() / 2;
-    }
-    return width;
-}
-
-/// Returns map height in pixels
-unsigned MapData::get_h() const {
-    int height = m_height * m_ts_collection.get_tile_h();
-    if(m_tile_layout.orientation != "orthogonal") {
-        if(m_tile_layout.stagger_axis_y) {
-            height /= 2;
-            height += m_height * m_tile_layout.hexsidelength / 2;
-        }
-        height += m_ts_collection.get_tile_h() / 2;
-    }
-    return height;
 }

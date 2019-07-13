@@ -29,7 +29,7 @@ Camera::Camera(int x, int y, int w, int h) :
  * @note If the camera is map bound and the map is smaller than the camera, the map is centered inside the camera frame
  */
 void Camera::update() {
-    if(m_player_bound) {
+    if(m_actor_bound) {
         m_rect.x = m_player->get_x_center() - (m_rect.w / 2);
         m_rect.y = m_player->get_y_center() - (m_rect.h / 2);
     }
@@ -80,9 +80,9 @@ void Camera::update(int x, int y) {
 /**
  * @brief Bind the camera center to the player image center
  */
-void Camera::bind_player(Actor* actor) {
+void Camera::bind_actor(Actor* actor) {
     m_player = actor;
-    m_player_bound = true;
+    m_actor_bound = true;
 }
 
 /**

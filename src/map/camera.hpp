@@ -39,8 +39,8 @@ class Camera{
 
         void set_size(unsigned w, unsigned h) {m_rect.w = w; m_rect.h = h;}
         void set_crop(int l, int r, int u, int d);
-        void bind_player(Actor* actor);
-        void unbind_player() {m_player_bound = false;}
+        void bind_actor(Actor* actor);
+        void unbind_actor() {m_actor_bound = false;}
 
         void bind_map(unsigned w, unsigned h);
         void unbind_map() {m_map_bound = false;}
@@ -62,7 +62,7 @@ class Camera{
         Actor* m_player = nullptr;
 
         bool m_map_bound = false;
-        bool m_player_bound = false;
+        bool m_actor_bound = false;
 };
 
 #endif // CAMERA_HPP_INCLUDED

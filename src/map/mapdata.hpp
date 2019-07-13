@@ -61,9 +61,14 @@ class MapData {
         MapData(MapData&& other) = default;
         MapData& operator=(MapData&& other) = default;
 
+        // Map parsing functions
         tinyxml2::XMLError init_map(std::string filename, SDL_Renderer** renderer);
+        tinyxml2::XMLError parse_map_info(tinyxml2::XMLElement* pMap);
+        tinyxml2::XMLError parse_map_properties(tinyxml2::XMLElement* pMap);
+
         bool render() const;
         void update();
+        void update_camera();
         void resume();
 
         // Trivial Getters
@@ -83,7 +88,7 @@ class MapData {
         const TileLayout get_tile_layout() {return m_tile_layout;}
 
         // Binds or unbinds camera from player position
-        void bind_camera_to_player(bool state) {if(!state) {m_camera.unbind_player();} m_player_to_camera = state;}
+        void bind_camera_to_actor(bool state) {if(!state) {m_camera.unbind_actor();} m_bind_camera_to_actor = state;}
 
         // Event management
         template<class Scope=Actor, class Key=std::string>
@@ -137,7 +142,8 @@ class MapData {
         float m_delta_time = 0.f;
 
         Camera m_camera;
-        bool m_player_to_camera = true;
+        bool m_bind_camera_to_actor = true;
+        std::string camera_target = "PLAYER";
 
         LayerCollection m_layer_collection;
 

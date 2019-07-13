@@ -47,8 +47,6 @@ public:
     bool load_map(std::string mapfile);
     void close_map();
 
-
-
     DataBlock& get_data() {return m_data;}
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
