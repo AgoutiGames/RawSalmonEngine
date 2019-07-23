@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "map/mapdata.hpp"
+#include "util/parse.hpp"
 
 Actor::Actor(MapData* map) : m_map{map} {}
 
@@ -41,12 +42,11 @@ Actor::Actor(const ActorTemplate& templ, MapData* mapdata) :
 }
 
 /**
- * @brief Initialize actor information from XML info
+ * @brief Initialize actor dimensions and name from XML info
  * @param source The @c XMLElement which contains the information
  * @return an @c XMLError object which indicates success or error type
  */
-tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
-
+tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
 
@@ -68,18 +68,115 @@ tinyxml2::XMLError Actor::init_actor(tinyxml2::XMLElement* source) {
         return XML_NO_ATTRIBUTE;
     }
     m_name = p_actor_name;
+    return XML_SUCCESS;
+}
 
-    // Parse user specified properties of the actor
+/**
+ * @brief Initialize custom actor properties from XML info
+ * @param source The @c XMLElement which contains the information
+ * @return an @c XMLError object which indicates success or error type
+ */
+tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
-    if(p_tile_properties != nullptr) {
-        XMLElement* p_property = p_tile_properties->FirstChildElement("property");
-        eResult = m_map->parse_actor_properties(p_property, m_direction, m_response);
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at parsing actor properties for actor: " << m_name << "\n";
-            return eResult;
+    if(p_tile_properties == nullptr) {
+        // Missing properties are generally considered okay
+        return XML_SUCCESS;
+    }
+    XMLElement* p_property = p_tile_properties->FirstChildElement("property");
+
+    // Iterate over all property elements
+    while(p_property != nullptr) {
+        // Get name of property
+        const char* p_name;
+        p_name = p_property->Attribute("name");
+        std::string name(p_name);
+        if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+        // Parse type/template name of actor
+        else if(name == "ACTOR_NAME") {
+            const char* p_actor_name = p_property->Attribute("value");
+            if(p_actor_name != nullptr) {
+                std::cerr << "Empty actor name specified\n";
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
+            m_type = p_actor_name;
+        }
+
+        // Parse current direction facing
+        else if(name == "DIRECTION") {
+            const char* p_direction = p_property->Attribute("value");
+            if(p_direction != nullptr) {
+                Direction dir = str_to_direction(std::string(p_direction));
+                if(dir == Direction::invalid) {
+                    std::cerr << "Invalid direction type \"" << p_direction << "\"specified\n";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+
+                if(dir == Direction::current) {
+                    std::cerr << "There is no current direction upon actor initialization\n";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+                m_direction = dir;
+            }
+            else {
+                std::cerr << "Empty direction value specified\n";
+                return XML_NO_ATTRIBUTE;
+            }
+
+        }
+
+        // Parse response values
+        else if(str_to_response(name) != Response::invalid) {
+            const char* p_event = p_property->Attribute("value");
+            if(p_event != nullptr) {
+                std::string event(p_event);
+                if(m_map->check_event_convert_actor(event)) {
+                    m_response.register_event(str_to_response(name), m_map->get_event_convert_actor(event));
+                }
+                else {
+                    std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+            }
+            else {
+                std::cerr << "Empty response event specified\n";
+                return XML_NO_ATTRIBUTE;
+            }
+        }
+
+        else {
+            std::cerr << "Unknown actor property \"" << p_name << "\" specified\n";
+            return XML_ERROR_PARSING_ATTRIBUTE;
+        }
+        // Move to next property
+        p_property = p_property->NextSiblingElement("property");
+    }
+    return XML_SUCCESS;
+}
+
+/**
+ * @brief Initialize actors hitboxes from XML info
+ * @param source The @c XMLElement which contains the information
+ * @return an @c XMLError object which indicates success or error type
+ */
+tinyxml2::XMLError Actor::parse_hitbox(tinyxml2::XMLElement* source) {
+    using namespace tinyxml2;
+    XMLError eResult;
+
+    // Parse the default hitbox
+    XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
+    if(p_objgroup != nullptr) {
+        XMLElement* p_object = p_objgroup->FirstChildElement("object");
+        if(p_object != nullptr) {
+            eResult = parse::hitboxes(p_object, m_hitbox);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at parsing hitbox for actor template: " << m_type << "\n";
+                return eResult;
+            }
         }
     }
-
     return XML_SUCCESS;
 }
 

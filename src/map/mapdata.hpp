@@ -155,6 +155,9 @@ class MapData {
         std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
         std::map<Uint32, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
+        std::map<std::string, Actor> m_actor_templates; ///< List of all actor templates by name
+        std::map<Uint32, std::string> m_gid_to_actor_temp_name; ///< List of actor template names by global tile id
+
         std::string m_key_target = "PLAYER";
 
         EventCollection<Actor, SDL_Keycode> m_key_up;

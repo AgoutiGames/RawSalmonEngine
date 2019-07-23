@@ -60,7 +60,9 @@ class Actor{
         Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
         // Core functions
-        tinyxml2::XMLError init_actor(tinyxml2::XMLElement* source);
+        tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
+        tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
+        tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source);
         void update();
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
         AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);

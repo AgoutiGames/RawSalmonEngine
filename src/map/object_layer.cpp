@@ -60,9 +60,14 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
         m_obj_grid.push_back(Actor(gid, &(m_layer_collection->get_base_map() )));
 
         // Initialize actor from the XMLElement*
-        eResult = m_obj_grid.back().init_actor(p_object);
+        eResult = m_obj_grid.back().parse_base(p_object);
         if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading object in layer: " << m_name << " with gid: " << gid << "\n";
+            std::cerr << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid << "\n";
+            return eResult;
+        }
+        eResult = m_obj_grid.back().parse_properties(p_object);
+        if(eResult != XML_SUCCESS) {
+            std::cerr << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid << "\n";
             return eResult;
         }
         // Move to next object/actor
