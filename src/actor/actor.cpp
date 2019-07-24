@@ -111,6 +111,14 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
 
         }
 
+        else if(name == "LATE_POLLING") {
+            XMLError eResult = p_property->QueryBoolAttribute("value", &m_late_polling);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed parsing the LATE_POLLING property\n";
+                return eResult;
+            }
+        }
+
         // Parse response values
         else if(str_to_response(name) != Response::invalid) {
             const char* p_event = p_property->Attribute("value");

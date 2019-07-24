@@ -9,6 +9,7 @@
  <objecttype name="ACTOR_TEMPLATE" color="#00007f">
   <property name="ACTOR_NAME" type="string"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="LATE_POLLING" type="bool" default="false"/>
   <property name="ON_ACTIVATION" type="string"/>
   <property name="ON_ALWAYS" type="string"/>
   <property name="ON_COLLISION" type="string"/>

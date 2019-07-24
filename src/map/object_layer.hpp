@@ -34,7 +34,7 @@ class ObjectLayer : public Layer{
     public:
 
         bool render(const Camera& camera) const override;
-        void update();
+        void update(bool late = false);
 
         LayerType get_type() override {return LayerType::object;}
 

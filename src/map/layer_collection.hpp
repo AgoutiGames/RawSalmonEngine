@@ -44,7 +44,7 @@ class LayerCollection {
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map);
 
         bool render(const Camera& camera) const;
-        void update();
+        void update(bool late = false);
 
         std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);

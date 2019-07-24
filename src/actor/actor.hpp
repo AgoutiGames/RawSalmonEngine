@@ -73,6 +73,7 @@ class Actor{
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
         EventQueue<Actor>& get_event_queue() {return m_events;}
         DataBlock& get_data() {return m_data;}
+        bool late_polling() {return m_late_polling;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
@@ -98,6 +99,8 @@ class Actor{
 
         DataBlock m_data; ///< This holds custom user values by string
         bool m_first = true;
+
+        bool m_late_polling = false;
 };
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list

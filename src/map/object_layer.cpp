@@ -99,9 +99,11 @@ bool ObjectLayer::render(const Camera& camera) const {
  * object of an object type layer. When it returns false, this is
  * a signal to delete the object.
  */
-void ObjectLayer::update() {
+void ObjectLayer::update(bool late) {
     for(Actor& a : m_obj_grid) {
-        a.update();
+        if(a.late_polling() == late) {
+            a.update();
+        }
     }
     // Establish correct rendering order
     m_obj_grid.sort();

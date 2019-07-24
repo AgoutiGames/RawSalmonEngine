@@ -329,7 +329,8 @@ void MapData::update() {
     //m_delta_time = 1.0f / 60.0f;
     m_last_update = current_time;
 
-    m_layer_collection.update();
+    // Early polling
+    m_layer_collection.update(false);
 
     update_camera();
     // Checks and changes animated tiles
@@ -340,6 +341,9 @@ void MapData::update() {
     }
     // Do nothing with returned signal because we don't have to
     m_events.process_events(*this);
+
+    // Late polling
+    m_layer_collection.update(true);
 }
 
 /// If necessary binds camera to actor target and updates the camera position
