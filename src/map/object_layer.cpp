@@ -57,7 +57,10 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
         }
 
         // Construct actor from template corresponding to gid
-        m_obj_grid.push_back(Actor(gid, &(m_layer_collection->get_base_map() )));
+        //m_obj_grid.push_back(Actor(gid, &(m_layer_collection->get_base_map() )));
+
+        MapData& mapdata = m_layer_collection->get_base_map();
+        m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
 
         // Initialize actor from the XMLElement*
         eResult = m_obj_grid.back().parse_base(p_object);

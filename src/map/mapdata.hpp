@@ -37,7 +37,6 @@
 #include "util/game_types.hpp"
 
 class Actor;
-class ActorTemplate;
 class Tile;
 class Layer;
 
@@ -113,14 +112,11 @@ class MapData {
         SmartEvent<MapData> get_event_convert_map(Key name) const;
 
         // Actor management
-        const ActorTemplate& get_actor_template(Uint32 gid) const;
-        ActorTemplate& get_actor_template(std::string actor);
+        Actor get_actor(Uint32 gid) const;
+        Actor get_actor(std::string name) const;
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
-        bool add_actor_hitbox(std::string actor, std::string hitbox, const SDL_Rect& rect);
-
-        tinyxml2::XMLError parse_actor_properties(tinyxml2::XMLElement* source, Direction& dir, EventCollection<Actor, Response>& resp);
 
         // Key input management
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
@@ -151,9 +147,6 @@ class MapData {
         TileLayout m_tile_layout;
 
         TilesetCollection m_ts_collection;
-
-        std::map<std::string, ActorTemplate> m_templates; ///< List of all actor templates by name
-        std::map<Uint32, std::string> m_gid_to_temp_name; ///< List of actor template names by global tile id
 
         std::map<std::string, Actor> m_actor_templates; ///< List of all actor templates by name
         std::map<Uint32, std::string> m_gid_to_actor_temp_name; ///< List of actor template names by global tile id

@@ -25,22 +25,6 @@
 
 Actor::Actor(MapData* map) : m_map{map} {}
 
-Actor::Actor(Uint32 tile_id, MapData* mapdata) : Actor::Actor(mapdata->get_actor_template(tile_id), mapdata)
-{
-
-}
-
-Actor::Actor(const ActorTemplate& templ, MapData* mapdata) :
- m_map {mapdata},
- m_type {templ.template_name},
- m_direction {templ.direction},
- m_hitbox {templ.hitbox},
- m_animations {templ.animations},
- m_response {templ.response}
-{
-
-}
-
 /**
  * @brief Initialize actor dimensions and name from XML info
  * @param source The @c XMLElement which contains the information
@@ -97,7 +81,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         // Parse type/template name of actor
         else if(name == "ACTOR_NAME") {
             const char* p_actor_name = p_property->Attribute("value");
-            if(p_actor_name != nullptr) {
+            if(p_actor_name == nullptr) {
                 std::cerr << "Empty actor name specified\n";
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }

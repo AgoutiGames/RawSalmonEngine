@@ -32,32 +32,16 @@
 #include "util/game_types.hpp"
 
 class MapData;
-class Actor;
-
-struct ActorTemplate {
-    std::string template_name = "_";
-    Direction direction = Direction::down;
-    std::map<std::string, SDL_Rect> hitbox;
-    std::map<AnimationType, std::map<Direction, Tile>> animations;
-    EventCollection<Actor, Response> response; ///< Map which yields events for response values
-};
 
 /**
  * @brief Parse, store and manage all actors
  *
- * @note Actors can only be constructed from parsed @c ActorTemplate
  */
 class Actor{
 
     public:
-        // Constructors
-        // I have no idea why but with a default constructor
-        // this won't compile properly
-        // This probably has something to do with members lacking one
-        // Actor() = default;
+        Actor() = default;
         Actor(MapData* map);
-        Actor(Uint32 tile_id, MapData* map);          ///< Construct actor from tile_id corresponding to an ActorTemplate
-        Actor(const ActorTemplate& templ, MapData* map);    ///< Construct actor from an ActorTemplate
 
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
@@ -76,6 +60,7 @@ class Actor{
 
         // Trivial Getters
         AnimationType get_animation() const {return m_anim_state;}
+        std::map<AnimationType, std::map<Direction, Tile>>& get_animation_container() {return m_animations;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
         std::string get_type() const {return m_type;}
@@ -103,7 +88,7 @@ class Actor{
         std::string m_type;
 
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
-        Direction m_direction; ///< Current direction facing
+        Direction m_direction = Direction::down; ///< Current direction facing
         std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
 
