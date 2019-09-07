@@ -112,6 +112,7 @@ class MapData {
         SmartEvent<MapData> get_event_convert_map(Key name) const;
 
         // Actor management
+        bool is_actor(Uint32 gid) const;
         Actor get_actor(Uint32 gid) const;
         Actor get_actor(std::string name) const;
 

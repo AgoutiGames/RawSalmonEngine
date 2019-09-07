@@ -79,3 +79,25 @@ std::vector<float> dir_to_mov(const Direction dir) {
     if(dir == Direction::left)  return std::vector<float>{-1,0};
     else return std::vector<float>{0,0};
 }
+
+/// Converts a @c string to an @c SDL_Color
+/// @note Format is #RRGGBB or #AARRGGBB, no error checking!
+SDL_Color str_to_color(const std::string& name) {
+        std::string n = name;
+        SDL_Color color;
+        n.erase(n.begin()); // Delete leading # sign
+
+        // Check for possible alpha value (since ARGB and RGB is possible)
+        if(n.length() > 6) {
+            color.a = std::stoul(std::string(n, 0, 2), nullptr, 16);
+            n.erase(n.begin(), n.begin() + 2);
+        }
+        // Set to fully opaque if no value is supplied
+        else {color.a = 255;}
+
+        color.r = std::stoul(std::string(n, 0, 2), nullptr, 16);
+        color.g = std::stoul(std::string(n, 2, 2), nullptr, 16);
+        color.b = std::stoul(std::string(n, 4, 2), nullptr, 16);
+
+        return color;
+}

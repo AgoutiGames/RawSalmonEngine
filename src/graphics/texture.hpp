@@ -41,7 +41,7 @@ class Texture
 		bool loadFromFile(SDL_Renderer* renderer, std::string path );
 
 		//Creates image from font string
-		bool loadFromRenderedText( SDL_Renderer* renderer, std::string textureText, SDL_Color textColor, TTF_Font *font );
+		bool loadFromRenderedText( SDL_Renderer* renderer, std::string textureText, SDL_Color textColor, TTF_Font *font, Uint32 wrap = 0);
 
 		//Set color modulation
 		void setColor( Uint8 red, Uint8 green, Uint8 blue );

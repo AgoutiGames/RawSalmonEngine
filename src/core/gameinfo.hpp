@@ -25,6 +25,7 @@
 
 #include "actor/data_block.hpp"
 #include "event/event_queue.hpp"
+#include "core/font_manager.hpp"
 
 class MapData;
 
@@ -52,6 +53,7 @@ public:
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
     EventQueue<GameInfo>& get_event_queue() {return m_events;}
+    FontManager& get_font_manager() {return m_font_manager;}
 
 private:
     void update_path();
@@ -65,6 +67,7 @@ private:
     DataBlock m_data; ///< This holds custom user values by string
 
     EventQueue<GameInfo> m_events;
+    FontManager m_font_manager;
 
     std::string m_current_path = "../data/";
 

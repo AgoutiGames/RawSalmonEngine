@@ -25,6 +25,7 @@
 #include "map/tileset_collection.hpp"
 #include "map/layer_collection.hpp"
 #include "map/camera.hpp"
+#include "map/primitive.hpp"
 
 /// Factory function which retrieves a pointer owning the object layer
 ObjectLayer* ObjectLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -44,35 +45,39 @@ ObjectLayer::ObjectLayer(tinyxml2::XMLElement* source, std::string name, LayerCo
 tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
+    MapData& mapdata = m_layer_collection->get_base_map();
 
     // Parse individual objects/actors
     XMLElement* p_object = source->FirstChildElement("object");
     while(p_object != nullptr) {
         unsigned gid;
         eResult = p_object->QueryUnsignedAttribute("gid", &gid);
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Object in layer: " << m_name << " has no tile id!\n";
-            std::cerr << "Currently only tile objects are supported/only true actors\n";
-            return eResult;
+
+        if(eResult == XML_SUCCESS && mapdata.is_actor(gid)) {
+            m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
+            // Initialize actor from the XMLElement*
+            eResult = m_obj_grid.back().parse_base(p_object);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid << "\n";
+                return eResult;
+            }
+            eResult = m_obj_grid.back().parse_properties(p_object);
+            if(eResult != XML_SUCCESS) {
+                std::cerr << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid << "\n";
+                return eResult;
+            }
+        }
+        else {
+
+            Primitive* p = Primitive::parse(p_object, mapdata);
+            if(p == nullptr) {
+                std::cerr << "Couldn't load primitive object with id " << p_object->Attribute("id") << ", skipping\n";
+            }
+            else {
+                add_primitive(p);
+            }
         }
 
-        // Construct actor from template corresponding to gid
-        //m_obj_grid.push_back(Actor(gid, &(m_layer_collection->get_base_map() )));
-
-        MapData& mapdata = m_layer_collection->get_base_map();
-        m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
-
-        // Initialize actor from the XMLElement*
-        eResult = m_obj_grid.back().parse_base(p_object);
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid << "\n";
-            return eResult;
-        }
-        eResult = m_obj_grid.back().parse_properties(p_object);
-        if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid << "\n";
-            return eResult;
-        }
         // Move to next object/actor
         p_object = p_object->NextSiblingElement();
     }
@@ -89,6 +94,13 @@ bool ObjectLayer::render(const Camera& camera) const {
     for(const Actor* actor : get_clip(camera.get_rect())) {
         actor->render(camera.x(), camera.y());
     }
+
+    // For now just always render all primitives
+    // Offscreen culling has to be implemented yet
+    for(auto& primitive : m_primitives) {
+        primitive->render(camera.x(), camera.y());
+    }
+
     return true;
 }
 
@@ -234,4 +246,27 @@ bool ObjectLayer::erase_actor(Actor* actor) {
         }
     }
     return false;*/
+}
+
+void ObjectLayer::add_primitive(Primitive* primitive) {
+    m_primitives.emplace_back(primitive);
+}
+
+Primitive* ObjectLayer::get_primitive(std::string name) const {
+    for(auto& elem : m_primitives) {
+        if(elem->get_name() == name) {
+            return elem.get();
+        }
+    }
+    return nullptr;
+}
+
+bool ObjectLayer::erase_primitive(std::string name) {
+    for(auto elem = m_primitives.begin(); elem != m_primitives.end(); elem++) {
+        if((*elem)->get_name() == name) {
+            m_primitives.erase(elem);
+            return true;
+        }
+    }
+    return false;
 }

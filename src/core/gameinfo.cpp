@@ -49,7 +49,7 @@ bool GameInfo::init() {
 	bool success = true;
 
 	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 )
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
 		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
 		success = false;
@@ -100,6 +100,14 @@ bool GameInfo::init() {
 			}
 		}
 	}
+
+	 //Initialize SDL_ttf
+    if( TTF_Init() == -1 )
+    {
+        printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+        success = false;
+    }
+
 	return success;
 }
 
@@ -185,9 +193,13 @@ void GameInfo::close() {
 	m_window = nullptr;
 	m_renderer = nullptr;
 
+	// Clear all currently open fonts
+	m_font_manager.clear();
+
 	//Quit SDL subsystems
 	Mix_Quit();
 	IMG_Quit();
+	TTF_Quit();
 	SDL_Quit();
 }
 

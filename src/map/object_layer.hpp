@@ -22,10 +22,13 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <memory>
 #include <SDL.h>
 
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
+
+class Primitive;
 
 /**
  * @brief A map layer which consist of a list of actors
@@ -43,6 +46,10 @@ class ObjectLayer : public Layer{
         Actor* get_actor(std::string name);
         bool erase_actor(std::string name);
         bool erase_actor(Actor* pointer);
+
+        void add_primitive(Primitive* primitive);
+        Primitive* get_primitive(std::string name) const;
+        bool erase_primitive(std::string name);
 
         std::vector<Actor*> get_clip(const SDL_Rect& rect);
         std::vector<const Actor*> get_clip(const SDL_Rect& rect) const;
@@ -62,6 +69,7 @@ class ObjectLayer : public Layer{
         tinyxml2::XMLError init(tinyxml2::XMLElement* source);
 
         std::list<Actor> m_obj_grid;
+        std::list<std::unique_ptr<Primitive>> m_primitives;
 };
 
 

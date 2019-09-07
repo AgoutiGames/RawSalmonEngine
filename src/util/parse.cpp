@@ -173,21 +173,7 @@ tinyxml2::XMLError parse::bg_color(tinyxml2::XMLElement* source, SDL_Color& colo
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
     else {
-        std::string s_bg_color = p_bg_color;
-        s_bg_color.erase(s_bg_color.begin()); // Delete leading # sign
-
-        // Check for possible alpha value (since ARGB and RGB is possible)
-        if(s_bg_color.length() > 6) {
-            color.a = std::stoul(std::string(s_bg_color, 0, 2), nullptr, 16);
-            s_bg_color.erase(s_bg_color.begin(), s_bg_color.begin() + 2);
-        }
-        // Set to fully opaque if no value is supplied
-        else {color.a = 255;}
-
-        color.r = std::stoul(std::string(s_bg_color, 0, 2), nullptr, 16);
-        color.g = std::stoul(std::string(s_bg_color, 2, 2), nullptr, 16);
-        color.b = std::stoul(std::string(s_bg_color, 4, 2), nullptr, 16);
-
+        color = str_to_color(p_bg_color);
         return XML_SUCCESS;
     }
 }

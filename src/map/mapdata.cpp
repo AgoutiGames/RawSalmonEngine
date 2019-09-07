@@ -27,6 +27,7 @@
 #include "map/tileset.hpp"
 #include "map/layer.hpp"
 #include "util/parse.hpp"
+#include "util/attribute_parser.hpp"
 
 /// Plain constructor
 MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
@@ -124,35 +125,27 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
  */
 tinyxml2::XMLError MapData::parse_map_info(tinyxml2::XMLElement* pMap) {
     using namespace tinyxml2;
+    XMLError eResult;
 
-    // Parse map dimensions in tiles
-    XMLError eResult = pMap->QueryUnsignedAttribute("width", &m_width);
-    if(eResult != XML_SUCCESS) return eResult;
+    AttributeParser parser;
+    parser.add(m_width, "width");
+    parser.add(m_height, "height");
+    std::string orientation, render_order;
+    parser.add(orientation, "orientation");
+    parser.add(render_order, "renderorder");
+
+    eResult = parser.parse(pMap);
+    if(eResult != XML_SUCCESS) {return eResult;}
+
     std::cout << "Map width: " << m_width << "\n";
-    eResult = pMap->QueryUnsignedAttribute("height", &m_height);
-    if(eResult != XML_SUCCESS) return eResult;
     std::cout << "Map height: " << m_height << "\n";
 
-    // Parse map orientation, check for unsupported orientations
-    const char* p_orientation = pMap->Attribute("orientation");
-    if(p_orientation == nullptr) {
-        std::cerr << "Missing map orientation value!\n";
-        return XMLError::XML_NO_ATTRIBUTE;
-    }
-    std::string orientation = p_orientation;
     if(orientation != "orthogonal" && orientation != "hexagonal" && orientation != "staggered") {
         std::cerr << "Tile orientation " << orientation << " isn't supported!\n";
         return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
     }
     m_tile_layout.orientation = orientation;
 
-    // Parse the render order of the tiles and again check for illegal values
-    const char* p_render_order = pMap->Attribute("renderorder");
-    if(p_render_order == nullptr) {
-        std::cerr << "Missing map render order value!\n";
-        return XMLError::XML_NO_ATTRIBUTE;
-    }
-    std::string render_order = p_render_order;
     if(render_order != "right-down" && render_order != "right-up" && render_order != "left-down" && render_order != "left-up") {
         std::cerr << "Tile render_order " << render_order << " isn't supported!\n";
         return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
@@ -541,6 +534,11 @@ Actor* MapData::fetch_actor(std::string name) {
         return actor_list[0];
     }
     return nullptr;
+}
+
+/// Returns true if the tile with the supplied gid is an actor
+bool MapData::is_actor(Uint32 gid) const {
+    return m_gid_to_actor_temp_name.find(gid) != m_gid_to_actor_temp_name.end();
 }
 
 /// Return Actor template which was parsed with tile with the given tile ID

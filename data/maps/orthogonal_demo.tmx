@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="38">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="59">
  <properties>
   <property name="EVENT1" type="file" value="events.tsx"/>
   <property name="KEY1" type="file" value="key_mapping.tsx"/>
@@ -47,6 +47,25 @@
   <object id="35" name="Test Coin 1" gid="27" x="696" y="6615.67" width="16" height="16"/>
   <object id="36" name="Test Coin 1" gid="27" x="761.333" y="6607" width="16" height="16"/>
   <object id="37" name="Test Coin 1" gid="27" x="730" y="6564.34" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup name="Test">
+  <object id="50" name="dat_rect" x="-51" y="5597" width="155" height="82"/>
+  <object id="51" name="dat_point" x="160" y="5648">
+   <point/>
+  </object>
+  <object id="52" name="dat_ellipse" x="229" y="5607" width="93" height="63">
+   <ellipse/>
+  </object>
+  <object id="53" name="dat_polygon" x="384" y="5608">
+   <polygon points="0,0 151,-21 111,127"/>
+  </object>
+  <object id="54" name="dat_polyline" x="590" y="5703">
+   <polyline points="0,0 10,-91 155,-76"/>
+  </object>
+  <object id="55" name="dat_tile" gid="6" x="7" y="5777" width="16" height="16"/>
+  <object id="56" name="dat_text" x="174.039" y="6097.5" width="97.9219" height="39">
+   <text fontfamily="Sans Serif" pixelsize="12" wrap="1" color="#8181c2">Hi There Handsome</text>
+  </object>
  </objectgroup>
  <imagelayer name="Bildebene 1" offsetx="445.333" offsety="6192">
   <image source="../tilesets/block.png" width="32" height="32"/>

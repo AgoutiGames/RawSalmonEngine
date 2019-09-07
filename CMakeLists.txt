@@ -58,6 +58,7 @@ set(AUDIO_SOURCES
 set(CORE_SOURCES
     src/core/main.cpp
     src/core/gameinfo.cpp
+    src/core/font_manager.cpp
     )
 
 set(EVENT_SOURCES
@@ -95,6 +96,9 @@ set(GRAPHICS_SOURCES
     )
 
 set(MAP_SOURCES
+    src/map/primitive.cpp
+    src/map/primitive_rectangle.cpp
+    src/map/primitive_text.cpp
     src/map/camera.cpp
     src/map/mapdata.cpp
     src/map/layer.cpp
@@ -108,6 +112,7 @@ set(MAP_SOURCES
     )
 
 set(UTIL_SOURCES
+    src/util/attribute_parser.cpp
     src/util/game_types.cpp
     src/util/parse.cpp
     )

@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <SDL.h>
 
 /**
  * @brief A collection of various enums and handy functions for conversion and parsing
@@ -101,6 +102,7 @@ Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
+SDL_Color str_to_color(const std::string& name);
 
 std::vector<float> dir_to_mov(const Direction dir);
 

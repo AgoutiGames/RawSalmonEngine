@@ -18,6 +18,7 @@
  */
 #include "graphics/texture.hpp"
 
+#include <algorithm>
 #include <SDL_image.h>
 #include <iostream>
 
@@ -84,7 +85,7 @@ bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
  * @param font The font which is used
  * @return @c bool which indicates success or failure
  */
-bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureText, SDL_Color textColor, TTF_Font* font )
+bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureText, SDL_Color textColor, TTF_Font* font, Uint32 wrap )
 {
 	//Get rid of preexisting texture
 	free();
@@ -92,7 +93,14 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
 	mRenderer = renderer;
 
 	//Render text surface
-	SDL_Surface* textSurface = TTF_RenderText_Solid( font, textureText.c_str(), textColor );
+	SDL_Surface* textSurface;
+	if(wrap != 0) {
+        textSurface = TTF_RenderUTF8_Blended_Wrapped( font, textureText.c_str(), textColor, wrap );
+	}
+	else {
+        textSurface = TTF_RenderUTF8_Blended( font, textureText.c_str(), textColor );
+	}
+
 	if( textSurface != nullptr )
 	{
 		//Create texture from surface pixels
@@ -162,8 +170,9 @@ void Texture::render( int x, int y, const SDL_Rect* clip ) const
 	//Set clip rendering dimensions
 	if( clip != nullptr )
 	{
-		renderQuad.w = clip->w;
-		renderQuad.h = clip->h;
+	    // Make sure a clip > base size doesn't stretch the destRect
+		renderQuad.w = std::min(clip->w, mWidth);
+		renderQuad.h = std::min(clip->h, mHeight);
 	}
 
 	//Render to screen
