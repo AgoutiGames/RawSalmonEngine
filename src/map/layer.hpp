@@ -59,6 +59,7 @@ class Layer {
         virtual bool render(const Camera& camera) const = 0;
 
         virtual LayerType get_type() {return LayerType::undefinied;}
+        std::string get_name() const {return m_name;}
 
         static Layer* parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult);
 

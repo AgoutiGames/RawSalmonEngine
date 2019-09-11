@@ -122,7 +122,10 @@
  </tile>
  <tile id="22" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="StupidText"/>
    <property name="KEYPRESS" value="P"/>
+   <property name="SUSTAINED" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="23" type="KEY_MAPPING">

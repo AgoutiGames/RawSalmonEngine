@@ -141,6 +141,27 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeSpawnText" color="#a0a0a4">
+  <property name="BOLD" type="bool" default="false"/>
+  <property name="CENTER_ORIGIN" type="bool" default="true"/>
+  <property name="COLOR" type="color" default="#ff000000"/>
+  <property name="FONT" type="string" default="OpenSans"/>
+  <property name="FONT_SIZE" type="int" default="12"/>
+  <property name="HEIGHT" type="int" default="500"/>
+  <property name="ITALIC" type="bool" default="false"/>
+  <property name="KERNING" type="bool" default="true"/>
+  <property name="LAYER_NAME" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIMITIVE_NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="STRIKEOUT" type="bool" default="false"/>
+  <property name="TEXT" type="string" default="Write Here!"/>
+  <property name="UNDERLINE" type="bool" default="false"/>
+  <property name="WIDTH" type="int" default="1000"/>
+  <property name="WRAP" type="bool" default="false"/>
+  <property name="X_POS" type="int" default="0"/>
+  <property name="Y_POS" type="int" default="0"/>
+ </objecttype>
  <objecttype name="AeSwitchCollision" color="#a0a0a4">
   <property name="MY_HITBOX" type="string"/>
   <property name="NAME" type="string"/>

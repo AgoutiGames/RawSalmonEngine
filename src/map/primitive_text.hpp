@@ -28,7 +28,7 @@ class PrimitiveText : public Primitive {
     public:
         struct Attributes {
             std::string font_family = "sans-serif";
-            SDL_Color color = {0,0,0,0};
+            SDL_Color color = {0,0,0,255};
             unsigned pixel_size = 12;
             bool wrap = false, bold = false, italic = false, underline = false, strikeout = false, kerning = true;
         };

@@ -253,6 +253,16 @@
    <property name="NAME" value="CoinPickupSafe"/>
   </properties>
  </tile>
+ <tile id="70" type="AeSpawnText">
+  <properties>
+   <property name="BOLD" type="bool" value="true"/>
+   <property name="COLOR" type="color" value="#ffcc65d5"/>
+   <property name="LAYER_NAME" value="Test"/>
+   <property name="NAME" value="StupidText"/>
+   <property name="TEXT" value="ASS"/>
+   <property name="UNDERLINE" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="79" type="AteOnGround">
   <properties>
    <property name="FAILURE" value="DecelerateAir"/>

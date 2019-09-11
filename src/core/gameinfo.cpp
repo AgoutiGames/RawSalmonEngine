@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -158,6 +158,12 @@ bool GameInfo::update() {
         }
         else if( e.type == SDL_KEYUP && (m_key_repeat == true || e.key.repeat == false)) {
             m_maps.top().process_key_up(e);
+        }
+        else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
+
+        }
+        else if(e.type == SDL_MOUSEWHEEL) {
+
         }
     }
 

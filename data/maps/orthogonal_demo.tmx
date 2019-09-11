@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="59">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="512" height="512" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#9cb7ff" nextobjectid="60">
  <properties>
   <property name="EVENT1" type="file" value="events.tsx"/>
   <property name="KEY1" type="file" value="key_mapping.tsx"/>
@@ -63,8 +63,11 @@
    <polyline points="0,0 10,-91 155,-76"/>
   </object>
   <object id="55" name="dat_tile" gid="6" x="7" y="5777" width="16" height="16"/>
-  <object id="56" name="dat_text" x="174.039" y="6097.5" width="97.9219" height="39">
-   <text fontfamily="Sans Serif" pixelsize="12" wrap="1" color="#8181c2">Hi There Handsome</text>
+  <object id="56" name="dat_text" x="174.039" y="6097.5" width="85.92" height="31">
+   <text fontfamily="Sans Serif" pixelsize="12" wrap="1" color="#c24daf" bold="1">Hi There Handsome</text>
+  </object>
+  <object id="59" name="dat_text2" x="123.04" y="6126.5" width="85.92" height="31">
+   <text fontfamily="Sans Serif" pixelsize="10" wrap="1" color="#c24daf" italic="1">Hi There Handsome</text>
   </object>
  </objectgroup>
  <imagelayer name="Bildebene 1" offsetx="445.333" offsety="6192">
