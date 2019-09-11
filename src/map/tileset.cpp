@@ -325,7 +325,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                     std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
-                if(!base_map.register_key(key, event, sustained, up, down)) {
+                if(!base_map.get_input_handler().register_key(key, event, sustained, up, down)) {
                     std::cerr << "Failed registering key " << SDL_GetKeyName(key) << " with event " << event << "\n";
                     std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
                     return XML_ERROR_PARSING_ATTRIBUTE;

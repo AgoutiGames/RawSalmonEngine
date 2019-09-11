@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -25,6 +25,7 @@
 #include <tinyxml2.h>
 
 #include "actor/data_block.hpp"
+#include "core/input_handler.hpp"
 #include "event/ae_me_wrapper.hpp"
 #include "event/ae_ge_wrapper.hpp"
 #include "event/me_ge_wrapper.hpp"
@@ -85,6 +86,8 @@ class MapData {
         EventQueue<MapData>& get_event_queue() {return m_events;}
         Camera& get_camera() {return m_camera;}
         const TileLayout get_tile_layout() {return m_tile_layout;}
+        std::string get_key_target() const {return m_key_target;}
+        InputHandler& get_input_handler() {return m_input_handler;}
 
         // Binds or unbinds camera from player position
         void bind_camera_to_actor(bool state) {if(!state) {m_camera.unbind_actor();} m_bind_camera_to_actor = state;}
@@ -120,10 +123,13 @@ class MapData {
         void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
 
         // Key input management
+        /*
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
         bool process_key_up(SDL_Event e);
         bool process_key_down(SDL_Event e);
         void process_keys_sustained();
+        */
+
         Actor* fetch_actor(std::string name);
 
     private:
@@ -149,14 +155,18 @@ class MapData {
 
         TilesetCollection m_ts_collection;
 
+        InputHandler m_input_handler;
+
         std::map<std::string, Actor> m_actor_templates; ///< List of all actor templates by name
         std::map<Uint32, std::string> m_gid_to_actor_temp_name; ///< List of actor template names by global tile id
 
         std::string m_key_target = "PLAYER";
 
+        /*
         EventCollection<Actor, SDL_Keycode> m_key_up;
         EventCollection<Actor, SDL_Keycode> m_key_down;
         EventCollection<Actor, SDL_Scancode> m_key_sustained;
+        */
 
         WideEventCollection m_event_archive;
 

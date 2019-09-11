@@ -146,6 +146,8 @@ bool GameInfo::update() {
 
     //Event handler
     SDL_Event e;
+    InputHandler handler = m_maps.top().get_input_handler();
+
     while( SDL_PollEvent( &e ) != 0 ) {
         //User requests quit
         if( e.type == SDL_QUIT )
@@ -154,10 +156,10 @@ bool GameInfo::update() {
         }
         //User presses a key
         else if( e.type == SDL_KEYDOWN && (m_key_repeat == true || e.key.repeat == false)) {
-            m_maps.top().process_key_down(e);
+            handler.process_key_down(e);
         }
         else if( e.type == SDL_KEYUP && (m_key_repeat == true || e.key.repeat == false)) {
-            m_maps.top().process_key_up(e);
+            handler.process_key_up(e);
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
 
@@ -167,7 +169,7 @@ bool GameInfo::update() {
         }
     }
 
-    m_maps.top().process_keys_sustained();
+    handler.process_keys_sustained();
 
     m_maps.top().update();
 

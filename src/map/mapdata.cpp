@@ -30,7 +30,7 @@
 #include "util/attribute_parser.hpp"
 
 /// Plain constructor
-MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)} {}
+MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)}, m_input_handler{*this} {}
 
 /**
  * @brief Parses the supplied .tmx file
@@ -431,94 +431,6 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     m_gid_to_actor_temp_name[m_ts_collection.get_gid(tile)] = temp.get_type();
 
     return XML_SUCCESS;
-}
-
-/**
- * @brief Links key with event which is sent to player upon press/release
- * @param key The keypress which triggers the event
- * @param event The event which gets triggered by a key
- * @param sustained, up, down Booleans which indicate when the event should be sent
- */
-bool MapData::register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down) {
-    if(!check_event_convert_actor(event)) {
-        std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
-        return false;
-    }
-    if( (sustained && up) || (sustained && down) ) {
-        std::cerr << "Cant parse key event as sustained AND up or down\n";
-        return false;
-    }
-    else {
-        if(sustained) {
-            SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
-            if(scancode == SDL_SCANCODE_UNKNOWN) {
-                std::cerr << "No corresponding scancode to key " << key <<" which is required for checking sustained\n";
-                return false;
-            }
-            SmartEvent<Actor> event_data = get_event_convert_actor(event);
-            SDL_Keysym temp;
-            temp.sym = key;
-            temp.scancode = scancode;
-            event_data->set_cause(Cause(temp));
-            m_key_sustained.register_event(scancode, event_data);
-        }
-        if(up) {
-            //m_key_up[key] = get_event(event);
-            m_key_up.register_event(key,get_event_convert_actor(event));
-        }
-        if(down) {
-            //m_key_down[key] = get_event(event);
-            m_key_down.register_event(key,get_event_convert_actor(event));
-        }
-        return true;
-    }
-}
-
-/**
- * @brief Adds event to player if key is pressed
- * @param e The keypress
- * @return @c bool which indicates if key triggered event
- */
-bool MapData::process_key_down(SDL_Event  e) {
-    Actor* target = fetch_actor(m_key_target);
-    if(target != nullptr && m_key_down.check_event(e.key.keysym.sym)) {
-        SmartEvent<Actor> event = m_key_down.get_event(e.key.keysym.sym);
-        event->set_cause(Cause(e.key.keysym));
-        target->get_event_queue().add_event(event);
-        return true;
-    }
-    return false;
-}
-
-/**
- * @brief Adds event to player if key is released
- * @param e The keypress
- * @return @c bool which indicates if key triggered event
- */
-bool MapData::process_key_up(SDL_Event  e) {
-    Actor* target = fetch_actor(m_key_target);
-    if(target != nullptr && m_key_up.check_event(e.key.keysym.sym)) {
-        SmartEvent<Actor> event = m_key_up.get_event(e.key.keysym.sym);
-        event->set_cause(Cause(e.key.keysym));
-        target->get_event_queue().add_event(event);
-        return true;
-    }
-    return false;
-}
-
-/**
- * @brief Checks if key is down and sends associated event to player
- */
-void MapData::process_keys_sustained() {
-    Actor* target = fetch_actor(m_key_target);
-    if(target != nullptr) {
-        const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        for(std::pair<const SDL_Scancode, SmartEvent<Actor>>& x : m_key_sustained.get_container()) {
-            if(keys[x.first]) {
-                target->get_event_queue().add_event(x.second);
-            }
-        }
-    }
 }
 
 /// @brief Returns the first actor with the given name
