@@ -22,6 +22,8 @@
 #include <string>
 #include <SDL.h>
 
+#include "util/game_types.hpp"
+
 class Actor;
 class Tile;
 
@@ -37,7 +39,8 @@ class Cause{
             none,
             key,
             tile,
-            actor
+            actor,
+            mouse,
         };
 
     public:
@@ -45,11 +48,13 @@ class Cause{
         Cause(SDL_Keysym key);
         Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox);
         Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox);
+        Cause(MouseState mousestate, std::string my_hitbox = "");
 
         // Checks against tile types
         bool key() const {return type == CauseType::key;}
         bool tile() const {return type == CauseType::tile;}
         bool actor() const {return type == CauseType::actor;}
+        bool mouse() const {return type == CauseType::mouse;}
         bool none() const {return type == CauseType::none;}
 
         std::string my_hitbox() const {return my_hitbox_name;}
@@ -59,6 +64,7 @@ class Cause{
         const SDL_Keysym get_key() const {return type == CauseType::key ? data.key : SDL_Keysym();}
         Actor* get_actor() const {return type == CauseType::actor ? data.actor : nullptr;}
         Tile* get_tile() const {return type == CauseType::tile ? data.tile : nullptr;}
+        MouseState get_mouse() const {return type == CauseType::mouse ? data.mouse : MouseState();}
 
         std::string get_type() const;
 
@@ -68,13 +74,8 @@ class Cause{
         union{
             SDL_Keysym key;
             Actor* actor;
-            /*
-            struct{
-                Tile* pointer;
-                int x;
-                int y;
-            } tile;*/
             Tile* tile;
+            MouseState mouse{};
         } data;
 
         std::string my_hitbox_name = "";

@@ -156,20 +156,28 @@ bool GameInfo::update() {
         }
         //User presses a key
         else if( e.type == SDL_KEYDOWN && (m_key_repeat == true || e.key.repeat == false)) {
-            handler.process_key_down(e);
+            handler.process_key_down(e.key);
         }
         else if( e.type == SDL_KEYUP && (m_key_repeat == true || e.key.repeat == false)) {
-            handler.process_key_up(e);
+            handler.process_key_up(e.key);
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-
+            handler.prime_mouse_button(e.button);
         }
         else if(e.type == SDL_MOUSEWHEEL) {
-
+            handler.prime_scroll(e.wheel);
+        }
+        else if(e.type == SDL_MOUSEMOTION) {
+            handler.prime_mouse_movement(e.motion);
         }
     }
 
+    // In addition to pressed and released events also check for down state of button
     handler.process_keys_sustained();
+    handler.prime_mouse_pressed();
+
+    // Trigger the handler sending its mouse information to related actors
+    handler.finalize_mouse_state();
 
     m_maps.top().update();
 

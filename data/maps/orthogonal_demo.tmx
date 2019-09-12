@@ -22,7 +22,11 @@
   </data>
  </layer>
  <objectgroup name="Actors">
-  <object id="13" name="PLAYER" gid="17" x="208" y="6052" width="32" height="32"/>
+  <object id="13" name="PLAYER" gid="17" x="208" y="6052" width="32" height="32">
+   <properties>
+    <property name="ON_MOUSE" value="AccRightDyn"/>
+   </properties>
+  </object>
   <object id="14" name="Dummy1" gid="17" x="0" y="6126" width="32" height="32"/>
   <object id="15" name="Dummy2" gid="17" x="62" y="6099" width="32" height="32"/>
   <object id="16" name="Dummy3" gid="17" x="139" y="6065" width="32" height="32"/>

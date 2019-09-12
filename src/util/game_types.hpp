@@ -71,6 +71,7 @@ enum class Response{
     on_idle,
     on_always,
     on_spawn,
+    on_mouse,
     invalid,
 };
 
@@ -95,6 +96,26 @@ struct TileLayout{
     int hexsidelength = 0;
     bool stagger_axis_y = true;
     bool stagger_index_odd = true;
+};
+
+struct MouseButtonState {
+    bool pressed = false;
+    bool released = false;
+    bool down = false;
+};
+
+struct MouseState {
+    MouseButtonState left;
+    MouseButtonState right;
+    MouseButtonState middle;
+    MouseButtonState extra1;
+    MouseButtonState extra2;
+    int x_scroll = 0;
+    int y_scroll = 0;
+    int x_pos = 0;
+    int y_pos = 0;
+    int x_delta = 0;
+    int y_delta = 0;
 };
 
 AnimationType str_to_anim_type(const std::string& name);

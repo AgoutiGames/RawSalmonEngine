@@ -53,6 +53,14 @@ Cause::Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
     other_hitbox_name = other_hitbox;
 }
 
+// Constructor for mouse
+Cause::Cause(MouseState mousestate, std::string my_hitbox) :
+ type{CauseType::mouse}
+{
+    data.mouse = mousestate;
+    my_hitbox_name = my_hitbox;
+}
+
 /**
  * @brief Return the type of the cause
  * @return Type as a string

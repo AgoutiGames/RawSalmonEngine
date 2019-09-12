@@ -22,6 +22,7 @@
 #include <SDL.h>
 
 #include "event/event_collection.hpp"
+#include "util/game_types.hpp"
 
 class Actor;
 class MapData;
@@ -31,16 +32,26 @@ class InputHandler {
         InputHandler(MapData& mapdata);
 
         bool register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down);
-        bool process_key_up(SDL_Event e);
-        bool process_key_down(SDL_Event e);
+        bool process_key_up(SDL_KeyboardEvent e);
+        bool process_key_down(SDL_KeyboardEvent e);
         void process_keys_sustained();
+
+        // Fetch all mouse events and information for current frame
+        void prime_mouse_button(SDL_MouseButtonEvent event);
+        void prime_scroll(SDL_MouseWheelEvent event);
+        void prime_mouse_movement(SDL_MouseMotionEvent event);
+        void prime_mouse_pressed();
+
+        // Check for collision of actors with mouse and trigger the OnMouse response
+        void finalize_mouse_state();
 
     private:
         MapData& m_mapdata;
 
+        MouseState m_mouse;
         EventCollection<Actor, SDL_Keycode> m_key_up;
         EventCollection<Actor, SDL_Keycode> m_key_down;
-        EventCollection<Actor, SDL_Scancode> m_key_sustained;
+        EventCollection<Actor, SDL_Keycode> m_key_sustained;
 };
 
 
