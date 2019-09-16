@@ -16,6 +16,7 @@
   <property name="ON_DEATH" type="string"/>
   <property name="ON_HIT" type="string"/>
   <property name="ON_IDLE" type="string"/>
+  <property name="ON_MOUSE" type="string"/>
   <property name="ON_SPAWN" type="string"/>
  </objecttype>
  <objecttype name="AeAccelerate" color="#a0a0a4">
@@ -176,6 +177,17 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="STOP"/>
   <property name="TIME" type="float" default="1"/>
+ </objecttype>
+ <objecttype name="AteMouseButtons" color="#a0a0a4">
+  <property name="DOWN" type="bool" default="false"/>
+  <property name="FAILURE" type="string"/>
+  <property name="MOUSE_BUTTON_INDEX" type="int" default="1"/>
+  <property name="NAME" type="string"/>
+  <property name="PRESSED" type="bool" default="true"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="RELEASED" type="bool" default="false"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SUCCESS" type="string"/>
  </objecttype>
  <objecttype name="AteOnGround" color="#a0a0a4">
   <property name="CONTINUOUS" type="bool" default="false"/>

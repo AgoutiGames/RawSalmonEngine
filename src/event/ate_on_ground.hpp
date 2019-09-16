@@ -45,7 +45,7 @@ class AteOnGround : public Event<Actor>{
         std::string get_type() const override {return m_alias;}
 
         // reimplement/hide inherited function
-        void set_cause(Cause x);
+        void set_cause(Cause x) override;
 
     private:
         static const bool good;

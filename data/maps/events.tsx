@@ -203,6 +203,12 @@
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
+ <tile id="50" type="AteMouseButtons">
+  <properties>
+   <property name="NAME" value="JumpOnClick"/>
+   <property name="SUCCESS" value="Jump_Grnd"/>
+  </properties>
+ </tile>
  <tile id="58" type="MeSetVar">
   <properties>
    <property name="NAME" value="CoinCountDupe"/>
@@ -319,6 +325,13 @@
    <property name="NAME" value="actor_lava"/>
    <property name="OTHER_HITBOX" value="LAVA"/>
    <property name="TRIGGER_EVENT" value="lava_float"/>
+  </properties>
+ </tile>
+ <tile id="92" type="AeMulti">
+  <properties>
+   <property name="1" value="AccRightDyn"/>
+   <property name="2" value="JumpOnClick"/>
+   <property name="NAME" value="PlayerMouseInteraction"/>
   </properties>
  </tile>
  <tile id="93" type="AeAnimate">

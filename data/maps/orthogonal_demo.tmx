@@ -24,7 +24,7 @@
  <objectgroup name="Actors">
   <object id="13" name="PLAYER" gid="17" x="208" y="6052" width="32" height="32">
    <properties>
-    <property name="ON_MOUSE" value="AccRightDyn"/>
+    <property name="ON_MOUSE" value="PlayerMouseInteraction"/>
    </properties>
   </object>
   <object id="14" name="Dummy1" gid="17" x="0" y="6126" width="32" height="32"/>

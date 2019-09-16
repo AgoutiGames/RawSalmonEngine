@@ -92,3 +92,11 @@ tinyxml2::XMLError AteSingle::init(tinyxml2::XMLElement* source, MapData& base_m
 
     return XML_SUCCESS;
 }
+
+/**
+ * @brief Set cause to every contained event
+ */
+void AteSingle::set_cause(Cause x) {
+    Event<Actor>::set_cause(x);
+    if(m_event) m_event->set_cause(x);
+}

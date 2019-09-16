@@ -56,7 +56,7 @@ public:
     Priority get_priority() const {return m_priority;}
     EventSignal get_signal() const {return m_signal;}
 
-    void set_cause(Cause x) {m_cause = x;}
+    virtual void set_cause(Cause x) {m_cause = x;}
     const Cause& get_cause() const {return m_cause;}
 
     static Event<Scope>* parse(tinyxml2::XMLElement* source, MapData& base_map);

@@ -75,6 +75,7 @@ set(EVENT_SOURCES
     src/event/ae_fall.cpp
     src/event/ae_multi.cpp
     src/event/ate_on_ground.cpp
+    src/event/ate_mouse_buttons.cpp
     src/event/ate_single.cpp
     src/event/ae_set_var.cpp
     src/event/ae_sound.cpp

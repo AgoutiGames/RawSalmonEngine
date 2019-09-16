@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,30 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AE_MULTI_HPP_INCLUDED //< Change this
-#define AE_MULTI_HPP_INCLUDED //< Change this
+#ifndef ATE_MOUSE_BUTTONS_HPP_INCLUDED
+#define ATE_MOUSE_BUTTONS_HPP_INCLUDED
 
 #include <vector>
 #include <string>
 
 #include "event/event.hpp"
+#include "event/smart_event.hpp"
 #include "event/property_listener.hpp"
-#include "event/event_queue.hpp"
 #include "util/game_types.hpp"
 
 class Actor;
 
 /**
- * @brief An event holding a list of other events
+ * @brief Write something
  */
-class AeMulti : public Event<Actor>{
+class AteMouseButtons : public Event<Actor>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& actor) override;
+        EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AeMulti* create() const override {return new AeMulti();}
-        AeMulti* clone() const override {return new AeMulti(*this);}
+        AteMouseButtons* create() const override {return new AteMouseButtons();}
+        AteMouseButtons* clone() const override {return new AteMouseButtons(*this);}
 
         std::string get_type() const override {return m_alias;}
 
@@ -49,9 +49,16 @@ class AeMulti : public Event<Actor>{
     private:
         static const bool good;
         static const std::string m_alias;
-        PropertyListener<AeMulti> m_property_listener;
+        PropertyListener<AteMouseButtons> m_property_listener;
         // vv Add members with default values
-        EventQueue<Actor> m_events;
+        SmartEvent<Actor> m_success;
+        SmartEvent<Actor> m_failure;
+        int m_mouse_button_index = 1; // 1 left 2 middle 3 right
+        bool m_pressed = true;
+        bool m_released = false;
+        bool m_down = false;
+        bool m_start = true;
+        bool m_decision;
 };
 
-#endif // AE_MULTI_HPP_INCLUDED
+#endif // ATE_MOUSE_BUTTONS_HPP_INCLUDED

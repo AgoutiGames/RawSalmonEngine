@@ -157,23 +157,21 @@ void InputHandler::prime_mouse_pressed() {
 }
 
 void InputHandler::finalize_mouse_state() {
-    SDL_Point click{m_mouse.x_pos, m_mouse.y_pos};
+    SDL_Rect cam = m_mapdata.get_camera().get_rect();
+    // Transform cursor from camera space to global space
+    SDL_Point click{m_mouse.x_pos + cam.x, m_mouse.y_pos+cam.y};
 
     // Fetch all currently visible actors
-    Camera& cam = m_mapdata.get_camera();
     std::vector<Actor*> actors;
     auto layers = m_mapdata.get_layer_collection().get_object_layers();
     for(ObjectLayer* layer : layers) {
-        std::vector<Actor*> temp = layer->get_clip(cam.get_rect());
+        std::vector<Actor*> temp = layer->get_clip(cam);
         actors.insert(actors.end(),temp.begin(),temp.end());
     }
 
-    // Check all hitboxes of each actor if the intersect with the mouse cursor
+    // Check all hitboxes of each actor if they intersect with the mouse cursor
     for(Actor* a : actors) {
         for(std::pair<std::string, SDL_Rect> hitbox : a->get_hitboxes()) {
-            // Transform hitbox from global to camera space
-            hitbox.second.x -= cam.get_rect().x;
-            hitbox.second.y -= cam.get_rect().y;
             if(SDL_PointInRect(&click,&hitbox.second)) {
                 // Trigger the OnMouse response
                 a->respond(Response::on_mouse, Cause(m_mouse,hitbox.first));
