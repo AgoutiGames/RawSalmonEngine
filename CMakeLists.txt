@@ -78,6 +78,7 @@ set(EVENT_SOURCES
     src/event/ate_mouse_buttons.cpp
     src/event/ate_single.cpp
     src/event/ae_set_var.cpp
+    src/event/ae_set_anim_frame.cpp
     src/event/ae_sound.cpp
     src/event/ae_ge_wrapper.cpp
     src/event/ae_me_wrapper.cpp

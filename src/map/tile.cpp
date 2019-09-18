@@ -353,6 +353,16 @@ void Tile::init_anim(Uint32 time) {
     m_anim_timestamp = time;
 }
 
+/// Set tile to specific animation frame
+bool Tile::set_frame(int anim_frame, Uint32 time) {
+    if(anim_frame < 0 || static_cast<size_t>(anim_frame) >= m_anim_ids.size()) {
+        return false;
+    }
+    m_current_id = static_cast<unsigned>(anim_frame);
+    m_anim_timestamp = time;
+    return true;
+}
+
 /**
  * @brief Animates a tile
  * @return a @c bool which indicates if the animation reached it's starting point/ frame 0

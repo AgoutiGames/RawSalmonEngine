@@ -128,6 +128,13 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeSetAnimFrame" color="#a0a0a4">
+  <property name="ANIMATION_FRAME" type="string" default="0"/>
+  <property name="ANIMATION_TYPE" type="string" default="CURRENT"/>
+  <property name="DIRECTION" type="string" default="CURRENT"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
  <objecttype name="AeSetVar" color="#a0a0a4">
   <property name="*=" type="bool" default="false"/>
   <property name="+=" type="bool" default="false"/>

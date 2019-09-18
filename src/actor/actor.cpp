@@ -319,6 +319,29 @@ bool Actor::animate(AnimationType anim, Direction dir, float speed) {
 }
 
 /**
+ * @brief Set animation tile to specific frame
+ */
+bool Actor::set_animation(AnimationType anim, Direction dir, int frame) {
+    if(anim == AnimationType::none) {return false;}
+    if(anim == AnimationType::current) {anim = m_anim_state;}
+    if(dir == Direction::current) {dir = m_direction;}
+    if(m_animations.find(anim) == m_animations.end()) {
+        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
+        return false;
+    }
+    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
+        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
+        return false;
+    }
+    if(m_anim_state != anim || m_direction != dir) {
+        m_anim_state = anim;
+        m_direction = dir;
+        m_animations[m_anim_state][m_direction].init_anim();
+    }
+    return m_animations[m_anim_state][m_direction].set_frame(frame);
+}
+
+/**
  * @brief Animate the actor
  * @param anim The type of the animation
  * @param dir The direction of the animation
