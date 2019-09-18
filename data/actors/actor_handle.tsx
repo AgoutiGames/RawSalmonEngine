@@ -13,4 +13,7 @@
    <object id="1" x="6" y="12" width="20" height="20"/>
   </objectgroup>
  </tile>
+ <tile id="1">
+  <objectgroup draworder="index"/>
+ </tile>
 </tileset>

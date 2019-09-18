@@ -90,7 +90,7 @@ class Actor{
 
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
         Direction m_direction = Direction::down; ///< Current direction facing
-        std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type
+        std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type, origin at upper left corner -> must subtract tile height!
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
 
         EventCollection<Actor, Response> m_response; ///< EventCollection which yields events for response values

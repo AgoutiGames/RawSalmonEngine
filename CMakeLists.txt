@@ -82,7 +82,7 @@ set(EVENT_SOURCES
     src/event/ae_ge_wrapper.cpp
     src/event/ae_me_wrapper.cpp
     src/event/ae_spawn_text.cpp
-    src/event/ae_switch_collision.cpp
+    src/event/ate_collision.cpp
     src/event/ae_wait.cpp
     src/event/me_erase_actor.cpp
     src/event/me_ge_wrapper.cpp

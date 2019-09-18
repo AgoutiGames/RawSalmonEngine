@@ -16,6 +16,7 @@
    <property name="PRIORITY" value="LOW"/>
    <property name="SIGNAL" value="STOP"/>
   </properties>
+  <objectgroup draworder="index"/>
  </tile>
  <tile id="2" type="AeMoveSustained">
   <properties>
@@ -319,12 +320,12 @@
    <property name="YFACTOR" type="float" value="300"/>
   </properties>
  </tile>
- <tile id="91" type="AeSwitchCollision">
+ <tile id="91" type="AteCollision">
   <properties>
    <property name="MY_HITBOX" value="COLLIDE"/>
    <property name="NAME" value="actor_lava"/>
    <property name="OTHER_HITBOX" value="LAVA"/>
-   <property name="TRIGGER_EVENT" value="lava_float"/>
+   <property name="SUCCESS" value="lava_float"/>
   </properties>
  </tile>
  <tile id="92" type="AeMulti">

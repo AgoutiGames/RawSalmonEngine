@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -65,7 +65,7 @@ private:
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
-    std::map<std::string, SDL_Rect> m_hitboxes;
+    std::map<std::string, SDL_Rect> m_hitboxes; // Origin at upper left corner of tile
     std::string m_type = "";
     bool m_animated = false;
 

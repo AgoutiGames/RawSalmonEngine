@@ -163,20 +163,21 @@
   <property name="X_POS" type="int" default="0"/>
   <property name="Y_POS" type="int" default="0"/>
  </objecttype>
- <objecttype name="AeSwitchCollision" color="#a0a0a4">
+ <objecttype name="AeWait" color="#a0a0a4">
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="STOP"/>
+  <property name="TIME" type="float" default="1"/>
+ </objecttype>
+ <objecttype name="AteCollision" color="#a0a0a4">
+  <property name="FAILURE" type="string"/>
   <property name="MY_HITBOX" type="string"/>
   <property name="NAME" type="string"/>
   <property name="OTHER_HITBOX" type="string"/>
   <property name="OTHER_NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
-  <property name="TRIGGER_EVENT" type="string"/>
- </objecttype>
- <objecttype name="AeWait" color="#a0a0a4">
-  <property name="NAME" type="string"/>
-  <property name="PRIORITY" type="string" default="MEDIUM"/>
-  <property name="SIGNAL" type="string" default="STOP"/>
-  <property name="TIME" type="float" default="1"/>
+  <property name="SUCCESS" type="string"/>
  </objecttype>
  <objecttype name="AteMouseButtons" color="#a0a0a4">
   <property name="DOWN" type="bool" default="false"/>
