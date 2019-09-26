@@ -34,7 +34,7 @@
   <property name="ANIMATION_FRAMES" type="int" default="0"/>
   <property name="ANIMATION_TYPE" type="string" default="IDLE"/>
   <property name="CYCLES" type="int" default="0"/>
-  <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="DIRECTION" type="string" default="CURRENT"/>
   <property name="GAME_FRAMES" type="int" default="0"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
