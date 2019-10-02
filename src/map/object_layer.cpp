@@ -47,6 +47,31 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     XMLError eResult;
     MapData& mapdata = m_layer_collection->get_base_map();
 
+    // Parse user specified properties of the object_layer (only suspended right now)
+    XMLElement* p_tile_properties = source->FirstChildElement("properties");
+    if(p_tile_properties != nullptr) {
+        XMLElement* p_property = p_tile_properties->FirstChildElement("property");
+        while(p_property != nullptr) {
+            const char* p_name;
+            p_name = p_property->Attribute("name");
+            std::string name(p_name);
+            if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+            else if(name == "SUSPENDED") {
+                eResult = p_property->QueryBoolAttribute("value", &m_suspended);
+                if(eResult != XML_SUCCESS) {
+                    std::cerr << "Failed parsing SUSPENDED attribute\n";
+                    return eResult;
+                }
+            }
+
+            else {
+                std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
+            p_property = p_property->NextSiblingElement("property");
+        }
+    }
+
     // Parse individual objects/actors
     XMLElement* p_object = source->FirstChildElement("object");
     while(p_object != nullptr) {
@@ -91,6 +116,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
  * @return @c bool which indicates sucess
  */
 bool ObjectLayer::render(const Camera& camera) const {
+    if(m_hidden) {return true;}
     for(const Actor* actor : get_clip(camera.get_rect())) {
         actor->render(camera.x(), camera.y());
     }
@@ -112,6 +138,7 @@ bool ObjectLayer::render(const Camera& camera) const {
  * a signal to delete the object.
  */
 void ObjectLayer::update(bool late) {
+    if(m_suspended) {return;}
     for(Actor& a : m_obj_grid) {
         if(a.late_polling() == late) {
             a.update();
@@ -206,6 +233,10 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
         }
     }
     return actor_list;
+}
+
+void ObjectLayer::add_actor(Actor a) {
+    m_obj_grid.insert(m_obj_grid.end(), a);
 }
 
 /// Remove actor with given name from layer

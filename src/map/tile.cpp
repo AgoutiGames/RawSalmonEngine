@@ -60,7 +60,6 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
             p_name = p_property->Attribute("name");
             std::string name(p_name);
             if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
             else if(name == "TYPE") {
                 p_value = source->Attribute("value");
                 if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;

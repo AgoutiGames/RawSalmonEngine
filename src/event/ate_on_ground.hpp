@@ -44,21 +44,13 @@ class AteOnGround : public Event<Actor>{
 
         std::string get_type() const override {return m_alias;}
 
-        // reimplement/hide inherited function
-        void set_cause(Cause x) override;
-
     private:
         static const bool good;
         static const std::string m_alias;
         PropertyListener<AteOnGround> m_property_listener;
         // vv Add members with default values
-        SmartEvent<Actor> m_success;
-        SmartEvent<Actor> m_failure;
-        Direction m_direction = Direction::down;
-        bool m_continuous = false;
-        bool m_start = true;
+        std::string m_direction_string = "DOWN";
         int m_tolerance = 0;
-        bool m_decision;
 };
 
 #endif // ATE_ON_GROUND_HPP_INCLUDED

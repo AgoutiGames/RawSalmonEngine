@@ -40,50 +40,34 @@ const bool AteCollision::good = Event<Actor>::register_class<AteCollision>();
 EventSignal AteCollision::process(Actor& scope) {
     // Syncs members with possibly linked DataBlock variables
     listen(m_property_listener, *this, scope);
-
-    if(m_start) {
-        const Cause& c = get_cause();
-        if(c.tile()) {
-            const Tile* t = c.get_tile();
-            if( (m_other_name == "" || m_other_name == t->get_type()) &&
-                (m_my_hitbox == "" || m_my_hitbox == c.my_hitbox()) &&
-                (m_other_hitbox == "" || m_other_hitbox == c.other_hitbox())) {
-                m_decision = true;
-            }
-            else {
-                m_decision = false;
-            }
-        }
-        else if(c.actor()) {
-            const Actor* a = c.get_actor();
-            if( (m_other_name == "" || (scope.get_map().get_layer_collection().check_actor(a) && (m_other_name == a->get_name() || m_other_name == a->get_type()))) &&
-                (m_my_hitbox == "" || m_my_hitbox == c.my_hitbox()) &&
-                (m_other_hitbox == "" || m_other_hitbox == c.other_hitbox())) {
-                m_decision = true;
-            }
-            else {
-                m_decision = false;
-            }
-        }
-        else {
-            std::cerr << "The collision switch event " << m_name << " wasn't triggered by a collision!\n";
-            std::cerr << "This means the event gets used wrongly, fix this error in your events!\n";
+    const Cause& c = get_cause();
+    if(c.tile()) {
+        const Tile* t = c.get_tile();
+        if( (m_other_name == "" || m_other_name == t->get_type()) &&
+            (m_my_hitbox == "" || m_my_hitbox == c.my_hitbox()) &&
+            (m_other_hitbox == "" || m_other_hitbox == c.other_hitbox())) {
             return EventSignal::end;
         }
-        m_start = false;
+        else {
+            return EventSignal::abort;
+        }
     }
-
-    EventSignal sig;
-    if(m_decision) {
-        if(m_success.valid()) {sig = m_success->process(scope);}
-        else {return EventSignal::end;}
+    else if(c.actor()) {
+        const Actor* a = c.get_actor();
+        if( (m_other_name == "" || (scope.get_map().get_layer_collection().check_actor(a) && (m_other_name == a->get_name() || m_other_name == a->get_type()))) &&
+            (m_my_hitbox == "" || m_my_hitbox == c.my_hitbox()) &&
+            (m_other_hitbox == "" || m_other_hitbox == c.other_hitbox())) {
+            return EventSignal::end;
+        }
+        else {
+            return EventSignal::abort;
+        }
     }
     else {
-        if(m_failure.valid()) {sig = m_failure->process(scope);}
-        else {return EventSignal::end;}
+        std::cerr << "The collision switch event " << m_name << " wasn't triggered by a collision!\n";
+        std::cerr << "This means the event gets used wrongly, fix this error in your events!\n";
+        return EventSignal::abort;
     }
-    if(sig == EventSignal::next) return get_signal();
-    else {return sig;}
 }
 
 /**
@@ -98,16 +82,11 @@ tinyxml2::XMLError AteCollision::init(tinyxml2::XMLElement* source, MapData& bas
     PropertyParser<AteCollision> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
-    parser.add(m_priority, "PRIORITY");
-    parser.add(m_signal, "SIGNAL");
 
     // Add additional members here
     parser.add(&AteCollision::m_other_name, "OTHER_NAME");
     parser.add(&AteCollision::m_my_hitbox, "MY_HITBOX");
     parser.add(&AteCollision::m_other_hitbox, "OTHER_HITBOX");
-    std::string success_name, failure_name;
-    parser.add(success_name, "SUCCESS");
-    parser.add(failure_name, "FAILURE");
 
     XMLError eResult = parser.parse(source);
 
@@ -119,26 +98,6 @@ tinyxml2::XMLError AteCollision::init(tinyxml2::XMLElement* source, MapData& bas
     if(eResult != XML_SUCCESS) {
         std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-
-    if(success_name != "") {
-        if(!base_map.check_event_convert_actor(success_name)) {
-            std::cerr << "Event " << success_name << " has not been parsed before!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_success = base_map.get_event_convert_actor(success_name);
-        }
-    }
-
-    if(failure_name != "") {
-        if(!base_map.check_event_convert_actor(failure_name)) {
-            std::cerr << "Event " << failure_name << " has not been parsed before!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_failure = base_map.get_event_convert_actor(failure_name);
-        }
     }
 
     return XML_SUCCESS;

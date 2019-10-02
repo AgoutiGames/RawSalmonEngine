@@ -28,6 +28,11 @@
 
 /**
  * @brief A helper class which parses event properties and passes them to previously added references
+ *
+ * If the name of a value starts with an asteriks (*) then the this indicates that the name following
+ * after is the name of a variable living inside a data block to be retrieved when running the event
+ * the first time. The retrieval is done by the PropertyListener to which we register the variable name
+ * and the event supplied references in case of an asteriks.
  */
  template<class EventType>
 class PropertyParser{

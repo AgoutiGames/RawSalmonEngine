@@ -60,6 +60,9 @@ class Layer {
 
         virtual LayerType get_type() {return LayerType::undefinied;}
         std::string get_name() const {return m_name;}
+        bool get_hidden() const {return m_hidden;}
+        void hide() {m_hidden = true;}
+        void unhide() {m_hidden = false;}
 
         static Layer* parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult);
 
@@ -68,6 +71,7 @@ class Layer {
         std::string m_name;
         int m_offset_x = 0;
         int m_offset_y = 0;
+        bool m_hidden = false;
 };
 
 #endif // LAYER_HPP_INCLUDED

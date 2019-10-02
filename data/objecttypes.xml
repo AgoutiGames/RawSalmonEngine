@@ -177,40 +177,49 @@
   <property name="TIME" type="float" default="1"/>
  </objecttype>
  <objecttype name="AteCollision" color="#a0a0a4">
-  <property name="FAILURE" type="string"/>
   <property name="MY_HITBOX" type="string"/>
   <property name="NAME" type="string"/>
   <property name="OTHER_HITBOX" type="string"/>
   <property name="OTHER_NAME" type="string"/>
-  <property name="PRIORITY" type="string" default="MEDIUM"/>
-  <property name="SIGNAL" type="string" default="NEXT"/>
-  <property name="SUCCESS" type="string"/>
+ </objecttype>
+ <objecttype name="AteMath" color="#a0a0a4">
+  <property name="!=" type="bool" default="false"/>
+  <property name="&lt;" type="bool" default="false"/>
+  <property name="==" type="bool" default="true"/>
+  <property name="&gt;" type="bool" default="false"/>
+  <property name="NAME" type="string"/>
+  <property name="VAL1" type="string"/>
+  <property name="VAL2" type="string"/>
  </objecttype>
  <objecttype name="AteMouseButtons" color="#a0a0a4">
   <property name="DOWN" type="bool" default="false"/>
-  <property name="FAILURE" type="string"/>
   <property name="MOUSE_BUTTON_INDEX" type="int" default="1"/>
   <property name="NAME" type="string"/>
   <property name="PRESSED" type="bool" default="true"/>
-  <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="RELEASED" type="bool" default="false"/>
-  <property name="SIGNAL" type="string" default="NEXT"/>
-  <property name="SUCCESS" type="string"/>
  </objecttype>
  <objecttype name="AteOnGround" color="#a0a0a4">
-  <property name="CONTINUOUS" type="bool" default="false"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
-  <property name="FAILURE" type="string"/>
   <property name="NAME" type="string"/>
-  <property name="PRIORITY" type="string" default="MEDIUM"/>
-  <property name="SIGNAL" type="string" default="NEXT"/>
-  <property name="SUCCESS" type="string"/>
   <property name="TOLERANCE" type="int" default="0"/>
  </objecttype>
  <objecttype name="AteSingle" color="#a0a0a4">
   <property name="EVENT_NAME" type="string"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="AteSwitch" color="#a0a0a4">
+  <property name="1" type="string"/>
+  <property name="2" type="string"/>
+  <property name="3" type="string"/>
+  <property name="4" type="string"/>
+  <property name="AND" type="bool" default="true"/>
+  <property name="FAILURE" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="OR" type="bool" default="false"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SUCCESS" type="string"/>
  </objecttype>
  <objecttype name="GeChangeMap" color="#a0a0a4">
   <property name="NAME" type="string"/>
@@ -266,5 +275,13 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="VALUE" type="float" default="0"/>
   <property name="VAL_NAME" type="string"/>
+ </objecttype>
+ <objecttype name="MeTemplateLayer" color="#a0a0a4">
+  <property name="DESTINATION" type="string"/>
+  <property name="INJECT" type="bool" default="true"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="PURGE" type="bool" default="false"/>
+  <property name="SOURCE" type="string"/>
  </objecttype>
 </objecttypes>

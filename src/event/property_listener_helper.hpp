@@ -24,6 +24,11 @@
 #include "core/gameinfo.hpp"
 #include "event/property_listener.hpp"
 
+/// These helper functions make sure that the Listener crawls the data block of the scope and all upper scopes
+/// In practice this means that variables in actor scope first crawl game scope, then map scope and then actor
+/// scope, possibly overwriting each other. Actor overwrites Map which overwrites Game.
+
+
 template <class EventType>
 void listen(PropertyListener<EventType>& listener, EventType& event, Actor& actor);
 

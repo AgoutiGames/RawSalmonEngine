@@ -43,22 +43,15 @@ class AteMouseButtons : public Event<Actor>{
 
         std::string get_type() const override {return m_alias;}
 
-        // reimplement/hide inherited function
-        void set_cause(Cause x) override;
-
     private:
         static const bool good;
         static const std::string m_alias;
         PropertyListener<AteMouseButtons> m_property_listener;
         // vv Add members with default values
-        SmartEvent<Actor> m_success;
-        SmartEvent<Actor> m_failure;
         int m_mouse_button_index = 1; // 1 left 2 middle 3 right
         bool m_pressed = true;
         bool m_released = false;
         bool m_down = false;
-        bool m_start = true;
-        bool m_decision;
 };
 
 #endif // ATE_MOUSE_BUTTONS_HPP_INCLUDED

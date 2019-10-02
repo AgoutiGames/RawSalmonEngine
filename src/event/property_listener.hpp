@@ -24,10 +24,10 @@
 #include <string>
 
 #include "actor/data_block.hpp"
-// #include "actor/actor.hpp"
-// #include "map/mapdata.hpp"
-// #include "core/gameinfo.hpp"
 
+/** @brief Links member values of events with names of values living inside DataBlock objects.
+ *         By "listening" we update the values of the members with the current value of the named variable.
+ */
 template<class EventType>
 class PropertyListener {
     public:
@@ -43,11 +43,6 @@ class PropertyListener {
 
         void listen(const DataBlock& data, EventType& event) const;
 
-        /*
-        void listen(Actor& data, EventType& event) const;
-        void listen(MapData& data, EventType& event) const;
-        void listen(GameInfo& data, EventType& event) const;
-        */
     private:
         std::vector<std::pair<std::string, int EventType::*>> m_int_link;
         std::vector<std::pair<std::string, float EventType::*>> m_float_link;
@@ -109,28 +104,5 @@ void PropertyListener<EventType>::listen(const DataBlock& data, EventType& event
         }
     }
 }
-
-/*
-template<class EventType>
-void PropertyListener<EventType>::listen(Actor& data, EventType& event) const {
-    MapData& map_data = data.get_map();
-    GameInfo& game_data = map_data.get_game();
-    listen(game_data, event);
-    listen(map_data, event);
-    listen(data.get_data(), event);
-}
-
-template<class EventType>
-void PropertyListener<EventType>::listen(MapData& data, EventType& event) const {
-    GameInfo& game_data = data.get_game();
-    listen(game_data, event);
-    listen(data.get_data(), event);
-}
-
-template<class EventType>
-void PropertyListener<EventType>::listen(GameInfo& data, EventType& event) const {
-    listen(data.get_data(), event);
-}
-*/
 
 #endif // PROPERTY_LISTENER_HPP_INCLUDED

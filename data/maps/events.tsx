@@ -81,10 +81,10 @@
    <property name="NAME" value="Test"/>
   </properties>
  </tile>
- <tile id="10" type="AeMoveDirection">
+ <tile id="10" type="AteOnGround">
   <properties>
-   <property name="DIRECTION" value="RIGHT"/>
-   <property name="NAME" value="WRight"/>
+   <property name="NAME" value="OnGroundJmp"/>
+   <property name="TOLERANCE" type="int" value="15"/>
   </properties>
  </tile>
  <tile id="11" type="AeSetVar">
@@ -100,8 +100,9 @@
    <property name="PATH" type="file" value="../audio/Ding2.ogg"/>
   </properties>
  </tile>
- <tile id="13" type="AteOnGround">
+ <tile id="13" type="AteSwitch">
   <properties>
+   <property name="1" value="OnGroundJmp"/>
    <property name="NAME" value="JumpOnce"/>
    <property name="SUCCESS" value="Jump1"/>
   </properties>
@@ -174,11 +175,11 @@
    <property name="NAME" value="Jump_Dyn2"/>
   </properties>
  </tile>
- <tile id="23" type="AteOnGround">
+ <tile id="23" type="AteSwitch">
   <properties>
+   <property name="1" value="OnGroundJmp"/>
    <property name="NAME" value="Jump_Grnd"/>
    <property name="SUCCESS" value="Jump_Dyn2"/>
-   <property name="TOLERANCE" type="int" value="15"/>
   </properties>
  </tile>
  <tile id="24" type="AeAccelerate">
@@ -206,6 +207,12 @@
  </tile>
  <tile id="50" type="AteMouseButtons">
   <properties>
+   <property name="NAME" value="LeftClick"/>
+  </properties>
+ </tile>
+ <tile id="51" type="AteSwitch">
+  <properties>
+   <property name="1" value="LeftClick"/>
    <property name="NAME" value="JumpOnClick"/>
    <property name="SUCCESS" value="Jump_Grnd"/>
   </properties>
@@ -270,8 +277,14 @@
    <property name="UNDERLINE" type="bool" value="true"/>
   </properties>
  </tile>
- <tile id="79" type="AteOnGround">
+ <tile id="78" type="AteOnGround">
   <properties>
+   <property name="NAME" value="OnGround"/>
+  </properties>
+ </tile>
+ <tile id="79" type="AteSwitch">
+  <properties>
+   <property name="1" value="OnGround"/>
    <property name="FAILURE" value="DecelerateAir"/>
    <property name="NAME" value="DecelerateDyn"/>
    <property name="SUCCESS" value="Decelerate"/>
@@ -299,15 +312,24 @@
    <property name="NAME" value="W-Right"/>
   </properties>
  </tile>
- <tile id="84" type="AteOnGround">
+ <tile id="83" type="AteCollision">
   <properties>
+   <property name="MY_HITBOX" value="COLLIDE"/>
+   <property name="NAME" value="lava_collision"/>
+   <property name="OTHER_HITBOX" value="LAVA"/>
+  </properties>
+ </tile>
+ <tile id="84" type="AteSwitch">
+  <properties>
+   <property name="1" value="OnGround"/>
    <property name="FAILURE" value="AccLeftAir"/>
    <property name="NAME" value="AccLeftDyn"/>
    <property name="SUCCESS" value="W-Left"/>
   </properties>
  </tile>
- <tile id="85" type="AteOnGround">
+ <tile id="85" type="AteSwitch">
   <properties>
+   <property name="1" value="OnGround"/>
    <property name="FAILURE" value="AccRightAir"/>
    <property name="NAME" value="AccRightDyn"/>
    <property name="SUCCESS" value="W-Right"/>
@@ -320,11 +342,10 @@
    <property name="YFACTOR" type="float" value="300"/>
   </properties>
  </tile>
- <tile id="91" type="AteCollision">
+ <tile id="91" type="AteSwitch">
   <properties>
-   <property name="MY_HITBOX" value="COLLIDE"/>
+   <property name="1" value="lava_collision"/>
    <property name="NAME" value="actor_lava"/>
-   <property name="OTHER_HITBOX" value="LAVA"/>
    <property name="SUCCESS" value="lava_float"/>
   </properties>
  </tile>

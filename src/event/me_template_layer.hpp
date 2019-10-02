@@ -16,41 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ATE_COLLISION_HPP_INCLUDED
-#define ATE_COLLISION_HPP_INCLUDED
+#ifndef ME_TEMPLATE_LAYER_HPP_INCLUDED
+#define ME_TEMPLATE_LAYER_HPP_INCLUDED
 
 #include <vector>
 #include <string>
 
 #include "event/event.hpp"
-#include "event/smart_event.hpp"
 #include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 
-class Actor;
+class MapData;
 
 /**
  * @brief Write something
  */
-class AteCollision : public Event<Actor>{
+class MeTemplateLayer : public Event<MapData>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Actor& scope) override;
+        EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        AteCollision* create() const override {return new AteCollision();}
-        AteCollision* clone() const override {return new AteCollision(*this);}
+        MeTemplateLayer* create() const override {return new MeTemplateLayer();}
+        MeTemplateLayer* clone() const override {return new MeTemplateLayer(*this);}
 
         std::string get_type() const override {return m_alias;}
 
     private:
         static const bool good;
         static const std::string m_alias;
-        PropertyListener<AteCollision> m_property_listener;
+        PropertyListener<MeTemplateLayer> m_property_listener;
         // vv Add members with default values
-        std::string m_other_name = "";
-        std::string m_my_hitbox = "";
-        std::string m_other_hitbox = "";
+        bool m_inject = true;
+        bool m_purge = false;
+        std::string m_destination, m_source;
+
 };
 
-#endif // ATE_COLLISION_HPP_INCLUDED
+#endif // ME_TEMPLATE_LAYER_HPP_INCLUDED

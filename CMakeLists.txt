@@ -75,8 +75,10 @@ set(EVENT_SOURCES
     src/event/ae_fall.cpp
     src/event/ae_multi.cpp
     src/event/ate_on_ground.cpp
+    src/event/ate_math.cpp
     src/event/ate_mouse_buttons.cpp
     src/event/ate_single.cpp
+    src/event/ate_switch.cpp
     src/event/ae_set_var.cpp
     src/event/ae_set_anim_frame.cpp
     src/event/ae_sound.cpp
@@ -89,6 +91,7 @@ set(EVENT_SOURCES
     src/event/me_ge_wrapper.cpp
     src/event/me_play_music.cpp
     src/event/me_set_var.cpp
+    src/event/me_template_layer.cpp
     src/event/ge_change_map.cpp
     src/event/ge_close_map.cpp
     src/event/ge_set_var.cpp

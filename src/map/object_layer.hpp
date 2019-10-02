@@ -41,6 +41,7 @@ class ObjectLayer : public Layer{
 
         LayerType get_type() override {return LayerType::object;}
 
+        void add_actor(Actor a);
         std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);
         Actor* get_actor(std::string name);
@@ -50,6 +51,10 @@ class ObjectLayer : public Layer{
         void add_primitive(Primitive* primitive);
         Primitive* get_primitive(std::string name) const;
         bool erase_primitive(std::string name);
+
+        bool get_suspended() const {return m_suspended;}
+        void suspend() {m_suspended = true;}
+        void unsuspend() {m_suspended = false;}
 
         std::vector<Actor*> get_clip(const SDL_Rect& rect);
         std::vector<const Actor*> get_clip(const SDL_Rect& rect) const;
@@ -70,6 +75,7 @@ class ObjectLayer : public Layer{
 
         std::list<Actor> m_obj_grid;
         std::list<std::unique_ptr<Primitive>> m_primitives;
+        bool m_suspended = false;
 };
 
 

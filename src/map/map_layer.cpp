@@ -162,6 +162,7 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
  * @return @c bool which indicates sucess
  */
 bool MapLayer::render(const Camera& camera) const {
+    if(m_hidden) {return true;}
     bool success = true;
     for(auto& t : clip(camera.get_rect())) {
         if(!m_ts_collection->render(std::get<0>(t),std::get<1>(t),std::get<2>(t))) {

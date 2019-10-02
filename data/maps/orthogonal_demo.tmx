@@ -22,6 +22,9 @@
   </data>
  </layer>
  <objectgroup name="Actors">
+  <properties>
+   <property name="SUSPENDED" type="bool" value="false"/>
+  </properties>
   <object id="13" name="PLAYER" gid="17" x="208" y="6052" width="32" height="32">
    <properties>
     <property name="ON_MOUSE" value="PlayerMouseInteraction"/>

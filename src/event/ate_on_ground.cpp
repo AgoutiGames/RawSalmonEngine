@@ -41,29 +41,19 @@ EventSignal AteOnGround::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
     listen(m_property_listener, *this, actor);
 
-    EventSignal sig;
-    if(m_start) {
-        if(!m_continuous) {
-            m_decision = actor.on_ground(m_direction, m_tolerance);
-        }
-        m_start = false;
+    // Parse and check direction value
+    Direction dir = str_to_direction(m_direction_string);
+    if(dir == Direction::invalid || dir == Direction::current) {
+        std::cerr << "Direction: " << m_direction_string << " is an invalid direction for AteOnGround: " << m_name << "\n";
+        return EventSignal::abort;
     }
 
-    if(m_continuous) {
-        m_decision = actor.on_ground(m_direction, m_tolerance);
-    }
-
-    if(m_decision) {
-        if(!m_success) {return EventSignal::end;}
-        sig = m_success->process(actor);
+    if(actor.on_ground(dir, m_tolerance)) {
+        return EventSignal::end;
     }
     else {
-        if(!m_failure) {return EventSignal::end;}
-        sig = m_failure->process(actor);
+        return EventSignal::abort;
     }
-
-    if(sig == EventSignal::next) return get_signal();
-    else {return sig;}
 }
 
 /**
@@ -78,17 +68,10 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
     PropertyParser<AteOnGround> parser(m_property_listener, *this);
 
     parser.add(m_name, "NAME");
-    parser.add(m_priority, "PRIORITY");
-    parser.add(m_signal, "SIGNAL");
 
     // Add additional members here
-    parser.add(m_direction, "DIRECTION");
-    parser.add(&AteOnGround::m_continuous, "CONTINUOUS");
+    parser.add(&AteOnGround::m_direction_string, "DIRECTION");
     parser.add(&AteOnGround::m_tolerance, "TOLERANCE");
-    std::string sucess_name = "";
-    parser.add(sucess_name, "SUCCESS");
-    std::string failure_name = "";
-    parser.add(failure_name, "FAILURE");
 
     XMLError eResult = parser.parse(source);
 
@@ -102,34 +85,5 @@ tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    if(sucess_name != "") {
-        if(!base_map.check_event_convert_actor(sucess_name)) {
-            std::cerr << "Event " << sucess_name << " has not been parsed before!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_success = base_map.get_event_convert_actor(sucess_name);
-        }
-    }
-
-    if(failure_name != "") {
-        if(!base_map.check_event_convert_actor(failure_name)) {
-            std::cerr << "Event " << failure_name << " has not been parsed before!\n";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_failure = base_map.get_event_convert_actor(failure_name);
-        }
-    }
-
     return XML_SUCCESS;
-}
-
-/**
- * @brief Set cause to every contained event
- */
-void AteOnGround::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
-    if(m_success) m_success->set_cause(x);
-    if(m_failure) m_failure->set_cause(x);
 }

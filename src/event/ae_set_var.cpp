@@ -42,8 +42,13 @@ EventSignal AeSetVar::process(Actor& actor) {
     // Syncs members with possibly linked DataBlock variables
     listen(m_property_listener, *this, actor);
 
+    if(m_val_name == "") {
+        std::cerr << "AeSetVar: " << m_name << " Missing value name property!\n";
+        return EventSignal::abort;
+    }
+
     if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
-        std::cerr << "ae_set_var of type bool can't handle adding or multiplying instruction!\n";
+        std::cerr << "Ae_set_var " << m_name << " of type bool can't handle adding or multiplying instruction!\n";
         return EventSignal::abort;
     }
 
@@ -110,9 +115,9 @@ tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     parser.add(m_priority, "PRIORITY");
 
     // Add additional members here
-    parser.add(m_add, "+=");
-    parser.add(m_mult, "*=");
-    parser.add(m_val_name, "VAL_NAME");
+    parser.add(&AeSetVar::m_add, "+=");
+    parser.add(&AeSetVar::m_mult, "*=");
+    parser.add(&AeSetVar::m_val_name, "VAL_NAME");
     parser.add(&AeSetVar::m_type, &AeSetVar::m_bool, &AeSetVar::m_int, &AeSetVar::m_float, &AeSetVar::m_string, "VALUE");
 
     XMLError eResult = parser.parse(source);
@@ -124,11 +129,6 @@ tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
 
     if(eResult != XML_SUCCESS) {
         std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
-        return XML_ERROR_PARSING_ATTRIBUTE;
-    }
-
-    if(m_val_name == "") {
-        std::cerr << "Missing value name property!\n";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

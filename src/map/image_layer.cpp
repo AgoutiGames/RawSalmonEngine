@@ -113,6 +113,7 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
  * @return @c bool which indicates sucess
  */
 bool ImageLayer::render(const Camera& camera) const {
+    if(m_hidden) {return true;}
     if(m_parallax) {
         MapData& base_map = m_layer_collection->get_base_map();
         int x_range = base_map.get_w() - camera.w();

@@ -51,6 +51,10 @@ Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collect
     }
     std::string name = std::string(p_name);
 
+    // Don't check for errors because missing attribute means visible=1 / visible=true
+    bool visible = true;
+    source->QueryBoolAttribute("visible", &visible);
+
     Layer* layer;
 
     // Parse map type "map"
@@ -78,6 +82,8 @@ Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collect
         std::cerr << "Error loading Layer: " << name << " !\n";
         return nullptr;
     }
+
+    if(!visible) {layer->hide();}
 
     return layer;
 
