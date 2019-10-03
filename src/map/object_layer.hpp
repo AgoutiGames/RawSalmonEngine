@@ -50,6 +50,7 @@ class ObjectLayer : public Layer{
 
         void add_primitive(Primitive* primitive);
         Primitive* get_primitive(std::string name) const;
+        std::vector<Primitive*> get_primitives();
         bool erase_primitive(std::string name);
 
         bool get_suspended() const {return m_suspended;}

@@ -177,6 +177,8 @@
  </tile>
  <tile id="30" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="ShowHandsome"/>
    <property name="KEYPRESS" value="H"/>
   </properties>
  </tile>

@@ -77,6 +77,8 @@ EventSignal AteCollision::process(Actor& scope) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AteCollision::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
     PropertyParser<AteCollision> parser(m_property_listener, *this);

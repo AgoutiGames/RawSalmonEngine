@@ -205,6 +205,13 @@
    <property name="YFACTOR" type="float" value="0"/>
   </properties>
  </tile>
+ <tile id="40" type="MeTemplateLayer">
+  <properties>
+   <property name="DESTINATION" value="Actors"/>
+   <property name="NAME" value="ShowHandsome"/>
+   <property name="SOURCE" value="Test"/>
+  </properties>
+ </tile>
  <tile id="50" type="AteMouseButtons">
   <properties>
    <property name="NAME" value="LeftClick"/>

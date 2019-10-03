@@ -63,6 +63,8 @@ EventSignal AteOnGround::process(Actor& actor) {
  * @return @c XMLError indication sucess or failure of parsing
  */
 tinyxml2::XMLError AteOnGround::init(tinyxml2::XMLElement* source, MapData& base_map) {
+    // Mute unused parameter warning
+    (void) base_map;
     using namespace tinyxml2;
 
     PropertyParser<AteOnGround> parser(m_property_listener, *this);

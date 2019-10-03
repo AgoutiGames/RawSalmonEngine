@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,6 +21,8 @@
 
 #include <tinyxml2.h>
 
+#include "util/smart.hpp"
+
 class MapData;
 
 template<class Scope>
@@ -30,50 +32,21 @@ class Event;
  * @brief A container for our game events which adheres to RAII and should be used in favour to raw pointers
  */
 template<class Scope>
-class SmartEvent {
+class SmartEvent : public Smart<Event<Scope>> {
 public:
-    SmartEvent() : m_internal{nullptr} {}
-    /// Constructor taking ownership of event
-    SmartEvent(Event<Scope>* event) : m_internal{event} {}
-    SmartEvent(tinyxml2::XMLElement* source, MapData& base_map) : m_internal{Event<Scope>::parse(source, base_map)} {}
-    ~SmartEvent() {purge();}
 
-    SmartEvent(const SmartEvent& other) : m_internal{other.valid() ? other->clone() : nullptr} {}
-    SmartEvent& operator=(const SmartEvent& other);
+    /// Explicitly use all constructors of Smart
+    /// @note Except "SmartEvent(Event<Scope>* e)", they'd be used implicitly by default constructors anyway
+    using Smart<Event<Scope>>::Smart;
 
-    SmartEvent(SmartEvent&& other) : m_internal{other.m_internal} {other.m_internal = nullptr;}
-    SmartEvent& operator=(SmartEvent&& other);
+    // The more verbose approach
+    // SmartEvent() = default;
+    // SmartEvent(Event<Scope>* e) : Smart<Event<Scope>>(e) {}
 
-    Event<Scope>* operator->() const {return m_internal;}
-    Event<Scope>& operator*() const {return *m_internal;}
-
-    bool valid() const {return (m_internal == nullptr) ? false : true;}
-    explicit operator bool() const {return valid();}
-
-private:
-    void purge() {if(valid()) {delete m_internal;}}
-
-    Event<Scope>* m_internal;
+    // Our handy shortcut constructor slapped ontop our Smart container
+    SmartEvent(tinyxml2::XMLElement* source, MapData& base_map) : Smart<Event<Scope>>(Event<Scope>::parse(source, base_map)) {}
 };
 
-template<class Scope>
-SmartEvent<Scope>& SmartEvent<Scope>::operator=(const SmartEvent<Scope>& other) {
-    if(this != &other) {
-        purge();
-        m_internal = other.valid() ? other->clone() : nullptr;
-    }
-    return *this;
-}
-
-template<class Scope>
-SmartEvent<Scope>& SmartEvent<Scope>::operator=(SmartEvent<Scope>&& other) {
-    if(this != &other) {
-        purge();
-        m_internal = other.m_internal;
-        other.m_internal = nullptr;
-    }
-    return *this;
-}
 
 
 #endif // SMART_EVENT_HPP_INCLUDED

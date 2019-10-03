@@ -292,6 +292,14 @@ Primitive* ObjectLayer::get_primitive(std::string name) const {
     return nullptr;
 }
 
+std::vector<Primitive*> ObjectLayer::get_primitives() {
+    std::vector<Primitive*> primitives;
+    for(auto& p : m_primitives) {
+        primitives.push_back(p.get());
+    }
+    return primitives;
+}
+
 bool ObjectLayer::erase_primitive(std::string name) {
     for(auto elem = m_primitives.begin(); elem != m_primitives.end(); elem++) {
         if((*elem)->get_name() == name) {
