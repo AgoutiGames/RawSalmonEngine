@@ -23,10 +23,10 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "actor/primitive_text.hpp"
 #include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
 #include "map/object_layer.hpp"
-#include "map/primitive_text.hpp"
 #include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 

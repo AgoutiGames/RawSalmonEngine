@@ -21,11 +21,11 @@
 #include <iostream>
 
 #include "actor/actor.hpp"
+#include "actor/primitive.hpp"
 #include "map/mapdata.hpp"
 #include "map/tileset_collection.hpp"
 #include "map/layer_collection.hpp"
 #include "map/camera.hpp"
-#include "map/primitive.hpp"
 
 /// Factory function which retrieves a pointer owning the object layer
 ObjectLayer* ObjectLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {

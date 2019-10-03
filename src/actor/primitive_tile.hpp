@@ -16,12 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "map/primitive_rectangle.hpp"
+#ifndef PRIMITIVE_TILE_HPP_INCLUDED
+#define PRIMITIVE_TILE_HPP_INCLUDED
 
-#include <SDL.h>
+#include "actor/primitive.hpp"
 
-bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
-    SDL_Rect rect{static_cast<int>(m_x_pos-x_cam), static_cast<int>(m_y_pos-y_cam),m_width,m_height};
+class PrimitiveTile : public Primitive {
+    public:
+        bool render(int x_cam, int y_cam) const override;
+        PrimitiveType get_type() const override {return PrimitiveType::tile;}
 
-    return SDL_RenderDrawRect(m_renderer, &rect) == 0;
-}
+        // Covariant return type!
+        PrimitiveTile* clone() const override {return new PrimitiveTile(*this);}
+
+        static PrimitiveTile* parse(tinyxml2::XMLElement* source, MapData& base_map);
+    private:
+
+};
+
+#endif // PRIMITIVE_TILE_HPP_INCLUDED

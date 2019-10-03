@@ -16,25 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "map/primitive.hpp"
+#ifndef PRIMITIVE_POINT_HPP_INCLUDED
+#define PRIMITIVE_POINT_HPP_INCLUDED
 
-#include "map/mapdata.hpp"
-#include "map/primitive_rectangle.hpp"
-#include "map/primitive_ellipse.hpp"
-#include "map/primitive_line.hpp"
-#include "map/primitive_point.hpp"
-#include "map/primitive_polygon.hpp"
-#include "map/primitive_text.hpp"
-#include "map/primitive_tile.hpp"
+#include "actor/primitive.hpp"
 
-Primitive::Primitive(float x_pos, float y_pos, MapData& mapdata, std::string name)
-                    : m_x_pos{x_pos}, m_y_pos{y_pos}, m_renderer{mapdata.get_renderer()}, m_name{name} {}
+class PrimitivePoint : public Primitive {
+    public:
+        bool render(int x_cam, int y_cam) const override;
+        PrimitiveType get_type() const override {return PrimitiveType::point;}
 
-Primitive* Primitive::parse(tinyxml2::XMLElement* source, MapData& base_map) {
-    if(source->FirstChildElement("text") != nullptr) {
-        return PrimitiveText::parse(source, base_map);
-    }
-    else {
-        return nullptr;
-    }
-}
+        // Covariant return type!
+        PrimitivePoint* clone() const override {return new PrimitivePoint(*this);}
+
+        static PrimitivePoint* parse(tinyxml2::XMLElement* source, MapData& base_map);
+    private:
+
+};
+
+#endif // PRIMITIVE_POINT_HPP_INCLUDED

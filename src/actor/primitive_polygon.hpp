@@ -16,19 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PRIMITIVE_POINT_HPP_INCLUDED
-#define PRIMITIVE_POINT_HPP_INCLUDED
+#ifndef PRIMITIVE_POLYGON_HPP_INCLUDED
+#define PRIMITIVE_POLYGON_HPP_INCLUDED
 
-#include "map/primitive.hpp"
+#include "actor/primitive.hpp"
 
-class PrimitivePoint : public Primitive {
+class PrimitivePolygon : public Primitive {
     public:
         bool render(int x_cam, int y_cam) const override;
-        PrimitiveType get_type() const override {return PrimitiveType::point;}
+        PrimitiveType get_type() const override {return PrimitiveType::polygon;}
 
-        static PrimitivePoint* parse(tinyxml2::XMLElement* source, MapData& base_map);
+        // Covariant return type!
+        PrimitivePolygon* clone() const override {return new PrimitivePolygon(*this);}
+
+        static PrimitivePolygon* parse(tinyxml2::XMLElement* source, MapData& base_map);
     private:
 
 };
 
-#endif // PRIMITIVE_POINT_HPP_INCLUDED
+#endif // PRIMITIVE_POLYGON_HPP_INCLUDED

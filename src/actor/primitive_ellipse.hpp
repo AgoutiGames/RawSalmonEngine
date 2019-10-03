@@ -16,26 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PRIMITIVE_RECTANGLE_HPP_INCLUDED
-#define PRIMITIVE_RECTANGLE_HPP_INCLUDED
+#ifndef PRIMITIVE_ELLIPSE_HPP_INCLUDED
+#define PRIMITIVE_ELLIPSE_HPP_INCLUDED
 
-#include <string>
+#include "actor/primitive.hpp"
 
-#include "map/primitive.hpp"
-
-class PrimitiveRectangle : public Primitive {
+class PrimitiveEllipse : public Primitive {
     public:
-        PrimitiveRectangle(float x_pos, float y_pos, int width, int height, MapData& mapdata, std::string name = "")
-                          : Primitive(x_pos,y_pos,mapdata,name), m_width{width}, m_height{height} {}
-
         bool render(int x_cam, int y_cam) const override;
-        PrimitiveType get_type() const override {return PrimitiveType::rectangle;}
+        PrimitiveType get_type() const override {return PrimitiveType::ellipse;}
 
-        static PrimitiveRectangle* parse(tinyxml2::XMLElement* source, MapData& base_map);
+        // Covariant return type!
+        PrimitiveEllipse* clone() const override {return new PrimitiveEllipse(*this);}
+
+        static Primitive* parse(tinyxml2::XMLElement* source, MapData& base_map);
     private:
-        int m_width;
-        int m_height;
+
 };
 
-
-#endif // PRIMITIVE_RECTANGLE_HPP_INCLUDED
+#endif // PRIMITIVE_CIRCLE_HPP_INCLUDED

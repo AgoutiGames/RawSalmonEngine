@@ -16,19 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PRIMITIVE_POLYGON_HPP_INCLUDED
-#define PRIMITIVE_POLYGON_HPP_INCLUDED
+#ifndef PRIMITIVE_RECTANGLE_HPP_INCLUDED
+#define PRIMITIVE_RECTANGLE_HPP_INCLUDED
 
-#include "map/primitive.hpp"
+#include <string>
 
-class PrimitivePolygon : public Primitive {
+#include "actor/primitive.hpp"
+
+class PrimitiveRectangle : public Primitive {
     public:
+        PrimitiveRectangle(float x_pos, float y_pos, int width, int height, MapData& mapdata, std::string name = "")
+                          : Primitive(x_pos,y_pos,mapdata,name), m_width{width}, m_height{height} {}
+
         bool render(int x_cam, int y_cam) const override;
-        PrimitiveType get_type() const override {return PrimitiveType::polygon;}
+        PrimitiveType get_type() const override {return PrimitiveType::rectangle;}
 
-        static PrimitivePolygon* parse(tinyxml2::XMLElement* source, MapData& base_map);
+        // Covariant return type!
+        PrimitiveRectangle* clone() const override {return new PrimitiveRectangle(*this);}
+
+        static PrimitiveRectangle* parse(tinyxml2::XMLElement* source, MapData& base_map);
     private:
-
+        int m_width;
+        int m_height;
 };
 
-#endif // PRIMITIVE_POLYGON_HPP_INCLUDED
+
+#endif // PRIMITIVE_RECTANGLE_HPP_INCLUDED

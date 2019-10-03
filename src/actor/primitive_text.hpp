@@ -19,7 +19,7 @@
 #ifndef PRIMITIVE_TEXT_HPP_INCLUDED
 #define PRIMITIVE_TEXT_HPP_INCLUDED
 
-#include "map/primitive.hpp"
+#include "actor/primitive.hpp"
 #include "graphics/texture.hpp"
 
 class MapData;
@@ -37,6 +37,9 @@ class PrimitiveText : public Primitive {
 
         bool render(int x_cam, int y_cam) const override;
         PrimitiveType get_type() const override {return PrimitiveType::text;}
+
+        // Covariant return type!
+        PrimitiveText* clone() const override {return new PrimitiveText(*this);}
 
         std::string get_text() {return m_text;}
         Attributes get_attributes() {return m_attributes;}

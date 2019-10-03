@@ -16,19 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PRIMITIVE_TILE_HPP_INCLUDED
-#define PRIMITIVE_TILE_HPP_INCLUDED
+#include "actor/primitive.hpp"
 
-#include "map/primitive.hpp"
+#include "map/mapdata.hpp"
+#include "actor/primitive_rectangle.hpp"
+#include "actor/primitive_ellipse.hpp"
+#include "actor/primitive_line.hpp"
+#include "actor/primitive_point.hpp"
+#include "actor/primitive_polygon.hpp"
+#include "actor/primitive_text.hpp"
+#include "actor/primitive_tile.hpp"
 
-class PrimitiveTile : public Primitive {
-    public:
-        bool render(int x_cam, int y_cam) const override;
-        PrimitiveType get_type() const override {return PrimitiveType::tile;}
+Primitive::Primitive(float x_pos, float y_pos, MapData& mapdata, std::string name)
+                    : m_x_pos{x_pos}, m_y_pos{y_pos}, m_renderer{mapdata.get_renderer()}, m_name{name} {}
 
-        static PrimitiveTile* parse(tinyxml2::XMLElement* source, MapData& base_map);
-    private:
-
-};
-
-#endif // PRIMITIVE_TILE_HPP_INCLUDED
+Primitive* Primitive::parse(tinyxml2::XMLElement* source, MapData& base_map) {
+    if(source->FirstChildElement("text") != nullptr) {
+        return PrimitiveText::parse(source, base_map);
+    }
+    else {
+        return nullptr;
+    }
+}

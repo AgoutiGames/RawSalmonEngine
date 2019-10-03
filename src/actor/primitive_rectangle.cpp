@@ -16,19 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PRIMITIVE_LINE_HPP_INCLUDED
-#define PRIMITIVE_LINE_HPP_INCLUDED
+#include "actor/primitive_rectangle.hpp"
 
-#include "map/primitive.hpp"
+#include <SDL.h>
 
-class PrimitiveLine : public Primitive {
-    public:
-        bool render(int x_cam, int y_cam) const override;
-        PrimitiveType get_type() const override {return PrimitiveType::line;}
+bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
+    SDL_Rect rect{static_cast<int>(m_x_pos-x_cam), static_cast<int>(m_y_pos-y_cam),m_width,m_height};
 
-        static PrimitiveLine* parse(tinyxml2::XMLElement* source, MapData& base_map);
-    private:
-
-};
-
-#endif // PRIMITIVE_LINE_HPP_INCLUDED
+    return SDL_RenderDrawRect(m_renderer, &rect) == 0;
+}

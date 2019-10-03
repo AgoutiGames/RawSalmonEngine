@@ -44,6 +44,8 @@ class Primitive {
         virtual bool render(int x_cam, int y_cam) const = 0;
         virtual PrimitiveType get_type() const {return PrimitiveType::undefined;}
 
+        virtual Primitive* clone() const = 0;
+
         float get_x() {return m_x_pos;}
         float get_y() {return m_y_pos;}
         std::string get_name() {return m_name;}

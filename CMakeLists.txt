@@ -48,6 +48,9 @@ set(ACTOR_SOURCES
     src/actor/actor.cpp
     src/actor/cause.cpp
     src/actor/data_block.cpp
+    src/actor/primitive.cpp
+    src/actor/primitive_rectangle.cpp
+    src/actor/primitive_text.cpp
     )
 
 set(AUDIO_SOURCES
@@ -103,9 +106,6 @@ set(GRAPHICS_SOURCES
     )
 
 set(MAP_SOURCES
-    src/map/primitive.cpp
-    src/map/primitive_rectangle.cpp
-    src/map/primitive_text.cpp
     src/map/camera.cpp
     src/map/mapdata.cpp
     src/map/layer.cpp
