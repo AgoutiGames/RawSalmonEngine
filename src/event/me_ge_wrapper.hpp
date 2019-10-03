@@ -39,7 +39,6 @@ class MeGeWrapper : public Event<MapData>{
         EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        MeGeWrapper* create() const override {return new MeGeWrapper();}
         MeGeWrapper* clone() const override {return new MeGeWrapper(*this);}
 
         std::string get_type() const override {return m_alias;}

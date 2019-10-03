@@ -38,7 +38,6 @@ class AteSwitch : public Event<Actor>{
         EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AteSwitch* create() const override {return new AteSwitch();}
         AteSwitch* clone() const override {return new AteSwitch(*this);}
 
         std::string get_type() const override {return m_alias;}

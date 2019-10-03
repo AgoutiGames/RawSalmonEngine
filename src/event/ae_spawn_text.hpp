@@ -37,7 +37,6 @@ class AeSpawnText : public Event<Actor>{
         EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AeSpawnText* create() const override {return new AeSpawnText();}
         AeSpawnText* clone() const override {return new AeSpawnText(*this);}
 
         std::string get_type() const override {return m_alias;}

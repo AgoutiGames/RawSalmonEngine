@@ -37,7 +37,6 @@ class GeSetVar : public Event<GameInfo>{
         EventSignal process(GameInfo& scope) override;
 
         // Covariant return type!
-        GeSetVar* create() const override {return new GeSetVar();}
         GeSetVar* clone() const override {return new GeSetVar(*this);}
 
         std::string get_type() const override {return m_alias;}

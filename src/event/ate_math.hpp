@@ -37,7 +37,6 @@ class AteMath : public Event<Actor>{
         EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AteMath* create() const override {return new AteMath();}
         AteMath* clone() const override {return new AteMath(*this);}
 
         std::string get_type() const override {return m_alias;}

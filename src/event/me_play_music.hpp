@@ -38,7 +38,6 @@ class MePlayMusic : public Event<MapData>{
         EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        MePlayMusic* create() const override {return new MePlayMusic();}
         MePlayMusic* clone() const override {return new MePlayMusic(*this);}
 
         std::string get_type() const override {return m_alias;}

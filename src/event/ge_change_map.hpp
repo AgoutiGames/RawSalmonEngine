@@ -37,7 +37,6 @@ class GeChangeMap : public Event<GameInfo>{
         EventSignal process(GameInfo& scope) override;
 
         // Covariant return type!
-        GeChangeMap* create() const override {return new GeChangeMap();}
         GeChangeMap* clone() const override {return new GeChangeMap(*this);}
 
         std::string get_type() const override {return m_alias;}

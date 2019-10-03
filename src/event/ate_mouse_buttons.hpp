@@ -38,7 +38,6 @@ class AteMouseButtons : public Event<Actor>{
         EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AteMouseButtons* create() const override {return new AteMouseButtons();}
         AteMouseButtons* clone() const override {return new AteMouseButtons(*this);}
 
         std::string get_type() const override {return m_alias;}

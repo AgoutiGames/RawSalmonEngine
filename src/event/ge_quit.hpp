@@ -37,7 +37,6 @@ class GeQuit : public Event<GameInfo>{
         EventSignal process(GameInfo& scope) override;
 
         // Covariant return type!
-        GeQuit* create() const override {return new GeQuit();}
         GeQuit* clone() const override {return new GeQuit(*this);}
 
         std::string get_type() const override {return m_alias;}

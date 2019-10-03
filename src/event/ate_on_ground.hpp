@@ -39,7 +39,6 @@ class AteOnGround : public Event<Actor>{
         EventSignal process(Actor& actor) override;
 
         // Covariant return type!
-        AteOnGround* create() const override {return new AteOnGround();}
         AteOnGround* clone() const override {return new AteOnGround(*this);}
 
         std::string get_type() const override {return m_alias;}

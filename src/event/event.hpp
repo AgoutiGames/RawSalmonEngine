@@ -49,7 +49,6 @@ public:
     virtual EventSignal process(Scope& entity) = 0;
     virtual std::string get_type() const = 0;
 
-    virtual Event<Scope>* create() const = 0;
     virtual Event<Scope>* clone() const = 0;
 
     std::string get_name() const {return m_name;}
@@ -135,7 +134,7 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
         return nullptr;
     }
 
-    Event<Scope>* parsed_event = get_dict()[event_type]->create();
+    Event<Scope>* parsed_event = get_dict()[event_type]->clone();
     tinyxml2::XMLError result = parsed_event->init(p_property, base_map);
     if(result != tinyxml2::XMLError::XML_SUCCESS) {
         std::cerr << "Failed at parsing event of type:" << parsed_event->get_type() << " with tile id: " << source->Attribute("id") << "\n";

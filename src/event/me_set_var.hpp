@@ -37,7 +37,6 @@ class MeSetVar : public Event<MapData>{
         EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        MeSetVar* create() const override {return new MeSetVar();}
         MeSetVar* clone() const override {return new MeSetVar(*this);}
 
         std::string get_type() const override {return m_alias;}

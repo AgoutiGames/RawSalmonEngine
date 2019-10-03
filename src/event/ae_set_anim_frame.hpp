@@ -37,7 +37,6 @@ class AeSetAnimFrame : public Event<Actor>{
         EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AeSetAnimFrame* create() const override {return new AeSetAnimFrame();}
         AeSetAnimFrame* clone() const override {return new AeSetAnimFrame(*this);}
 
         std::string get_type() const override {return m_alias;}

@@ -37,7 +37,6 @@ class GeCloseMap : public Event<GameInfo>{
         EventSignal process(GameInfo& scope) override;
 
         // Covariant return type!
-        GeCloseMap* create() const override {return new GeCloseMap();}
         GeCloseMap* clone() const override {return new GeCloseMap(*this);}
 
         std::string get_type() const override {return m_alias;}

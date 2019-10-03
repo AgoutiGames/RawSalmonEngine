@@ -37,7 +37,6 @@ class AeDecelerate : public Event<Actor>{
         EventSignal process(Actor& actor) override;
 
         // Covariant return type!
-        AeDecelerate* create() const override {return new AeDecelerate();}
         AeDecelerate* clone() const override {return new AeDecelerate(*this);}
 
         std::string get_type() const override {return m_alias;}

@@ -41,7 +41,6 @@ class MeEraseActor : public Event<MapData>{
         EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        MeEraseActor* create() const override {return new MeEraseActor();}
         MeEraseActor* clone() const override {return new MeEraseActor(*this);}
 
         std::string get_type() const override {return m_alias;}

@@ -39,7 +39,6 @@ class AeGeWrapper : public Event<Actor>{
         EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        AeGeWrapper* create() const override {return new AeGeWrapper();}
         AeGeWrapper* clone() const override {return new AeGeWrapper(*this);}
 
         std::string get_type() const override {return m_alias;}

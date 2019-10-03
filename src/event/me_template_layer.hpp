@@ -37,7 +37,6 @@ class MeTemplateLayer : public Event<MapData>{
         EventSignal process(MapData& scope) override;
 
         // Covariant return type!
-        MeTemplateLayer* create() const override {return new MeTemplateLayer();}
         MeTemplateLayer* clone() const override {return new MeTemplateLayer(*this);}
 
         std::string get_type() const override {return m_alias;}
