@@ -44,6 +44,8 @@ public:
     bool valid() const {return (m_internal == nullptr) ? false : true;}
     explicit operator bool() const {return valid();}
 
+    Type* get() const {return m_internal;}
+
 private:
     void purge() {if(valid()) {delete m_internal;}}
 

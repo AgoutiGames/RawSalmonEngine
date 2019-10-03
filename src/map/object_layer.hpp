@@ -27,6 +27,7 @@
 
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
+#include "util/smart.hpp"
 
 class Primitive;
 
@@ -48,6 +49,7 @@ class ObjectLayer : public Layer{
         bool erase_actor(std::string name);
         bool erase_actor(Actor* pointer);
 
+        /// @note Takes ownership of the supplied pointer
         void add_primitive(Primitive* primitive);
         Primitive* get_primitive(std::string name) const;
         std::vector<Primitive*> get_primitives();
@@ -75,7 +77,7 @@ class ObjectLayer : public Layer{
         tinyxml2::XMLError init(tinyxml2::XMLElement* source);
 
         std::list<Actor> m_obj_grid;
-        std::list<std::unique_ptr<Primitive>> m_primitives;
+        std::list<Smart<Primitive>> m_primitives;
         bool m_suspended = false;
 };
 

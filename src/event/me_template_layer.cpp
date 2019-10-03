@@ -22,6 +22,8 @@
 #include <map>
 #include <iostream>
 
+#include "actor/actor.hpp"
+#include "actor/primitive.hpp"
 #include "map/mapdata.hpp"
 #include "event/property_parser.hpp"
 #include "map/mapdata.hpp"
@@ -71,12 +73,18 @@ EventSignal MeTemplateLayer::process(MapData& scope) {
         for(Actor* a : src_layer->get_actors()) {
             dest_layer->add_actor(*a);
         }
+        for(Primitive* p : src_layer->get_primitives()) {
+            dest_layer->add_primitive(p->clone());
+        }
         return EventSignal::end;
     }
     else {
         bool success = true;
         for(Actor* a : src_layer->get_actors()) {
             if(!dest_layer->erase_actor(a->get_name())) {success = false;}
+        }
+        for(Primitive* p : src_layer->get_primitives()) {
+            if(!dest_layer->erase_primitive(p->get_name())) {success = false;}
         }
         if(success) {return EventSignal::end;}
         else {return EventSignal::abort;}
