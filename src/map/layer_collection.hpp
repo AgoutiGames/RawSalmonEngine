@@ -65,6 +65,8 @@ class LayerCollection {
         std::vector<ImageLayer*> get_image_layers();
         std::vector<ObjectLayer*> get_object_layers();
 
+        Layer* get_layer(std::string name);
+
         MapData& get_base_map() {return *m_base_map;}
 
         // Don't allow copy construction and assignment because our destructor would delete twice!

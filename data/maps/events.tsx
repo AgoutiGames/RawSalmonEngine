@@ -284,6 +284,26 @@
    <property name="UNDERLINE" type="bool" value="true"/>
   </properties>
  </tile>
+ <tile id="71" type="MeLayerState">
+  <properties>
+   <property name="HIDE" type="bool" value="true"/>
+   <property name="LAYER_NAME" value="Actors"/>
+   <property name="NAME" value="Hide"/>
+  </properties>
+ </tile>
+ <tile id="72" type="MeLayerState">
+  <properties>
+   <property name="LAYER_NAME" value="Actors"/>
+   <property name="NAME" value="Unhide"/>
+   <property name="UNHIDE" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="73" type="AeRotate">
+  <properties>
+   <property name="DEGREE" type="float" value="10"/>
+   <property name="NAME" value="Rotate"/>
+  </properties>
+ </tile>
  <tile id="78" type="AteOnGround">
   <properties>
    <property name="NAME" value="OnGround"/>

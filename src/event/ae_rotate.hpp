@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef TEMPLATE_HPP_INCLUDED
-#define TEMPLATE_HPP_INCLUDED
+#ifndef AE_ROTATE_HPP_INCLUDED
+#define AE_ROTATE_HPP_INCLUDED
 
 #include <vector>
 #include <string>
@@ -26,27 +26,29 @@
 #include "event/property_listener.hpp"
 #include "util/game_types.hpp"
 
-class Scope;
+class Actor;
 
 /**
  * @brief Write something
  */
-class Template : public Event<Scope>{
+class AeRotate : public Event<Actor>{
     public:
         tinyxml2::XMLError init(tinyxml2::XMLElement* source, MapData& base_map) override;
-        EventSignal process(Scope& scope) override;
+        EventSignal process(Actor& scope) override;
 
         // Covariant return type!
-        Template* clone() const override {return new Template(*this);}
+        AeRotate* clone() const override {return new AeRotate(*this);}
 
         std::string get_type() const override {return m_alias;}
 
     private:
         static const bool good;
         static const std::string m_alias;
-        PropertyListener<Template> m_property_listener;
+        PropertyListener<AeRotate> m_property_listener;
         // vv Add members with default values
-
+        bool m_absolute = false;
+        bool m_relative = true;
+        float m_degree = 0.0f;
 };
 
-#endif // TEMPLATE_HPP_INCLUDED
+#endif // AE_ROTATE_HPP_INCLUDED

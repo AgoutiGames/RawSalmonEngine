@@ -177,8 +177,14 @@ tinyxml2::XMLError Actor::parse_hitbox(tinyxml2::XMLElement* source) {
  * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
  */
 void Actor::render(int x_cam, int y_cam) const {
-    SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-    m_animations.at(m_anim_state).at(m_direction).render(dest);
+    if(m_angle > 0.1 || m_angle < -0.1) {
+        SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
+        m_animations.at(m_anim_state).at(m_direction).render_extra(dest, m_angle, false, false);
+    }
+    else {
+        SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
+        m_animations.at(m_anim_state).at(m_direction).render(dest);
+    }
 }
 
 /**

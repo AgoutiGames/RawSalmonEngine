@@ -88,11 +88,13 @@ set(EVENT_SOURCES
     src/event/ae_ge_wrapper.cpp
     src/event/ae_me_wrapper.cpp
     src/event/ae_spawn_text.cpp
+    src/event/ae_rotate.cpp
     src/event/ate_collision.cpp
     src/event/ae_wait.cpp
     src/event/me_erase_actor.cpp
     src/event/me_ge_wrapper.cpp
     src/event/me_play_music.cpp
+    src/event/me_layer_state.cpp
     src/event/me_set_var.cpp
     src/event/me_template_layer.cpp
     src/event/ge_change_map.cpp

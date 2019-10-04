@@ -207,6 +207,14 @@ void Texture::render_extra(int x, int y, const SDL_Rect* clip, double angle, boo
     SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, &renderQuad, angle, nullptr, flip);
 }
 
+/// @todo Add documentation
+void Texture::render_extra_resize(const SDL_Rect* clip, const SDL_Rect* dest, double angle, bool x_flip, bool y_flip) const {
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	if(x_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_HORIZONTAL);}
+	if(y_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_VERTICAL);}
+    SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, dest, angle, nullptr, flip);
+}
+
 int Texture::getWidth() const
 {
 	return mWidth;

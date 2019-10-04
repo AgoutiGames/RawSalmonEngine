@@ -40,6 +40,7 @@ public:
     void render(int x, int y) const;
     void render_extra(int x, int y, double angle, bool x_flip, bool y_flip) const;
     void render(SDL_Rect& dest) const; // Resizable render
+    void render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const;
 
     SDL_Rect get_hitbox(std::string name = "COLLIDE", bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;

@@ -486,6 +486,22 @@ void Tile::render(SDL_Rect& dest) const {
 }
 
 /**
+ * @brief Render a tile object to a rect
+ * @param dest The rendering rect
+ * @param tsc Reference to map for getting clip and renderer
+ *
+ * @note This function can resize the tile image
+ */
+void Tile::render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const {
+    dest.x += mp_tileset->get_x_offset();
+    dest.y += mp_tileset->get_y_offset();
+    const Texture* image = mp_tileset->get_image_pointer();
+
+    image->render_extra_resize(&get_clip(), &dest, angle, x_flip, y_flip);
+    return;
+}
+
+/**
  * @brief Return the active hitbox by name
  * @param name The name/type of the hitbox
  * @param aligned Sets the origin of hitbox relative to tile grid

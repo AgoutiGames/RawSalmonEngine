@@ -184,16 +184,22 @@
  </tile>
  <tile id="31" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="Hide"/>
    <property name="KEYPRESS" value="J"/>
   </properties>
  </tile>
  <tile id="32" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="Unhide"/>
    <property name="KEYPRESS" value="K"/>
   </properties>
  </tile>
  <tile id="33" type="KEY_MAPPING">
   <properties>
+   <property name="DOWN" type="bool" value="true"/>
+   <property name="EVENT" value="Rotate"/>
    <property name="KEYPRESS" value="L"/>
   </properties>
  </tile>

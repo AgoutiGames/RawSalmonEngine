@@ -74,7 +74,9 @@ class Actor{
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
         EventQueue<Actor>& get_event_queue() {return m_events;}
         DataBlock& get_data() {return m_data;}
-        bool late_polling() {return m_late_polling;}
+        bool late_polling() const {return m_late_polling;}
+        double get_angle() const {return m_angle;}
+        void set_angle(double angle) {m_angle = angle;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
@@ -88,6 +90,8 @@ class Actor{
         unsigned m_height;
         std::string m_name;
         std::string m_type;
+
+        double m_angle = 0.0;
 
         AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
         Direction m_direction = Direction::down; ///< Current direction facing

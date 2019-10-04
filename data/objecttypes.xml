@@ -128,6 +128,13 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
  </objecttype>
+ <objecttype name="AeRotate" color="#a0a0a4">
+  <property name="ABSOLUTE" type="bool" default="false"/>
+  <property name="DEGREE" type="float" default="0"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="RELATIVE" type="bool" default="true"/>
+ </objecttype>
  <objecttype name="AeSetAnimFrame" color="#a0a0a4">
   <property name="ANIMATION_FRAME" type="string" default="0"/>
   <property name="ANIMATION_TYPE" type="string" default="CURRENT"/>
@@ -177,10 +184,14 @@
   <property name="TIME" type="float" default="1"/>
  </objecttype>
  <objecttype name="AteCollision" color="#a0a0a4">
+  <property name="FAILURE" type="string"/>
   <property name="MY_HITBOX" type="string"/>
   <property name="NAME" type="string"/>
   <property name="OTHER_HITBOX" type="string"/>
   <property name="OTHER_NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SUCCESS" type="string"/>
  </objecttype>
  <objecttype name="AteMath" color="#a0a0a4">
   <property name="!=" type="bool" default="false"/>
@@ -193,14 +204,23 @@
  </objecttype>
  <objecttype name="AteMouseButtons" color="#a0a0a4">
   <property name="DOWN" type="bool" default="false"/>
+  <property name="FAILURE" type="string"/>
   <property name="MOUSE_BUTTON_INDEX" type="int" default="1"/>
   <property name="NAME" type="string"/>
   <property name="PRESSED" type="bool" default="true"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="RELEASED" type="bool" default="false"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SUCCESS" type="string"/>
  </objecttype>
  <objecttype name="AteOnGround" color="#a0a0a4">
+  <property name="CONTINUOUS" type="bool" default="false"/>
   <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="FAILURE" type="string"/>
   <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SIGNAL" type="string" default="NEXT"/>
+  <property name="SUCCESS" type="string"/>
   <property name="TOLERANCE" type="int" default="0"/>
  </objecttype>
  <objecttype name="AteSingle" color="#a0a0a4">
@@ -259,6 +279,15 @@
   <property name="EVENT" type="string"/>
   <property name="NAME" type="string"/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
+ </objecttype>
+ <objecttype name="MeLayerState" color="#a0a0a4">
+  <property name="HIDE" type="bool" default="false"/>
+  <property name="LAYER_NAME" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SUSPEND" type="bool" default="false"/>
+  <property name="UNHIDE" type="bool" default="false"/>
+  <property name="UNSUSPEND" type="bool" default="false"/>
  </objecttype>
  <objecttype name="MePlayMusic" color="#a0a0a4">
   <property name="FADE_IN" type="int" default="0"/>

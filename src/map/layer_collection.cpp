@@ -363,3 +363,13 @@ bool LayerCollection::erase_actor(std::string name) {
     }
     return false;
 }
+
+/// Return layer with the given name
+Layer* LayerCollection::get_layer(std::string name) {
+    for(auto& l : m_layers) {
+        if(l->get_name() == name) {
+            return l.get();
+        }
+    }
+    return nullptr;
+}
