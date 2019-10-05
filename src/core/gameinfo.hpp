@@ -45,7 +45,7 @@ public:
     void render();
     bool update();
 
-    bool load_map(std::string mapfile);
+    bool load_map(std::string mapfile, bool absolute = false);
     void close_map();
 
     DataBlock& get_data() {return m_data;}

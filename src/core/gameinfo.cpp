@@ -117,9 +117,10 @@ bool GameInfo::init() {
  * @return @c bool which indicates success or failure
  * @warning The SDL2 renderer must be initialized prior loading!
  */
-bool GameInfo::load_map(std::string mapfile) {
+bool GameInfo::load_map(std::string mapfile, bool absolute) {
     m_maps.emplace(this, m_screen_w, m_screen_h);
-    tinyxml2::XMLError eResult = m_maps.top().init_map(m_current_path + mapfile, &m_renderer);
+    if(!absolute) {mapfile = m_current_path + mapfile;}
+    tinyxml2::XMLError eResult = m_maps.top().init_map(mapfile, &m_renderer);
     if(eResult == tinyxml2::XML_SUCCESS) {
         update_path();
         return true;

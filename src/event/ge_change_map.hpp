@@ -46,6 +46,7 @@ class GeChangeMap : public Event<GameInfo>{
         static const std::string m_alias;
         PropertyListener<GeChangeMap> m_property_listener;
         // vv Add members with default values
+        std::string m_base_path = "";
         std::string m_path = "";
         bool m_preserve = false;
 };

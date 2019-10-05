@@ -46,7 +46,15 @@ EventSignal AeAnimate::process(Actor& actor) {
         m_first = false;
     }
 
+
     AnimSignal sig = actor.animate_trigger(m_animation, m_direction, m_speed);
+
+    if(m_stop_on_last_frame && sig == AnimSignal::wrap) {
+        Tile& tile = actor.get_animation_tile();
+        tile.set_frame(tile.get_frame_count() - 1);
+        return EventSignal::end;
+    }
+
     if(sig == AnimSignal::missing) {return EventSignal::abort;}
     if(m_cycles > 0) {
         if(sig == AnimSignal::wrap) {
@@ -90,6 +98,7 @@ tinyxml2::XMLError AeAnimate::init(tinyxml2::XMLElement* source, MapData& base_m
     parser.add(&AeAnimate::m_cycles, "CYCLES");
     parser.add(&AeAnimate::m_anim_frames, "ANIMATION_FRAMES");
     parser.add(&AeAnimate::m_game_frames, "GAME_FRAMES");
+    parser.add(&AeAnimate::m_stop_on_last_frame, "STOP_ON_LAST_FRAME");
 
     XMLError eResult = parser.parse(source);
 

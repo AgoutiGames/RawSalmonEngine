@@ -61,6 +61,7 @@ class Actor{
 
         // Trivial Getters
         AnimationType get_animation() const {return m_anim_state;}
+        Tile& get_animation_tile() {return m_animations.at(m_anim_state).at(m_direction);}
         std::map<AnimationType, std::map<Direction, Tile>>& get_animation_container() {return m_animations;}
         Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
