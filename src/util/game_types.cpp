@@ -27,6 +27,16 @@ AnimationType str_to_anim_type(const std::string& name) {
     if(name == "RUN") return AnimationType::run;
     if(name == "JUMP") return AnimationType::jump;
     if(name == "FALL") return AnimationType::fall;
+    if(name == "DIE") return AnimationType::die;
+    if(name == "CUSTOM1") return AnimationType::custom1;
+    if(name == "CUSTOM2") return AnimationType::custom2;
+    if(name == "CUSTOM3") return AnimationType::custom3;
+    if(name == "CUSTOM4") return AnimationType::custom4;
+    if(name == "CUSTOM5") return AnimationType::custom5;
+    if(name == "CUSTOM6") return AnimationType::custom6;
+    if(name == "CUSTOM7") return AnimationType::custom7;
+    if(name == "CUSTOM8") return AnimationType::custom8;
+    if(name == "CUSTOM9") return AnimationType::custom9;
     if(name == "CURRENT") return AnimationType::current;
     if(name == "NONE") return AnimationType::none;
     else return AnimationType::invalid;
