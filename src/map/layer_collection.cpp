@@ -91,14 +91,15 @@ bool LayerCollection::render(const Camera& camera) const{
  * @brief Updates each object layer state
  */
 void LayerCollection::update(bool late) {
-    for(auto layer : get_object_layers()) {
-        layer->update(late);
-    }
-
     if(!late) {
         // Send possible on_collide per actors
         collision_check();
     }
+    for(auto layer : get_object_layers()) {
+        layer->update(late);
+    }
+
+
 }
 
 /**
