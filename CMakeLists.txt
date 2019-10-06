@@ -77,6 +77,7 @@ set(EVENT_SOURCES
     src/event/ae_jump.cpp
     src/event/ae_fall.cpp
     src/event/ae_multi.cpp
+    src/event/ae_spawn_actor.cpp
     src/event/ate_on_ground.cpp
     src/event/ate_math.cpp
     src/event/ate_mouse_buttons.cpp

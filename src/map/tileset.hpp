@@ -51,6 +51,7 @@ class Tileset{
         const Texture* get_image_pointer() const {return &m_image;}
         TilesetCollection& get_ts_collection() const {return *mp_ts_collection;}
         unsigned get_tile_height() const {return m_tile_height;}
+        unsigned get_tile_width() const {return m_tile_width;}
         int get_x_offset() const {return m_x_offset;}
         int get_y_offset() const {return m_y_offset;}
 

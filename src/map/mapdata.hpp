@@ -116,6 +116,7 @@ class MapData {
 
         // Actor management
         bool is_actor(Uint32 gid) const;
+        bool is_actor(std::string name) const;
         Actor get_actor(Uint32 gid) const;
         Actor get_actor(std::string name) const;
 

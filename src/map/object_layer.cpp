@@ -79,7 +79,11 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
         eResult = p_object->QueryUnsignedAttribute("gid", &gid);
 
         if(eResult == XML_SUCCESS && mapdata.is_actor(gid)) {
-            m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
+
+            add_actor(Actor(mapdata.get_actor(gid)));
+
+            // m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
+
             // Initialize actor from the XMLElement*
             eResult = m_obj_grid.back().parse_base(p_object);
             if(eResult != XML_SUCCESS) {
@@ -236,7 +240,8 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
 }
 
 void ObjectLayer::add_actor(Actor a) {
-    m_obj_grid.insert(m_obj_grid.end(), a);
+    a.respond(Response::on_activation);
+    m_obj_grid.push_back(a);
 }
 
 /// Remove actor with given name from layer

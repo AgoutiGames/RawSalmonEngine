@@ -391,7 +391,7 @@ unsigned MapData::get_h() const {
  * @param tile A pointer to the corresponding animation tile
  */
 void MapData::add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile) {
-    Actor& temp = m_actor_templates.at(name);
+    Actor& temp = m_actor_templates[name];
     auto& animations = temp.get_animation_container();
     animations[anim][dir] = *tile;
     animations[anim][dir].init_anim();
@@ -421,12 +421,23 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     }
 
     if(temp.get_type() == "") {
-        std::cerr << "Actor template with is missing a type!\n";
+        std::cerr << "Actor template with is mis128sing a type!\n";
         return XML_NO_ATTRIBUTE;
     }
+    temp.set_w(tile->get_tileset().get_tile_width());
+    temp.set_h(tile->get_tileset().get_tile_height());
+
+    // Awkward animation transfer if the animation information was there before the actor template
+    Actor& temp2 = m_actor_templates[temp.get_type()];
+    auto& animations2 = temp2.get_animation_container();
+    auto& animations = temp.get_animation_container();
+    animations = animations2;
+    temp2 = temp;
+
 
     // Store the parsed actor in the actor templates map
-    m_actor_templates[temp.get_type()] = temp;
+    //m_actor_templates[temp.get_type()] = temp;
+
     // Make gid an alias of actor template type name
     m_gid_to_actor_temp_name[m_ts_collection.get_gid(tile)] = temp.get_type();
 
@@ -451,6 +462,11 @@ Actor* MapData::fetch_actor(std::string name) {
 /// Returns true if the tile with the supplied gid is an actor
 bool MapData::is_actor(Uint32 gid) const {
     return m_gid_to_actor_temp_name.find(gid) != m_gid_to_actor_temp_name.end();
+}
+
+/// Returns true if the actor with the given name exists
+bool MapData::is_actor(std::string name) const {
+    return m_actor_templates.find(name) != m_actor_templates.end();
 }
 
 /// Return Actor template which was parsed with tile with the given tile ID

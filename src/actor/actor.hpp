@@ -59,6 +59,10 @@ class Actor{
         bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
         bool respond(Response r, Cause c = Cause());
 
+        void set_w(unsigned w) {m_width = w;}
+        void set_h(unsigned h) {m_height = h;}
+        void set_name(std::string name) {m_name = name;}
+
         // Trivial Getters
         AnimationType get_animation() const {return m_anim_state;}
         Tile& get_animation_tile() {return m_animations.at(m_anim_state).at(m_direction);}
@@ -85,10 +89,10 @@ class Actor{
     private:
         MapData* m_map;
 
-        float m_x; ///< Coordinate of lower left image corner
-        float m_y; ///< @warning LOWER left corner!
-        unsigned m_width;
-        unsigned m_height;
+        float m_x = 0; ///< Coordinate of lower left image corner
+        float m_y = 0; ///< @warning LOWER left corner!
+        unsigned m_width = 0;
+        unsigned m_height = 0;
         std::string m_name;
         std::string m_type;
 
