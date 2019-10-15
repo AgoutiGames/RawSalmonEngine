@@ -22,6 +22,7 @@
 
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
+#include "util/logger.hpp"
 
 /// Factory function which retrieves a pointer owning the image layer
 ImageLayer* ImageLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -83,7 +84,7 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
             if(name == "BLEND_MODE") {
                 eResult = parse::blendmode(p_property, m_img);
                 if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed at parsing blend mode for layer: " << m_name << "\n";
+                    Logger(Logger::error) << "Failed at parsing blend mode for layer: " << m_name << std::endl;
                     return eResult;
                 }
             }
@@ -96,7 +97,7 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
                 if(eResult != XML_SUCCESS) return eResult;
             }
             else{
-                std::cerr << "Unknown image layer property " << p_name << " occured\n";
+                Logger(Logger::error) << "Unknown image layer property " << p_name << " occured" << std::endl;
                 return XML_ERROR_PARSING;
             }
             // Move to next property

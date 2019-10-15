@@ -26,6 +26,7 @@
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/mapdata.hpp"
+#include "util/logger.hpp"
 #include "util/parse.hpp"
 
 /**
@@ -41,10 +42,8 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
 
     XMLError eResult = source->QueryUnsignedAttribute("tilewidth", &m_tile_w);
     if(eResult != XML_SUCCESS) return eResult;
-    std::cout << "Tile width: " << m_tile_w << "\n";
     eResult = source->QueryUnsignedAttribute("tileheight", &m_tile_h);
     if(eResult != XML_SUCCESS) return eResult;
-    std::cout << "Tile height: " << m_tile_h << "\n";
 
     // All tilesets get parsed
     std::vector<XMLElement*> p_tilesets;
@@ -61,7 +60,6 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
         p_tilesets.push_back(pTs);
         pTs = pTs->NextSiblingElement("tileset");
     }while(pTs != nullptr );
-    std::cout << "Tileset files: " << p_tilesets.size() << "\n";
 
     // Clear Tile and Tileset data
     mp_tiles.clear();
@@ -79,7 +77,7 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
     for(unsigned i = 0; i < p_tilesets.size(); i++) {
         eResult = m_tilesets[i].init(p_tilesets[i], *this);
         if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at parsing Tileset: " << i << "\n";
+            Logger(Logger::error) << "Failed at parsing Tileset: " << i << std::endl;
             return eResult;
         }
     }
@@ -112,7 +110,7 @@ unsigned TilesetCollection::get_overhang(Direction dir) const{
             return m_right_overhang;
             break;
         default:
-            std::cout << "Invalid overhang value requested!\n";
+            Logger(Logger::error) << "Invalid overhang value requested!" << std::endl;
             return 0;
             break;
     }
@@ -125,7 +123,7 @@ Uint32 TilesetCollection::get_gid(Tile* tile)  const{
             return i;
         }
     }
-    std::cerr << "Could not find Tile to get its gid, not in global list!\n";
+    Logger(Logger::error) << "Could not find Tile to get its gid, not in global list!" << std::endl;
     return 0;
 }
 
@@ -137,7 +135,7 @@ Tile* TilesetCollection::get_tile(Uint32 tile_id) const{
     // Clear the flags
     tile_id &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
     if(tile_id >= mp_tiles.size()) {
-        std::cerr << "Tile id " << tile_id << " is out of bounds\n";
+        Logger(Logger::error) << "Tile id " << tile_id << " is out of bounds" << std::endl;
         return nullptr;
     }
     else return mp_tiles[tile_id];
@@ -147,7 +145,7 @@ Tile* TilesetCollection::get_tile(Uint32 tile_id) const{
 bool TilesetCollection::register_tile(Tile* tile, unsigned gid) {
     mp_tiles.push_back(tile);
     if(mp_tiles.size() != gid + 1) {
-        std::cerr << "Global tile id does not match! Is: " << gid << " should be: " << mp_tiles.size() - 1 << "\n";
+        Logger(Logger::error) << "Global tile id does not match! Is: " << gid << " should be: " << mp_tiles.size() - 1 << std::endl;
         return false;
     }
     return true;
@@ -166,7 +164,7 @@ void TilesetCollection::set_tile_animated(Tile* tile) {
             return;
         }
     }
-    std::cerr << "Could not find Tile to set it to animated, not in global tile list! (has no gid)\n";
+    Logger(Logger::error) << "Could not find Tile to set it to animated, not in global tile list! (has no gid)" << std::endl;
 }
 
 /// Initializes all registered animated tiles to the current timestamp and first frame
@@ -247,7 +245,7 @@ bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
         tile_id &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
         // Check if id is valid
         if(tile_id >= mp_tiles.size()) {
-            std::cerr << "Tile id " << tile_id << " is out of bounds\n";
+            Logger(Logger::error) << "Tile id " << tile_id << " is out of bounds" << std::endl;
             success = false;
         }
         else {
@@ -258,7 +256,7 @@ bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
     else {
         // Check if id is valid
         if(tile_id >= mp_tiles.size()) {
-            std::cerr << "Tile id " << tile_id << " is out of bounds\n";
+            Logger(Logger::error) << "Tile id " << tile_id << " is out of bounds" << std::endl;
             success = false;
         }
         else {
@@ -281,7 +279,7 @@ bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
 bool TilesetCollection::render(Uint32 tile_id, SDL_Rect& dest) const{
     bool success = true;
     if(tile_id >= mp_tiles.size()) {
-        std::cerr << "Tile id " << tile_id << " is out of bounds\n";
+        Logger(Logger::error) << "Tile id " << tile_id << " is out of bounds" << std::endl;
         success = false;
     }
     else {

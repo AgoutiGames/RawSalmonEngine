@@ -29,6 +29,7 @@
 #include "actor/actor.hpp"
 #include "map/tileset.hpp"
 #include "map/layer.hpp"
+#include "util/logger.hpp"
 
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
@@ -36,7 +37,7 @@ GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
 {
     //Start up SDL and create window
 	if( !init() ) {
-		std::cerr << "Failed to initialize!\n";
+		Logger(Logger::error) << "Failed to initialize SDL!" << std::endl;
 	}
 }
 
@@ -48,10 +49,12 @@ bool GameInfo::init() {
 	//Initialization flag
 	bool success = true;
 
+	Logger() << "Initialize SDL and its subsystems" << std::endl;
+
 	//Initialize SDL
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
-		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
+		Logger(Logger::error) << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
 		success = false;
 	}
 	else
@@ -59,14 +62,14 @@ bool GameInfo::init() {
 		//Set texture filtering to linear
 		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
 		{
-			std::cerr << "Warning: Linear texture filtering not enabled!\n";
+			Logger(Logger::warning) << "Linear texture filtering not enabled!" << std::endl;
 		}
 
 		//Create window
 		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_screen_w, m_screen_h, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
 		if( m_window == nullptr )
 		{
-			std::cerr << "Window could not be created! SDL Error: "<< SDL_GetError() << "\n";
+			Logger(Logger::error) << "Window could not be created! SDL Error: "<< SDL_GetError() << std::endl;
 			success = false;
 		}
 		else
@@ -75,7 +78,7 @@ bool GameInfo::init() {
 			m_renderer = SDL_CreateRenderer( m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
 			if( m_renderer == nullptr )
 			{
-				std::cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << "\n";
+				Logger(Logger::error) << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
 				success = false;
 			}
 			else
@@ -87,14 +90,14 @@ bool GameInfo::init() {
 				int imgFlags = IMG_INIT_PNG;
 				if( !( IMG_Init( imgFlags ) & imgFlags ) )
 				{
-					std::cerr << "SDL_image could not initialize! SDL_image Error: "<< IMG_GetError() << "\n" ;
+					Logger(Logger::error) << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl ;
 					success = false;
 				}
 
 				//Initialize SDL_mixer
 				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
                 {
-                    printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+                    Logger(Logger::error) << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
                     success = false;
                 }
 			}
@@ -104,7 +107,7 @@ bool GameInfo::init() {
 	 //Initialize SDL_ttf
     if( TTF_Init() == -1 )
     {
-        printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+        Logger(Logger::error) << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << std::endl;
         success = false;
     }
 
@@ -120,18 +123,24 @@ bool GameInfo::init() {
 bool GameInfo::load_map(std::string mapfile, bool absolute) {
     m_maps.emplace(this, m_screen_w, m_screen_h);
     if(!absolute) {mapfile = m_current_path + mapfile;}
+    Logger() << "Load map at: " << mapfile << std::endl;
     tinyxml2::XMLError eResult = m_maps.top().init_map(mapfile, &m_renderer);
     if(eResult == tinyxml2::XML_SUCCESS) {
+        Logger() << "Successfully loaded map" << std::endl;
         update_path();
         return true;
     }
-    else return false;
+    else {
+        Logger(Logger::error) << "Failed loading map:" << mapfile << std::endl;
+        return false;
+    }
 }
 
 /**
  * @brief Remove the currently active map from map stack
  */
 void GameInfo::close_map() {
+    Logger() << "Close map at: " << m_maps.top().get_full_path() << std::endl;
     m_maps.pop();
     if(!m_maps.empty()) {
         m_maps.top().resume();
@@ -144,6 +153,11 @@ void GameInfo::close_map() {
  * @return @c bool which is false if game ended
  */
 bool GameInfo::update() {
+
+    if(m_maps.empty()) {
+        Logger(Logger::fatal) << "No active map left on stack to update and render! Aborting!" << std::endl;
+        return false;
+    }
 
     //Event handler
     SDL_Event e;
@@ -203,6 +217,8 @@ void GameInfo::update_path() {
 
 /// Cleans up SDL2 stuff
 void GameInfo::close() {
+
+    Logger() << "Clean up and quit SDL and its subsystems" << std::endl;
 
 	//Destroy window
 	SDL_DestroyRenderer( m_renderer );

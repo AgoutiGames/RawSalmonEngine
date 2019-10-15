@@ -17,12 +17,13 @@
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "audio/sound_effect.hpp"
+#include "util/logger.hpp"
 
 SoundEffect::SoundEffect(std::string path) :
 m_sound(Mix_LoadWAV(path.c_str()), SoundEffect::Deleter())
 {
     if(m_sound == nullptr) {
-        std::cerr << "Failed to load sound effect at: " << path << " ! SDL_mixer Error: " << Mix_GetError() << "\n";
+        Logger(Logger::error) << "Failed to load sound effect at: " << path << " ! SDL_mixer Error: " << Mix_GetError() << std::endl;
     }
 }
 

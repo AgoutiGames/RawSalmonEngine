@@ -124,6 +124,7 @@ set(MAP_SOURCES
 set(UTIL_SOURCES
     src/util/attribute_parser.cpp
     src/util/game_types.cpp
+    src/util/logger.cpp
     src/util/parse.cpp
     )
 

@@ -25,6 +25,7 @@
 
 #include "event/property_listener.hpp"
 #include "util/game_types.hpp"
+#include "util/logger.hpp"
 
 /**
  * @brief A helper class which parses event properties and passes them to previously added references
@@ -294,7 +295,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi_e(tinyxml2::XMLElement
         return XML_SUCCESS;
     }
     else {
-        std::cerr << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up\n";
+        Logger(Logger::error) << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -420,7 +421,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi(tinyxml2::XMLElement* 
         return XML_SUCCESS;
     }
     else {
-        std::cerr << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up\n";
+        Logger(Logger::error) << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -532,7 +533,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_animation_type(tinyxml2::XML
     AnimationType anim = str_to_anim_type(value);
     if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
     if(anim == AnimationType::none) {
-        std::cerr << "Cant count cycles or frames with Animation Type none!\n";
+        Logger(Logger::error) << "Cant count cycles or frames with Animation Type none!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
     *m_animation_type.at(name) = anim;
@@ -602,7 +603,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse(tinyxml2::XMLElement* source
 
         // std::cerr << "Now Parsing " << source->Attribute("name") << "\n";
         if(source->Attribute("name") == nullptr) {
-            std::cerr << "Name of event property number: " << counter << " yields null!\n";
+            Logger(Logger::error) << "Name of event property number: " << counter << " yields null!" << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
@@ -616,13 +617,13 @@ tinyxml2::XMLError PropertyParser<EventType>::parse(tinyxml2::XMLElement* source
                 continue;
             }
             else {
-                std::cerr << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
+                Logger(Logger::error) << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << std::endl;
                 return result;
             }
         }
 
         if(no_match) {
-            std::cerr << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
+            Logger(Logger::error) << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
     }
@@ -643,7 +644,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_ignore_unknown(tinyxml2::XML
     for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
 
         if(source->Attribute("name") == nullptr) {
-            std::cerr << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!\n";
+            Logger(Logger::error) << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!" << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
@@ -657,7 +658,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_ignore_unknown(tinyxml2::XML
                 continue;
             }
             else {
-                std::cerr << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << "\n";
+                Logger(Logger::error) << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << std::endl;
                 return result;
             }
         }

@@ -26,6 +26,7 @@
 #include "core/gameinfo.hpp"
 #include "util/game_types.hpp"
 #include "util/attribute_parser.hpp"
+#include "util/logger.hpp"
 
 PrimitiveText::PrimitiveText(float x_pos, float y_pos, int w, int h, std::string text, Attributes atr, MapData& mapdata, std::string name)
 : Primitive(x_pos, y_pos, mapdata, name), m_mapdata{&mapdata}, m_width{w}, m_height{h}, m_text{text}, m_attributes{atr} {
@@ -71,13 +72,13 @@ PrimitiveText* PrimitiveText::parse(tinyxml2::XMLElement* source, MapData& base_
     parser.add(atr.kerning, "kerning");
     eResult = parser.parse(source, true);
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing text attributes\n";
+        Logger(Logger::error) << "Failed parsing text attributes" << std::endl;
         return nullptr;
     }
     atr.color = str_to_color(color);
     const char* text_p = source->GetText();
     if(text_p == nullptr) {
-        std::cerr << "Text of text primitive is missing!\n";
+        Logger(Logger::error) << "Text of text primitive is missing!" << std::endl;
         return nullptr;
     }
 

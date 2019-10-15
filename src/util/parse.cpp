@@ -22,6 +22,7 @@
 #include <tinyxml2.h>
 
 #include "graphics/texture.hpp"
+#include "util/logger.hpp"
 
  /**
  * @brief Converts the xmlelement to a proper SDL_Rect with checking
@@ -35,19 +36,19 @@ tinyxml2::XMLError parse::hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
     XMLError eResult;
 
     if(source->FirstChildElement("ellipse") != nullptr) {
-        std::cerr << "Hitbox can't be an ellipse!\n";
+        Logger(Logger::error) << "Hitbox can't be an ellipse!" << std::endl;
         return XML_WRONG_ATTRIBUTE_TYPE;
     }
     if(source->FirstChildElement("polygon") != nullptr) {
-        std::cerr << "Hitbox can't be a polygon!\n";
+        Logger(Logger::error) << "Hitbox can't be a polygon!" << std::endl;
         return XML_WRONG_ATTRIBUTE_TYPE;
     }
     if(source->FirstChildElement("polyline") != nullptr) {
-        std::cerr << "Hitbox can't be a polyline!\n";
+        Logger(Logger::error) << "Hitbox can't be a polyline!" << std::endl;
         return XML_WRONG_ATTRIBUTE_TYPE;
     }
     if(source->NextSiblingElement("object") != nullptr) {
-        std::cerr << "Multiple hitboxes are not supported!\n";
+        Logger(Logger::error) << "Multiple hitboxes are not supported!" << std::endl;
         return XML_WRONG_ATTRIBUTE_TYPE;
     }
     SDL_Rect temp_rec;
@@ -85,15 +86,15 @@ tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::s
 
     while(source != nullptr) {
         if(source->FirstChildElement("ellipse") != nullptr) {
-            std::cerr << "Hitbox can't be an ellipse!\n";
+            Logger(Logger::error) << "Hitbox can't be an ellipse!" << std::endl;
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
         if(source->FirstChildElement("polygon") != nullptr) {
-            std::cerr << "Hitbox can't be a polygon!\n";
+            Logger(Logger::error) << "Hitbox can't be a polygon!" << std::endl;
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
         if(source->FirstChildElement("polyline") != nullptr) {
-            std::cerr << "Hitbox can't be a polyline!\n";
+            Logger(Logger::error) << "Hitbox can't be a polyline!" << std::endl;
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
 
@@ -121,7 +122,7 @@ tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::s
         temp_rec.h = static_cast<int>(temp);
 
         if(rects.find(name) != rects.end()) {
-            std::cerr << "Possible multiple definition of hitbox: " << name << " !\n";
+            Logger(Logger::error) << "Possible multiple definition of hitbox: " << name << " !" << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
@@ -149,7 +150,7 @@ tinyxml2::XMLError parse::blendmode(tinyxml2::XMLElement* source, Texture& img) 
     else if(mode == "ADD") img.setBlendMode(SDL_BLENDMODE_ADD);
     else if(mode == "COLOR") img.setBlendMode(SDL_BLENDMODE_MOD);
     else {
-        std::cerr << "Unknown blend mode specified\n";
+        Logger(Logger::error) << "Unknown blend mode: " << mode << " specified" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
     return XML_SUCCESS;
@@ -167,7 +168,7 @@ tinyxml2::XMLError parse::bg_color(tinyxml2::XMLElement* source, SDL_Color& colo
     const char* p_bg_color;
     p_bg_color = source->Attribute("backgroundcolor");
     if(p_bg_color == nullptr) {
-        std::cerr << "Map is missing a custom backgroundcolor, will use white as default\n";
+        Logger(Logger::warning) << "Map is missing a custom backgroundcolor, will use white as default" << std::endl;
         color = {255,255,255,255};
 
         return XML_ERROR_PARSING_ATTRIBUTE;

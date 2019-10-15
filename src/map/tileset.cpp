@@ -24,6 +24,7 @@
 
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
+#include "util/logger.hpp"
 #include "util/parse.hpp"
 
 /**
@@ -99,15 +100,15 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
     // Check for matching image dimensions
     // If tiles don't perfectly fit, the tileset gets rejected
     if(m_width % m_tile_width != 0) {
-        std::cerr << "Image width isn't divisible by its tile width in tileset: "<< m_name<< "\n";
+        Logger(Logger::error) << "Image width isn't divisible by its tile width in tileset: "<< m_name<< std::endl;
         return XML_ERROR_PARSING;
     }
     if(m_height % m_tile_height != 0) {
-        std::cerr << "Image height isn't divisible by its tile height in tileset: "<< m_name<< "\n";
+        Logger(Logger::error) << "Image height isn't divisible by its tile height in tileset: "<< m_name<< std::endl;
         return XML_ERROR_PARSING;
     }
     if(m_tile_count != (m_width / m_tile_width) * (m_height / m_tile_height)) {
-        std::cerr << "Wrong tile count given in .tmx/.tsx file in tileset: "<< m_name<< "\n";
+        Logger(Logger::error) << "Wrong tile count given in .tmx/.tsx file in tileset: "<< m_name<< std::endl;
         return XML_ERROR_PARSING;
     }
 
@@ -125,7 +126,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
         // Construct each tile of the tilset and store in m_tiles
         m_tiles.push_back(Tile(this, temp));
         if(!ts_collection.register_tile(&m_tiles.back(), i_tile + m_first_gid)) {
-            std::cerr << "Failed to register Tile, abort parsing process!\n";
+            Logger(Logger::error) << "Failed to register Tile, abort parsing process!" << std::endl;
             return XML_ERROR_PARSING;
         }
     }
@@ -142,12 +143,12 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
             if(name == "BLEND_MODE") {
                 eResult = parse::blendmode(p_property, m_image);
                 if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed at parsing blend mode for tileset: " << m_name << "\n";
+                    Logger(Logger::error) << "Failed at parsing blend mode for tileset: " << m_name << std::endl;
                     return eResult;
                 }
             }
             else{
-                std::cerr << "Unknown tileset property " << p_name << " occured in tileset: "<< m_name<< "\n";
+                Logger(Logger::error) << "Unknown tileset property " << p_name << " occured in tileset: "<< m_name<< std::endl;
                 return XML_ERROR_PARSING;
             }
             // Move to next property
@@ -163,7 +164,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
         // Method of MapData object deals with the parsing of all tiles
         eResult = parse_tile_info(p_tile);
         if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading tile info of tileset: " << m_name << " \n";
+            Logger(Logger::error) << "Failed at loading tile info of tileset: " << m_name << std::endl;
             return eResult;
         }
     }
@@ -179,7 +180,7 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
 bool Tileset::render(Uint32 local_tile_id, int x, int y) const {
     bool success = true;
     if(local_tile_id >= m_tiles.size()) {
-        std::cerr << "Local tileset tile id " << local_tile_id << " is out of bounds\n";
+        Logger(Logger::error) << "Local tileset tile id " << local_tile_id << " is out of bounds" << std::endl;
         success = false;
     }
     else {
@@ -262,12 +263,12 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
             if(p_properties != nullptr) {
                 p_property = p_properties->FirstChildElement("property");
                 if(p_property == nullptr) {
-                    std::cerr << "Error: Missing first property in key mapping: " << p_tile->Attribute("id") << "\n";
+                    Logger(Logger::error) << "Error: Missing first property in key mapping: " << p_tile->Attribute("id") << std::endl;
                     return XML_ERROR_PARSING_ELEMENT;
                 }
             }
             else {
-                std::cerr << "Error: Missing properties in key mapping: " << p_tile->Attribute("id") << "\n";
+                Logger(Logger::error) << "Error: Missing properties in key mapping: " << p_tile->Attribute("id") << std::endl;
                 return XML_ERROR_PARSING_ELEMENT;
             }
             while(p_property != nullptr) {
@@ -290,14 +291,12 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                 else if(name == "KEYPRESS") {
                     const char* p_key_name = p_property->Attribute("value");
                     if(p_key_name == nullptr) {
-                        std::cerr << "Missing keypress value!\n";
-                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        Logger(Logger::error) << "Missing keypress value! Tile ID: " << p_tile->Attribute("id") << std::endl;
                         return XML_ERROR_PARSING_ATTRIBUTE;
                     }
                     key = SDL_GetKeyFromName(p_key_name);
                     if(key == SDLK_UNKNOWN) {
-                        std::cerr << "Unknown key value " << p_key_name << " \n";
-                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        Logger(Logger::error) << "Unknown key value " << p_key_name << " Tile ID: " << p_tile->Attribute("id") << std::endl;
                         return XML_ERROR_PARSING_ATTRIBUTE;
                     }
 
@@ -311,8 +310,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                 }
 
                 else {
-                    std::cerr << "Unknown property " << name << " for keypress\n";
-                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                    Logger(Logger::error) << "Unknown property " << name << " for keypress, Tile ID: " << p_tile->Attribute("id") << std::endl;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
 
@@ -321,13 +319,11 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
 
             if(event != "") {
                 if(key == SDLK_UNKNOWN) {
-                    std::cerr << "Missing keypress value after parsing properties!\n";
-                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                    Logger(Logger::error) << "Missing keypress value after parsing properties! Tile ID: " << p_tile->Attribute("id") << std::endl;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
                 if(!base_map.get_input_handler().register_key(key, event, sustained, up, down)) {
-                    std::cerr << "Failed registering key " << SDL_GetKeyName(key) << " with event " << event << "\n";
-                    std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                    Logger(Logger::error) << "Failed registering key " << SDL_GetKeyName(key) << " with event " << event << " Tile ID: " << p_tile->Attribute("id") << std::endl;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
             }
@@ -338,7 +334,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
 
             std::string event_type = p_tile->Attribute("type");
             if(event_type == "") {
-                std::cerr << "Missing event type at Tile ID: " << p_tile->Attribute("id") << "\n";
+                Logger(Logger::error) << "Missing event type at Tile ID: " << p_tile->Attribute("id") << std::endl;
                 return XML_ERROR_PARSING;
             }
             const char identifier = event_type.front();
@@ -347,8 +343,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                     std::pair<std::string, SmartEvent<Actor>> event;
                     event.second = SmartEvent<Actor>(p_tile, base_map);
                     if(!event.second) {
-                        std::cerr << "Failed at parsing symbolic tile yielding an event\n";
-                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id") << std::endl;
                         return XML_ERROR_PARSING;
                     }
                     else {
@@ -363,8 +358,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                     std::pair<std::string, SmartEvent<MapData>> event;
                     event.second = SmartEvent<MapData>(p_tile, base_map);
                     if(!event.second) {
-                        std::cerr << "Failed at parsing symbolic tile yielding an event\n";
-                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id") << std::endl;
                         return XML_ERROR_PARSING;
                     }
                     else {
@@ -379,8 +373,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                     std::pair<std::string, SmartEvent<GameInfo>> event;
                     event.second = SmartEvent<GameInfo>(p_tile, base_map);
                     if(!event.second) {
-                        std::cerr << "Failed at parsing symbolic tile yielding an event\n";
-                        std::cerr << "Tile ID: " << p_tile->Attribute("id") << "\n";
+                        Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id") << std::endl;
                         return XML_ERROR_PARSING;
                     }
                     else {
@@ -392,7 +385,7 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                 }
 
                 default: {
-                    std::cerr << "Unknown event type: " << event_type << " at Tile ID: " << p_tile->Attribute("id") << "\n";
+                    Logger(Logger::error) << "Unknown event type: " << event_type << " at Tile ID: " << p_tile->Attribute("id") << std::endl;
                     return XML_ERROR_PARSING;
                 }
             }
@@ -441,12 +434,12 @@ tinyxml2::XMLError Tileset::parse_tile_info(tinyxml2::XMLElement* source) {
             eResult = tile.parse_actor_templ(source);
         }
         else {
-            std::cerr << "Unknown tile type: " << tile_type << "\n";
+            Logger(Logger::error) << "Unknown tile type: " << tile_type << std::endl;
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
 
         if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at loading tile gid: " << tile_id + m_first_gid << " local id: " << tile_id << "\n";
+            Logger(Logger::error) << "Failed at loading tile gid: " << tile_id + m_first_gid << " local id: " << tile_id << std::endl;
             return eResult;
         }
 

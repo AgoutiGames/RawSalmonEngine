@@ -27,6 +27,7 @@
 #include "map/mapdata.hpp"
 #include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
+#include "util/logger.cpp"
 
 const std::string Template::m_alias = "Template";
 
@@ -67,12 +68,12 @@ tinyxml2::XMLError Template::init(tinyxml2::XMLElement* source, MapData& base_ma
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

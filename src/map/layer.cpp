@@ -30,6 +30,7 @@
 #include "map/image_layer.hpp"
 #include "map/object_layer.hpp"
 #include "map/tile.hpp"
+#include "util/logger.hpp"
 #include "util/parse.hpp"
 
 /**
@@ -74,12 +75,12 @@ Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collect
 
     // Return error for unknown layer types
     else {
-        std::cerr << "Unknown layer type: " << source->Name() << " !\n";
+        Logger(Logger::error) << "Unknown layer type: " << source->Name() << " !" << std::endl;
         eResult = XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Error loading Layer: " << name << " !\n";
+        Logger(Logger::error) << "Failed loading Layer: " << name << " !" << std::endl;
         return nullptr;
     }
 

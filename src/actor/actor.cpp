@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "map/mapdata.hpp"
+#include "util/logger.hpp"
 #include "util/parse.hpp"
 
 Actor::Actor(MapData* map) : m_map{map} {}
@@ -48,7 +49,7 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
     const char* p_actor_name;
     p_actor_name = source->Attribute("name");
     if(p_actor_name == nullptr) {
-        std::cerr << "Actor at x: " << m_x << " y: " << m_y << " is missing a custom name!\n";
+        Logger(Logger::error) << "Actor at x: " << m_x << " y: " << m_y << " is missing a custom name!" << std::endl;
         return XML_NO_ATTRIBUTE;
     }
     m_name = p_actor_name;
@@ -82,7 +83,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         else if(name == "ACTOR_NAME") {
             const char* p_actor_name = p_property->Attribute("value");
             if(p_actor_name == nullptr) {
-                std::cerr << "Empty actor name specified\n";
+                Logger(Logger::error) << "Empty actor name specified" << std::endl;
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             m_type = p_actor_name;
@@ -94,18 +95,18 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             if(p_direction != nullptr) {
                 Direction dir = str_to_direction(std::string(p_direction));
                 if(dir == Direction::invalid) {
-                    std::cerr << "Invalid direction type \"" << p_direction << "\"specified\n";
+                    Logger(Logger::error) << "Invalid direction type \"" << p_direction << "\"specified" << std::endl;
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
 
                 if(dir == Direction::current) {
-                    std::cerr << "There is no current direction upon actor initialization\n";
+                    Logger(Logger::error) << "There is no current direction upon actor initialization" << std::endl;
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
                 m_direction = dir;
             }
             else {
-                std::cerr << "Empty direction value specified\n";
+                Logger(Logger::error) << "Empty direction value specified" << std::endl;
                 return XML_NO_ATTRIBUTE;
             }
 
@@ -114,7 +115,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         else if(name == "LATE_POLLING") {
             XMLError eResult = p_property->QueryBoolAttribute("value", &m_late_polling);
             if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed parsing the LATE_POLLING property\n";
+                Logger(Logger::error) << "Failed parsing the LATE_POLLING property" << std::endl;
                 return eResult;
             }
         }
@@ -128,18 +129,18 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                     m_response.register_event(str_to_response(name), m_map->get_event_convert_actor(event));
                 }
                 else {
-                    std::cerr << "An event called: " << event << " does not exist/ never got parsed!\n";
+                    Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!" << std::endl;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
             }
             else {
-                std::cerr << "Empty response event specified\n";
+                Logger(Logger::error) << "Empty response event specified" << std::endl;
                 return XML_NO_ATTRIBUTE;
             }
         }
 
         else {
-            std::cerr << "Unknown actor property \"" << p_name << "\" specified\n";
+            Logger(Logger::error) << "Unknown actor property \"" << p_name << "\" specified" << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         // Move to next property
@@ -164,7 +165,7 @@ tinyxml2::XMLError Actor::parse_hitbox(tinyxml2::XMLElement* source) {
         if(p_object != nullptr) {
             eResult = parse::hitboxes(p_object, m_hitbox);
             if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed at parsing hitbox for actor template: " << m_type << "\n";
+                Logger(Logger::error) << "Failed at parsing hitbox for actor template: " << m_type << std::endl;
                 return eResult;
             }
         }
@@ -309,11 +310,11 @@ bool Actor::animate(AnimationType anim, Direction dir, float speed) {
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!" << std::endl;
         return false;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!" << std::endl;
         return false;
     }
     if(m_anim_state != anim || m_direction != dir) {
@@ -332,11 +333,11 @@ bool Actor::set_animation(AnimationType anim, Direction dir, int frame) {
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!" << std::endl;
         return false;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!" << std::endl;
         return false;
     }
     if(m_anim_state != anim || m_direction != dir) {
@@ -358,11 +359,11 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir, float speed
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        std::cerr << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!\n";
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!" << std::endl;
         return AnimSignal::missing;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        std::cerr << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!\n";
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!" << std::endl;
         return AnimSignal::missing;
     }
     if(m_anim_state != anim || m_direction != dir) {

@@ -26,6 +26,7 @@
 #include "map/tileset_collection.hpp"
 #include "map/layer_collection.hpp"
 #include "map/camera.hpp"
+#include "util/logger.hpp"
 
 /// Factory function which retrieves a pointer owning the object layer
 ObjectLayer* ObjectLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -59,13 +60,13 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             else if(name == "SUSPENDED") {
                 eResult = p_property->QueryBoolAttribute("value", &m_suspended);
                 if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed parsing SUSPENDED attribute\n";
+                    Logger(Logger::error) << "Failed parsing SUSPENDED attribute" << std::endl;
                     return eResult;
                 }
             }
 
             else {
-                std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
+                Logger(Logger::error) << "Unknown tile property \""<< p_name << "\" specified" << std::endl;
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             p_property = p_property->NextSiblingElement("property");
@@ -87,12 +88,12 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             // Initialize actor from the XMLElement*
             eResult = m_obj_grid.back().parse_base(p_object);
             if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid << "\n";
+                Logger(Logger::error) << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid << std::endl;
                 return eResult;
             }
             eResult = m_obj_grid.back().parse_properties(p_object);
             if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid << "\n";
+                Logger(Logger::error) << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid << std::endl;
                 return eResult;
             }
         }
@@ -100,7 +101,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
 
             Primitive* p = Primitive::parse(p_object, mapdata);
             if(p == nullptr) {
-                std::cerr << "Couldn't load primitive object with id " << p_object->Attribute("id") << ", skipping\n";
+                Logger(Logger::warning) << "Couldn't load primitive object with id " << p_object->Attribute("id") << ", skipping" << std::endl;
             }
             else {
                 add_primitive(p);

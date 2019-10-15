@@ -25,6 +25,7 @@
 #include "graphics/texture.hpp"
 #include "map/mapdata.hpp"
 #include "map/tileset.hpp"
+#include "util/logger.hpp"
 #include "util/parse.hpp"
 
 /**
@@ -67,7 +68,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
             }
 
             else {
-                std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
+                Logger(Logger::error) << "Unknown tile property \""<< p_name << "\" specified" << std::endl;
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             p_property = p_property->NextSiblingElement("property");
@@ -81,7 +82,7 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
         if(p_object != nullptr) {
             eResult = parse::hitboxes(p_object, m_hitboxes);
             if(eResult != XML_SUCCESS) {
-                std::cerr << "Failed at parsing hitbox for tile\n";
+                Logger(Logger::error) << "Failed at parsing hitbox for tile" << std::endl;
                 return eResult;
             }
         }
@@ -153,7 +154,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                 const char* p_actor_name = p_property->Attribute("value");
                 if(p_actor_name != nullptr) actor_name = p_actor_name;
                 else {
-                    std::cerr << "Invalid actor name in actor animation\n";
+                    Logger(Logger::error) << "Invalid actor name in actor animation" << std::endl;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
             }
@@ -164,22 +165,22 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                 if(p_anim_type != nullptr) {
                     anim = str_to_anim_type(std::string(p_anim_type));
                     if(anim == AnimationType::invalid) {
-                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << std::endl;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                     if(anim == AnimationType::current) {
-                        std::cerr << "You can't define a specific animation type as the current one\n";
-                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        Logger(Logger::error) << "You can't define a specific animation type as the current one" << std::endl;
+                        Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << std::endl;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                     if(anim == AnimationType::none) {
-                        std::cerr << "You can't define a specific animation type as no animation\n";
-                        std::cerr << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << "\n";
+                        Logger(Logger::error) << "You can't define a specific animation type as no animation" << std::endl;
+                        Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name << std::endl;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                 }
                 else {
-                    std::cerr << "Missing animation type in actor animation for " << actor_name << "\n";
+                    Logger(Logger::error) << "Missing animation type in actor animation for " << actor_name << std::endl;
                     return XML_NO_ATTRIBUTE;
                 }
             }
@@ -190,17 +191,17 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                 if(p_direction != nullptr) {
                     dir = str_to_direction(std::string(p_direction));
                     if(dir == Direction::invalid) {
-                        std::cerr << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
+                        Logger(Logger::error) << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << std::endl;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                     if(dir == Direction::current) {
-                        std::cerr << "You can't define a specific direction as the current one\n";
-                        std::cerr << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << "\n";
+                        Logger(Logger::error) << "You can't define a specific direction as the current one" << std::endl;
+                        Logger(Logger::error) << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name << std::endl;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                 }
                 else {
-                    std::cerr << "Missing direction in actor animation for " << actor_name << "\n";
+                    Logger(Logger::error) << "Missing direction in actor animation for " << actor_name << std::endl;
                     return XML_NO_ATTRIBUTE;
                 }
 
@@ -211,14 +212,14 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                 eResult = p_property->QueryIntAttribute("value", &frame);
                 if(eResult != XML_SUCCESS) return eResult;
                 if(frame < 0) {
-                    std::cerr << "Trigger frame can't be a negative value!\n";
+                    Logger(Logger::error) << "Trigger frame can't be a negative value!" << std::endl;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
                 m_trigger_frame = frame;
             }
 
             else {
-                std::cerr << "Unknown tile property \""<< p_name << "\" specified\n";
+                Logger(Logger::error) << "Unknown tile property \""<< p_name << "\" specified" << std::endl;
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             p_property = p_property->NextSiblingElement("property");
@@ -227,7 +228,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
     }
 
     else {
-        std::cerr << "Missing properties on actor_animation tile\n";
+        Logger(Logger::error) << "Missing properties on actor_animation tile" << std::endl;
         return XML_NO_ATTRIBUTE;
     }
 
@@ -259,27 +260,27 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
         }
     }
     else {
-        std::cerr << "Missing tile animation on actor animation for " << actor_name << " -> will use static tile instead\n";
+        Logger(Logger::warning) << "Missing tile animation on actor animation for " << actor_name << " -> will use static tile instead" << std::endl;
         // return XML_NO_ATTRIBUTE;
     }
 
     if(actor_name == "_") {
-        std::cerr << "Missing actor name in actor animation \n";
+        Logger(Logger::error) << "Missing actor name in actor animation" << std::endl;
         return XML_NO_ATTRIBUTE;
     }
 
     else if(anim == AnimationType::invalid) {
-        std::cerr << "Missing animation type in actor animation for " << actor_name << "\n";
+        Logger(Logger::error) << "Missing animation type in actor animation for " << actor_name << std::endl;
         return XML_NO_ATTRIBUTE;
     }
 
     else if(dir == Direction::invalid) {
-        std::cerr << "Missing direction in actor animation for " << actor_name << "\n";
+        Logger(Logger::error) << "Missing direction in actor animation for " << actor_name << std::endl;
         return XML_NO_ATTRIBUTE;
     }
 
     else if(m_animated && m_trigger_frame >= m_anim_ids.size()) {
-        std::cerr << "The trigger frame " << m_trigger_frame << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << "\n";
+        Logger(Logger::error) << "The trigger frame " << m_trigger_frame << " is out of the animation range from 0 to " << m_anim_ids.size() - 1 << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -291,7 +292,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
             if(p_object != nullptr) {
                 eResult = parse::hitboxes(p_object, m_hitboxes);
                 if(eResult != XML_SUCCESS) {
-                    std::cerr << "Failed at parsing hitboxes of actor animation for actor " << actor_name << "\n";
+                    Logger(Logger::error) << "Failed at parsing hitboxes of actor animation for actor " << actor_name << std::endl;
                     return eResult;
                 }
             }
@@ -319,7 +320,7 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source) {
 
     eResult = mp_tileset->get_ts_collection().get_mapdata().add_actor_template(source, this);
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed at adding actor template\n";
+        Logger(Logger::error) << "Failed at adding actor template" << std::endl;
         return XML_ERROR_PARSING_ELEMENT;
     }
     return XML_SUCCESS;

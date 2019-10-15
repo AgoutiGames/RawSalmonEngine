@@ -74,6 +74,7 @@ class MapData {
         // Trivial Getters
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
+        std::string get_full_path() const {return m_full_path;}
 
         unsigned get_w() const;
         unsigned get_h() const;
@@ -137,6 +138,7 @@ class MapData {
 
         GameInfo* m_game;
 
+        std::string m_full_path = ""; ///< Path to tmx file
         std::string m_base_path = ""; ///< Path to folder where .tmx map files are
         unsigned m_width;  // The map dimensions in tiles
         unsigned m_height;

@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "core/gameinfo.hpp"
+#include "util/logger.hpp"
 
 #if defined(_WIN32)
 #include <SDL.h>
@@ -30,9 +31,9 @@ int main()
 {
     // Better read resolution from config file
     GameInfo game(1920, 1080);
-    // Also better read first map file from text file (or at least make the name standard like "main.tmx"
+
     if(!game.load_map("main.tmx")) {
-        std::cerr << "Map couldn't load\n";
+        Logger(Logger::fatal) << "Engine startup failed! Entry point \"main.tmx\" couldn't be load!" << std::endl;
     }
     else {
         //While application is running

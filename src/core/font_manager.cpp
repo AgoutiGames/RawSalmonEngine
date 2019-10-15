@@ -17,6 +17,7 @@
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "core/font_manager.hpp"
+#include "util/logger.hpp"
 
 #include <iostream>
 
@@ -43,7 +44,7 @@ TTF_Font* FontManager::get_font(std::string name, int pt_size) {
             TTF_Font* new_font = TTF_OpenFont(path.c_str(), pt_size);
             if(new_font == nullptr) {
                 // This shouldnt ever happen since font was already used before!
-                std::cerr << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError() << "\n";
+                Logger(Logger::error) << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError() << std::endl;
                 return nullptr;
             }
             else {
@@ -63,7 +64,7 @@ TTF_Font* FontManager::get_font(std::string name, int pt_size) {
         }
         // Use fallback font
         else {
-            std::cerr << "Can't find font at " << path << ", use fallback font instead\n";
+            Logger(Logger::warning) << "Can't find font at " << path << ", use fallback font instead" << std::endl;
             return get_fallback(pt_size);
         }
     }
@@ -77,7 +78,7 @@ TTF_Font* FontManager::get_fallback(int pt_size) {
         TTF_Font* new_font = TTF_OpenFont(path.c_str(), pt_size);
         if(new_font == nullptr) {
             // This shouldnt ever happen since font is default fallback option!
-            std::cerr << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError() << "\n";
+            Logger(Logger::error) << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError() << std::endl;
             return nullptr;
         }
         else {

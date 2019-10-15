@@ -22,6 +22,8 @@
 #include <SDL_image.h>
 #include <iostream>
 
+#include "util/logger.hpp"
+
 Texture::Texture()
 {
 	//Initialize
@@ -48,7 +50,7 @@ bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
 	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
 	if( loadedSurface == nullptr )
 	{
-		std::cerr << "Unable to load image " << path.c_str() << "! SDL_image Error: " << IMG_GetError() << "\n";
+		Logger(Logger::error) << "Unable to load image " << path.c_str() << "! SDL_image Error: " << IMG_GetError() << std::endl;
 	}
 	else
 	{
@@ -59,7 +61,7 @@ bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
         newTexture = SDL_CreateTextureFromSurface( renderer, loadedSurface );
 		if( newTexture == nullptr )
 		{
-			std::cerr << "Unable to create texture from " << path.c_str() << "! SDL_image Error: " << SDL_GetError() << "\n";
+			Logger(Logger::error) << "Unable to create texture from " << path.c_str() << "! SDL_image Error: " << SDL_GetError() << std::endl;
 		}
 		else
 		{
@@ -107,7 +109,7 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
         mTexture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface( renderer, textSurface ), Texture::Deleter());
 		if( mTexture.get() == nullptr )
 		{
-			std::cerr << "Unable to create texture from rendered text! SDL Error: " << SDL_GetError() << "\n";
+			Logger(Logger::error) << "Unable to create texture from rendered text! SDL Error: " << SDL_GetError() << std::endl;
 		}
 		else
 		{
@@ -121,7 +123,7 @@ bool Texture::loadFromRenderedText( SDL_Renderer* renderer, std::string textureT
 	}
 	else
 	{
-		std::cerr << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << "\n";
+		Logger(Logger::error) << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << std::endl;
 	}
 
 	//Return success

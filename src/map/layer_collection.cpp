@@ -26,6 +26,7 @@
 #include "map/object_layer.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tile.hpp"
+#include "util/logger.hpp"
 
 /**
  * @brief Parses each layer and stores in vector member
@@ -50,8 +51,6 @@
         p_layers.push_back(source);
         source = source->NextSiblingElement();
     }while(source != nullptr );
-    std::cout << "Layer count: " << p_layers.size() << "\n";
-
 
     /// Don't forget to implement the new pointer inheritance approach
     // Clear layer vector member of possible old data
@@ -63,7 +62,7 @@
         XMLError eResult = XML_SUCCESS;
         m_layers.emplace_back(Layer::parse(p_layers[i_layer], this, eResult));
         if(eResult != XML_SUCCESS) {
-            std::cerr << "Failed at parsing layer: " << i_layer << "\n";
+            Logger(Logger::error) << "Failed at parsing layer: " << i_layer << std::endl;
             return eResult;
         }
     }
@@ -80,7 +79,7 @@ bool LayerCollection::render(const Camera& camera) const{
     // Renders all layers
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         if(!m_layers[i_layer]->render(camera)) {
-            std::cerr << "Failed at rendering layer " << i_layer << " !\n";
+            Logger(Logger::error) << "Failed at rendering layer " << i_layer << " !" << std::endl;
             success = false;
         }
     }

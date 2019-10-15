@@ -30,6 +30,7 @@
 #include "map/tile.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
+#include "util/logger.hpp"
 
 /// Factory function which retrieves a pointer owning the map layer
 MapLayer* MapLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -93,15 +94,14 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
 
             int result = uncompress(decomp_bytes.data(), &decomp_size, bytes.data(), bytes.size());
             if(result != Z_OK) {
-                std::cerr << "Error at decompressing zlip map data!\n";
-                std::cerr << "Error code: " << result << "\n";
+                Logger(Logger::error) << "Failed decompressing zlip map data! Error code: " << result << std::endl;
                 return XML_ERROR_PARSING_TEXT;
             }
             bytes = decomp_bytes;
         }
 
         else {
-            std::cerr << "Unsupported compression " << p_compression << " for base64 encoded map\n";
+            Logger(Logger::error) << "Unsupported compression " << p_compression << " for base64 encoded map" << std::endl;
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
 
@@ -141,7 +141,7 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
                     m_map_grid[i_y].push_back(tile_id);
                 }
                 else {
-                    std::cerr << "Tile ids ended prematurely at x: " << i_x << " y: " << i_y << "\n";
+                    Logger(Logger::error) << "Tile ids ended prematurely at x: " << i_x << " y: " << i_y << std::endl;
                     return XML_ERROR_PARSING_TEXT;
                 }
             }
@@ -149,7 +149,7 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     }
 
     else {
-        std::cerr << "Encoding type: " << p_encoding << " is not supported !\n";
+        Logger(Logger::error) << "Encoding type: " << p_encoding << " is not supported !" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
