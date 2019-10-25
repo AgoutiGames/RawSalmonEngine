@@ -44,15 +44,15 @@ EventSignal AeSpawnActor::process(Actor& scope) {
     listen(m_property_listener, *this, scope);
     Layer* layer = scope.get_map().get_layer_collection().get_layer(m_layer_name);
     if(layer == nullptr) {
-        std::cerr << "AeSpawnActor: " << m_name << " couldn't find layer with name " << m_layer_name << "\n";
+        Logger(Logger::error) << info() << " couldn't find layer with name " << m_layer_name << std::endl;
         return EventSignal::abort;
     }
     if(layer->get_type() != Layer::object) {
-        std::cerr << "AeSpawnActor: " << m_name << " layer " << m_layer_name << " is no valid object layer\n";
+        Logger(Logger::error) << info() << " layer " << m_layer_name << " is no valid object layer" << std::endl;
         return EventSignal::abort;
     }
     if(!scope.get_map().is_actor(m_actor_name)) {
-        std::cerr << "AeSpawnActor: " << m_name << " actor " << m_actor_name << " doesn't exist\n";
+        Logger(Logger::error) << info() << " actor " << m_actor_name << " doesn't exist" << std::endl;
         return EventSignal::abort;
     }
     Actor a = scope.get_map().get_actor(m_actor_name);
@@ -89,12 +89,12 @@ tinyxml2::XMLError AeSpawnActor::init(tinyxml2::XMLElement* source, MapData& bas
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

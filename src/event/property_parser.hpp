@@ -295,7 +295,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi_e(tinyxml2::XMLElement
         return XML_SUCCESS;
     }
     else {
-        Logger(Logger::error) << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up" << std::endl;
+        Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -421,7 +421,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi(tinyxml2::XMLElement* 
         return XML_SUCCESS;
     }
     else {
-        Logger(Logger::error) << "Unknown type " << type << " specified!\nThis shouldn't happen at all!\nTiled must have messed up" << std::endl;
+        Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

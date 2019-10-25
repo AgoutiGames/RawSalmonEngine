@@ -42,7 +42,7 @@ EventSignal AeRotate::process(Actor& scope) {
     listen(m_property_listener, *this, scope);
 
     if((m_absolute && m_relative) || (!m_absolute && !m_relative)) {
-        std::cerr << "AeRotate: " << m_name << " can't be absolute and relative at the same time\n";
+        Logger(Logger::error) << info() << " can't be absolute and relative at the same time" << std::endl;
         return EventSignal::abort;
     }
     if(m_absolute) {
@@ -78,12 +78,12 @@ tinyxml2::XMLError AeRotate::init(tinyxml2::XMLElement* source, MapData& base_ma
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

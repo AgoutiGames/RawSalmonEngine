@@ -140,8 +140,54 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         }
 
         else {
+            XMLError eResult;
+            std::string type(source->Attribute("type"));
+            if(type == "bool") {
+                bool temp;
+                eResult = source->QueryBoolAttribute("value", &temp);
+                if(eResult != XML_SUCCESS) {
+                    Logger(Logger::error) << "Malformed bool property: " << name << std::endl;
+                    return eResult;
+                }
+                m_data.set_val(name, temp);
+            }
+            else if(type == "int") {
+                int temp;
+                eResult = source->QueryIntAttribute("value", &temp);
+                if(eResult != XML_SUCCESS) {
+                    Logger(Logger::error) << "Malformed int property: " << name << std::endl;
+                    return eResult;
+                }
+                m_data.set_val(name, temp);
+            }
+            else if(type == "float") {
+                float temp;
+                eResult = source->QueryFloatAttribute("value", &temp);
+                if(eResult != XML_SUCCESS) {
+                    Logger(Logger::error) << "Malformed float property: " << name << std::endl;
+                    return eResult;
+                }
+                m_data.set_val(name, temp);
+            }
+            else if(type == "" || type == "file") {
+                const char* p_value = source->Attribute("value");
+                if(p_value == nullptr) {
+                    Logger(Logger::error) << "Malformed string property: " << name << std::endl;
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
+                std::string value = "";
+                if(type == "file") {value += m_map->get_file_path();}
+                value += p_value;
+                m_data.set_val(name, value);
+            }
+            else {
+                Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up" << std::endl;
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
+            /*
             Logger(Logger::error) << "Unknown actor property \"" << p_name << "\" specified" << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
+            */
         }
         // Move to next property
         p_property = p_property->NextSiblingElement("property");

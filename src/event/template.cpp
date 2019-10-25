@@ -27,7 +27,6 @@
 #include "map/mapdata.hpp"
 #include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
-#include "util/logger.cpp"
 
 const std::string Template::m_alias = "Template";
 

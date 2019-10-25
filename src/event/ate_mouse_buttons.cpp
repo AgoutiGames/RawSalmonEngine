@@ -42,11 +42,11 @@ EventSignal AteMouseButtons::process(Actor& scope) {
     listen(m_property_listener, *this, scope);
 
     if(!m_cause.mouse()) {
-        std::cerr << "Event: " << m_name << " of type AteMouse not triggered by mouse event!\n";
+        Logger(Logger::error) << info() << " not triggered by mouse event!" << std::endl;
         return EventSignal::abort;
     }
     if(m_mouse_button_index > 5 || m_mouse_button_index < 1) {
-        std::cerr << "Event: " << m_name << " triggers on invalid mouse button number: " << m_mouse_button_index << "\n";
+        Logger(Logger::error) << info() << " triggers on invalid mouse button number: " << m_mouse_button_index << std::endl;
         return EventSignal::abort;
     }
     MouseState mouse = m_cause.get_mouse();
@@ -96,12 +96,12 @@ tinyxml2::XMLError AteMouseButtons::init(tinyxml2::XMLElement* source, MapData& 
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

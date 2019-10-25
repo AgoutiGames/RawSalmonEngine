@@ -45,7 +45,7 @@ EventSignal MeTemplateLayer::process(MapData& scope) {
     listen(m_property_listener, *this, scope);
 
     if((m_purge && m_inject) || (!m_purge && !m_inject)) {
-        std::cerr << "MeTemplateLayer: " << m_name << " can only either purge or inject!\n";
+        Logger(Logger::error) << this << "can only either purge or inject!" << std::endl;
         return EventSignal::abort;
     }
 
@@ -62,11 +62,11 @@ EventSignal MeTemplateLayer::process(MapData& scope) {
         }
     }
     if(dest_layer == nullptr) {
-        std::cerr << "MeTemplateLayer: " << m_name << " the name " << m_destination << " is no valid object layer\n";
+        Logger(Logger::error) << this << "The name " << m_destination << " is no valid object layer" << std::endl;
         return EventSignal::abort;
     }
     else if(src_layer == nullptr) {
-        std::cerr << "MeTemplateLayer: " << m_name << " the name " << m_source << " is no valid object layer\n";
+        Logger(Logger::error) << info() << " the name " << m_source << " is no valid object layer" << std::endl;
         return EventSignal::abort;
     }
     if(m_inject) {
@@ -116,12 +116,12 @@ tinyxml2::XMLError MeTemplateLayer::init(tinyxml2::XMLElement* source, MapData& 
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

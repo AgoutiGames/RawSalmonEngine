@@ -42,7 +42,7 @@ EventSignal MeSetVar::process(MapData& scope) {
     listen(m_property_listener, *this, scope);
 
     if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
-        std::cerr << "me_set_var of type bool can't handle adding or multiplying instruction!\n";
+        Logger(Logger::error) << info() << " of type bool can't handle adding or multiplying instruction!" << std::endl;
         return EventSignal::abort;
     }
 
@@ -117,17 +117,17 @@ tinyxml2::XMLError MeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(m_val_name == "") {
-        std::cerr << "Missing value name property!\n";
+        Logger(Logger::error) << "Missing value name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

@@ -63,18 +63,18 @@ tinyxml2::XMLError AeMeWrapper::init(tinyxml2::XMLElement* source, MapData& base
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(event_name != "") {
         if(!base_map.check_event<MapData>(event_name)) {
-            std::cerr << "Event " << event_name << " has not been parsed before!\n";
+            Logger(Logger::error) << "Event " << event_name << " has not been parsed before!" << std::endl;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {

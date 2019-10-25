@@ -26,6 +26,7 @@
 
 #include "actor/cause.hpp"
 #include "util/game_types.hpp"
+#include "util/logger.hpp"
 
 class MapData;
 
@@ -54,6 +55,9 @@ public:
     std::string get_name() const {return m_name;}
     Priority get_priority() const {return m_priority;}
     EventSignal get_signal() const {return m_signal;}
+
+    /// Useful function for printing event id
+    std::string info() const {return get_type() + ": " + get_name();}
 
     virtual void set_cause(Cause x) {m_cause = x;}
     const Cause& get_cause() const {return m_cause;}
@@ -115,7 +119,7 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
     }
 
     if(get_dict().find(event_type) == get_dict().end()) {
-        std::cerr << "Error: Cant parse event of unknown type: " << event_type << "\n";
+        Logger(Logger::error) << "Cant parse event of unknown type: " << event_type << std::endl;
         return nullptr;
     }
 
@@ -125,19 +129,19 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
     if(p_properties != nullptr) {
         p_property = p_properties->FirstChildElement("property");
         if(p_property == nullptr) {
-            std::cerr << "Error: Missing first property in event with id: " << source->Attribute("id") << "\n";
+            Logger(Logger::error) << "Missing first property in event with id: " << source->Attribute("id") << std::endl;
             return nullptr;
         }
     }
     else {
-        std::cerr << "Error: Missing properties in event with id: " << source->Attribute("id") << "\n";
+        Logger(Logger::error) << "Error: Missing properties in event with id: " << source->Attribute("id") << std::endl;
         return nullptr;
     }
 
     Event<Scope>* parsed_event = get_dict()[event_type]->clone();
     tinyxml2::XMLError result = parsed_event->init(p_property, base_map);
     if(result != tinyxml2::XMLError::XML_SUCCESS) {
-        std::cerr << "Failed at parsing event of type:" << parsed_event->get_type() << " with tile id: " << source->Attribute("id") << "\n";
+        Logger(Logger::error) << "Failed at parsing event of type:" << parsed_event->get_type() << " with tile id: " << source->Attribute("id") << std::endl;
         delete parsed_event;
         return nullptr;
     }

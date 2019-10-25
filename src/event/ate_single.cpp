@@ -68,24 +68,22 @@ tinyxml2::XMLError AteSingle::init(tinyxml2::XMLElement* source, MapData& base_m
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(event_name == "") {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
-        std::cerr << "Missing EVENT_NAME property!\n";
+        Logger(Logger::error) << "Missing EVENT_NAME property!" << std::endl;
         return XML_ERROR_PARSING;
     }
 
     if(!base_map.check_event_convert_actor(event_name)) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
-        std::cerr << "There is no event called: " << event_name << " that can be triggered!\n";
+        Logger(Logger::error) << "There is no event called: " << event_name << " that can be triggered!" << std::endl;
         return XML_ERROR_PARSING;
     }
     m_event = base_map.get_event_convert_actor(event_name);

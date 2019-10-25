@@ -27,7 +27,9 @@ std::ofstream Logger::m_logfile = Logger::open_log();
 
 Logger::~Logger() {
     if(!m_buffer.str().empty()) {
-        std::cerr << "!!Log message not sent!! : " << m_buffer.str() << "\n";
+        // std::cerr << "!!Log message not sent!! : " << m_buffer.str() << "\n";
+        // Slight danger of stack overflowing if i messed up horribly
+        Logger(Logger::fatal) << "!!Log message not sent!! : " << m_buffer.str() << std::endl;
     }
 }
 

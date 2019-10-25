@@ -68,18 +68,18 @@ tinyxml2::XMLError MePlayMusic::init(tinyxml2::XMLElement* source, MapData& base
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     m_music = Music(base_map.get_file_path() + path);
     if(!m_music.good()) {
-        std::cerr << "Failed parsing music file: " << path << " !\n";
+        Logger(Logger::error) << "Failed parsing music file: " << path << " !" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

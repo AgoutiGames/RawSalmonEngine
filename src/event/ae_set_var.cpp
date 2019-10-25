@@ -43,12 +43,12 @@ EventSignal AeSetVar::process(Actor& actor) {
     listen(m_property_listener, *this, actor);
 
     if(m_val_name == "") {
-        std::cerr << "AeSetVar: " << m_name << " Missing value name property!\n";
+        Logger(Logger::error) << info() << " Missing value name property!" << std::endl;
         return EventSignal::abort;
     }
 
     if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
-        std::cerr << "Ae_set_var " << m_name << " of type bool can't handle adding or multiplying instruction!\n";
+        Logger(Logger::error) << info() << " of type bool can't handle adding or multiplying instruction!" << std::endl;
         return EventSignal::abort;
     }
 
@@ -123,12 +123,12 @@ tinyxml2::XMLError AeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        std::cerr << "Missing name property!\n";
+        Logger(Logger::error) << "Missing name property!" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        std::cerr << "Failed parsing event: \"" << m_name << "\"\n";
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
