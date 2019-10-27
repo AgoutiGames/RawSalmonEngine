@@ -24,6 +24,15 @@
 #include <iostream>
 #include <fstream>
 
+/**
+ * @brief A simple logger which annotates log messages and writes log additionally to file
+ *
+ * The calling interface is usually: "Logger(Logger::LogLevel) << message_string;" or
+ *                                   "Logger(Logger::LogLevel) << message_string << std::endl;"
+ *
+ * @note The log message gets either sent when passing std::endl or upon destruction
+ *       of the usually temporary Logger object
+ */
 class Logger {
 public:
 
@@ -65,8 +74,8 @@ private:
     std::stringstream m_buffer;
 
     static std::ofstream open_log();
-    static void close_log();
-    static std::ofstream m_logfile;
+    static std::ofstream s_logfile;
+    static const char* s_log_filename;
 };
 
 

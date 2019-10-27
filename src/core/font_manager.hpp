@@ -23,6 +23,9 @@
 #include <map>
 #include <SDL_ttf.h>
 
+/**
+ * @brief A container which loads and stores typefonts with fallback option
+ */
 class FontManager {
     public:
         FontManager() = default;

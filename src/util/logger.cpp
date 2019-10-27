@@ -23,25 +23,25 @@
 #include <chrono>
 #include <ctime>
 
-std::ofstream Logger::m_logfile = Logger::open_log();
+// Define static vars
+const char* Logger::s_log_filename = "log.txt";
+std::ofstream Logger::s_logfile = Logger::open_log();
 
+/// If buffer isn't empty upon destruction, flush it
 Logger::~Logger() {
     if(!m_buffer.str().empty()) {
-        // std::cerr << "!!Log message not sent!! : " << m_buffer.str() << "\n";
-        // Slight danger of stack overflowing if i messed up horribly
-        Logger(Logger::fatal) << "!!Log message not sent!! : " << m_buffer.str() << std::endl;
+        // Set linebreak and flush
+        (*this) << '\n';
+        flush();
     }
 }
 
+
 std::ofstream Logger::open_log() {
     std::ofstream logfile;
-    logfile.open ("log.txt", std::ios::app);
+    logfile.open (s_log_filename, std::ios::app);
     logfile << "--------Start Logging--------\n";
     return logfile;
-}
-
-void Logger::close_log() {
-    m_logfile.close();
 }
 
 /// Handle endl, flush, setw, setfill, etc.
@@ -66,6 +66,7 @@ Logger& Logger::operator<<(LogLevel level) {
     return *this;
 }
 
+/// Annotate and write contents of buffer to terminal and file
 void Logger::flush() {
     std::ostream* target = nullptr;
 
@@ -75,10 +76,25 @@ void Logger::flush() {
     }
     std::string time = timestamp();
     std::string level = log_level();
-    // Write log to terminal
-    (*target) << time << level << ' ' << m_buffer.str();
+
+    // Windows has problems with ANSI color codes
+    #ifdef _WIN32
+        // Write log to terminal
+        (*target) << time << level << ' ' << m_buffer.str();
+    #else
+        // Additionally annotate by color
+        switch(m_log_level) {
+            case error : {(*target) << "\u001b[31m" ;break;} // Red color
+            case warning : {(*target) << "\u001b[33m";break;} // Yellow color
+            case fatal : {(*target) << "\u001b[35m";break;} // Magenta Color
+            default : {break;}
+        }
+        // Reset to default color after each message
+        (*target) << time << level << ' ' << m_buffer.str() << "\u001b[0m";
+    #endif
+
     // Write log to log.txt
-    m_logfile << time << level << ' ' << m_buffer.str();
+    s_logfile << time << level << ' ' << m_buffer.str();
 
     // After each message reset the log level
     m_log_level = info;
@@ -88,6 +104,7 @@ void Logger::flush() {
     m_buffer.clear();
 }
 
+/// Returns string representation of current date and time up to microseconds
 std::string Logger::timestamp() {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     time_t start_time = std::chrono::system_clock::to_time_t(now);
@@ -96,7 +113,7 @@ std::string Logger::timestamp() {
     auto fraction = now - seconds;
 
     auto ms = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
-    // Only show the first five digits
+    // Only show the first six digits
     int microseconds = ms.count();
 
     char timedisplay[40];
@@ -109,6 +126,7 @@ std::string Logger::timestamp() {
 
 }
 
+/// Returns string representation of current LogLevel
 std::string Logger::log_level() {
     switch(m_log_level) {
         case info : {return "[INFO ]";}

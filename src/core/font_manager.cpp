@@ -21,6 +21,9 @@
 
 #include <iostream>
 
+/**
+ * @brief Delete all currently loaded fonts
+ */
 void FontManager::clear() {
     for(auto& font : m_fonts) {
         for(auto& instance : font.second) {
@@ -29,7 +32,9 @@ void FontManager::clear() {
     }
 }
 
-
+/**
+ * @brief Load font with name and size and return a pointer to it
+ */
 TTF_Font* FontManager::get_font(std::string name, int pt_size) {
     auto font_it = m_fonts.find(name);
     // Check if font already exists
@@ -70,6 +75,9 @@ TTF_Font* FontManager::get_font(std::string name, int pt_size) {
     }
 }
 
+/**
+ * @brief Return pointer to fallback font with given size
+ */
 TTF_Font* FontManager::get_fallback(int pt_size) {
     auto font_it = m_fonts[m_default_font].find(pt_size);
     // Check if font already exists
