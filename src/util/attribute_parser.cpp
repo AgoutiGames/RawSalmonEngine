@@ -28,35 +28,35 @@ tinyxml2::XMLError AttributeParser::parse(tinyxml2::XMLElement* source, bool ign
     for(auto& entry : m_bool) {
         eResult = source->QueryBoolAttribute(entry.first.c_str(), entry.second);
         if(eResult != XML_SUCCESS && (!ignore_missing || eResult != XML_NO_ATTRIBUTE)) {
-            Logger(Logger::error) << "Failed at loading bool attribute: " << entry.first << std::endl;
+            Logger(Logger::error) << "Failed at loading bool attribute: " << entry.first;
             return eResult;
         }
     }
     for(auto& entry : m_unsigned) {
         eResult = source->QueryUnsignedAttribute(entry.first.c_str(), entry.second);
         if(eResult != XML_SUCCESS && (!ignore_missing || eResult != XML_NO_ATTRIBUTE)) {
-            Logger(Logger::error) << "Failed at loading unsigned int attribute: " << entry.first << std::endl;
+            Logger(Logger::error) << "Failed at loading unsigned int attribute: " << entry.first;
             return eResult;
         }
     }
     for(auto& entry : m_int) {
         eResult = source->QueryIntAttribute(entry.first.c_str(), entry.second);
         if(eResult != XML_SUCCESS && (!ignore_missing || eResult != XML_NO_ATTRIBUTE)) {
-            Logger(Logger::error) << "Failed at loading int attribute: " << entry.first << std::endl;
+            Logger(Logger::error) << "Failed at loading int attribute: " << entry.first;
             return eResult;
         }
     }
     for(auto& entry : m_float) {
         eResult = source->QueryFloatAttribute(entry.first.c_str(), entry.second);
         if(eResult != XML_SUCCESS && (!ignore_missing || eResult != XML_NO_ATTRIBUTE)) {
-            Logger(Logger::error) << "Failed at loading float attribute: " << entry.first << std::endl;
+            Logger(Logger::error) << "Failed at loading float attribute: " << entry.first;
             return eResult;
         }
     }
     for(auto& entry : m_string) {
         const char* p_name = source->Attribute(entry.first.c_str());
         if(p_name == nullptr && !ignore_missing) {
-            Logger(Logger::error) << "Failed at loading string attribute: " << entry.first << std::endl;
+            Logger(Logger::error) << "Failed at loading string attribute: " << entry.first;
             return XML_NO_ATTRIBUTE;
         }
         if(p_name != nullptr) {

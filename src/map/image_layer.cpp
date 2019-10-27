@@ -84,7 +84,7 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
             if(name == "BLEND_MODE") {
                 eResult = parse::blendmode(p_property, m_img);
                 if(eResult != XML_SUCCESS) {
-                    Logger(Logger::error) << "Failed at parsing blend mode for layer: " << m_name << std::endl;
+                    Logger(Logger::error) << "Failed at parsing blend mode for layer: " << m_name;
                     return eResult;
                 }
             }
@@ -97,7 +97,7 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
                 if(eResult != XML_SUCCESS) return eResult;
             }
             else{
-                Logger(Logger::error) << "Unknown image layer property " << p_name << " occured" << std::endl;
+                Logger(Logger::error) << "Unknown image layer property " << p_name << " occured";
                 return XML_ERROR_PARSING;
             }
             // Move to next property

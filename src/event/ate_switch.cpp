@@ -44,7 +44,7 @@ EventSignal AteSwitch::process(Actor& scope) {
         listen(m_property_listener, *this, scope);
 
         if(m_and + m_or != 1) {
-            Logger(Logger::error) << info() << " switch event can only either be linked by \"and\" or \"or\"" << std::endl;
+            Logger(Logger::error) << info() << " switch event can only either be linked by \"and\" or \"or\"";
             //return XML_ERROR_PARSING_ATTRIBUTE;
             return EventSignal::abort;
         }
@@ -53,7 +53,7 @@ EventSignal AteSwitch::process(Actor& scope) {
         // Parse the two switch events
         if(m_success_name != "") {
             if(!base_map.check_event_convert_actor(m_success_name)) {
-                Logger(Logger::error) << info() << " Event " << m_success_name << " has not been parsed before!" << std::endl;
+                Logger(Logger::error) << info() << " Event " << m_success_name << " has not been parsed before!";
                 //return XML_ERROR_PARSING_ATTRIBUTE;
                 return EventSignal::abort;
             }
@@ -65,7 +65,7 @@ EventSignal AteSwitch::process(Actor& scope) {
         }
         if(m_failure_name != "") {
             if(!base_map.check_event_convert_actor(m_failure_name)) {
-                Logger(Logger::error) << info() << " Event " << m_failure_name << " has not been parsed before!" << std::endl;
+                Logger(Logger::error) << info() << " Event " << m_failure_name << " has not been parsed before!";
                 //return XML_ERROR_PARSING_ATTRIBUTE;
                 return EventSignal::abort;
             }
@@ -95,13 +95,13 @@ EventSignal AteSwitch::process(Actor& scope) {
                     name = map_data.get_val_string(name);
                 }
                 else {
-                    Logger(Logger::error) << info() << " The trigger event variable: " << name << " isn't defined!" << std::endl;
+                    Logger(Logger::error) << info() << " The trigger event variable: " << name << " isn't defined!";
                     return EventSignal::abort;
                 }
             }
 
             if(!base_map.check_event_convert_actor(name)) {
-                Logger(Logger::error) << info() << " Event " << m_failure_name << " has not been parsed before!" << std::endl;
+                Logger(Logger::error) << info() << " Event " << m_failure_name << " has not been parsed before!";
                 //return XML_ERROR_PARSING_ATTRIBUTE;
                 return EventSignal::abort;
             }
@@ -136,7 +136,7 @@ EventSignal AteSwitch::process(Actor& scope) {
             }
         }
         else {
-            Logger(Logger::error) << "AteSwitch screams in agony!" << std::endl;
+            Logger(Logger::error) << "AteSwitch screams in agony!";
             return EventSignal::abort;
         }
 
@@ -188,17 +188,17 @@ tinyxml2::XMLError AteSwitch::init(tinyxml2::XMLElement* source, MapData& base_m
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(m_trigger_events.empty()) {
-        Logger(Logger::error) << "Missing trigger events for switch event!" << std::endl;
+        Logger(Logger::error) << "Missing trigger events for switch event!";
         return XML_ERROR_PARSING;
     }
 

@@ -44,20 +44,20 @@ EventSignal MeLayerState::process(MapData& scope) {
     listen(m_property_listener, *this, scope);
 
     if(m_hide + m_unhide + m_suspend + m_unsuspend == 0) {
-        Logger(Logger::error) << info() << " has no specified state change!" << std::endl;
+        Logger(Logger::error) << info() << " has no specified state change!";
         return EventSignal::abort;
     }
     if(m_hide && m_unhide) {
-        Logger(Logger::error) << info() << " can't hide and unhide at the same time!" << std::endl;
+        Logger(Logger::error) << info() << " can't hide and unhide at the same time!";
         return EventSignal::abort;
     }
     if(m_suspend && m_unsuspend) {
-        Logger(Logger::error) << info() << " can't suspend and unsuspend at the same time!" << std::endl;
+        Logger(Logger::error) << info() << " can't suspend and unsuspend at the same time!";
         return EventSignal::abort;
     }
     Layer* layer = scope.get_layer_collection().get_layer(m_layer_name);
     if(layer == nullptr) {
-        Logger(Logger::error) << info() << " cant find layer of name: " << m_layer_name << std::endl;
+        Logger(Logger::error) << info() << " cant find layer of name: " << m_layer_name;
         return EventSignal::abort;
     }
     if(m_hide) {layer->hide();}
@@ -65,7 +65,7 @@ EventSignal MeLayerState::process(MapData& scope) {
 
     if(m_suspend || m_unsuspend) {
         if(layer->get_type() != Layer::object) {
-            Logger(Logger::error) << info() << " can't un/suspend layer which isn't an object layer" << std::endl;
+            Logger(Logger::error) << info() << " can't un/suspend layer which isn't an object layer";
             return EventSignal::abort;
         }
         ObjectLayer* obl = static_cast<ObjectLayer*>(layer);
@@ -102,12 +102,12 @@ tinyxml2::XMLError MeLayerState::init(tinyxml2::XMLElement* source, MapData& bas
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

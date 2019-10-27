@@ -49,7 +49,7 @@ TTF_Font* FontManager::get_font(std::string name, int pt_size) {
             TTF_Font* new_font = TTF_OpenFont(path.c_str(), pt_size);
             if(new_font == nullptr) {
                 // This shouldnt ever happen since font was already used before!
-                Logger(Logger::error) << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError() << std::endl;
+                Logger(Logger::error) << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError();
                 return nullptr;
             }
             else {
@@ -69,7 +69,7 @@ TTF_Font* FontManager::get_font(std::string name, int pt_size) {
         }
         // Use fallback font
         else {
-            Logger(Logger::warning) << "Can't find font at " << path << ", use fallback font instead" << std::endl;
+            Logger(Logger::warning) << "Can't find font at " << path << ", use fallback font instead";
             return get_fallback(pt_size);
         }
     }
@@ -86,7 +86,7 @@ TTF_Font* FontManager::get_fallback(int pt_size) {
         TTF_Font* new_font = TTF_OpenFont(path.c_str(), pt_size);
         if(new_font == nullptr) {
             // This shouldnt ever happen since font is default fallback option!
-            Logger(Logger::error) << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError() << std::endl;
+            Logger(Logger::error) << "Failed loading font at: " << path << "SDL_ttf Error: " << TTF_GetError();
             return nullptr;
         }
         else {

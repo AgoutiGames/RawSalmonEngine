@@ -42,14 +42,14 @@ EventSignal AeSetAnimFrame::process(Actor& scope) {
     listen(m_property_listener, *this, scope);
 
     if(m_anim_frame < 0) {
-        Logger(Logger::error) << info() << " A negative animation frame is illegal!" << std::endl;
+        Logger(Logger::error) << info() << " A negative animation frame is illegal!";
         return EventSignal::abort;
     }
     if(scope.set_animation(m_animation,m_direction,m_anim_frame)) {
         return EventSignal::end;
     }
     else {
-        Logger(Logger::error) << info() << " Animation frame: " << m_anim_frame << " is out of bounds!" << std::endl;
+        Logger(Logger::error) << info() << " Animation frame: " << m_anim_frame << " is out of bounds!";
         return EventSignal::abort;
     }
 }
@@ -78,12 +78,12 @@ tinyxml2::XMLError AeSetAnimFrame::init(tinyxml2::XMLElement* source, MapData& b
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

@@ -62,7 +62,7 @@
         XMLError eResult = XML_SUCCESS;
         m_layers.emplace_back(Layer::parse(p_layers[i_layer], this, eResult));
         if(eResult != XML_SUCCESS) {
-            Logger(Logger::error) << "Failed at parsing layer: " << i_layer << std::endl;
+            Logger(Logger::error) << "Failed at parsing layer: " << i_layer;
             return eResult;
         }
     }
@@ -79,7 +79,7 @@ bool LayerCollection::render(const Camera& camera) const{
     // Renders all layers
     for(unsigned i_layer = 0; i_layer < m_layers.size(); i_layer++) {
         if(!m_layers[i_layer]->render(camera)) {
-            Logger(Logger::error) << "Failed at rendering layer " << i_layer << " !" << std::endl;
+            Logger(Logger::error) << "Failed at rendering layer " << i_layer << " !";
             success = false;
         }
     }

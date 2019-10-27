@@ -43,7 +43,7 @@ EventSignal GeSetVar::process(GameInfo& scope) {
     listen(m_property_listener, *this, scope);
 
     if(m_type == PropertyType::Boolean && (m_add || m_mult)) {
-        Logger(Logger::error) << info() << " of type bool can't handle adding or multiplying instruction!" << std::endl;
+        Logger(Logger::error) << info() << " of type bool can't handle adding or multiplying instruction!";
         return EventSignal::abort;
     }
 
@@ -118,17 +118,17 @@ tinyxml2::XMLError GeSetVar::init(tinyxml2::XMLElement* source, MapData& base_ma
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(m_val_name == "") {
-        Logger(Logger::error) << "Missing value name property!" << std::endl;
+        Logger(Logger::error) << "Missing value name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

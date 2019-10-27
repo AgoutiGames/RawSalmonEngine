@@ -34,18 +34,18 @@ InputHandler::InputHandler(MapData& mapdata) : m_mapdata{mapdata} {}
  */
 bool InputHandler::register_key(SDL_Keycode key, std::string event, bool sustained, bool up, bool down) {
     if(!m_mapdata.check_event_convert_actor(event)) {
-        Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!" << std::endl;
+        Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!";
         return false;
     }
     if( (sustained && up) || (sustained && down) ) {
-        Logger(Logger::error) << "Cant parse key event as sustained AND up or down" << std::endl;
+        Logger(Logger::error) << "Cant parse key event as sustained AND up or down";
         return false;
     }
     else {
         if(sustained) {
             SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
             if(scancode == SDL_SCANCODE_UNKNOWN) {
-                Logger(Logger::error) << "No corresponding scancode to key " << key <<" which is required for checking sustained" << std::endl;
+                Logger(Logger::error) << "No corresponding scancode to key " << key <<" which is required for checking sustained";
                 return false;
             }
             SmartEvent<Actor> event_data = m_mapdata.get_event_convert_actor(event);
@@ -119,7 +119,7 @@ void InputHandler::prime_mouse_button(SDL_MouseButtonEvent event) {
     else if(event.button == SDL_BUTTON_MIDDLE) {button = &m_mouse.middle;}
     else if(event.button == SDL_BUTTON_X1) {button = &m_mouse.extra1;}
     else if(event.button == SDL_BUTTON_X2) {button = &m_mouse.extra2;}
-    else {Logger(Logger::error) << "Strange mouse button error, couldn't recognize mouse button!" << std::endl; return;} // Strange error should not occur ever
+    else {Logger(Logger::error) << "Strange mouse button error, couldn't recognize mouse button!"; return;} // Strange error should not occur ever
 
     if(event.state == SDL_PRESSED) {
         button->pressed = true;

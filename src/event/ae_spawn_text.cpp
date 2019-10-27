@@ -53,7 +53,7 @@ EventSignal AeSpawnText::process(Actor& scope) {
         }
     }
     if(target_layer == nullptr) {
-        Logger(Logger::error) << info() << " failed to find layer: " << m_layer_name << std::endl;
+        Logger(Logger::error) << info() << " failed to find layer: " << m_layer_name;
         return EventSignal::abort;
     }
     PrimitiveText::Attributes atr;
@@ -120,17 +120,17 @@ tinyxml2::XMLError AeSpawnText::init(tinyxml2::XMLElement* source, MapData& base
     XMLError eResult = parser.parse(source);
 
     if(m_text == "") {
-        Logger(Logger::error) << "Missing text property!" << std::endl;
+        Logger(Logger::error) << "Missing text property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

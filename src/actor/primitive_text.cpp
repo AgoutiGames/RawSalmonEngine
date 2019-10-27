@@ -72,13 +72,13 @@ PrimitiveText* PrimitiveText::parse(tinyxml2::XMLElement* source, MapData& base_
     parser.add(atr.kerning, "kerning");
     eResult = parser.parse(source, true);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing text attributes" << std::endl;
+        Logger(Logger::error) << "Failed parsing text attributes";
         return nullptr;
     }
     atr.color = str_to_color(color);
     const char* text_p = source->GetText();
     if(text_p == nullptr) {
-        Logger(Logger::error) << "Text of text primitive is missing!" << std::endl;
+        Logger(Logger::error) << "Text of text primitive is missing!";
         return nullptr;
     }
 

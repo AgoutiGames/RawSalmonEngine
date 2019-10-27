@@ -60,28 +60,28 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     tinyxml2::XMLDocument mapfile{true, tinyxml2::COLLAPSE_WHITESPACE};
     eResult = mapfile.LoadFile(filename.c_str());
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Can't find file at: " << filename << std::endl;
+        Logger(Logger::error) << "Can't find file at: " << filename;
         return eResult;
     }
 
     // Check for map base element
     XMLElement* pMap = mapfile.FirstChildElement("map");
     if (pMap == nullptr)  {
-        Logger(Logger::error) << "Missing base node \"map\" inside .tmx file!" << std::endl;
+        Logger(Logger::error) << "Missing base node \"map\" inside .tmx file!";
         return XML_ERROR_PARSING_ELEMENT;
     }
 
     // Parse map info
     eResult = parse_map_info(pMap);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing essential map info!" << std::endl;
+        Logger(Logger::error) << "Failed parsing essential map info!";
         return eResult;
     }
 
     // Parse map properties
     eResult = parse_map_properties(pMap);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed at parsing map properties!" << std::endl;
+        Logger(Logger::error) << "Failed at parsing map properties!";
         return eResult;
     }
 
@@ -89,7 +89,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     // This initiates the parsing of all tilesets
     eResult = m_ts_collection.init(pMap, this);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed at parsing tilesets!" << std::endl;
+        Logger(Logger::error) << "Failed at parsing tilesets!";
         return eResult;
     }
 
@@ -102,7 +102,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     // Parse all layers of the map file
     eResult = m_layer_collection.init(pLa, *this);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed at parsing layers!" << std::endl;
+        Logger(Logger::error) << "Failed at parsing layers!";
         return eResult;
     }
 
@@ -140,13 +140,13 @@ tinyxml2::XMLError MapData::parse_map_info(tinyxml2::XMLElement* pMap) {
     if(eResult != XML_SUCCESS) {return eResult;}
 
     if(orientation != "orthogonal" && orientation != "hexagonal" && orientation != "staggered") {
-        Logger(Logger::error) << "Tile orientation " << orientation << " isn't supported!" << std::endl;
+        Logger(Logger::error) << "Tile orientation " << orientation << " isn't supported!";
         return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
     }
     m_tile_layout.orientation = orientation;
 
     if(render_order != "right-down" && render_order != "right-up" && render_order != "left-down" && render_order != "left-up") {
-        Logger(Logger::error) << "Tile render_order " << render_order << " isn't supported!" << std::endl;
+        Logger(Logger::error) << "Tile render_order " << render_order << " isn't supported!";
         return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
     }
     m_tile_layout.render_order = render_order;
@@ -161,7 +161,7 @@ tinyxml2::XMLError MapData::parse_map_info(tinyxml2::XMLElement* pMap) {
             m_tile_layout.stagger_axis_y = true;
         }
         else {
-            Logger(Logger::error) << "Stagger axis " << p_stagger_axis << " isn't supported! Use x or y!" << std::endl;
+            Logger(Logger::error) << "Stagger axis " << p_stagger_axis << " isn't supported! Use x or y!";
             return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
         }
     }
@@ -176,7 +176,7 @@ tinyxml2::XMLError MapData::parse_map_info(tinyxml2::XMLElement* pMap) {
             m_tile_layout.stagger_index_odd = false;
         }
         else {
-            Logger(Logger::error) << "Stagger index " << p_stagger_index << " isn't supported! Use odd or even!" << std::endl;
+            Logger(Logger::error) << "Stagger index " << p_stagger_index << " isn't supported! Use odd or even!";
             return XMLError::XML_WRONG_ATTRIBUTE_TYPE;
         }
     }
@@ -236,12 +236,12 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
         std::string full_path = m_base_path + name;
         XMLError eResult = sym_ts.LoadFile(full_path.c_str());
         if(eResult != XML_SUCCESS) {
-            Logger(Logger::error) << "Can't find symbolic tileset " << name << " at path: " << full_path << std::endl;
+            Logger(Logger::error) << "Can't find symbolic tileset " << name << " at path: " << full_path;
             return eResult;
         }
         XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
         if (pSymTs == nullptr) {
-            Logger(Logger::error) << "Symbolic tileset " << full_path << " is of wrong type/has no \"tileset\" node!" << std::endl;
+            Logger(Logger::error) << "Symbolic tileset " << full_path << " is of wrong type/has no \"tileset\" node!";
             return XML_ERROR_PARSING_ELEMENT;
         }
 
@@ -257,7 +257,7 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
         m_base_path = path_backup;
 
         if(eResult != XML_SUCCESS) {
-            Logger(Logger::error) << "Failed at parsing symbolic tileset " << name << std::endl;
+            Logger(Logger::error) << "Failed at parsing symbolic tileset " << name;
             return eResult;
         }
     }
@@ -265,8 +265,8 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
     // Parse actual events from the on_* callback names
     if(on_load != "") {
         if(check_event_convert_map(on_load) != true) {
-            Logger(Logger::error) << "The event: " << on_load << " couldn't be found / is no valid game or map event" << std::endl;
-            Logger(Logger::error) << "Failed adding " << on_load << " as the ON_LOAD callback to map" << std::endl;
+            Logger(Logger::error) << "The event: " << on_load << " couldn't be found / is no valid game or map event";
+            Logger(Logger::error) << "Failed adding " << on_load << " as the ON_LOAD callback to map";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
@@ -275,8 +275,8 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
     }
     if(on_always != "") {
         if(check_event_convert_map(on_always) != true) {
-            Logger(Logger::error) << "The event: " << on_always << " couldn't be found / is no valid game or map event" << std::endl;
-            Logger(Logger::error) << "Failed adding " << on_always << " as the ON_ALWAYS callback to map" << std::endl;
+            Logger(Logger::error) << "The event: " << on_always << " couldn't be found / is no valid game or map event";
+            Logger(Logger::error) << "Failed adding " << on_always << " as the ON_ALWAYS callback to map";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
@@ -285,8 +285,8 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
     }
     if(on_resume != "") {
         if(check_event_convert_map(on_resume) != true) {
-            Logger(Logger::error) << "The event: " << on_resume << " couldn't be found / is no valid game or map event" << std::endl;
-            Logger(Logger::error) << "Failed adding " << on_resume << " as the ON_RESUME callback to map" << std::endl;
+            Logger(Logger::error) << "The event: " << on_resume << " couldn't be found / is no valid game or map event";
+            Logger(Logger::error) << "Failed adding " << on_resume << " as the ON_RESUME callback to map";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {
@@ -407,18 +407,18 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     Actor temp(this);
     eResult = temp.parse_properties(source);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing properties of actor of type: " << temp.get_type() << std::endl;
+        Logger(Logger::error) << "Failed parsing properties of actor of type: " << temp.get_type();
         return eResult;
     }
 
     eResult = temp.parse_hitbox(source);
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing hitbox of actor of type: " << temp.get_type() << std::endl;
+        Logger(Logger::error) << "Failed parsing hitbox of actor of type: " << temp.get_type();
         return eResult;
     }
 
     if(temp.get_type() == "") {
-        Logger(Logger::error) << "Actor template with is missing a type!" << std::endl;
+        Logger(Logger::error) << "Actor template with is missing a type!";
         return XML_NO_ATTRIBUTE;
     }
     temp.set_w(tile->get_tileset().get_tile_width());

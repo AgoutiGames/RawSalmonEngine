@@ -68,18 +68,18 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     for(std::string value : event_names) {
         if(!base_map.check_event_convert_actor(value)) {
-            Logger(Logger::error) << "Event " << value << " has not been parsed before!" << std::endl;
+            Logger(Logger::error) << "Event " << value << " has not been parsed before!";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
         else {

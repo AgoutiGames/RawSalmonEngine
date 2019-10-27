@@ -64,23 +64,23 @@ tinyxml2::XMLError AeSound::init(tinyxml2::XMLElement* source, MapData& base_map
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(m_sound_path == "") {
-        Logger(Logger::error) << "Missing sound path property!" << std::endl;
+        Logger(Logger::error) << "Missing sound path property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     m_sound = SoundEffect(base_map.get_file_path() + m_sound_path);
     if(!m_sound.good()) {
-        Logger(Logger::error) << "Audio file: " << base_map.get_file_path() + m_sound_path << " not found!" << std::endl;
+        Logger(Logger::error) << "Audio file: " << base_map.get_file_path() + m_sound_path << " not found!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

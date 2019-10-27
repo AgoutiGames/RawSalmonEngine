@@ -49,7 +49,7 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
     const char* p_actor_name;
     p_actor_name = source->Attribute("name");
     if(p_actor_name == nullptr) {
-        Logger(Logger::error) << "Actor at x: " << m_x << " y: " << m_y << " is missing a custom name!" << std::endl;
+        Logger(Logger::error) << "Actor at x: " << m_x << " y: " << m_y << " is missing a custom name!";
         return XML_NO_ATTRIBUTE;
     }
     m_name = p_actor_name;
@@ -83,7 +83,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         else if(name == "ACTOR_NAME") {
             const char* p_actor_name = p_property->Attribute("value");
             if(p_actor_name == nullptr) {
-                Logger(Logger::error) << "Empty actor name specified" << std::endl;
+                Logger(Logger::error) << "Empty actor name specified";
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             m_type = p_actor_name;
@@ -95,18 +95,18 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             if(p_direction != nullptr) {
                 Direction dir = str_to_direction(std::string(p_direction));
                 if(dir == Direction::invalid) {
-                    Logger(Logger::error) << "Invalid direction type \"" << p_direction << "\"specified" << std::endl;
+                    Logger(Logger::error) << "Invalid direction type \"" << p_direction << "\"specified";
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
 
                 if(dir == Direction::current) {
-                    Logger(Logger::error) << "There is no current direction upon actor initialization" << std::endl;
+                    Logger(Logger::error) << "There is no current direction upon actor initialization";
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
                 m_direction = dir;
             }
             else {
-                Logger(Logger::error) << "Empty direction value specified" << std::endl;
+                Logger(Logger::error) << "Empty direction value specified";
                 return XML_NO_ATTRIBUTE;
             }
 
@@ -115,7 +115,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         else if(name == "LATE_POLLING") {
             XMLError eResult = p_property->QueryBoolAttribute("value", &m_late_polling);
             if(eResult != XML_SUCCESS) {
-                Logger(Logger::error) << "Failed parsing the LATE_POLLING property" << std::endl;
+                Logger(Logger::error) << "Failed parsing the LATE_POLLING property";
                 return eResult;
             }
         }
@@ -129,12 +129,12 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                     m_response.register_event(str_to_response(name), m_map->get_event_convert_actor(event));
                 }
                 else {
-                    Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!" << std::endl;
+                    Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!";
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
             }
             else {
-                Logger(Logger::error) << "Empty response event specified" << std::endl;
+                Logger(Logger::error) << "Empty response event specified";
                 return XML_NO_ATTRIBUTE;
             }
         }
@@ -146,7 +146,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                 bool temp;
                 eResult = source->QueryBoolAttribute("value", &temp);
                 if(eResult != XML_SUCCESS) {
-                    Logger(Logger::error) << "Malformed bool property: " << name << std::endl;
+                    Logger(Logger::error) << "Malformed bool property: " << name;
                     return eResult;
                 }
                 m_data.set_val(name, temp);
@@ -155,7 +155,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                 int temp;
                 eResult = source->QueryIntAttribute("value", &temp);
                 if(eResult != XML_SUCCESS) {
-                    Logger(Logger::error) << "Malformed int property: " << name << std::endl;
+                    Logger(Logger::error) << "Malformed int property: " << name;
                     return eResult;
                 }
                 m_data.set_val(name, temp);
@@ -164,7 +164,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                 float temp;
                 eResult = source->QueryFloatAttribute("value", &temp);
                 if(eResult != XML_SUCCESS) {
-                    Logger(Logger::error) << "Malformed float property: " << name << std::endl;
+                    Logger(Logger::error) << "Malformed float property: " << name;
                     return eResult;
                 }
                 m_data.set_val(name, temp);
@@ -172,7 +172,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             else if(type == "" || type == "file") {
                 const char* p_value = source->Attribute("value");
                 if(p_value == nullptr) {
-                    Logger(Logger::error) << "Malformed string property: " << name << std::endl;
+                    Logger(Logger::error) << "Malformed string property: " << name;
                     return XML_ERROR_PARSING_ATTRIBUTE;
                 }
                 std::string value = "";
@@ -181,11 +181,11 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                 m_data.set_val(name, value);
             }
             else {
-                Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up" << std::endl;
+                Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up";
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             /*
-            Logger(Logger::error) << "Unknown actor property \"" << p_name << "\" specified" << std::endl;
+            Logger(Logger::error) << "Unknown actor property \"" << p_name << "\" specified";
             return XML_ERROR_PARSING_ATTRIBUTE;
             */
         }
@@ -211,7 +211,7 @@ tinyxml2::XMLError Actor::parse_hitbox(tinyxml2::XMLElement* source) {
         if(p_object != nullptr) {
             eResult = parse::hitboxes(p_object, m_hitbox);
             if(eResult != XML_SUCCESS) {
-                Logger(Logger::error) << "Failed at parsing hitbox for actor template: " << m_type << std::endl;
+                Logger(Logger::error) << "Failed at parsing hitbox for actor template: " << m_type;
                 return eResult;
             }
         }
@@ -356,11 +356,11 @@ bool Actor::animate(AnimationType anim, Direction dir, float speed) {
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!" << std::endl;
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
         return false;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!" << std::endl;
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
         return false;
     }
     if(m_anim_state != anim || m_direction != dir) {
@@ -379,11 +379,11 @@ bool Actor::set_animation(AnimationType anim, Direction dir, int frame) {
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!" << std::endl;
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
         return false;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!" << std::endl;
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
         return false;
     }
     if(m_anim_state != anim || m_direction != dir) {
@@ -405,11 +405,11 @@ AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir, float speed
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
     if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!" << std::endl;
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
         return AnimSignal::missing;
     }
     if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!" << std::endl;
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
         return AnimSignal::missing;
     }
     if(m_anim_state != anim || m_direction != dir) {

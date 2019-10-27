@@ -33,7 +33,7 @@ int main()
     GameInfo game(1920, 1080);
 
     if(!game.load_map("main.tmx")) {
-        Logger(Logger::fatal) << "Engine startup failed! Entry point \"main.tmx\" couldn't be load!" << std::endl;
+        Logger(Logger::fatal) << "Engine startup failed! Entry point \"main.tmx\" couldn't be load!";
     }
     else {
         //While application is running

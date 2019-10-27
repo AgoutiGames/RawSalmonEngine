@@ -64,7 +64,7 @@ EventSignal AteCollision::process(Actor& scope) {
         }
     }
     else {
-        Logger(Logger::error) << info() << " wasn't triggered by a collision! "<< "This means the event gets used wrongly, fix this error in your events!" << std::endl;
+        Logger(Logger::error) << info() << " wasn't triggered by a collision! "<< "This means the event gets used wrongly, fix this error in your events!";
         return EventSignal::abort;
     }
 }
@@ -92,12 +92,12 @@ tinyxml2::XMLError AteCollision::init(tinyxml2::XMLElement* source, MapData& bas
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

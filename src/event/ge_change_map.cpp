@@ -43,7 +43,7 @@ EventSignal GeChangeMap::process(GameInfo& scope) {
 
     if(!m_preserve) {scope.close_map();}
     if(!scope.load_map(m_base_path + m_path, true)) {
-        Logger(Logger::fatal) << "Failed at loading map at path: " << m_path << std::endl;
+        Logger(Logger::fatal) << "Failed at loading map at path: " << m_path;
         return EventSignal::abort;
     }
     return EventSignal::end;
@@ -71,12 +71,12 @@ tinyxml2::XMLError GeChangeMap::init(tinyxml2::XMLElement* source, MapData& base
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
     m_base_path = base_map.get_file_path();

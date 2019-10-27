@@ -60,13 +60,13 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             else if(name == "SUSPENDED") {
                 eResult = p_property->QueryBoolAttribute("value", &m_suspended);
                 if(eResult != XML_SUCCESS) {
-                    Logger(Logger::error) << "Failed parsing SUSPENDED attribute" << std::endl;
+                    Logger(Logger::error) << "Failed parsing SUSPENDED attribute";
                     return eResult;
                 }
             }
 
             else {
-                Logger(Logger::error) << "Unknown tile property \""<< p_name << "\" specified" << std::endl;
+                Logger(Logger::error) << "Unknown tile property \""<< p_name << "\" specified";
                 return XML_ERROR_PARSING_ATTRIBUTE;
             }
             p_property = p_property->NextSiblingElement("property");
@@ -88,12 +88,12 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             // Initialize actor from the XMLElement*
             eResult = m_obj_grid.back().parse_base(p_object);
             if(eResult != XML_SUCCESS) {
-                Logger(Logger::error) << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid << std::endl;
+                Logger(Logger::error) << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
             eResult = m_obj_grid.back().parse_properties(p_object);
             if(eResult != XML_SUCCESS) {
-                Logger(Logger::error) << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid << std::endl;
+                Logger(Logger::error) << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
         }
@@ -101,7 +101,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
 
             Primitive* p = Primitive::parse(p_object, mapdata);
             if(p == nullptr) {
-                Logger(Logger::warning) << "Couldn't load primitive object with id " << p_object->Attribute("id") << ", skipping" << std::endl;
+                Logger(Logger::warning) << "Couldn't load primitive object with id " << p_object->Attribute("id") << ", skipping";
             }
             else {
                 add_primitive(p);

@@ -94,14 +94,14 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
 
             int result = uncompress(decomp_bytes.data(), &decomp_size, bytes.data(), bytes.size());
             if(result != Z_OK) {
-                Logger(Logger::error) << "Failed decompressing zlip map data! Error code: " << result << std::endl;
+                Logger(Logger::error) << "Failed decompressing zlip map data! Error code: " << result;
                 return XML_ERROR_PARSING_TEXT;
             }
             bytes = decomp_bytes;
         }
 
         else {
-            Logger(Logger::error) << "Unsupported compression " << p_compression << " for base64 encoded map" << std::endl;
+            Logger(Logger::error) << "Unsupported compression " << p_compression << " for base64 encoded map";
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
 
@@ -141,7 +141,7 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
                     m_map_grid[i_y].push_back(tile_id);
                 }
                 else {
-                    Logger(Logger::error) << "Tile ids ended prematurely at x: " << i_x << " y: " << i_y << std::endl;
+                    Logger(Logger::error) << "Tile ids ended prematurely at x: " << i_x << " y: " << i_y;
                     return XML_ERROR_PARSING_TEXT;
                 }
             }
@@ -149,7 +149,7 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     }
 
     else {
-        Logger(Logger::error) << "Encoding type: " << p_encoding << " is not supported !" << std::endl;
+        Logger(Logger::error) << "Encoding type: " << p_encoding << " is not supported !";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

@@ -43,30 +43,30 @@ EventSignal AteMath::process(Actor& scope) {
 
     // Upfront error checking
     if(m_type1 != m_type2) {
-        Logger(Logger::error) << info() << " has two comparing values of different types!" << std::endl;
+        Logger(Logger::error) << info() << " has two comparing values of different types!";
         return EventSignal::abort;
     }
     if(m_equals && m_not_equal) {
-        Logger(Logger::error) << info() << " cant compare by equalness AND unequalness!" << std::endl;
+        Logger(Logger::error) << info() << " cant compare by equalness AND unequalness!";
         return EventSignal::abort;
     }
     if(m_bigger && m_smaller) {
-        Logger(Logger::error) << info() << " cant compare by bigger AND smaller!" << std::endl;
+        Logger(Logger::error) << info() << " cant compare by bigger AND smaller!";
         return EventSignal::abort;
     }
     if(m_not_equal && (m_bigger || m_smaller)) {
-        Logger(Logger::error) << info() << " != nullifies effect of < or >" << std::endl;
+        Logger(Logger::error) << info() << " != nullifies effect of < or >";
         return EventSignal::abort;
     }
     if(m_equals + m_bigger + m_smaller + m_not_equal == 0) {
-        Logger(Logger::error) << info() << " must specify at least one comparison operator" << std::endl;
+        Logger(Logger::error) << info() << " must specify at least one comparison operator";
         return EventSignal::abort;
     }
 
     // Discriminate cases by value type
     if(m_type1 == PropertyType::Boolean) {
         if(m_bigger || m_smaller) {
-            Logger(Logger::error) << info() << "can't compare boolian via < and >" << std::endl;
+            Logger(Logger::error) << info() << "can't compare boolian via < and >";
             return EventSignal::abort;
         }
         if( (m_equals && (m_bool1 == m_bool2)) || (m_not_equal && (m_bool1 != m_bool2)) ) {
@@ -141,12 +141,12 @@ tinyxml2::XMLError AteMath::init(tinyxml2::XMLElement* source, MapData& base_map
     XMLError eResult = parser.parse(source);
 
     if(m_name == "") {
-        Logger(Logger::error) << "Missing name property!" << std::endl;
+        Logger(Logger::error) << "Missing name property!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"" << std::endl;
+        Logger(Logger::error) << "Failed parsing event: \"" << m_name << "\"";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 

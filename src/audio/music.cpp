@@ -23,7 +23,7 @@ Music::Music(std::string path) :
 m_sound(Mix_LoadMUS(path.c_str()), Music::Deleter())
 {
     if(m_sound == nullptr) {
-        Logger(Logger::error) << "Failed to load music at: " << path << " ! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        Logger(Logger::error) << "Failed to load music at: " << path << " ! SDL_mixer Error: " << Mix_GetError();
     }
 }
 

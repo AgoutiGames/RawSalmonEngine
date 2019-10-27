@@ -295,7 +295,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi_e(tinyxml2::XMLElement
         return XML_SUCCESS;
     }
     else {
-        Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up" << std::endl;
+        Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -421,7 +421,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_multi(tinyxml2::XMLElement* 
         return XML_SUCCESS;
     }
     else {
-        Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up" << std::endl;
+        Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
@@ -533,7 +533,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_animation_type(tinyxml2::XML
     AnimationType anim = str_to_anim_type(value);
     if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
     if(anim == AnimationType::none) {
-        Logger(Logger::error) << "Cant count cycles or frames with Animation Type none!" << std::endl;
+        Logger(Logger::error) << "Cant count cycles or frames with Animation Type none!";
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
     *m_animation_type.at(name) = anim;
@@ -603,7 +603,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse(tinyxml2::XMLElement* source
 
         // std::cerr << "Now Parsing " << source->Attribute("name") << "\n";
         if(source->Attribute("name") == nullptr) {
-            Logger(Logger::error) << "Name of event property number: " << counter << " yields null!" << std::endl;
+            Logger(Logger::error) << "Name of event property number: " << counter << " yields null!";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
@@ -617,13 +617,13 @@ tinyxml2::XMLError PropertyParser<EventType>::parse(tinyxml2::XMLElement* source
                 continue;
             }
             else {
-                Logger(Logger::error) << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << std::endl;
+                Logger(Logger::error) << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter;
                 return result;
             }
         }
 
         if(no_match) {
-            Logger(Logger::error) << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter << std::endl;
+            Logger(Logger::error) << "Unknown event property \"" << source->Attribute("name") << "\" number: " << counter;
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
     }
@@ -644,7 +644,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_ignore_unknown(tinyxml2::XML
     for(int counter = 0; source != nullptr; source = source->NextSiblingElement("property")) {
 
         if(source->Attribute("name") == nullptr) {
-            Logger(Logger::error) << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!" << std::endl;
+            Logger(Logger::error) << "Name of event property \"" << source->Attribute("name") << "\" number: " << counter << " yields null!";
             return XML_ERROR_PARSING_ATTRIBUTE;
         }
 
@@ -658,7 +658,7 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_ignore_unknown(tinyxml2::XML
                 continue;
             }
             else {
-                Logger(Logger::error) << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter << std::endl;
+                Logger(Logger::error) << "Failed parsing event property \"" << source->Attribute("name") << "\" number: " << counter;
                 return result;
             }
         }

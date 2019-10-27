@@ -75,12 +75,12 @@ Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collect
 
     // Return error for unknown layer types
     else {
-        Logger(Logger::error) << "Unknown layer type: " << source->Name() << " !" << std::endl;
+        Logger(Logger::error) << "Unknown layer type: " << source->Name() << " !";
         eResult = XML_ERROR_PARSING_ATTRIBUTE;
     }
 
     if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed loading Layer: " << name << " !" << std::endl;
+        Logger(Logger::error) << "Failed loading Layer: " << name << " !";
         return nullptr;
     }
 

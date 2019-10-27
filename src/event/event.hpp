@@ -119,7 +119,7 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
     }
 
     if(get_dict().find(event_type) == get_dict().end()) {
-        Logger(Logger::error) << "Cant parse event of unknown type: " << event_type << std::endl;
+        Logger(Logger::error) << "Cant parse event of unknown type: " << event_type;
         return nullptr;
     }
 
@@ -129,19 +129,19 @@ Event<Scope>* Event<Scope>::parse(tinyxml2::XMLElement* source, MapData& base_ma
     if(p_properties != nullptr) {
         p_property = p_properties->FirstChildElement("property");
         if(p_property == nullptr) {
-            Logger(Logger::error) << "Missing first property in event with id: " << source->Attribute("id") << std::endl;
+            Logger(Logger::error) << "Missing first property in event with id: " << source->Attribute("id");
             return nullptr;
         }
     }
     else {
-        Logger(Logger::error) << "Error: Missing properties in event with id: " << source->Attribute("id") << std::endl;
+        Logger(Logger::error) << "Error: Missing properties in event with id: " << source->Attribute("id");
         return nullptr;
     }
 
     Event<Scope>* parsed_event = get_dict()[event_type]->clone();
     tinyxml2::XMLError result = parsed_event->init(p_property, base_map);
     if(result != tinyxml2::XMLError::XML_SUCCESS) {
-        Logger(Logger::error) << "Failed at parsing event of type:" << parsed_event->get_type() << " with tile id: " << source->Attribute("id") << std::endl;
+        Logger(Logger::error) << "Failed at parsing event of type:" << parsed_event->get_type() << " with tile id: " << source->Attribute("id");
         delete parsed_event;
         return nullptr;
     }
