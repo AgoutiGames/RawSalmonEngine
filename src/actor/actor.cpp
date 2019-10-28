@@ -333,10 +333,7 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
  * @brief Update the actor state
  */
 void Actor::update() {
-    if(m_first) {
-        m_first = false;
-        respond(Response::on_spawn);
-    }
+
     respond(Response::on_always);
     EventSignal sig = m_events.process_events(*this);
 

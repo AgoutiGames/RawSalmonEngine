@@ -241,7 +241,7 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
 }
 
 void ObjectLayer::add_actor(Actor a) {
-    a.respond(Response::on_activation);
+    a.respond(Response::on_spawn);
     m_obj_grid.push_back(a);
 }
 

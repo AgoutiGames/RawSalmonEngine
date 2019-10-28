@@ -108,7 +108,6 @@ class Actor{
         EventQueue<Actor> m_events;
 
         DataBlock m_data; ///< This holds custom user values by string
-        bool m_first = true;
 
         bool m_late_polling = false;
 };
