@@ -46,14 +46,14 @@ mp_tileset{ts}, m_clip{clp}
  *
  * Determines the tile type and calls the corresponding tile parsers
  */
-tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
+tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source, bool skip_properties) {
     using namespace tinyxml2;
 
     XMLError eResult;
 
     // Parse user specified properties of the tile (only speed right now)
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
-    if(p_tile_properties != nullptr) {
+    if(!skip_properties && p_tile_properties != nullptr) {
         XMLElement* p_property = p_tile_properties->FirstChildElement("property");
         while(p_property != nullptr) {
             const char* p_name;
@@ -131,6 +131,10 @@ tinyxml2::XMLError Tile::parse_tile(tinyxml2::XMLElement* source) {
 tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
+
+    // First parse base tile info
+    eResult = parse_tile(source, true);
+    if(eResult != XML_SUCCESS) {return eResult;}
 
     // Initialize temporary variables
     std::string actor_name = "_";
@@ -232,36 +236,8 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
         return XML_NO_ATTRIBUTE;
     }
 
-    // Parse the animation info
-    XMLElement* p_animation = source->FirstChildElement("animation");
-    if(p_animation != nullptr) {
-        XMLElement* p_frame = p_animation->FirstChildElement("frame");
-
-        m_animated = true;
-
-        // Parse each animation frame
-        while(p_frame != nullptr) {
-            unsigned anim_tile_id;
-            unsigned duration;
-            eResult = p_frame->QueryUnsignedAttribute("tileid", &anim_tile_id);
-            if(eResult != XML_SUCCESS) return eResult;
-            eResult = p_frame->QueryUnsignedAttribute("duration", &duration);
-            if(eResult != XML_SUCCESS) return eResult;
-
-            // We don't use local, but global tile ids for animation
-            anim_tile_id += mp_tileset->get_first_gid();
-
-            // The actual registration of the frame
-            m_anim_ids.push_back(static_cast<Uint32>(anim_tile_id));
-            m_durations.push_back(duration);
-
-            // Go to next frame
-            p_frame = p_frame->NextSiblingElement("frame");
-        }
-    }
-    else {
+    if(!m_animated) {
         Logger(Logger::warning) << "Missing tile animation on actor animation for " << actor_name << " -> will use static tile instead";
-        // return XML_NO_ATTRIBUTE;
     }
 
     if(actor_name == "_") {
@@ -284,21 +260,6 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
         return XML_ERROR_PARSING_ATTRIBUTE;
     }
 
-    else {
-        // Parse the hitboxes of the actor animation
-        XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
-        if(p_objgroup != nullptr) {
-            XMLElement* p_object = p_objgroup->FirstChildElement("object");
-            if(p_object != nullptr) {
-                eResult = parse::hitboxes(p_object, m_hitboxes);
-                if(eResult != XML_SUCCESS) {
-                    Logger(Logger::error) << "Failed at parsing hitboxes of actor animation for actor " << actor_name;
-                    return eResult;
-                }
-            }
-        }
-    }
-
     // Add this animated tile to the actor template
     MapData& base_map = mp_tileset->get_ts_collection().get_mapdata();
     base_map.add_actor_animation(actor_name, anim, dir, this);
@@ -317,6 +278,10 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
 tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source) {
     using namespace tinyxml2;
     XMLError eResult;
+
+    // First parse base tile info
+    eResult = parse_tile(source, true);
+    if(eResult != XML_SUCCESS) {return eResult;}
 
     eResult = mp_tileset->get_ts_collection().get_mapdata().add_actor_template(source, this);
     if(eResult != XML_SUCCESS) {

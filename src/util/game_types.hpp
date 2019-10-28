@@ -33,6 +33,7 @@ enum class Direction {
     left,
     right,
     current, ///< Keyword for last used direction
+    none,
     invalid,
 };
 

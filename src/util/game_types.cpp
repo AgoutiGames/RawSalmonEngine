@@ -49,6 +49,7 @@ Direction str_to_direction(const std::string& name) {
     if(name == "LEFT") return Direction::left;
     if(name == "RIGHT") return Direction::right;
     if(name == "CURRENT") return Direction::current;
+    if(name == "NONE") return Direction::none;
     else return Direction::invalid;
 }
 

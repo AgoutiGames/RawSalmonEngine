@@ -45,7 +45,7 @@ public:
     SDL_Rect get_hitbox(std::string name = "COLLIDE", bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
 
-    tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source);
+    tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, bool skip_properties = false);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
     tinyxml2::XMLError parse_actor_templ(tinyxml2::XMLElement* source);
 
