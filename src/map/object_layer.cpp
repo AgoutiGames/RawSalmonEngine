@@ -81,7 +81,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
 
         if(eResult == XML_SUCCESS && mapdata.is_actor(gid)) {
 
-            add_actor(Actor(mapdata.get_actor(gid)));
+            add_actor(mapdata.get_actor(gid));
 
             // m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
 

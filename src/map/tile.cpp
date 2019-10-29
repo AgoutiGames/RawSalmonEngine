@@ -178,7 +178,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
                     if(anim == AnimationType::none) {
-                        Logger(Logger::error) << "You can't define a specific animation type as no animation";
+                        Logger(Logger::error) << "Animation type \"NONE\" is reserved for the directionless symbolic tile of " << actor_name;
                         Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }

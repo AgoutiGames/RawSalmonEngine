@@ -112,6 +112,27 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
 
         }
 
+        // Parse animation type
+        else if(name == "ANIMATION_TYPE") {
+            const char* p_anim_type = p_property->Attribute("value");
+            if(p_anim_type != nullptr) {
+                AnimationType anim = str_to_anim_type(std::string(p_anim_type));
+                if(anim == AnimationType::invalid) {
+                    Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\"";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+                if(anim == AnimationType::current) {
+                    Logger(Logger::error) << "You can't define a specific animation type as the current one";
+                    return XML_WRONG_ATTRIBUTE_TYPE;
+                }
+                m_anim_state = anim;
+            }
+            else {
+                Logger(Logger::error) << "Missing animation type";
+                return XML_NO_ATTRIBUTE;
+            }
+        }
+
         else if(name == "LATE_POLLING") {
             XMLError eResult = p_property->QueryBoolAttribute("value", &m_late_polling);
             if(eResult != XML_SUCCESS) {
@@ -196,41 +217,21 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
 }
 
 /**
- * @brief Initialize actors hitboxes from XML info
- * @param source The @c XMLElement which contains the information
- * @return an @c XMLError object which indicates success or error type
- */
-tinyxml2::XMLError Actor::parse_hitbox(tinyxml2::XMLElement* source) {
-    using namespace tinyxml2;
-    XMLError eResult;
-
-    // Parse the default hitbox
-    XMLElement* p_objgroup = source->FirstChildElement("objectgroup");
-    if(p_objgroup != nullptr) {
-        XMLElement* p_object = p_objgroup->FirstChildElement("object");
-        if(p_object != nullptr) {
-            eResult = parse::hitboxes(p_object, m_hitbox);
-            if(eResult != XML_SUCCESS) {
-                Logger(Logger::error) << "Failed at parsing hitbox for actor template: " << m_type;
-                return eResult;
-            }
-        }
-    }
-    return XML_SUCCESS;
-}
-
-/**
  * @brief Render the actor at it's position relative to the camera position
  * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
  */
 void Actor::render(int x_cam, int y_cam) const {
+    const Tile* current_tile = nullptr;
+    if(m_anim_state != AnimationType::none && valid_anim_state()) {current_tile = &m_animations.at(m_anim_state).at(m_direction);}
+    else {current_tile = &m_base_tile;}
+
     if(m_angle > 0.1 || m_angle < -0.1) {
         SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-        m_animations.at(m_anim_state).at(m_direction).render_extra(dest, m_angle, false, false);
+        current_tile->render_extra(dest, m_angle, false, false);
     }
     else {
         SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-        m_animations.at(m_anim_state).at(m_direction).render(dest);
+        current_tile->render(dest);
     }
 }
 
@@ -349,46 +350,46 @@ void Actor::update() {
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
  */
 bool Actor::animate(AnimationType anim, Direction dir, float speed) {
-    if(anim == AnimationType::none) {return false;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
-    if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
-        return false;
+
+    Tile* current_tile = nullptr;
+    if(anim == AnimationType::none) {current_tile = &m_base_tile;}
+    else if(valid_anim_state(anim,dir)) {
+        current_tile = &m_animations[anim][dir];
     }
-    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
-        return false;
-    }
+    else {return false;}
+
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;
         m_direction = dir;
-        m_animations[m_anim_state][m_direction].init_anim();
+        current_tile->init_anim();
     }
-    return m_animations[m_anim_state][m_direction].push_anim(speed);
+
+    return current_tile->push_anim(speed);
 }
 
 /**
  * @brief Set animation tile to specific frame
  */
 bool Actor::set_animation(AnimationType anim, Direction dir, int frame) {
-    if(anim == AnimationType::none) {return false;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
-    if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
-        return false;
+
+    Tile* current_tile = nullptr;
+    if(anim == AnimationType::none) {current_tile = &m_base_tile;}
+    else if(valid_anim_state(anim,dir)) {
+        current_tile = &m_animations[anim][dir];
     }
-    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
-        return false;
-    }
+    else {return false;}
+
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;
         m_direction = dir;
-        m_animations[m_anim_state][m_direction].init_anim();
+        current_tile->init_anim();
     }
-    return m_animations[m_anim_state][m_direction].set_frame(frame);
+
+    return current_tile->set_frame(frame);
 }
 
 /**
@@ -398,23 +399,23 @@ bool Actor::set_animation(AnimationType anim, Direction dir, int frame) {
  * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger frame
  */
 AnimSignal Actor::animate_trigger(AnimationType anim, Direction dir, float speed) {
-    if(anim == AnimationType::none) {return AnimSignal::none;}
     if(anim == AnimationType::current) {anim = m_anim_state;}
     if(dir == Direction::current) {dir = m_direction;}
-    if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
-        return AnimSignal::missing;
+
+    Tile* current_tile = nullptr;
+    if(anim == AnimationType::none) {current_tile = &m_base_tile;}
+    else if(valid_anim_state(anim,dir)) {
+        current_tile = &m_animations[anim][dir];
     }
-    if(m_animations[anim].find(dir) == m_animations[anim].end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
-        return AnimSignal::missing;
-    }
+    else {return AnimSignal::missing;}
+
     if(m_anim_state != anim || m_direction != dir) {
         m_anim_state = anim;
         m_direction = dir;
-        m_animations[m_anim_state][m_direction].init_anim();
+        current_tile->init_anim();
     }
-    return m_animations[m_anim_state][m_direction].push_anim_trigger(speed);
+
+    return current_tile->push_anim_trigger(speed);
 }
 
 /**
@@ -473,6 +474,20 @@ bool Actor::respond(Response r, Cause c) {
     }
 }
 
+/// Checks if the currently set animation state and direction are existin
+bool Actor::valid_anim_state(AnimationType anim, Direction dir) const {
+    //if(m_anim_state == AnimationType::none) {return true;}
+    if(m_animations.find(anim) == m_animations.end()) {
+        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
+        return false;
+    }
+    if(m_animations.at(anim).find(dir) == m_animations.at(anim).end()) {
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
+        return false;
+    }
+    return true;
+}
+
 /**
  * @brief Returns the active hitbox of the supplied type
  * @param type The supplied type
@@ -483,24 +498,22 @@ bool Actor::respond(Response r, Cause c) {
  * and returns it instead.
  */
 SDL_Rect Actor::get_hitbox(std::string type) const {
-    SDL_Rect hitbox = m_animations.at(m_anim_state).at(m_direction).get_hitbox(type);
-    if(SDL_RectEmpty(&hitbox)) {
-        if(m_hitbox.find(type) == m_hitbox.end()) {
-            // std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
-            return SDL_Rect{0,0,0,0};
-        }
-        else{
-            hitbox = m_hitbox.at(type);
-            hitbox.x += get_x();
-            hitbox.y += get_y() - get_h();
-            return hitbox;
-        }
+
+
+    SDL_Rect current_hitbox = {0,0,0,0};
+    // Try extracting hitbox from currenty active animated tile
+    if(m_anim_state != AnimationType::none && valid_anim_state()) {
+        current_hitbox = m_animations.at(m_anim_state).at(m_direction).get_hitbox(type);
     }
-    else {
-        hitbox.x += get_x();
-        hitbox.y += get_y() - get_h();
-        return hitbox;
-    }
+    // If that failed, extract hitbox from base actor tile
+    if(SDL_RectEmpty((&current_hitbox))) {current_hitbox = m_base_tile.get_hitbox(type);}
+    // If that also failed just return the empty hitbox
+    if(SDL_RectEmpty((&current_hitbox))) {return current_hitbox;}
+
+    // Otherwise adjust hitbox position and return
+    current_hitbox.x += get_x();
+    current_hitbox.y += get_y() - get_h();
+    return current_hitbox;
 }
 
 /**
@@ -510,10 +523,15 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
  * animation and its animation frame are added. Specific ones may override general ones.
  */
 const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
-    std::map<std::string, SDL_Rect> hitboxes = m_hitbox;
-    for(const auto& hitbox_pair: m_animations.at(m_anim_state).at(m_direction).get_hitboxes()) {
-        hitboxes[hitbox_pair.first] = hitbox_pair.second;
+    // Get all hitboxes from base tile
+    std::map<std::string, SDL_Rect> hitboxes = m_base_tile.get_hitboxes();
+    // If there is a valid animation tile, load those "ontop" of the other hitboxes
+    if(m_anim_state != AnimationType::none && valid_anim_state()) {
+        for(const auto& hitbox_pair: m_animations.at(m_anim_state).at(m_direction).get_hitboxes()) {
+            hitboxes[hitbox_pair.first] = hitbox_pair.second;
+        }
     }
+    // Adjust each hibox position and return
     for(auto& hitbox_pair : hitboxes) {
         hitbox_pair.second.x += get_x();
         hitbox_pair.second.y += get_y() - get_h();

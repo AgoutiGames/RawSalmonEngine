@@ -43,7 +43,7 @@ EventSignal GeChangeMap::process(GameInfo& scope) {
 
     if(!m_preserve) {scope.close_map();}
     if(!scope.load_map(m_base_path + m_path, true)) {
-        Logger(Logger::fatal) << "Failed at loading map at path: " << m_path;
+        Logger(Logger::fatal) << "Failed at loading map at path: " << m_base_path + m_path;
         return EventSignal::abort;
     }
     return EventSignal::end;

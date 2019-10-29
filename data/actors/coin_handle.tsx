@@ -4,6 +4,8 @@
  <tile id="0" type="ACTOR_TEMPLATE">
   <properties>
    <property name="ACTOR_NAME" value="COIN"/>
+   <property name="ANIMATION_TYPE" value="IDLE"/>
+   <property name="DIRECTION" value="NONE"/>
    <property name="ON_COLLISION" value="CoinPickupSafe"/>
   </properties>
   <objectgroup draworder="index">

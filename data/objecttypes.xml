@@ -8,7 +8,8 @@
  </objecttype>
  <objecttype name="ACTOR_TEMPLATE" color="#00007f">
   <property name="ACTOR_NAME" type="string"/>
-  <property name="DIRECTION" type="string" default="DOWN"/>
+  <property name="ANIMATION_TYPE" type="string" default="NONE"/>
+  <property name="DIRECTION" type="string" default="NONE"/>
   <property name="LATE_POLLING" type="bool" default="false"/>
   <property name="ON_ACTIVATION" type="string"/>
   <property name="ON_ALWAYS" type="string"/>
@@ -40,6 +41,7 @@
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
   <property name="SPEED" type="float" default="1"/>
+  <property name="STOP_ON_LAST_FRAME" type="bool" default="false"/>
  </objecttype>
  <objecttype name="AeDecelerate" color="#a0a0a4">
   <property name="NAME" type="string"/>
@@ -155,6 +157,15 @@
   <property name="PATH" type="file" default=""/>
   <property name="PRIORITY" type="string" default="MEDIUM"/>
   <property name="SIGNAL" type="string" default="NEXT"/>
+ </objecttype>
+ <objecttype name="AeSpawnActor" color="#a0a0a4">
+  <property name="ACTOR_NAME" type="string"/>
+  <property name="LAYER_NAME" type="string"/>
+  <property name="NAME" type="string"/>
+  <property name="PRIORITY" type="string" default="MEDIUM"/>
+  <property name="SPAWN_NAME" type="string"/>
+  <property name="X_POS" type="int" default="0"/>
+  <property name="Y_POS" type="int" default="0"/>
  </objecttype>
  <objecttype name="AeSpawnText" color="#a0a0a4">
   <property name="BOLD" type="bool" default="false"/>

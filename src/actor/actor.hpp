@@ -40,13 +40,12 @@ class MapData;
 class Actor{
 
     public:
-        Actor() = default;
+        // Actor() = default;
         Actor(MapData* map);
 
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
         tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
-        tinyxml2::XMLError parse_hitbox(tinyxml2::XMLElement* source);
         void update();
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
         bool set_animation(AnimationType anim = AnimationType::current, Direction dir = Direction::current, int frame = 0);
@@ -82,6 +81,10 @@ class Actor{
         bool late_polling() const {return m_late_polling;}
         double get_angle() const {return m_angle;}
         void set_angle(double angle) {m_angle = angle;}
+        void set_tile(Tile tile) {m_base_tile = tile;}
+        bool valid_anim_state(AnimationType anim, Direction dir) const;
+        bool valid_anim_state() const {return valid_anim_state(m_anim_state, m_direction);}
+        bool is_valid() const {return m_base_tile.is_valid();}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
@@ -98,10 +101,10 @@ class Actor{
 
         double m_angle = 0.0;
 
-        AnimationType m_anim_state = AnimationType::idle; ///< Currently active animation
-        Direction m_direction = Direction::down; ///< Current direction facing
-        std::map<std::string, SDL_Rect> m_hitbox; ///< All hitboxes adressed by type, origin at upper left corner -> must subtract tile height!
+        AnimationType m_anim_state = AnimationType::none; ///< Currently active animation
+        Direction m_direction = Direction::none; ///< Current direction facing
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
+        Tile m_base_tile;
 
         EventCollection<Actor, Response> m_response; ///< EventCollection which yields events for response values
 

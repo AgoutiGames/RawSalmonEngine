@@ -5,7 +5,7 @@
   <properties>
    <property name="ACTOR_NAME" value="COIN"/>
    <property name="ANIMATION_TYPE" value="WALK"/>
-   <property name="DIRECTION" value="DOWN"/>
+   <property name="DIRECTION" value="NONE"/>
   </properties>
   <animation>
    <frame tileid="4" duration="100"/>
@@ -19,7 +19,7 @@
   <properties>
    <property name="ACTOR_NAME" value="COIN"/>
    <property name="ANIMATION_TYPE" value="IDLE"/>
-   <property name="DIRECTION" value="DOWN"/>
+   <property name="DIRECTION" value="NONE"/>
   </properties>
  </tile>
 </tileset>

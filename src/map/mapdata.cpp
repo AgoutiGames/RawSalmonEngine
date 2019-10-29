@@ -93,6 +93,13 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         return eResult;
     }
 
+    for(auto& actor_pair : m_actor_templates) {
+        if(!actor_pair.second.is_valid()) {
+            Logger(Logger::error) << "Actor called: " << actor_pair.first << " failed to properly parse! Aborting!";
+            return XML_ERROR_MISMATCHED_ELEMENT;
+        }
+    }
+
     // Get the first Element that isn't a tileset (can be layer, imagelayer or objectgroup)
     XMLElement* pLa;
     for(pLa = pMap->FirstChildElement("tileset");
@@ -388,7 +395,10 @@ unsigned MapData::get_h() const {
  * @param tile A pointer to the corresponding animation tile
  */
 void MapData::add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile) {
-    Actor& temp = m_actor_templates[name];
+    // If actor template doesn't exist, construct it!
+    if(m_actor_templates.find(name) == m_actor_templates.end()) {m_actor_templates.insert(std::make_pair(name, Actor(this)));}
+
+    Actor& temp = m_actor_templates.at(name);
     auto& animations = temp.get_animation_container();
     animations[anim][dir] = *tile;
     animations[anim][dir].init_anim();
@@ -404,6 +414,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     using namespace tinyxml2;
     XMLError eResult;
 
+    // First parse properties into dummy actor simply to retrieve type
     Actor temp(this);
     eResult = temp.parse_properties(source);
     if(eResult != XML_SUCCESS) {
@@ -411,29 +422,31 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
         return eResult;
     }
 
-    eResult = temp.parse_hitbox(source);
-    if(eResult != XML_SUCCESS) {
-        Logger(Logger::error) << "Failed parsing hitbox of actor of type: " << temp.get_type();
-        return eResult;
-    }
-
     if(temp.get_type() == "") {
         Logger(Logger::error) << "Actor template with is missing a type!";
         return XML_NO_ATTRIBUTE;
     }
-    temp.set_w(tile->get_tileset().get_tile_width());
-    temp.set_h(tile->get_tileset().get_tile_height());
 
-    // Awkward animation transfer if the animation information was there before the actor template
-    Actor& temp2 = m_actor_templates[temp.get_type()];
-    auto& animations2 = temp2.get_animation_container();
-    auto& animations = temp.get_animation_container();
-    animations = animations2;
-    temp2 = temp;
+    // If actor template doesn't exist, construct it!
+    std::string name = temp.get_type();
+    if(m_actor_templates.find(name) == m_actor_templates.end()) {m_actor_templates.insert(std::make_pair(name, Actor(this)));}
 
+    // Parse the real actor
+    Actor& current_actor = m_actor_templates.at(name);
 
-    // Store the parsed actor in the actor templates map
-    //m_actor_templates[temp.get_type()] = temp;
+    eResult = current_actor.parse_properties(source);
+    if(eResult != XML_SUCCESS) {
+        Logger(Logger::error) << "Failed parsing properties of actor of type: " << current_actor.get_type();
+        return eResult;
+    }
+    if(current_actor.get_type() == "") {
+        Logger(Logger::error) << "Actor template with is missing a type!";
+        return XML_NO_ATTRIBUTE;
+    }
+
+    current_actor.set_w(tile->get_tileset().get_tile_width());
+    current_actor.set_h(tile->get_tileset().get_tile_height());
+    current_actor.set_tile(*tile);
 
     // Make gid an alias of actor template type name
     m_gid_to_actor_temp_name[m_ts_collection.get_gid(tile)] = temp.get_type();

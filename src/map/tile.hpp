@@ -56,6 +56,7 @@ public:
     bool set_frame(int anim_frame, Uint32 time = SDL_GetTicks());
     int get_frame_count() const {return m_anim_ids.size();}
     int get_current_frame() const {return m_current_id;}
+    bool is_valid() const {return mp_tileset != nullptr;}
 
     std::string get_type() const {return m_type;}
     Tileset& get_tileset() {return *mp_tileset;}

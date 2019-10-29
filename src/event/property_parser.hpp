@@ -532,10 +532,6 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_animation_type(tinyxml2::XML
     std::string value(p_value);
     AnimationType anim = str_to_anim_type(value);
     if(anim == AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-    if(anim == AnimationType::none) {
-        Logger(Logger::error) << "Cant count cycles or frames with Animation Type none!";
-        return XML_ERROR_PARSING_ATTRIBUTE;
-    }
     *m_animation_type.at(name) = anim;
     return XML_SUCCESS;
 }
