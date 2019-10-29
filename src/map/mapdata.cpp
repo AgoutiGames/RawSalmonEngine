@@ -93,6 +93,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         return eResult;
     }
 
+    // Check if all actor templates properly initiated
     for(auto& actor_pair : m_actor_templates) {
         if(!actor_pair.second.is_valid()) {
             Logger(Logger::error) << "Actor called: " << actor_pair.first << " failed to properly parse! Aborting!";

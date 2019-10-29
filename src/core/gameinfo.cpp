@@ -132,6 +132,7 @@ bool GameInfo::load_map(std::string mapfile, bool absolute) {
     }
     else {
         Logger(Logger::error) << "Failed loading map:" << mapfile;
+        m_maps.pop();
         return false;
     }
 }
@@ -206,8 +207,10 @@ bool GameInfo::update() {
  * @brief Draws the current map to screen
  */
 void GameInfo::render() {
-    m_maps.top().render();
-    SDL_RenderPresent(m_renderer);
+    if(!m_maps.empty()) {
+        m_maps.top().render();
+        SDL_RenderPresent(m_renderer);
+    }
 }
 
 void GameInfo::update_path() {
