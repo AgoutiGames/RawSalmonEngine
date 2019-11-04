@@ -162,7 +162,10 @@ bool GameInfo::update() {
 
     //Event handler
     SDL_Event e;
-    InputHandler handler = m_maps.top().get_input_handler();
+    InputHandler& handler = m_maps.top().get_input_handler();
+
+    // Reset input information from last frame
+    handler.reset();
 
     while( SDL_PollEvent( &e ) != 0 ) {
         //User requests quit

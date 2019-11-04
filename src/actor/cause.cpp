@@ -28,13 +28,6 @@ Cause::Cause() :
 
 }
 
-// Constructor for keypress
-Cause::Cause(SDL_Keysym key) :
- type{CauseType::key}
-{
-    data.key = key;
-}
-
 // Constructor for tile
 Cause::Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox) :
  type{CauseType::tile}
@@ -54,10 +47,9 @@ Cause::Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
 }
 
 // Constructor for mouse
-Cause::Cause(MouseState mousestate, std::string my_hitbox) :
+Cause::Cause(std::string my_hitbox) :
  type{CauseType::mouse}
 {
-    data.mouse = mousestate;
     my_hitbox_name = my_hitbox;
 }
 

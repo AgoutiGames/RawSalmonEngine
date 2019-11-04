@@ -250,8 +250,12 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
     XMLError eResult;
     XMLElement* p_tile = source->FirstChildElement("tile");
     while(p_tile != nullptr) {
+        // Safely parse type
+        const char* p_type = p_tile->Attribute("type");
+        std::string type;
+        if(p_type != nullptr) {type = p_type;}
         // Parse key mapping
-        if(std::string(p_tile->Attribute("type")) == "KEY_MAPPING"){
+        if(type == "KEY_MAPPING"){
             bool up = false;
             bool down = false;
             bool sustained = false;
@@ -330,14 +334,8 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
         }
 
         // Parse events
-        else {
-
-            std::string event_type = p_tile->Attribute("type");
-            if(event_type == "") {
-                Logger(Logger::error) << "Missing event type at Tile ID: " << p_tile->Attribute("id");
-                return XML_ERROR_PARSING;
-            }
-            const char identifier = event_type.front();
+        else if (type != "") {
+            const char identifier = type.front();
             switch (identifier) {
                 case 'A': {
                     std::pair<std::string, SmartEvent<Actor>> event;
@@ -385,11 +383,17 @@ tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData
                 }
 
                 default: {
-                    Logger(Logger::error) << "Unknown event type: " << event_type << " at Tile ID: " << p_tile->Attribute("id");
+                    Logger(Logger::error) << "Unknown event type: " << type << " at Tile ID: " << p_tile->Attribute("id");
                     return XML_ERROR_PARSING;
                 }
             }
         }
+
+        else {
+            Logger(Logger::warning) << "Missing event type at Tile ID: " << p_tile->Attribute("id") << ", skipping";
+            //return XML_ERROR_PARSING;
+        }
+
         p_tile = p_tile->NextSiblingElement("tile");
     }
     return XML_SUCCESS;

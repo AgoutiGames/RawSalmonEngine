@@ -49,10 +49,6 @@ bool InputHandler::register_key(SDL_Keycode key, std::string event, bool sustain
                 return false;
             }
             SmartEvent<Actor> event_data = m_mapdata.get_event_convert_actor(event);
-            SDL_Keysym temp;
-            temp.sym = key;
-            temp.scancode = scancode;
-            event_data->set_cause(Cause(temp));
             m_key_sustained.register_event(key, event_data);
         }
         if(up) {
@@ -74,7 +70,6 @@ bool InputHandler::process_key_down(SDL_KeyboardEvent  e) {
     Actor* target = m_mapdata.fetch_actor(m_mapdata.get_key_target());
     if(target != nullptr && m_key_down.check_event(e.keysym.sym)) {
         SmartEvent<Actor> event = m_key_down.get_event(e.keysym.sym);
-        event->set_cause(Cause(e.keysym));
         target->get_event_queue().add_event(event);
         return true;
     }
@@ -90,7 +85,6 @@ bool InputHandler::process_key_up(SDL_KeyboardEvent  e) {
     Actor* target = m_mapdata.fetch_actor(m_mapdata.get_key_target());
     if(target != nullptr && m_key_up.check_event(e.keysym.sym)) {
         SmartEvent<Actor> event = m_key_up.get_event(e.keysym.sym);
-        event->set_cause(Cause(e.keysym));
         target->get_event_queue().add_event(event);
         return true;
     }
@@ -148,6 +142,7 @@ void InputHandler::prime_mouse_movement(SDL_MouseMotionEvent event) {
     m_mouse.y_pos = event.y;
 }
 
+/// @note Always also polls the current mouse position
 void InputHandler::prime_mouse_pressed() {
     Uint32 buttons = SDL_GetMouseState(&m_mouse.x_pos, &m_mouse.y_pos);
     if(buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) {m_mouse.left.down = true;}
@@ -175,10 +170,8 @@ void InputHandler::finalize_mouse_state() {
         for(std::pair<std::string, SDL_Rect> hitbox : a->get_hitboxes()) {
             if(SDL_PointInRect(&click,&hitbox.second)) {
                 // Trigger the OnMouse response
-                a->respond(Response::on_mouse, Cause(m_mouse,hitbox.first));
+                a->respond(Response::on_mouse, Cause(hitbox.first));
             }
         }
     }
-    // Finally dont forget resetting mouse state for next frame
-    m_mouse = MouseState();
 }

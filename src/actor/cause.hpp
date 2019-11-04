@@ -37,7 +37,6 @@ class Cause{
     private:
         enum class CauseType{
             none,
-            key,
             tile,
             actor,
             mouse,
@@ -45,13 +44,11 @@ class Cause{
 
     public:
         Cause();
-        Cause(SDL_Keysym key);
+        Cause(std::string my_hitbox);
         Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox);
         Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox);
-        Cause(MouseState mousestate, std::string my_hitbox = "");
 
         // Checks against tile types
-        bool key() const {return type == CauseType::key;}
         bool tile() const {return type == CauseType::tile;}
         bool actor() const {return type == CauseType::actor;}
         bool mouse() const {return type == CauseType::mouse;}
@@ -61,10 +58,8 @@ class Cause{
         std::string other_hitbox() const {return other_hitbox_name;}
 
         // Return cause objects
-        const SDL_Keysym get_key() const {return type == CauseType::key ? data.key : SDL_Keysym();}
         Actor* get_actor() const {return type == CauseType::actor ? data.actor : nullptr;}
         Tile* get_tile() const {return type == CauseType::tile ? data.tile : nullptr;}
-        MouseState get_mouse() const {return type == CauseType::mouse ? data.mouse : MouseState();}
 
         std::string get_type() const;
 
@@ -72,10 +67,8 @@ class Cause{
         CauseType type;
 
         union{
-            SDL_Keysym key;
             Actor* actor;
             Tile* tile;
-            MouseState mouse{};
         } data;
 
         std::string my_hitbox_name = "";

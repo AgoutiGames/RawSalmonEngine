@@ -41,15 +41,18 @@ EventSignal AteMouseButtons::process(Actor& scope) {
     // Syncs members with possibly linked DataBlock variables
     listen(m_property_listener, *this, scope);
 
+
     if(!m_cause.mouse()) {
         Logger(Logger::error) << info() << " not triggered by mouse event!";
         return EventSignal::abort;
     }
+
     if(m_mouse_button_index > 5 || m_mouse_button_index < 1) {
         Logger(Logger::error) << info() << " triggers on invalid mouse button number: " << m_mouse_button_index;
         return EventSignal::abort;
     }
-    MouseState mouse = m_cause.get_mouse();
+    MouseState mouse = scope.get_map().get_input_handler().get_mouse_state();
+
     MouseButtonState button;
     switch(m_mouse_button_index) {
         case 1: {button = mouse.left; break;}

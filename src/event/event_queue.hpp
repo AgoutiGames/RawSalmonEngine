@@ -44,16 +44,13 @@ class EventQueue {
         Uint32 get_cooldown(std::string name) const {return m_timestamp.at(name);}
 
         void block_event(std::string name) {m_block[name] = true;}
-        void block_event(SDL_Keycode key) {m_block_key[key] = true;}
 
         void unblock_event(std::string name) {m_block[name] = false;}
-        void unblock_event(SDL_Keycode key) {m_block_key[key] = false;}
 
         bool is_empty() const {return m_event_pipeline.empty();}
         int get_size() const {return m_event_pipeline.size();}
 
         bool is_blocked(std::string name) const;
-        bool is_blocked(const SDL_Keysym& key) const;
         bool in_cooldown(std::string name) const;
 
         std::vector<SmartEvent<Scope>>& get_events() {return m_event_pipeline;}
@@ -61,7 +58,6 @@ class EventQueue {
     private:
         std::map<std::string, Uint32> m_timestamp; ///< Map holding timestamps for use as cooldown functionality
         std::map<std::string, bool> m_block; ///< Map determinig if the event pipeline is blocked for a specific event or event type
-        std::map<SDL_Keycode, bool> m_block_key; ///< Map determinig if the event pipeline is blocked for a specific key
         std::vector<SmartEvent<Scope>> m_event_pipeline; ///< Vector of current events to be processed
 
         std::vector<SmartEvent<Scope>> m_event_buffer; ///< Added events are buffered and released right before processing
@@ -104,7 +100,6 @@ EventSignal EventQueue<Scope>::process_events(Scope& target) {
 template<class Scope>
 void EventQueue<Scope>::add_event_internal(SmartEvent<Scope> event) {
     if(!is_blocked(event->get_type()) && !is_blocked(event->get_name())
-       && !is_blocked(event->get_cause().get_key())
        && !in_cooldown(event->get_type()) && !in_cooldown(event->get_name())) {
         if(!is_empty()) {
             auto it = m_event_pipeline.end();
@@ -153,21 +148,6 @@ bool EventQueue<Scope>::is_blocked(std::string name) const {
     }
     else {
         return m_block.at(name);
-    }
-}
-
-/**
- * @brief Return if event pipeline is blocked for a specific key
- * @param key The key which gets checked
- * @return @c bool indicating if key is currently blocked
- */
-template<class Scope>
-bool EventQueue<Scope>::is_blocked(const SDL_Keysym& key) const {
-    if(m_block_key.find(key.sym) == m_block_key.end()) {
-        return false;
-    }
-    else {
-        return m_block_key.at(key.sym);
     }
 }
 
