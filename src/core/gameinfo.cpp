@@ -87,7 +87,7 @@ bool GameInfo::init() {
 				SDL_SetRenderDrawColor( m_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 				//Initialize PNG loading
-				int imgFlags = IMG_INIT_PNG;
+				int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
 				if( !( IMG_Init( imgFlags ) & imgFlags ) )
 				{
 					Logger(Logger::error) << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError();
