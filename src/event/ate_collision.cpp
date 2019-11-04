@@ -63,6 +63,14 @@ EventSignal AteCollision::process(Actor& scope) {
             return EventSignal::abort;
         }
     }
+    else if(c.mouse()) {
+        if(m_my_hitbox == "" || m_my_hitbox == c.my_hitbox()) {
+            return EventSignal::end;
+        }
+        else {
+            return EventSignal::abort;
+        }
+    }
     else {
         Logger(Logger::error) << info() << " wasn't triggered by a collision! "<< "This means the event gets used wrongly, fix this error in your events!";
         return EventSignal::abort;
