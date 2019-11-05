@@ -50,6 +50,10 @@ if(LIB_TARGET)
   add_definitions(-DLIB_BUILD)
 endif()
 
+set(LIB_SOURCES
+    src/include/gameinfo.cpp
+    )
+
 set(ACTOR_SOURCES
     src/actor/actor.cpp
     src/actor/collision.cpp
@@ -141,6 +145,7 @@ if(NOT LIB_TARGET)
         ${GRAPHICS_SOURCES}
         ${MAP_SOURCES}
         ${UTIL_SOURCES}
+        ${LIB_SOURCES}
     )
     add_executable(${PROJECT_NAME} ${SALMON_SOURCES})
 
@@ -152,6 +157,7 @@ else()
         ${GRAPHICS_SOURCES}
         ${MAP_SOURCES}
         ${UTIL_SOURCES}
+        ${LIB_SOURCES}
     )
     add_library(${PROJECT_NAME} SHARED ${SALMON_SOURCES})
 endif()
