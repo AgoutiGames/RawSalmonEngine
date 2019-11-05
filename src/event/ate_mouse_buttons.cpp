@@ -51,9 +51,9 @@ EventSignal AteMouseButtons::process(Actor& scope) {
         Logger(Logger::error) << info() << " triggers on invalid mouse button number: " << m_mouse_button_index;
         return EventSignal::abort;
     }
-    MouseState mouse = scope.get_map().get_input_handler().get_mouse_state();
+    salmon::MouseState mouse = scope.get_map().get_input_handler().get_mouse_state();
 
-    MouseButtonState button;
+    salmon::MouseButtonState button;
     switch(m_mouse_button_index) {
         case 1: {button = mouse.left; break;}
         case 2: {button = mouse.middle; break;}

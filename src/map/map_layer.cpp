@@ -173,7 +173,7 @@ bool MapLayer::render(const Camera& camera) const {
 }
 
 std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const {
-    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+    const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     std::vector< std::tuple<Uint32, int, int> > tiles;
     if(layout.orientation == "orthogonal") {
         tiles = clip_ortho(rect);
@@ -197,7 +197,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const 
  */
 std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(SDL_Rect rect) const {
 
-    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+    const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
     int tile_w = static_cast<int>(m_ts_collection->get_tile_w());
     int tile_h = static_cast<int>(m_ts_collection->get_tile_h());
@@ -255,7 +255,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
  */
 std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(SDL_Rect rect) const {
 
-    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+    const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
     int tile_w = static_cast<int>(m_ts_collection->get_tile_w());
     int tile_h = static_cast<int>(m_ts_collection->get_tile_h());
@@ -321,7 +321,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
  */
 std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(SDL_Rect rect) const {
 
-    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+    const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
     int tile_w = static_cast<int>(m_ts_collection->get_tile_w());
     int tile_h = static_cast<int>(m_ts_collection->get_tile_h());
@@ -424,7 +424,7 @@ void MapLayer::calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_fro
     float up_oh = m_ts_collection->get_overhang(Direction::up);
     float down_oh = m_ts_collection->get_overhang(Direction::down);
 
-    const TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
+    const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     if(layout.orientation != "orthogonal") {
         // Render half tile extra to show pointy tile borders
         left_oh += static_cast<int>(m_ts_collection->get_tile_w()) / 2;

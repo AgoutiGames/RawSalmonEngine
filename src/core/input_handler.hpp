@@ -27,6 +27,9 @@
 class Actor;
 class MapData;
 
+using salmon::MouseState;
+using salmon::MouseButtonState;
+
 class InputHandler {
     public:
         InputHandler(MapData& mapdata);

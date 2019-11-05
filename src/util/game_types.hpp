@@ -58,21 +58,35 @@ enum class AnimationType {
     invalid,
 };
 
-enum class Priority{
-    low = 25,
-    medium = 50,
-    high = 75,
-    invalid = -1,
-};
+namespace salmon {
+    enum class AnimSignal{
+        missing = -1,
+        none = 0,
+        next = 1,
+        trigger = 2,
+        wrap = 3,
+    };
 
-enum class EventSignal{
-    next, ///< Process next event in pipeline
-    stop, ///< Stop processing events here
-    end,  ///< The event succesfully finished, needs to be deleted
-    abort,///< The event preemtively finished, needs to be deleted
-//    erase,///< Erase the actor who processed this event
-    invalid, ///< EventSignal did not properly parse
-};
+    struct MouseButtonState {
+        bool pressed = false;
+        bool released = false;
+        bool down = false;
+    };
+
+    struct MouseState {
+        MouseButtonState left;
+        MouseButtonState right;
+        MouseButtonState middle;
+        MouseButtonState extra1;
+        MouseButtonState extra2;
+        int x_scroll = 0;
+        int y_scroll = 0;
+        int x_pos = 0;
+        int y_pos = 0;
+        int x_delta = 0;
+        int y_delta = 0;
+    };
+}
 
 enum class Response{
     on_hit,
@@ -86,14 +100,6 @@ enum class Response{
     invalid,
 };
 
-enum class AnimSignal{
-    missing = -1,
-    none = 0,
-    next = 1,
-    trigger = 2,
-    wrap = 3,
-};
-
 enum class PropertyType{
     Boolean,
     Integer,
@@ -101,32 +107,20 @@ enum class PropertyType{
     String,
 };
 
-struct TileLayout{
-    std::string orientation = "";
-    std::string render_order = "";
-    int hexsidelength = 0;
-    bool stagger_axis_y = true;
-    bool stagger_index_odd = true;
+enum class EventSignal{
+    next, ///< Process next event in pipeline
+    stop, ///< Stop processing events here
+    end,  ///< The event succesfully finished, needs to be deleted
+    abort,///< The event preemtively finished, needs to be deleted
+//    erase,///< Erase the actor who processed this event
+    invalid, ///< EventSignal did not properly parse
 };
 
-struct MouseButtonState {
-    bool pressed = false;
-    bool released = false;
-    bool down = false;
-};
-
-struct MouseState {
-    MouseButtonState left;
-    MouseButtonState right;
-    MouseButtonState middle;
-    MouseButtonState extra1;
-    MouseButtonState extra2;
-    int x_scroll = 0;
-    int y_scroll = 0;
-    int x_pos = 0;
-    int y_pos = 0;
-    int x_delta = 0;
-    int y_delta = 0;
+enum class Priority{
+    low = 25,
+    medium = 50,
+    high = 75,
+    invalid = -1,
 };
 
 AnimationType str_to_anim_type(const std::string& name);

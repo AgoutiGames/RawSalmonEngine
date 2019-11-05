@@ -24,6 +24,8 @@
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
+using namespace salmon;
+
 Actor::Actor(MapData* map) : m_map{map} {}
 
 /**

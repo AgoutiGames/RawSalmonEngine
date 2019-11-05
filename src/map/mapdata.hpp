@@ -53,6 +53,15 @@ class SmartEvent;
 
 class MapData {
     public:
+        struct TileLayout{
+            std::string orientation = "";
+            std::string render_order = "";
+            int hexsidelength = 0;
+            bool stagger_axis_y = true;
+            bool stagger_index_odd = true;
+        };
+
+    public:
         MapData(GameInfo* game, unsigned screen_w, unsigned screen_h);
 
         MapData(const MapData& other) = delete;

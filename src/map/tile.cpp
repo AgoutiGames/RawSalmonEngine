@@ -28,6 +28,8 @@
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
+using namespace salmon;
+
 /**
  * @brief Construct and registers a fully functional tile
  * @param ts Pointer to the corresponding tileset

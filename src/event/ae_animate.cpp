@@ -28,6 +28,8 @@
 #include "event/property_listener_helper.hpp"
 #include "util/game_types.hpp"
 
+using namespace salmon;
+
 const std::string AeAnimate::m_alias = "AeAnimate";
 
 const bool AeAnimate::good = Event<Actor>::register_class<AeAnimate>();
