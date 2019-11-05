@@ -24,7 +24,7 @@
 #include <map>
 #include <tinyxml2.h>
 
-#include "actor/cause.hpp"
+#include "actor/collision.hpp"
 #include "actor/data_block.hpp"
 #include "event/event_collection.hpp"
 #include "event/event_queue.hpp"
@@ -56,7 +56,7 @@ class Actor{
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
-        bool respond(Response r, Cause c = Cause());
+        bool respond(Response r, Collision c = Collision());
 
         void set_w(unsigned w) {m_width = w;}
         void set_h(unsigned h) {m_height = h;}

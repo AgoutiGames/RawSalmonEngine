@@ -94,7 +94,7 @@ tinyxml2::XMLError AteSingle::init(tinyxml2::XMLElement* source, MapData& base_m
 /**
  * @brief Set cause to every contained event
  */
-void AteSingle::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
-    if(m_event) m_event->set_cause(x);
+void AteSingle::set_collision(Collision x) {
+    Event<Actor>::set_collision(x);
+    if(m_event) m_event->set_collision(x);
 }

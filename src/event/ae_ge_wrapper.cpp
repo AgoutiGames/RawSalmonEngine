@@ -89,7 +89,7 @@ tinyxml2::XMLError AeGeWrapper::init(tinyxml2::XMLElement* source, MapData& base
 /**
  * @brief Set cause to every contained event
  */
-void AeGeWrapper::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
-    if(m_event) m_event->set_cause(x);
+void AeGeWrapper::set_collision(Collision x) {
+    Event<Actor>::set_collision(x);
+    if(m_event) m_event->set_collision(x);
 }

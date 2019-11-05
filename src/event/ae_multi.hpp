@@ -43,7 +43,7 @@ class AeMulti : public Event<Actor>{
         std::string get_type() const override {return m_alias;}
 
         // reimplement/hide inherited function
-        void set_cause(Cause x) override;
+        void set_collision(Collision x) override;
 
     private:
         static const bool good;

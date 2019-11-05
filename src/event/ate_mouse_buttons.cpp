@@ -42,7 +42,7 @@ EventSignal AteMouseButtons::process(Actor& scope) {
     listen(m_property_listener, *this, scope);
 
 
-    if(!m_cause.mouse()) {
+    if(!m_collision.mouse()) {
         Logger(Logger::error) << info() << " not triggered by mouse event!";
         return EventSignal::abort;
     }

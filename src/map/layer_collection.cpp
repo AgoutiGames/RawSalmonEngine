@@ -182,7 +182,7 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
 
                         collide = true;
                         if(notify) {
-                            Cause c = Cause(tile, "COLLIDE", "COLLIDE");
+                            Collision c = Collision(tile, "COLLIDE", "COLLIDE");
                             actor->respond(Response::on_collision, c);
                         }
                     }
@@ -301,7 +301,7 @@ void LayerCollection::collision_check() {
                         SDL_Rect intersect;
                         if(SDL_IntersectRect(&hitbox_left.second, &hitbox_right.second, &intersect)) {
                             // Trigger callback of left actor
-                            Cause c = Cause(right_actor, hitbox_left.first, hitbox_right.first);
+                            Collision c = Collision(right_actor, hitbox_left.first, hitbox_right.first);
                             left_actor->respond(Response::on_collision, c);
                             //std::cerr << left_actor->get_name() << " " << hitbox_left.first << " collide with " << right_actor->get_name() << " " << hitbox_right.first << "\n";
                         }
@@ -325,7 +325,7 @@ void LayerCollection::collision_check() {
                         SDL_Rect intersect;
                         if(SDL_IntersectRect(&relative_left, &hitbox_right.second, &intersect)) {
                             // Trigger callback of actor
-                            Cause c = Cause(tile_pointer, hitbox_left.first, hitbox_right.first);
+                            Collision c = Collision(tile_pointer, hitbox_left.first, hitbox_right.first);
                             left_actor->respond(Response::on_collision, c);
                             // std::cerr << left_actor->get_name() << " " << hitbox_left.first << " collide with " << "TILE" << " " << hitbox_right.first << "\n";
                         }

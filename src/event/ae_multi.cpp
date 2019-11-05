@@ -93,10 +93,10 @@ tinyxml2::XMLError AeMulti::init(tinyxml2::XMLElement* source, MapData& base_map
 /**
  * @brief Set cause to every contained event
  */
-void AeMulti::set_cause(Cause x) {
-    Event<Actor>::set_cause(x);
+void AeMulti::set_collision(Collision x) {
+    Event<Actor>::set_collision(x);
     for(SmartEvent<Actor>& e : m_events.get_events()) {
-        e->set_cause(x);
+        e->set_collision(x);
     }
 }
 

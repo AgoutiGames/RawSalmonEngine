@@ -462,13 +462,13 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
  * @param c the Cause value which shows who triggered this response
  * @return @c bool indication if response is defined/gets triggered
  */
-bool Actor::respond(Response r, Cause c) {
+bool Actor::respond(Response r, Collision c) {
     if(!m_response.check_event(r)) {
         return false;
     }
     else {
         SmartEvent<Actor> event = m_response.get_event(r);
-        event->set_cause(c);
+        event->set_collision(c);
         m_events.add_event(event);
         return true;
     }

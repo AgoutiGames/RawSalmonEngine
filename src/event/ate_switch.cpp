@@ -60,7 +60,7 @@ EventSignal AteSwitch::process(Actor& scope) {
             else {
                 m_success = base_map.get_event_convert_actor(m_success_name);
                 // Propagate cause down to switch events
-                m_success->set_cause(m_cause);
+                m_success->set_collision(m_collision);
             }
         }
         if(m_failure_name != "") {
@@ -72,7 +72,7 @@ EventSignal AteSwitch::process(Actor& scope) {
             else {
                 m_failure = base_map.get_event_convert_actor(m_failure_name);
                 // Propagate cause down to switch events
-                m_failure->set_cause(m_cause);
+                m_failure->set_collision(m_collision);
             }
         }
 
@@ -108,7 +108,7 @@ EventSignal AteSwitch::process(Actor& scope) {
             else {
                 triggers.push_back(base_map.get_event_convert_actor(name));
                 // Propagate cause down to trigger events
-                triggers.back()->set_cause(m_cause);
+                triggers.back()->set_collision(m_collision);
             }
         }
 

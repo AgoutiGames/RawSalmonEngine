@@ -24,7 +24,7 @@
 #include <map>
 #include <tinyxml2.h>
 
-#include "actor/cause.hpp"
+#include "actor/collision.hpp"
 #include "util/game_types.hpp"
 #include "util/logger.hpp"
 
@@ -59,8 +59,8 @@ public:
     /// Useful function for printing event id
     std::string info() const {return get_type() + ": " + get_name();}
 
-    virtual void set_cause(Cause x) {m_cause = x;}
-    const Cause& get_cause() const {return m_cause;}
+    virtual void set_collision(Collision x) {m_collision = x;}
+    const Collision& get_collision() const {return m_collision;}
 
     static Event<Scope>* parse(tinyxml2::XMLElement* source, MapData& base_map);
 
@@ -68,7 +68,7 @@ protected:
     std::string m_name = "";
     Priority m_priority = Priority::medium;
     EventSignal m_signal = EventSignal::next;
-    Cause m_cause;
+    Collision m_collision;
 
     template <class T>
     static bool register_class();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef CAUSE_HPP_INCLUDED
-#define CAUSE_HPP_INCLUDED
+#ifndef COLLISION_HPP_INCLUDED
+#define COLLISION_HPP_INCLUDED
 
 #include <string>
 #include <SDL.h>
@@ -28,14 +28,13 @@ class Actor;
 class Tile;
 
 /**
- * @brief Store information of the object which has triggered an event
+ * @brief Store information of an actor collision
  *
- * @note Events can be either caused by other actors, keypresses or tiles
  */
 
-class Cause{
+class Collision{
     private:
-        enum class CauseType{
+        enum class CollisionType{
             none,
             tile,
             actor,
@@ -43,28 +42,28 @@ class Cause{
         };
 
     public:
-        Cause();
-        Cause(std::string my_hitbox);
-        Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox);
-        Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox);
+        Collision();
+        Collision(std::string my_hitbox);
+        Collision(Tile* tile, std::string my_hitbox, std::string other_hitbox);
+        Collision(Actor* actor, std::string my_hitbox, std::string other_hitbox);
 
         // Checks against tile types
-        bool tile() const {return type == CauseType::tile;}
-        bool actor() const {return type == CauseType::actor;}
-        bool mouse() const {return type == CauseType::mouse;}
-        bool none() const {return type == CauseType::none;}
+        bool tile() const {return type == CollisionType::tile;}
+        bool actor() const {return type == CollisionType::actor;}
+        bool mouse() const {return type == CollisionType::mouse;}
+        bool none() const {return type == CollisionType::none;}
 
         std::string my_hitbox() const {return my_hitbox_name;}
         std::string other_hitbox() const {return other_hitbox_name;}
 
         // Return cause objects
-        Actor* get_actor() const {return type == CauseType::actor ? data.actor : nullptr;}
-        Tile* get_tile() const {return type == CauseType::tile ? data.tile : nullptr;}
+        Actor* get_actor() const {return type == CollisionType::actor ? data.actor : nullptr;}
+        Tile* get_tile() const {return type == CollisionType::tile ? data.tile : nullptr;}
 
         std::string get_type() const;
 
     private:
-        CauseType type;
+        CollisionType type;
 
         union{
             Actor* actor;
@@ -77,4 +76,4 @@ class Cause{
 };
 
 
-#endif // CAUSE_HPP_INCLUDED
+#endif // COLLISION_HPP_INCLUDED

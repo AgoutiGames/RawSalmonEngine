@@ -18,7 +18,7 @@
  */
 
 #include "actor/actor.hpp"
-#include "actor/cause.hpp"
+#include "actor/collision.hpp"
 #include "event/smart_event.hpp"
 #include "map/mapdata.hpp"
 #include "map/object_layer.hpp"
@@ -170,7 +170,7 @@ void InputHandler::finalize_mouse_state() {
         for(std::pair<std::string, SDL_Rect> hitbox : a->get_hitboxes()) {
             if(SDL_PointInRect(&click,&hitbox.second)) {
                 // Trigger the OnMouse response
-                a->respond(Response::on_mouse, Cause(hitbox.first));
+                a->respond(Response::on_mouse, Collision(hitbox.first));
             }
         }
     }

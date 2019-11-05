@@ -16,21 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
- #include "actor/cause.hpp"
+ #include "actor/collision.hpp"
 
  #include "actor/actor.hpp"
  #include "map/tile.hpp"
 
  // Default constructor
-Cause::Cause() :
- type{CauseType::none}
+Collision::Collision() :
+ type{CollisionType::none}
 {
 
 }
 
 // Constructor for tile
-Cause::Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox) :
- type{CauseType::tile}
+Collision::Collision(Tile* tile, std::string my_hitbox, std::string other_hitbox) :
+ type{CollisionType::tile}
 {
     data.tile = tile;
     my_hitbox_name = my_hitbox;
@@ -38,8 +38,8 @@ Cause::Cause(Tile* tile, std::string my_hitbox, std::string other_hitbox) :
 }
 
 // Constructor for actor
-Cause::Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
- type{CauseType::actor}
+Collision::Collision(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
+ type{CollisionType::actor}
 {
     data.actor = actor;
     my_hitbox_name = my_hitbox;
@@ -47,8 +47,8 @@ Cause::Cause(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
 }
 
 // Constructor for mouse
-Cause::Cause(std::string my_hitbox) :
- type{CauseType::mouse}
+Collision::Collision(std::string my_hitbox) :
+ type{CollisionType::mouse}
 {
     my_hitbox_name = my_hitbox;
 }
@@ -59,11 +59,11 @@ Cause::Cause(std::string my_hitbox) :
  * @note Only actor and tiles return a type,
  *       key returns an empty string
  */
-std::string Cause::get_type() const {
-    if(type == CauseType::tile) {
+std::string Collision::get_type() const {
+    if(type == CollisionType::tile) {
         return data.tile->get_type();
     }
-    else if(type == CauseType::actor) {
+    else if(type == CollisionType::actor) {
         return data.actor->get_type();
     }
     else {

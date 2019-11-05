@@ -44,9 +44,15 @@ endif()
 
 include_directories(src)
 
+option(LIB_TARGET "Build library version without event support" OFF)
+
+if(LIB_TARGET)
+  add_definitions(-DLIB_BUILD)
+endif()
+
 set(ACTOR_SOURCES
     src/actor/actor.cpp
-    src/actor/cause.cpp
+    src/actor/collision.cpp
     src/actor/data_block.cpp
     src/actor/primitive.cpp
     src/actor/primitive_rectangle.cpp
@@ -126,17 +132,29 @@ set(UTIL_SOURCES
     src/util/parse.cpp
     )
 
-set(SALMON_SOURCES
-    ${ACTOR_SOURCES}
-    ${AUDIO_SOURCES}
-    ${CORE_SOURCES}
-    ${EVENT_SOURCES}
-    ${GRAPHICS_SOURCES}
-    ${MAP_SOURCES}
-    ${UTIL_SOURCES}
-)
+if(NOT LIB_TARGET)
+    set(SALMON_SOURCES
+        ${ACTOR_SOURCES}
+        ${AUDIO_SOURCES}
+        ${CORE_SOURCES}
+        ${EVENT_SOURCES}
+        ${GRAPHICS_SOURCES}
+        ${MAP_SOURCES}
+        ${UTIL_SOURCES}
+    )
+    add_executable(${PROJECT_NAME} ${SALMON_SOURCES})
 
-add_executable(${PROJECT_NAME} ${SALMON_SOURCES})
+else()
+    set(SALMON_SOURCES
+        ${ACTOR_SOURCES}
+        ${AUDIO_SOURCES}
+        ${CORE_SOURCES}
+        ${GRAPHICS_SOURCES}
+        ${MAP_SOURCES}
+        ${UTIL_SOURCES}
+    )
+    add_library(${PROJECT_NAME} SHARED ${SALMON_SOURCES})
+endif()
 
 find_package(B64 REQUIRED)
 find_package(TinyXML2 REQUIRED)

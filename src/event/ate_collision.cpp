@@ -40,7 +40,7 @@ const bool AteCollision::good = Event<Actor>::register_class<AteCollision>();
 EventSignal AteCollision::process(Actor& scope) {
     // Syncs members with possibly linked DataBlock variables
     listen(m_property_listener, *this, scope);
-    const Cause& c = get_cause();
+    const Collision& c = get_collision();
     if(c.tile()) {
         const Tile* t = c.get_tile();
         if( (m_other_name == "" || m_other_name == t->get_type()) &&
