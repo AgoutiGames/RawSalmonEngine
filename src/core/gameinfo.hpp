@@ -25,6 +25,7 @@
 
 #include "actor/data_block.hpp"
 #include "event/event_queue.hpp"
+#include "core/input_cache.hpp"
 #include "core/font_manager.hpp"
 
 class MapData;
@@ -54,6 +55,7 @@ public:
 
     EventQueue<GameInfo>& get_event_queue() {return m_events;}
     FontManager& get_font_manager() {return m_font_manager;}
+    InputCache& get_input_cache() {return m_input_cache;}
 
 private:
     void update_path();
@@ -64,6 +66,7 @@ private:
     unsigned m_screen_w;
     unsigned m_screen_h;
 
+    InputCache m_input_cache;
     DataBlock m_data; ///< This holds custom user values by string
 
     EventQueue<GameInfo> m_events;

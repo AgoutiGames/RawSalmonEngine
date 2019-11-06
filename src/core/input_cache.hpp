@@ -30,8 +30,13 @@ class InputCache {
         bool just_pressed(SDL_Keycode key) const;
         bool just_released(SDL_Keycode key) const;
 
-        void set_key(SDL_Keycode key, bool pressed);
+        void set(SDL_Keycode key, bool pressed);
+        void set(SDL_MouseButtonEvent event);
+        void set(SDL_MouseWheelEvent event);
+        void set(SDL_MouseMotionEvent event);
+
         void poll();
+        void poll_mouse();
         void clear();
 
         salmon::MouseState get_mouse_state() const {return m_mouse;}
