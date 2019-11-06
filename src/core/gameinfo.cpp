@@ -164,9 +164,6 @@ bool GameInfo::update() {
     SDL_Event e;
     InputHandler& handler = m_maps.top().get_input_handler();
 
-    // Reset input information from last frame
-    handler.reset();
-
     m_input_cache.clear();
 
     while( SDL_PollEvent( &e ) != 0 ) {
@@ -185,25 +182,18 @@ bool GameInfo::update() {
             m_input_cache.set(e.key.keysym.sym, false);
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-            handler.prime_mouse_button(e.button);
             m_input_cache.set(e.button);
         }
         else if(e.type == SDL_MOUSEWHEEL) {
-            handler.prime_scroll(e.wheel);
             m_input_cache.set(e.wheel);
         }
         else if(e.type == SDL_MOUSEMOTION) {
-            handler.prime_mouse_movement(e.motion);
             m_input_cache.set(e.motion);
         }
     }
 
     // In addition to pressed and released events also check for down state of button
     handler.process_keys_sustained();
-    handler.prime_mouse_pressed();
-
-    // Trigger the handler sending its mouse information to related actors
-    handler.finalize_mouse_state();
 
     m_input_cache.poll();
 

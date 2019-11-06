@@ -36,22 +36,9 @@ class InputHandler {
         bool process_key_down(SDL_KeyboardEvent e);
         void process_keys_sustained();
 
-        // Fetch all mouse events and information for current frame
-        void prime_mouse_button(SDL_MouseButtonEvent event);
-        void prime_scroll(SDL_MouseWheelEvent event);
-        void prime_mouse_movement(SDL_MouseMotionEvent event);
-        void prime_mouse_pressed();
-
-        // Check for collision of actors with mouse and trigger the OnMouse response
-        void reset() {m_mouse = salmon::MouseState();}
-        void finalize_mouse_state();
-
-        salmon::MouseState get_mouse_state() const {return m_mouse;}
-
     private:
         MapData& m_mapdata;
 
-        salmon::MouseState m_mouse;
         EventCollection<Actor, SDL_Keycode> m_key_up;
         EventCollection<Actor, SDL_Keycode> m_key_down;
         EventCollection<Actor, SDL_Keycode> m_key_sustained;

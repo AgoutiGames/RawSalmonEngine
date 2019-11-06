@@ -26,6 +26,7 @@
 #include "map/object_layer.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tile.hpp"
+#include "core/gameinfo.hpp"
 #include "util/logger.hpp"
 
 /**
@@ -93,6 +94,7 @@ void LayerCollection::update(bool late) {
     if(!late) {
         // Send possible on_collide per actors
         collision_check();
+        mouse_collision();
     }
     for(auto layer : get_object_layers()) {
         layer->update(late);
@@ -372,4 +374,29 @@ Layer* LayerCollection::get_layer(std::string name) {
         }
     }
     return nullptr;
+}
+
+void LayerCollection::mouse_collision() {
+    SDL_Rect cam = m_base_map->get_camera().get_rect();
+    // Transform cursor from camera space to global space
+    salmon::MouseState mouse = m_base_map->get_game().get_input_cache().get_mouse_state();
+    SDL_Point click{mouse.x_pos + cam.x, mouse.y_pos+cam.y};
+
+    // Fetch all currently visible actors
+    std::vector<Actor*> actors;
+    auto layers = get_object_layers();
+    for(ObjectLayer* layer : layers) {
+        std::vector<Actor*> temp = layer->get_clip(cam);
+        actors.insert(actors.end(),temp.begin(),temp.end());
+    }
+
+    // Check all hitboxes of each actor if they intersect with the mouse cursor
+    for(Actor* a : actors) {
+        for(std::pair<std::string, SDL_Rect> hitbox : a->get_hitboxes()) {
+            if(SDL_PointInRect(&click,&hitbox.second)) {
+                // Trigger the OnMouse response
+                a->respond(Response::on_mouse, Collision(hitbox.first));
+            }
+        }
+    }
 }

@@ -77,6 +77,8 @@ class LayerCollection {
         LayerCollection& operator=(LayerCollection&& other) = default;
 
     private:
+        void mouse_collision();
+
         MapData* m_base_map;
         std::vector<std::unique_ptr<Layer>> m_layers;
 };
