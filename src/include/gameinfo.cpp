@@ -37,3 +37,4 @@ void salmon::GameInfo::close_map() {m_impl->close_map();}
 
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
 salmon::FontManagerRef salmon::GameInfo::get_font_manager() {return m_impl->get_font_manager();}
+salmon::InputCacheRef salmon::GameInfo::get_input_cache() {return m_impl->get_input_cache();}

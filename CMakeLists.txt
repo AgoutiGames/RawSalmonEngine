@@ -54,6 +54,7 @@ set(LIB_SOURCES
     src/include/gameinfo.cpp
     src/include/font_manager_ref.cpp
     src/include/data_block_ref.cpp
+    src/include/input_cache_ref.cpp
     )
 
 set(ACTOR_SOURCES

@@ -92,3 +92,15 @@ void InputCache::poll_mouse() {
     if(buttons & SDL_BUTTON(SDL_BUTTON_X1)) {m_mouse.extra1.down = true;}
     if(buttons & SDL_BUTTON(SDL_BUTTON_X2)) {m_mouse.extra2.down = true;}
 }
+
+SDL_Keycode InputCache::convert_key(std::string key) {
+    SDL_Keycode temp = SDL_GetKeyFromName(key.c_str());
+    if(temp == SDLK_UNKNOWN) {
+        Logger(Logger::warning) << "The string " << key << " is no proper keyboard key value!";
+    }
+    return temp;
+}
+
+bool InputCache::is_down(std::string key) const {return is_down(convert_key(key));}
+bool InputCache::just_pressed(std::string key) const {return just_pressed(convert_key(key));}
+bool InputCache::just_released(std::string key) const {return just_released(convert_key(key));}

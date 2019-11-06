@@ -16,41 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef GAMEINFO_LIB_HPP_INCLUDED
-#define GAMEINFO_LIB_HPP_INCLUDED
+#ifndef INPUT_CACHE_REF_HPP_INCLUDED
+#define INPUT_CACHE_REF_HPP_INCLUDED
 
 #include <string>
-#include <memory>
 
-#include "./font_manager_ref.hpp"
-#include "./data_block_ref.hpp"
-#include "./input_cache_ref.hpp"
+#include "util/game_types.hpp"
 
-class GameInfo;
+class InputCache;
 
 namespace salmon {
-    class GameInfo{
+    class InputCacheRef {
         public:
-            GameInfo(unsigned screen_w, unsigned screen_h);
-            ~GameInfo();
+            InputCacheRef(InputCache& impl);
 
-            bool init();
-            void close();
+            bool is_down(std::string key) const;
+            bool just_pressed(std::string key) const;
+            bool just_released(std::string key) const;
 
-            void render();
-            bool update();
-
-            bool load_map(std::string mapfile, bool absolute = false);
-            void close_map();
-
-            DataBlockRef get_data();
-            FontManagerRef get_font_manager();
-            InputCacheRef get_input_cache();
-
+            salmon::MouseState get_mouse_state() const;
         private:
-            std::unique_ptr<::GameInfo> m_impl;
+            InputCache* m_impl;
     };
 }
 
 
-#endif // GAMEINFO_LIB_HPP_INCLUDED
+#endif // INPUT_CACHE_REF_HPP_INCLUDED

@@ -19,6 +19,7 @@
 #ifndef INPUT_CACHE_HPP_INCLUDED
 #define INPUT_CACHE_HPP_INCLUDED
 
+#include <string>
 #include <unordered_set>
 #include <SDL.h>
 
@@ -26,6 +27,10 @@
 
 class InputCache {
     public:
+        bool is_down(std::string key) const;
+        bool just_pressed(std::string key) const;
+        bool just_released(std::string key) const;
+
         bool is_down(SDL_Keycode key) const;
         bool just_pressed(SDL_Keycode key) const;
         bool just_released(SDL_Keycode key) const;
@@ -40,6 +45,8 @@ class InputCache {
         void clear();
 
         salmon::MouseState get_mouse_state() const {return m_mouse;}
+
+        static SDL_Keycode convert_key(std::string key);
     private:
         std::unordered_set<SDL_Keycode> m_pressed;
         std::unordered_set<SDL_Keycode> m_released;
