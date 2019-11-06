@@ -24,6 +24,9 @@
 #include "map/object_layer.hpp"
 #include "util/logger.hpp"
 
+using salmon::MouseState;
+using salmon::MouseButtonState;
+
 InputHandler::InputHandler(MapData& mapdata) : m_mapdata{mapdata} {}
 
 /**

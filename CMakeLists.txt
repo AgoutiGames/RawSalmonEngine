@@ -74,6 +74,7 @@ set(CORE_SOURCES
     src/core/main.cpp
     src/core/gameinfo.cpp
     src/core/font_manager.cpp
+    src/core/input_cache.cpp
     src/core/input_handler.cpp
     )
 

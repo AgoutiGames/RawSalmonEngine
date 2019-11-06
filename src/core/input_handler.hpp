@@ -27,9 +27,6 @@
 class Actor;
 class MapData;
 
-using salmon::MouseState;
-using salmon::MouseButtonState;
-
 class InputHandler {
     public:
         InputHandler(MapData& mapdata);
@@ -46,15 +43,15 @@ class InputHandler {
         void prime_mouse_pressed();
 
         // Check for collision of actors with mouse and trigger the OnMouse response
-        void reset() {m_mouse = MouseState();}
+        void reset() {m_mouse = salmon::MouseState();}
         void finalize_mouse_state();
 
-        MouseState get_mouse_state() const {return m_mouse;}
+        salmon::MouseState get_mouse_state() const {return m_mouse;}
 
     private:
         MapData& m_mapdata;
 
-        MouseState m_mouse;
+        salmon::MouseState m_mouse;
         EventCollection<Actor, SDL_Keycode> m_key_up;
         EventCollection<Actor, SDL_Keycode> m_key_down;
         EventCollection<Actor, SDL_Keycode> m_key_sustained;
