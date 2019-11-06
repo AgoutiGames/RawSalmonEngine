@@ -16,39 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef GAMEINFO_LIB_HPP_INCLUDED
-#define GAMEINFO_LIB_HPP_INCLUDED
+#include "include/font_manager_ref.hpp"
 
-#include <string>
-#include <memory>
+#include "core/font_manager.hpp"
 
-#include "./font_manager_ref.hpp"
-#include "./data_block_ref.hpp"
+using salmon::FontManagerRef;
 
-class GameInfo;
+FontManagerRef::FontManagerRef(FontManager& impl) : m_impl{&impl} {}
 
-namespace salmon {
-    class GameInfo{
-        public:
-            GameInfo(unsigned screen_w, unsigned screen_h);
-            ~GameInfo();
-
-            bool init();
-            void close();
-
-            void render();
-            bool update();
-
-            bool load_map(std::string mapfile, bool absolute = false);
-            void close_map();
-
-            DataBlockRef get_data();
-            FontManagerRef get_font_manager();
-
-        private:
-            std::unique_ptr<::GameInfo> m_impl;
-    };
-}
-
-
-#endif // GAMEINFO_LIB_HPP_INCLUDED
+TTF_Font* FontManagerRef::get_font(std::string name, int pt_size) {return m_impl->get_font(name, pt_size);}
+void FontManagerRef::clear() {m_impl->clear();}

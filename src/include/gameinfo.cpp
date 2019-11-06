@@ -18,6 +18,8 @@
  */
 #include "include/gameinfo.hpp"
 
+#include <SDL.h>
+
 #include "core/gameinfo.hpp"
 #include "actor/data_block.hpp"
 
@@ -33,5 +35,5 @@ bool salmon::GameInfo::update() {return m_impl->update();}
 bool salmon::GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load_map(mapfile, absolute);}
 void salmon::GameInfo::close_map() {m_impl->close_map();}
 
-DataBlock& salmon::GameInfo::get_data() {return m_impl->get_data();}
-FontManager& salmon::GameInfo::get_font_manager() {return m_impl->get_font_manager();}
+salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
+salmon::FontManagerRef salmon::GameInfo::get_font_manager() {return m_impl->get_font_manager();}
