@@ -19,9 +19,10 @@
 #include "map/camera.hpp"
 
 #include "actor/actor.hpp"
+#include "map/mapdata.hpp"
 
-Camera::Camera(int x, int y, int w, int h) :
-    m_rect{x,y,w,h} {}
+Camera::Camera(int x, int y, int w, int h, MapData* map) :
+    m_rect{x,y,w,h}, m_map{map} {}
 
 /**
  * @brief Move camera to a valid position in respect to player position and map border
@@ -88,9 +89,9 @@ void Camera::bind_actor(Actor* actor) {
 /**
  * @brief Bind the camera to the map boundaries so that we can't look over the map borders
  */
-void Camera::bind_map(unsigned w, unsigned h) {
-    m_map_width = w;
-    m_map_height = h;
+void Camera::bind_map() {
+    m_map_width = m_map->get_w();
+    m_map_height = m_map->get_h();
     m_map_bound = true;
 }
 

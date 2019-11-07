@@ -19,12 +19,27 @@
 #ifndef CAMERA_REF_HPP_INCLUDED
 #define CAMERA_REF_HPP_INCLUDED
 
+#include "./actor_ref.hpp"
+
 class Camera;
 
 namespace salmon {
     class CameraRef {
         public:
             CameraRef(Camera& impl);
+
+            int get_x() const;
+            int get_y() const;
+
+            void set_x(int x);
+            void set_y(int y);
+
+            void bind_actor(ActorRef actor);
+            void unbind_actor();
+
+            void bind_map();
+            void unbind_map();
+
         private:
             Camera* m_impl;
     };

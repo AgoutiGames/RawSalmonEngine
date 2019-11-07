@@ -23,3 +23,15 @@
 using salmon::CameraRef;
 
 CameraRef::CameraRef(Camera& impl) : m_impl{&impl} {}
+
+int CameraRef::get_x() const {return m_impl->x();}
+int CameraRef::get_y() const {return m_impl->y();}
+
+void CameraRef::set_x(int x) {m_impl->set_x(x);}
+void CameraRef::set_y(int y) {m_impl->set_y(y);}
+
+void CameraRef::bind_actor(ActorRef actor) {m_impl->bind_actor(actor.m_impl);}
+void CameraRef::unbind_actor() {m_impl->unbind_actor();}
+
+void CameraRef::bind_map() {m_impl->bind_map();}
+void CameraRef::unbind_map() {m_impl->unbind_map();}

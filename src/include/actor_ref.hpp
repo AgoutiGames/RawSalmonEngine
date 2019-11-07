@@ -23,6 +23,7 @@ class Actor;
 
 namespace salmon {
     class ActorRef {
+        friend class CameraRef;
         public:
             ActorRef(Actor& impl);
         private:

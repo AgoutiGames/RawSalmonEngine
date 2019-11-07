@@ -22,6 +22,7 @@
 #include <SDL.h>
 
 class Actor;
+class MapData;
 
 /**
  * @brief An interface for a smart sdl_rect used for camera purposes
@@ -29,7 +30,7 @@ class Actor;
 
 class Camera{
     public:
-        Camera(int x, int y, int w, int h);
+        Camera(int x, int y, int w, int h, MapData* map);
 
         int x() const {return m_rect.x;}
         int y() const {return m_rect.y;}
@@ -38,11 +39,13 @@ class Camera{
         const SDL_Rect& get_rect() const {return m_rect;}
 
         void set_size(unsigned w, unsigned h) {m_rect.w = w; m_rect.h = h;}
+        void set_x(int x) {m_rect.x = x;}
+        void set_y(int y) {m_rect.y = y;}
         void set_crop(int l, int r, int u, int d);
         void bind_actor(Actor* actor);
         void unbind_actor() {m_actor_bound = false;}
 
-        void bind_map(unsigned w, unsigned h);
+        void bind_map();
         void unbind_map() {m_map_bound = false;}
 
         void update();
@@ -59,6 +62,7 @@ class Camera{
         int m_crop_up = 0;
         int m_crop_down = 0;
 
+        MapData* m_map = nullptr;
         Actor* m_player = nullptr;
 
         bool m_map_bound = false;

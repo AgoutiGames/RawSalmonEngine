@@ -31,7 +31,7 @@
 #include "util/logger.hpp"
 
 /// Plain constructor
-MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h)}, m_input_handler{*this} {}
+MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h), this}, m_input_handler{*this} {}
 
 /**
  * @brief Parses the supplied .tmx file
@@ -115,7 +115,7 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     }
 
     // By default bind the camera to the map borders
-    m_camera.bind_map(get_w(),get_h());
+    m_camera.bind_map();
 
     // Trigger the ON_LOAD callback event
     if(m_on_load.valid()) {
