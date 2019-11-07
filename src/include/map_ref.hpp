@@ -19,12 +19,30 @@
 #ifndef MAP_REF_HPP_INCLUDED
 #define MAP_REF_HPP_INCLUDED
 
+#include <vector>
+
+#include "./actor_ref.hpp"
+#include "./data_block_ref.hpp"
+#include "./camera_ref.hpp"
+
 class MapData;
 
 namespace salmon {
     class MapRef {
         public:
             MapRef(MapData& impl);
+
+            bool render() const;
+            void update();
+
+            std::vector<salmon::ActorRef> get_actors();
+            CameraRef get_camera();
+
+            unsigned get_w() const;
+            unsigned get_h() const;
+            float get_delta_time() const;
+            std::string get_path() const;
+            DataBlockRef get_data();
         private:
             MapData* m_impl;
     };
