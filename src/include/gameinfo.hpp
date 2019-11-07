@@ -22,7 +22,6 @@
 #include <string>
 #include <memory>
 
-#include "./font_manager_ref.hpp"
 #include "./data_block_ref.hpp"
 #include "./input_cache_ref.hpp"
 
@@ -44,7 +43,6 @@ namespace salmon {
             void close_map();
 
             DataBlockRef get_data();
-            FontManagerRef get_font_manager();
             InputCacheRef get_input_cache();
 
         private:
