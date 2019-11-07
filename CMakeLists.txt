@@ -55,6 +55,9 @@ set(LIB_SOURCES
     src/include/font_manager_ref.cpp
     src/include/data_block_ref.cpp
     src/include/input_cache_ref.cpp
+    src/include/camera_ref.cpp
+    src/include/actor_ref.cpp
+    src/include/map_ref.cpp
     )
 
 set(ACTOR_SOURCES
