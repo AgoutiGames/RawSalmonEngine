@@ -6,6 +6,7 @@
    <property name="ACTOR_NAME" value="COIN"/>
    <property name="ANIMATION_TYPE" value="IDLE"/>
    <property name="DIRECTION" value="NONE"/>
+   <property name="Number" type="float" value="13.37"/>
    <property name="ON_COLLISION" value="CoinPickupSafe"/>
   </properties>
   <objectgroup draworder="index">

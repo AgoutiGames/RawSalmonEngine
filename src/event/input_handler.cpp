@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+ #include "event/input_handler.hpp"
 
 #include "actor/actor.hpp"
 #include "actor/collision.hpp"

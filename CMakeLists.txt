@@ -78,10 +78,10 @@ set(CORE_SOURCES
     src/core/gameinfo.cpp
     src/core/font_manager.cpp
     src/core/input_cache.cpp
-    src/core/input_handler.cpp
     )
 
 set(EVENT_SOURCES
+    src/event/input_handler.cpp
     src/event/ae_accelerate.cpp
     src/event/ae_decelerate.cpp
     src/event/ae_erase_this.cpp

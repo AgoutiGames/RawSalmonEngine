@@ -26,12 +26,15 @@
 
 #include "actor/collision.hpp"
 #include "actor/data_block.hpp"
-#include "event/event_collection.hpp"
-#include "event/event_queue.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 
 class MapData;
+
+#ifndef LIB_BUILD
+    #include "event/event_collection.hpp"
+    #include "event/event_queue.hpp"
+#endif // LIB_BUILD
 
 /**
  * @brief Parse, store and manage all actors
@@ -46,7 +49,6 @@ class Actor{
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
         tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
-        void update();
         bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
         bool set_animation(AnimationType anim = AnimationType::current, Direction dir = Direction::current, int frame = 0);
         salmon::AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
@@ -56,7 +58,6 @@ class Actor{
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
-        bool respond(Response r, Collision c = Collision());
 
         void set_w(unsigned w) {m_width = w;}
         void set_h(unsigned h) {m_height = h;}
@@ -76,7 +77,6 @@ class Actor{
         unsigned get_h() const {return m_height;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
-        EventQueue<Actor>& get_event_queue() {return m_events;}
         DataBlock& get_data() {return m_data;}
         bool late_polling() const {return m_late_polling;}
         double get_angle() const {return m_angle;}
@@ -88,6 +88,16 @@ class Actor{
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
+
+        void add_collision(Collision c) {m_collisions.push_back(c);}
+        std::vector<Collision> get_collisions() {return m_collisions;}
+        void clear_collisions() {m_collisions.clear();}
+
+        #ifndef LIB_BUILD
+            void update();
+            EventQueue<Actor>& get_event_queue() {return m_events;}
+            bool respond(Response r, Collision c = Collision());
+        #endif // LIB_BUILD
 
     private:
         MapData* m_map;
@@ -106,11 +116,14 @@ class Actor{
         std::map<AnimationType, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         Tile m_base_tile;
 
-        EventCollection<Actor, Response> m_response; ///< EventCollection which yields events for response values
-
-        EventQueue<Actor> m_events;
+        #ifndef LIB_BUILD
+            EventCollection<Actor, Response> m_response; ///< EventCollection which yields events for response values
+            EventQueue<Actor> m_events;
+        #endif // LIB_BUILD
 
         DataBlock m_data; ///< This holds custom user values by string
+
+        std::vector<Collision> m_collisions;
 
         bool m_late_polling = false;
 };

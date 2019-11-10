@@ -143,12 +143,16 @@ bool ObjectLayer::render(const Camera& camera) const {
  * a signal to delete the object.
  */
 void ObjectLayer::update(bool late) {
-    if(m_suspended) {return;}
-    for(Actor& a : m_obj_grid) {
-        if(a.late_polling() == late) {
-            a.update();
+    #ifndef LIB_BUILD
+        if(m_suspended) {return;}
+        for(Actor& a : m_obj_grid) {
+            if(a.late_polling() == late) {
+                a.update();
+            }
         }
-    }
+    #else
+    (void) late;
+    #endif // LIB_BUILD
     // Establish correct rendering order
     m_obj_grid.sort();
 }
@@ -241,7 +245,9 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
 }
 
 void ObjectLayer::add_actor(Actor a) {
-    a.respond(Response::on_spawn);
+    #ifndef LIB_BUILD
+        a.respond(Response::on_spawn);
+    #endif // LIB_BUILD
     m_obj_grid.push_back(a);
 }
 

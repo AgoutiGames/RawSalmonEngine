@@ -185,7 +185,8 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
                         collide = true;
                         if(notify) {
                             Collision c = Collision(tile, "COLLIDE", "COLLIDE");
-                            actor->respond(Response::on_collision, c);
+                            //actor->respond(Response::on_collision, c);
+                            actor->add_collision(c);
                         }
                     }
                 }
@@ -304,8 +305,8 @@ void LayerCollection::collision_check() {
                         if(SDL_IntersectRect(&hitbox_left.second, &hitbox_right.second, &intersect)) {
                             // Trigger callback of left actor
                             Collision c = Collision(right_actor, hitbox_left.first, hitbox_right.first);
-                            left_actor->respond(Response::on_collision, c);
-                            //std::cerr << left_actor->get_name() << " " << hitbox_left.first << " collide with " << right_actor->get_name() << " " << hitbox_right.first << "\n";
+                            // left_actor->respond(Response::on_collision, c);
+                            left_actor->add_collision(c);
                         }
                     }
                 }
@@ -328,8 +329,8 @@ void LayerCollection::collision_check() {
                         if(SDL_IntersectRect(&relative_left, &hitbox_right.second, &intersect)) {
                             // Trigger callback of actor
                             Collision c = Collision(tile_pointer, hitbox_left.first, hitbox_right.first);
-                            left_actor->respond(Response::on_collision, c);
-                            // std::cerr << left_actor->get_name() << " " << hitbox_left.first << " collide with " << "TILE" << " " << hitbox_right.first << "\n";
+                            // left_actor->respond(Response::on_collision, c);
+                            left_actor->add_collision(c);
                         }
                     }
                 }
@@ -395,7 +396,8 @@ void LayerCollection::mouse_collision() {
         for(std::pair<std::string, SDL_Rect> hitbox : a->get_hitboxes()) {
             if(SDL_PointInRect(&click,&hitbox.second)) {
                 // Trigger the OnMouse response
-                a->respond(Response::on_mouse, Collision(hitbox.first));
+                // a->respond(Response::on_mouse, Collision(hitbox.first));
+                a->add_collision(Collision(hitbox.first));
             }
         }
     }

@@ -143,31 +143,34 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             }
         }
 
-        // Parse response values
-        else if(str_to_response(name) != Response::invalid) {
-            const char* p_event = p_property->Attribute("value");
-            if(p_event != nullptr) {
-                std::string event(p_event);
-                if(m_map->check_event_convert_actor(event)) {
-                    m_response.register_event(str_to_response(name), m_map->get_event_convert_actor(event));
+        #ifndef LIB_BUILD
+            // Parse response values
+            else if(str_to_response(name) != Response::invalid) {
+                const char* p_event = p_property->Attribute("value");
+                if(p_event != nullptr) {
+                    std::string event(p_event);
+                    if(m_map->check_event_convert_actor(event)) {
+                        m_response.register_event(str_to_response(name), m_map->get_event_convert_actor(event));
+                    }
+                    else {
+                        Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!";
+                        return XML_ERROR_PARSING_ATTRIBUTE;
+                    }
                 }
                 else {
-                    Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!";
-                    return XML_ERROR_PARSING_ATTRIBUTE;
+                    Logger(Logger::error) << "Empty response event specified";
+                    return XML_NO_ATTRIBUTE;
                 }
             }
-            else {
-                Logger(Logger::error) << "Empty response event specified";
-                return XML_NO_ATTRIBUTE;
-            }
-        }
+        #endif // LIB_BUILD
 
         else {
             XMLError eResult;
-            std::string type(source->Attribute("type"));
+            const char* p_type = p_property->Attribute("type");
+            std::string type = (p_type) ? p_type : "";
             if(type == "bool") {
                 bool temp;
-                eResult = source->QueryBoolAttribute("value", &temp);
+                eResult = p_property->QueryBoolAttribute("value", &temp);
                 if(eResult != XML_SUCCESS) {
                     Logger(Logger::error) << "Malformed bool property: " << name;
                     return eResult;
@@ -176,7 +179,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             }
             else if(type == "int") {
                 int temp;
-                eResult = source->QueryIntAttribute("value", &temp);
+                eResult = p_property->QueryIntAttribute("value", &temp);
                 if(eResult != XML_SUCCESS) {
                     Logger(Logger::error) << "Malformed int property: " << name;
                     return eResult;
@@ -185,7 +188,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             }
             else if(type == "float") {
                 float temp;
-                eResult = source->QueryFloatAttribute("value", &temp);
+                eResult = p_property->QueryFloatAttribute("value", &temp);
                 if(eResult != XML_SUCCESS) {
                     Logger(Logger::error) << "Malformed float property: " << name;
                     return eResult;
@@ -193,7 +196,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
                 m_data.set_val(name, temp);
             }
             else if(type == "" || type == "file") {
-                const char* p_value = source->Attribute("value");
+                const char* p_value = p_property->Attribute("value");
                 if(p_value == nullptr) {
                     Logger(Logger::error) << "Malformed string property: " << name;
                     return XML_ERROR_PARSING_ATTRIBUTE;
@@ -332,18 +335,30 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
     return moved;
 }
 
-/**
- * @brief Update the actor state
- */
-void Actor::update() {
+#ifndef LIB_BUILD
+    /**
+     * @brief Update the actor state
+     */
+    void Actor::update() {
 
-    respond(Response::on_always);
-    EventSignal sig = m_events.process_events(*this);
+        respond(Response::on_always);
 
-    if(sig == EventSignal::end) {
-        respond(Response::on_idle);
+        for(Collision c : m_collisions) {
+            if(c.mouse()) {respond(Response::on_mouse, c);}
+            else if(!c.none()) {respond(Response::on_collision, c);}
+            else {
+                Logger(Logger::error) << "Actor: " << m_name << " tried to respond to \"empty\" collision. This shouldn't happen!";
+            }
+        }
+        clear_collisions();
+
+        EventSignal sig = m_events.process_events(*this);
+
+        if(sig == EventSignal::end) {
+            respond(Response::on_idle);
+        }
     }
-}
+#endif // LIB_BUILD
 
 /**
  * @brief Animate the actor
@@ -458,23 +473,25 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
     return false;
 }
 
-/**
- * @brief Triggers event bound to Response value
- * @param r the Response value
- * @param c the Cause value which shows who triggered this response
- * @return @c bool indication if response is defined/gets triggered
- */
-bool Actor::respond(Response r, Collision c) {
-    if(!m_response.check_event(r)) {
-        return false;
+#ifndef LIB_BUILD
+    /**
+     * @brief Triggers event bound to Response value
+     * @param r the Response value
+     * @param c the Cause value which shows who triggered this response
+     * @return @c bool indication if response is defined/gets triggered
+     */
+    bool Actor::respond(Response r, Collision c) {
+        if(!m_response.check_event(r)) {
+            return false;
+        }
+        else {
+            SmartEvent<Actor> event = m_response.get_event(r);
+            event->set_collision(c);
+            m_events.add_event(event);
+            return true;
+        }
     }
-    else {
-        SmartEvent<Actor> event = m_response.get_event(r);
-        event->set_collision(c);
-        m_events.add_event(event);
-        return true;
-    }
-}
+#endif // LIB_BUILD
 
 /// Checks if the currently set animation state and direction are existin
 bool Actor::valid_anim_state(AnimationType anim, Direction dir) const {

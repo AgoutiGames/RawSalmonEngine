@@ -27,6 +27,8 @@
   </properties>
   <object id="13" name="PLAYER" gid="17" x="208" y="6052" width="32" height="32">
    <properties>
+    <property name="Last Name" value="Error"/>
+    <property name="Number" type="int" value="1337"/>
     <property name="ON_MOUSE" value="PlayerMouseInteraction"/>
    </properties>
   </object>

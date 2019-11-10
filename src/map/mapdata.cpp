@@ -31,7 +31,12 @@
 #include "util/logger.hpp"
 
 /// Plain constructor
-MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game}, m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h), this}, m_input_handler{*this} {}
+MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game},
+m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h), this}
+#ifndef LIB_BUILD
+    ,m_input_handler{*this}
+#endif // LIB_BUILD
+{}
 
 /**
  * @brief Parses the supplied .tmx file
@@ -117,10 +122,12 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     // By default bind the camera to the map borders
     m_camera.bind_map();
 
-    // Trigger the ON_LOAD callback event
-    if(m_on_load.valid()) {
-        m_events.add_event(m_on_load);
-    }
+    #ifndef LIB_BUILD
+        // Trigger the ON_LOAD callback event
+        if(m_on_load.valid()) {
+            m_events.add_event(m_on_load);
+        }
+    #endif // LIB_BUILD
 
     // Initialize last_update timestamp
     m_last_update = SDL_GetTicks();
@@ -209,98 +216,101 @@ tinyxml2::XMLError MapData::parse_map_info(tinyxml2::XMLElement* pMap) {
  */
 tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
     using namespace tinyxml2;
+    #ifndef LIB_BUILD
+        std::vector<std::string> symbolic_tilesets;
+        std::string on_load = "";
+        std::string on_always = "";
+        std::string on_resume = "";
 
-    std::vector<std::string> symbolic_tilesets;
-    std::string on_load = "";
-    std::string on_always = "";
-    std::string on_resume = "";
+        // Parse names of possible on_* callbacks and filenames of possible symbolic tilesets
+        XMLElement* pProp = pMap->FirstChildElement("properties");
+        if (pProp != nullptr) {
+            pProp = pProp->FirstChildElement("property");
+            while(pProp != nullptr) {
+                if(std::string("ON_LOAD") == pProp->Attribute("name")) {
+                    on_load = pProp->Attribute("value");
+                }
+                else if(std::string("ON_ALWAYS") == pProp->Attribute("name")) {
+                    on_always = pProp->Attribute("value");
+                }
+                else if(std::string("ON_RESUME") == pProp->Attribute("name")) {
+                    on_resume = pProp->Attribute("value");
+                }
+                else {
+                    symbolic_tilesets.push_back(pProp->Attribute("value"));
+                }
+                pProp = pProp->NextSiblingElement();
+            }
+        }
 
-    // Parse names of possible on_* callbacks and filenames of possible symbolic tilesets
-    XMLElement* pProp = pMap->FirstChildElement("properties");
-    if (pProp != nullptr) {
-        pProp = pProp->FirstChildElement("property");
-        while(pProp != nullptr) {
-            if(std::string("ON_LOAD") == pProp->Attribute("name")) {
-                on_load = pProp->Attribute("value");
+        // Parse all symbolic tilesets
+        /// @warning Dont mix key mapping and event mapping .tsx files
+        /// @warning Watch for valid ordering of symbolic tilesets (You can bind a event to a key only after it already got parsed)
+        for(std::string name : symbolic_tilesets) {
+            XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
+            std::string full_path = m_base_path + name;
+            XMLError eResult = sym_ts.LoadFile(full_path.c_str());
+            if(eResult != XML_SUCCESS) {
+                Logger(Logger::error) << "Can't find symbolic tileset " << name << " at path: " << full_path;
+                return eResult;
             }
-            else if(std::string("ON_ALWAYS") == pProp->Attribute("name")) {
-                on_always = pProp->Attribute("value");
+            XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
+            if (pSymTs == nullptr) {
+                Logger(Logger::error) << "Symbolic tileset " << full_path << " is of wrong type/has no \"tileset\" node!";
+                return XML_ERROR_PARSING_ELEMENT;
             }
-            else if(std::string("ON_RESUME") == pProp->Attribute("name")) {
-                on_resume = pProp->Attribute("value");
+
+            // Temporarily set base path to symbolic ts path so events can load files from their base path
+            std::string path_backup = m_base_path;
+            m_base_path = full_path;
+            m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
+
+            // Static function of Tileset class actually takes care of parsing the symbolic tileset
+            eResult = Tileset::parse_symbolic(pSymTs, *this);
+
+            //reset base path
+            m_base_path = path_backup;
+
+            if(eResult != XML_SUCCESS) {
+                Logger(Logger::error) << "Failed at parsing symbolic tileset " << name;
+                return eResult;
+            }
+        }
+
+        // Parse actual events from the on_* callback names
+        if(on_load != "") {
+            if(check_event_convert_map(on_load) != true) {
+                Logger(Logger::error) << "The event: " << on_load << " couldn't be found / is no valid game or map event";
+                Logger(Logger::error) << "Failed adding " << on_load << " as the ON_LOAD callback to map";
+                return XML_ERROR_PARSING_ATTRIBUTE;
             }
             else {
-                symbolic_tilesets.push_back(pProp->Attribute("value"));
+                m_on_load = get_event_convert_map(on_load);
             }
-            pProp = pProp->NextSiblingElement();
         }
-    }
-
-    // Parse all symbolic tilesets
-    /// @warning Dont mix key mapping and event mapping .tsx files
-    /// @warning Watch for valid ordering of symbolic tilesets (You can bind a event to a key only after it already got parsed)
-    for(std::string name : symbolic_tilesets) {
-        XMLDocument sym_ts{true, COLLAPSE_WHITESPACE};
-        std::string full_path = m_base_path + name;
-        XMLError eResult = sym_ts.LoadFile(full_path.c_str());
-        if(eResult != XML_SUCCESS) {
-            Logger(Logger::error) << "Can't find symbolic tileset " << name << " at path: " << full_path;
-            return eResult;
+        if(on_always != "") {
+            if(check_event_convert_map(on_always) != true) {
+                Logger(Logger::error) << "The event: " << on_always << " couldn't be found / is no valid game or map event";
+                Logger(Logger::error) << "Failed adding " << on_always << " as the ON_ALWAYS callback to map";
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
+            else {
+                m_on_always = get_event_convert_map(on_always);
+            }
         }
-        XMLElement* pSymTs = sym_ts.FirstChildElement("tileset");
-        if (pSymTs == nullptr) {
-            Logger(Logger::error) << "Symbolic tileset " << full_path << " is of wrong type/has no \"tileset\" node!";
-            return XML_ERROR_PARSING_ELEMENT;
+        if(on_resume != "") {
+            if(check_event_convert_map(on_resume) != true) {
+                Logger(Logger::error) << "The event: " << on_resume << " couldn't be found / is no valid game or map event";
+                Logger(Logger::error) << "Failed adding " << on_resume << " as the ON_RESUME callback to map";
+                return XML_ERROR_PARSING_ATTRIBUTE;
+            }
+            else {
+                m_on_resume = get_event_convert_map(on_resume);
+            }
         }
-
-        // Temporarily set base path to symbolic ts path so events can load files from their base path
-        std::string path_backup = m_base_path;
-        m_base_path = full_path;
-        m_base_path = m_base_path.erase(m_base_path.find_last_of('/') + 1);
-
-        // Static function of Tileset class actually takes care of parsing the symbolic tileset
-        eResult = Tileset::parse_symbolic(pSymTs, *this);
-
-        //reset base path
-        m_base_path = path_backup;
-
-        if(eResult != XML_SUCCESS) {
-            Logger(Logger::error) << "Failed at parsing symbolic tileset " << name;
-            return eResult;
-        }
-    }
-
-    // Parse actual events from the on_* callback names
-    if(on_load != "") {
-        if(check_event_convert_map(on_load) != true) {
-            Logger(Logger::error) << "The event: " << on_load << " couldn't be found / is no valid game or map event";
-            Logger(Logger::error) << "Failed adding " << on_load << " as the ON_LOAD callback to map";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_on_load = get_event_convert_map(on_load);
-        }
-    }
-    if(on_always != "") {
-        if(check_event_convert_map(on_always) != true) {
-            Logger(Logger::error) << "The event: " << on_always << " couldn't be found / is no valid game or map event";
-            Logger(Logger::error) << "Failed adding " << on_always << " as the ON_ALWAYS callback to map";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_on_always = get_event_convert_map(on_always);
-        }
-    }
-    if(on_resume != "") {
-        if(check_event_convert_map(on_resume) != true) {
-            Logger(Logger::error) << "The event: " << on_resume << " couldn't be found / is no valid game or map event";
-            Logger(Logger::error) << "Failed adding " << on_resume << " as the ON_RESUME callback to map";
-            return XML_ERROR_PARSING_ATTRIBUTE;
-        }
-        else {
-            m_on_resume = get_event_convert_map(on_resume);
-        }
-    }
+    #else
+    (void) pMap;
+    #endif // LIB_BUILD
     return XML_SUCCESS;
 }
 
@@ -334,11 +344,13 @@ void MapData::update() {
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
 
-    if(m_on_always.valid()) {
-        m_events.add_event(m_on_always);
-    }
-    // Do nothing with returned signal because we don't have to
-    m_events.process_events(*this);
+    #ifndef LIB_BUILD
+        if(m_on_always.valid()) {
+            m_events.add_event(m_on_always);
+        }
+        // Do nothing with returned signal because we don't have to
+        m_events.process_events(*this);
+    #endif // LIB_BUILD
 
     // Late polling
     m_layer_collection.update(true);
@@ -356,9 +368,11 @@ void MapData::update_camera() {
  */
 void MapData::resume() {
     m_last_update = SDL_GetTicks();
-    if(m_on_resume.valid()) {
-        m_events.add_event(m_on_resume);
-    }
+    #ifndef LIB_BUILD
+        if(m_on_resume.valid()) {
+            m_events.add_event(m_on_resume);
+        }
+    #endif // LIB_BUILD
 }
 
 /// Returns map width in pixels

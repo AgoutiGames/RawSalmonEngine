@@ -237,167 +237,169 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     return oh_map;
 }
 
-/**
- * @brief Parse symbolic tiles to register them as events or keys
- * @param source The XMLElement pointing to the tileset
- * @param base_map Reference to map object to register each event or key
- * @return @c XMLElement indication sucess of parsing
- *
- * @todo Somehow refactor this ugly ugly key mapping parsing
- */
-tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map) {
-    using namespace tinyxml2;
-    XMLError eResult;
-    XMLElement* p_tile = source->FirstChildElement("tile");
-    while(p_tile != nullptr) {
-        // Safely parse type
-        const char* p_type = p_tile->Attribute("type");
-        std::string type;
-        if(p_type != nullptr) {type = p_type;}
-        // Parse key mapping
-        if(type == "KEY_MAPPING"){
-            bool up = false;
-            bool down = false;
-            bool sustained = false;
-            std::string event = "";
-            SDL_Keycode key = SDLK_UNKNOWN;
+#ifndef LIB_BUILD
+    /**
+     * @brief Parse symbolic tiles to register them as events or keys
+     * @param source The XMLElement pointing to the tileset
+     * @param base_map Reference to map object to register each event or key
+     * @return @c XMLElement indication sucess of parsing
+     *
+     * @todo Somehow refactor this ugly ugly key mapping parsing
+     */
+    tinyxml2::XMLError Tileset::parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map) {
+        using namespace tinyxml2;
+        XMLError eResult;
+        XMLElement* p_tile = source->FirstChildElement("tile");
+        while(p_tile != nullptr) {
+            // Safely parse type
+            const char* p_type = p_tile->Attribute("type");
+            std::string type;
+            if(p_type != nullptr) {type = p_type;}
+            // Parse key mapping
+            if(type == "KEY_MAPPING"){
+                bool up = false;
+                bool down = false;
+                bool sustained = false;
+                std::string event = "";
+                SDL_Keycode key = SDLK_UNKNOWN;
 
-            XMLElement* p_property = nullptr;
-            XMLElement* p_properties = p_tile->FirstChildElement("properties");
-            if(p_properties != nullptr) {
-                p_property = p_properties->FirstChildElement("property");
-                if(p_property == nullptr) {
-                    Logger(Logger::error) << "Error: Missing first property in key mapping: " << p_tile->Attribute("id");
+                XMLElement* p_property = nullptr;
+                XMLElement* p_properties = p_tile->FirstChildElement("properties");
+                if(p_properties != nullptr) {
+                    p_property = p_properties->FirstChildElement("property");
+                    if(p_property == nullptr) {
+                        Logger(Logger::error) << "Error: Missing first property in key mapping: " << p_tile->Attribute("id");
+                        return XML_ERROR_PARSING_ELEMENT;
+                    }
+                }
+                else {
+                    Logger(Logger::error) << "Error: Missing properties in key mapping: " << p_tile->Attribute("id");
                     return XML_ERROR_PARSING_ELEMENT;
                 }
-            }
-            else {
-                Logger(Logger::error) << "Error: Missing properties in key mapping: " << p_tile->Attribute("id");
-                return XML_ERROR_PARSING_ELEMENT;
-            }
-            while(p_property != nullptr) {
-                const char* p_name;
-                p_name = p_property->Attribute("name");
-                std::string name(p_name);
-                if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-                if(name == "UP") {
-                    eResult = p_property->QueryBoolAttribute("value", &up);
-                    if(eResult != XML_SUCCESS) return eResult;
-                }
-                else if(name == "DOWN") {
-                    eResult = p_property->QueryBoolAttribute("value", &down);
-                    if(eResult != XML_SUCCESS) return eResult;
-                }
-                else if(name == "SUSTAINED") {
-                    eResult = p_property->QueryBoolAttribute("value", &sustained);
-                    if(eResult != XML_SUCCESS) return eResult;
-                }
-                else if(name == "KEYPRESS") {
-                    const char* p_key_name = p_property->Attribute("value");
-                    if(p_key_name == nullptr) {
-                        Logger(Logger::error) << "Missing keypress value! Tile ID: " << p_tile->Attribute("id");
+                while(p_property != nullptr) {
+                    const char* p_name;
+                    p_name = p_property->Attribute("name");
+                    std::string name(p_name);
+                    if(p_name == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+                    if(name == "UP") {
+                        eResult = p_property->QueryBoolAttribute("value", &up);
+                        if(eResult != XML_SUCCESS) return eResult;
+                    }
+                    else if(name == "DOWN") {
+                        eResult = p_property->QueryBoolAttribute("value", &down);
+                        if(eResult != XML_SUCCESS) return eResult;
+                    }
+                    else if(name == "SUSTAINED") {
+                        eResult = p_property->QueryBoolAttribute("value", &sustained);
+                        if(eResult != XML_SUCCESS) return eResult;
+                    }
+                    else if(name == "KEYPRESS") {
+                        const char* p_key_name = p_property->Attribute("value");
+                        if(p_key_name == nullptr) {
+                            Logger(Logger::error) << "Missing keypress value! Tile ID: " << p_tile->Attribute("id");
+                            return XML_ERROR_PARSING_ATTRIBUTE;
+                        }
+                        key = SDL_GetKeyFromName(p_key_name);
+                        if(key == SDLK_UNKNOWN) {
+                            Logger(Logger::error) << "Unknown key value " << p_key_name << " Tile ID: " << p_tile->Attribute("id");
+                            return XML_ERROR_PARSING_ATTRIBUTE;
+                        }
+
+                    }
+                    // If the event value is missing, instead of throwing an error the key is skipped
+                    else if(name == "EVENT") {
+                        const char* p_event_name = p_property->Attribute("value");
+                        if(p_event_name != nullptr) {
+                            event.assign(p_event_name);
+                        }
+                    }
+
+                    else {
+                        Logger(Logger::error) << "Unknown property " << name << " for keypress, Tile ID: " << p_tile->Attribute("id");
                         return XML_ERROR_PARSING_ATTRIBUTE;
                     }
-                    key = SDL_GetKeyFromName(p_key_name);
+
+                    p_property = p_property->NextSiblingElement("property");
+                }
+
+                if(event != "") {
                     if(key == SDLK_UNKNOWN) {
-                        Logger(Logger::error) << "Unknown key value " << p_key_name << " Tile ID: " << p_tile->Attribute("id");
+                        Logger(Logger::error) << "Missing keypress value after parsing properties! Tile ID: " << p_tile->Attribute("id");
                         return XML_ERROR_PARSING_ATTRIBUTE;
                     }
-
-                }
-                // If the event value is missing, instead of throwing an error the key is skipped
-                else if(name == "EVENT") {
-                    const char* p_event_name = p_property->Attribute("value");
-                    if(p_event_name != nullptr) {
-                        event.assign(p_event_name);
+                    if(!base_map.get_input_handler().register_key(key, event, sustained, up, down)) {
+                        Logger(Logger::error) << "Failed registering key " << SDL_GetKeyName(key) << " with event " << event << " Tile ID: " << p_tile->Attribute("id");
+                        return XML_ERROR_PARSING_ATTRIBUTE;
                     }
                 }
-
-                else {
-                    Logger(Logger::error) << "Unknown property " << name << " for keypress, Tile ID: " << p_tile->Attribute("id");
-                    return XML_ERROR_PARSING_ATTRIBUTE;
-                }
-
-                p_property = p_property->NextSiblingElement("property");
             }
 
-            if(event != "") {
-                if(key == SDLK_UNKNOWN) {
-                    Logger(Logger::error) << "Missing keypress value after parsing properties! Tile ID: " << p_tile->Attribute("id");
-                    return XML_ERROR_PARSING_ATTRIBUTE;
-                }
-                if(!base_map.get_input_handler().register_key(key, event, sustained, up, down)) {
-                    Logger(Logger::error) << "Failed registering key " << SDL_GetKeyName(key) << " with event " << event << " Tile ID: " << p_tile->Attribute("id");
-                    return XML_ERROR_PARSING_ATTRIBUTE;
+            // Parse events
+            else if (type != "") {
+                const char identifier = type.front();
+                switch (identifier) {
+                    case 'A': {
+                        std::pair<std::string, SmartEvent<Actor>> event;
+                        event.second = SmartEvent<Actor>(p_tile, base_map);
+                        if(!event.second) {
+                            Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id");
+                            return XML_ERROR_PARSING;
+                        }
+                        else {
+                            event.first = event.second->get_name();
+                            base_map.register_event<Actor>(event);
+                        }
+                        // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                        break;
+                    }
+
+                    case 'M': {
+                        std::pair<std::string, SmartEvent<MapData>> event;
+                        event.second = SmartEvent<MapData>(p_tile, base_map);
+                        if(!event.second) {
+                            Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id");
+                            return XML_ERROR_PARSING;
+                        }
+                        else {
+                            event.first = event.second->get_name();
+                            base_map.register_event<MapData>(event);
+                        }
+                        // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                        break;
+                    }
+
+                    case 'G': {
+                        std::pair<std::string, SmartEvent<GameInfo>> event;
+                        event.second = SmartEvent<GameInfo>(p_tile, base_map);
+                        if(!event.second) {
+                            Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id");
+                            return XML_ERROR_PARSING;
+                        }
+                        else {
+                            event.first = event.second->get_name();
+                            base_map.register_event<GameInfo>(event);
+                        }
+                        // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
+                        break;
+                    }
+
+                    default: {
+                        Logger(Logger::error) << "Unknown event type: " << type << " at Tile ID: " << p_tile->Attribute("id");
+                        return XML_ERROR_PARSING;
+                    }
                 }
             }
-        }
 
-        // Parse events
-        else if (type != "") {
-            const char identifier = type.front();
-            switch (identifier) {
-                case 'A': {
-                    std::pair<std::string, SmartEvent<Actor>> event;
-                    event.second = SmartEvent<Actor>(p_tile, base_map);
-                    if(!event.second) {
-                        Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id");
-                        return XML_ERROR_PARSING;
-                    }
-                    else {
-                        event.first = event.second->get_name();
-                        base_map.register_event<Actor>(event);
-                    }
-                    // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
-                    break;
-                }
-
-                case 'M': {
-                    std::pair<std::string, SmartEvent<MapData>> event;
-                    event.second = SmartEvent<MapData>(p_tile, base_map);
-                    if(!event.second) {
-                        Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id");
-                        return XML_ERROR_PARSING;
-                    }
-                    else {
-                        event.first = event.second->get_name();
-                        base_map.register_event<MapData>(event);
-                    }
-                    // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
-                    break;
-                }
-
-                case 'G': {
-                    std::pair<std::string, SmartEvent<GameInfo>> event;
-                    event.second = SmartEvent<GameInfo>(p_tile, base_map);
-                    if(!event.second) {
-                        Logger(Logger::error) << "Failed at parsing symbolic tile yielding an event Tile ID: " << p_tile->Attribute("id");
-                        return XML_ERROR_PARSING;
-                    }
-                    else {
-                        event.first = event.second->get_name();
-                        base_map.register_event<GameInfo>(event);
-                    }
-                    // std::cerr << "Just Parsed " << event.second->get_name() << "\n";
-                    break;
-                }
-
-                default: {
-                    Logger(Logger::error) << "Unknown event type: " << type << " at Tile ID: " << p_tile->Attribute("id");
-                    return XML_ERROR_PARSING;
-                }
+            else {
+                Logger(Logger::warning) << "Missing event type at Tile ID: " << p_tile->Attribute("id") << ", skipping";
+                //return XML_ERROR_PARSING;
             }
-        }
 
-        else {
-            Logger(Logger::warning) << "Missing event type at Tile ID: " << p_tile->Attribute("id") << ", skipping";
-            //return XML_ERROR_PARSING;
+            p_tile = p_tile->NextSiblingElement("tile");
         }
-
-        p_tile = p_tile->NextSiblingElement("tile");
+        return XML_SUCCESS;
     }
-    return XML_SUCCESS;
-}
+#endif // LIB_BUILD
 
 
 /**
