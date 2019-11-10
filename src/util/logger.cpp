@@ -119,7 +119,7 @@ std::string Logger::timestamp() {
     char timedisplay[40];
     const tm* buf = localtime(&start_time);
     std::stringstream container;
-    if (strftime(timedisplay, sizeof(timedisplay), "%F %H:%M:%S.", buf)) {
+    if (strftime(timedisplay, sizeof(timedisplay), "%Y-%m-%d %H:%M:%S.", buf)) {
         container << "[" << timedisplay << std::setfill('0') << std::setw(6) << microseconds << "]";
     }
     return container.str();
