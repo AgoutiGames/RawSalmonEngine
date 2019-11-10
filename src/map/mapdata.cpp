@@ -225,16 +225,18 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
 
         std::string key_name = "KEY";
         std::string event_name = "EVENT";
+    #endif // LIB_BUILD
 
-        // Parse names of possible on_* callbacks and filenames of possible symbolic tilesets
-        XMLElement* pProp = pMap->FirstChildElement("properties");
-        if (pProp != nullptr) {
-            pProp = pProp->FirstChildElement("property");
-            while(pProp != nullptr) {
+    // Parse names of possible on_* callbacks and filenames of possible symbolic tilesets
+    XMLElement* pProp = pMap->FirstChildElement("properties");
+    if (pProp != nullptr) {
+        pProp = pProp->FirstChildElement("property");
+        while(pProp != nullptr) {
 
-                const char* p_name = pProp->Attribute("name");
-                std::string name = (p_name) ? p_name : "";
+            const char* p_name = pProp->Attribute("name");
+            std::string name = (p_name) ? p_name : "";
 
+            #ifndef LIB_BUILD
                 if(std::string("ON_LOAD") == p_name) {
                     on_load = pProp->Attribute("value");
                 }
@@ -248,10 +250,61 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
                 else if (std::equal(key_name.begin(), key_name.end(), name.begin()) || std::equal(event_name.begin(), event_name.end(), name.begin())) {
                     symbolic_tilesets.push_back(pProp->Attribute("value"));
                 }
-                pProp = pProp->NextSiblingElement();
+            #else
+                if(false) {}
+            #endif
+            else {
+                XMLError eResult;
+                const char* p_type = pProp->Attribute("type");
+                std::string type = (p_type) ? p_type : "";
+                if(type == "bool") {
+                    bool temp;
+                    eResult = pProp->QueryBoolAttribute("value", &temp);
+                    if(eResult != XML_SUCCESS) {
+                        Logger(Logger::error) << "Malformed bool property: " << name;
+                        return eResult;
+                    }
+                    m_data.set_val(name, temp);
+                }
+                else if(type == "int") {
+                    int temp;
+                    eResult = pProp->QueryIntAttribute("value", &temp);
+                    if(eResult != XML_SUCCESS) {
+                        Logger(Logger::error) << "Malformed int property: " << name;
+                        return eResult;
+                    }
+                    m_data.set_val(name, temp);
+                }
+                else if(type == "float") {
+                    float temp;
+                    eResult = pProp->QueryFloatAttribute("value", &temp);
+                    if(eResult != XML_SUCCESS) {
+                        Logger(Logger::error) << "Malformed float property: " << name;
+                        return eResult;
+                    }
+                    m_data.set_val(name, temp);
+                }
+                else if(type == "" || type == "file") {
+                    const char* p_value = pProp->Attribute("value");
+                    if(p_value == nullptr) {
+                        Logger(Logger::error) << "Malformed string property: " << name;
+                        return XML_ERROR_PARSING_ATTRIBUTE;
+                    }
+                    std::string value = "";
+                    if(type == "file") {value += get_file_path();}
+                    value += p_value;
+                    m_data.set_val(name, value);
+                }
+                else {
+                    Logger(Logger::error) << "Unknown type " << type << " specified! This shouldn't happen at all! Tiled must have messed up";
+                    return XML_ERROR_PARSING_ATTRIBUTE;
+                }
             }
+            pProp = pProp->NextSiblingElement();
         }
+    }
 
+    #ifndef LIB_BUILD
         // Parse all symbolic tilesets
         /// @warning Dont mix key mapping and event mapping .tsx files
         /// @warning Watch for valid ordering of symbolic tilesets (You can bind a event to a key only after it already got parsed)
@@ -317,8 +370,6 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
                 m_on_resume = get_event_convert_map(on_resume);
             }
         }
-    #else
-    (void) pMap;
     #endif // LIB_BUILD
     return XML_SUCCESS;
 }

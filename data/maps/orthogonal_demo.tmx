@@ -3,6 +3,11 @@
  <properties>
   <property name="EVENT1" type="file" value="events.tsx"/>
   <property name="KEY1" type="file" value="key_mapping.tsx"/>
+  <property name="Test 1" type="bool" value="true"/>
+  <property name="Test 2" type="float" value="1337"/>
+  <property name="Test 3" type="int" value="1337"/>
+  <property name="Test 4" value="Hello"/>
+  <property name="Test 5" type="file" value="../../README.md"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/basic_blocks.tsx"/>
  <tileset firstgid="7" source="../actors/actor_handle_small.tsx"/>
