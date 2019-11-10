@@ -199,7 +199,7 @@ bool Tileset::render(Uint32 local_tile_id, int x, int y) const {
  *
  * @todo Use pixel margin instead of tile margin for possibly slightly better performance
  */
-std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsigned tile_h) const{
+std::map<salmon::Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsigned tile_h) const{
     int pix_up = 0;
     int pix_down = 0;
     int pix_left = 0;
@@ -228,11 +228,11 @@ std::map<Direction, unsigned> Tileset::determine_overhang(unsigned tile_w, unsig
     if (pix_left < 0) {pix_left = 0;}
     if (pix_right < 0) {pix_right = 0;}
 
-    std::map<Direction, unsigned> oh_map;
-    oh_map[Direction::up] = pix_up;
-    oh_map[Direction::down] = pix_down;
-    oh_map[Direction::left] = pix_left;
-    oh_map[Direction::right] = pix_right;
+    std::map<salmon::Direction, unsigned> oh_map;
+    oh_map[salmon::Direction::up] = pix_up;
+    oh_map[salmon::Direction::down] = pix_down;
+    oh_map[salmon::Direction::left] = pix_left;
+    oh_map[salmon::Direction::right] = pix_right;
 
     return oh_map;
 }

@@ -46,8 +46,8 @@ class AeSetAnimFrame : public Event<Actor>{
         static const std::string m_alias;
         PropertyListener<AeSetAnimFrame> m_property_listener;
         // vv Add members with default values
-        AnimationType m_animation = AnimationType::current;
-        Direction m_direction = Direction::current;
+        salmon::AnimationType m_animation = salmon::AnimationType::current;
+        salmon::Direction m_direction = salmon::Direction::current;
         int m_anim_frame = 0;
 };
 

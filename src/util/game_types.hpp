@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -22,71 +22,12 @@
 #include <string>
 #include <vector>
 #include <SDL.h>
+#include "include/types.hpp"
+
 
 /**
  * @brief A collection of various enums and handy functions for conversion and parsing
  */
-
-enum class Direction {
-    up,
-    down,
-    left,
-    right,
-    current, ///< Keyword for last used direction
-    none,
-    invalid,
-};
-
-enum class AnimationType {
-    idle,
-    walk,
-    run,
-    jump,
-    fall,
-    die,
-    custom1,
-    custom2,
-    custom3,
-    custom4,
-    custom5,
-    custom6,
-    custom7,
-    custom8,
-    custom9,
-    current, ///< Keyord for last used AnimationType
-    none,
-    invalid,
-};
-
-namespace salmon {
-    enum class AnimSignal{
-        missing = -1,
-        none = 0,
-        next = 1,
-        trigger = 2,
-        wrap = 3,
-    };
-
-    struct MouseButtonState {
-        bool pressed = false;
-        bool released = false;
-        bool down = false;
-    };
-
-    struct MouseState {
-        MouseButtonState left;
-        MouseButtonState right;
-        MouseButtonState middle;
-        MouseButtonState extra1;
-        MouseButtonState extra2;
-        int x_scroll = 0;
-        int y_scroll = 0;
-        int x_pos = 0;
-        int y_pos = 0;
-        int x_delta = 0;
-        int y_delta = 0;
-    };
-}
 
 enum class Response{
     on_hit,
@@ -123,13 +64,13 @@ enum class Priority{
     invalid = -1,
 };
 
-AnimationType str_to_anim_type(const std::string& name);
-Direction str_to_direction(const std::string& name);
+salmon::AnimationType str_to_anim_type(const std::string& name);
+salmon::Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
 SDL_Color str_to_color(const std::string& name);
 
-std::vector<float> dir_to_mov(const Direction dir);
+std::vector<float> dir_to_mov(const salmon::Direction dir);
 
 #endif // GAME_TYPES_HPP_INCLUDED

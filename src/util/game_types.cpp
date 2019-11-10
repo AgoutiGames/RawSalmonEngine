@@ -16,41 +16,40 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "game_types.hpp"
-
+#include "util/game_types.hpp"
 #include <iostream>
 
 /// Converts a @c string to an @c enum of @c AnimationType
-AnimationType str_to_anim_type(const std::string& name) {
-    if(name == "IDLE") return AnimationType::idle;
-    if(name == "WALK") return AnimationType::walk;
-    if(name == "RUN") return AnimationType::run;
-    if(name == "JUMP") return AnimationType::jump;
-    if(name == "FALL") return AnimationType::fall;
-    if(name == "DIE") return AnimationType::die;
-    if(name == "CUSTOM1") return AnimationType::custom1;
-    if(name == "CUSTOM2") return AnimationType::custom2;
-    if(name == "CUSTOM3") return AnimationType::custom3;
-    if(name == "CUSTOM4") return AnimationType::custom4;
-    if(name == "CUSTOM5") return AnimationType::custom5;
-    if(name == "CUSTOM6") return AnimationType::custom6;
-    if(name == "CUSTOM7") return AnimationType::custom7;
-    if(name == "CUSTOM8") return AnimationType::custom8;
-    if(name == "CUSTOM9") return AnimationType::custom9;
-    if(name == "CURRENT") return AnimationType::current;
-    if(name == "NONE") return AnimationType::none;
-    else return AnimationType::invalid;
+salmon::AnimationType str_to_anim_type(const std::string& name) {
+    if(name == "IDLE") return salmon::AnimationType::idle;
+    if(name == "WALK") return salmon::AnimationType::walk;
+    if(name == "RUN") return salmon::AnimationType::run;
+    if(name == "JUMP") return salmon::AnimationType::jump;
+    if(name == "FALL") return salmon::AnimationType::fall;
+    if(name == "DIE") return salmon::AnimationType::die;
+    if(name == "CUSTOM1") return salmon::AnimationType::custom1;
+    if(name == "CUSTOM2") return salmon::AnimationType::custom2;
+    if(name == "CUSTOM3") return salmon::AnimationType::custom3;
+    if(name == "CUSTOM4") return salmon::AnimationType::custom4;
+    if(name == "CUSTOM5") return salmon::AnimationType::custom5;
+    if(name == "CUSTOM6") return salmon::AnimationType::custom6;
+    if(name == "CUSTOM7") return salmon::AnimationType::custom7;
+    if(name == "CUSTOM8") return salmon::AnimationType::custom8;
+    if(name == "CUSTOM9") return salmon::AnimationType::custom9;
+    if(name == "CURRENT") return salmon::AnimationType::current;
+    if(name == "NONE") return salmon::AnimationType::none;
+    else return salmon::AnimationType::invalid;
 }
 
 /// Converts a @c string to an @c enum of @c Direction
-Direction str_to_direction(const std::string& name) {
-    if(name == "UP") return Direction::up;
-    if(name == "DOWN") return Direction::down;
-    if(name == "LEFT") return Direction::left;
-    if(name == "RIGHT") return Direction::right;
-    if(name == "CURRENT") return Direction::current;
-    if(name == "NONE") return Direction::none;
-    else return Direction::invalid;
+salmon::Direction str_to_direction(const std::string& name) {
+    if(name == "UP") return salmon::Direction::up;
+    if(name == "DOWN") return salmon::Direction::down;
+    if(name == "LEFT") return salmon::Direction::left;
+    if(name == "RIGHT") return salmon::Direction::right;
+    if(name == "CURRENT") return salmon::Direction::current;
+    if(name == "NONE") return salmon::Direction::none;
+    else return salmon::Direction::invalid;
 }
 
 /// Converts a @c string to an @c enum of @c Priority
@@ -84,11 +83,11 @@ Response str_to_response(const std::string& name) {
 }
 
 /// Converts a @c Direction to x and y factors
-std::vector<float> dir_to_mov(const Direction dir) {
-    if(dir == Direction::up)    return std::vector<float>{0,-1};
-    if(dir == Direction::right) return std::vector<float>{1,0};
-    if(dir == Direction::down)  return std::vector<float>{0,1};
-    if(dir == Direction::left)  return std::vector<float>{-1,0};
+std::vector<float> dir_to_mov(const salmon::Direction dir) {
+    if(dir == salmon::Direction::up)    return std::vector<float>{0,-1};
+    if(dir == salmon::Direction::right) return std::vector<float>{1,0};
+    if(dir == salmon::Direction::down)  return std::vector<float>{0,1};
+    if(dir == salmon::Direction::left)  return std::vector<float>{-1,0};
     else return std::vector<float>{0,0};
 }
 

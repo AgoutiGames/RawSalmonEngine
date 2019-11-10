@@ -49,10 +49,10 @@ class AeFall : public Event<Actor>{
         float m_acceleration = 500.0f;
         float m_max_velocity = 1000.0f;
         int m_death_height = 0.0f;
-        Direction m_fall_dir = Direction::down;
+        salmon::Direction m_fall_dir = salmon::Direction::down;
 
-        AnimationType m_animation = AnimationType::fall;
-        Direction m_anim_dir = Direction::current;
+        salmon::AnimationType m_animation = salmon::AnimationType::fall;
+        salmon::Direction m_anim_dir = salmon::Direction::current;
 
         float m_speed = 0;
         float m_height = 0;

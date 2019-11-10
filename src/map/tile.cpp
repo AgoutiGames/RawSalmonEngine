@@ -140,8 +140,8 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
 
     // Initialize temporary variables
     std::string actor_name = "_";
-    AnimationType anim = AnimationType::invalid;
-    Direction dir = Direction::invalid;
+    salmon::AnimationType anim = salmon::AnimationType::invalid;
+    salmon::Direction dir = salmon::Direction::invalid;
 
 
     // Parse user specified properties of the tile
@@ -170,16 +170,16 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                 const char* p_anim_type = p_property->Attribute("value");
                 if(p_anim_type != nullptr) {
                     anim = str_to_anim_type(std::string(p_anim_type));
-                    if(anim == AnimationType::invalid) {
+                    if(anim == salmon::AnimationType::invalid) {
                         Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
-                    if(anim == AnimationType::current) {
+                    if(anim == salmon::AnimationType::current) {
                         Logger(Logger::error) << "You can't define a specific animation type as the current one";
                         Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
-                    if(anim == AnimationType::none) {
+                    if(anim == salmon::AnimationType::none) {
                         Logger(Logger::error) << "Animation type \"NONE\" is reserved for the directionless symbolic tile of " << actor_name;
                         Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name;
                         return XML_WRONG_ATTRIBUTE_TYPE;
@@ -196,11 +196,11 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
                 const char* p_direction = p_property->Attribute("value");
                 if(p_direction != nullptr) {
                     dir = str_to_direction(std::string(p_direction));
-                    if(dir == Direction::invalid) {
+                    if(dir == salmon::Direction::invalid) {
                         Logger(Logger::error) << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name;
                         return XML_WRONG_ATTRIBUTE_TYPE;
                     }
-                    if(dir == Direction::current) {
+                    if(dir == salmon::Direction::current) {
                         Logger(Logger::error) << "You can't define a specific direction as the current one";
                         Logger(Logger::error) << "Invalid animation direction \"" << p_direction << "\" in actor animation for " << actor_name;
                         return XML_WRONG_ATTRIBUTE_TYPE;
@@ -247,12 +247,12 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
         return XML_NO_ATTRIBUTE;
     }
 
-    else if(anim == AnimationType::invalid) {
+    else if(anim == salmon::AnimationType::invalid) {
         Logger(Logger::error) << "Missing animation type in actor animation for " << actor_name;
         return XML_NO_ATTRIBUTE;
     }
 
-    else if(dir == Direction::invalid) {
+    else if(dir == salmon::Direction::invalid) {
         Logger(Logger::error) << "Missing direction in actor animation for " << actor_name;
         return XML_NO_ATTRIBUTE;
     }

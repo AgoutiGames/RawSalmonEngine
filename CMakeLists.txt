@@ -51,12 +51,12 @@ if(LIB_TARGET)
 endif()
 
 set(LIB_SOURCES
-    src/include/gameinfo.cpp
-    src/include/data_block_ref.cpp
-    src/include/input_cache_ref.cpp
-    src/include/camera_ref.cpp
-    src/include/actor_ref.cpp
-    src/include/map_ref.cpp
+    src/include_impl/gameinfo.cpp
+    src/include_impl/data_block_ref.cpp
+    src/include_impl/input_cache_ref.cpp
+    src/include_impl/camera_ref.cpp
+    src/include_impl/actor_ref.cpp
+    src/include_impl/map_ref.cpp
     )
 
 set(ACTOR_SOURCES
@@ -151,7 +151,6 @@ if(NOT LIB_TARGET)
         ${GRAPHICS_SOURCES}
         ${MAP_SOURCES}
         ${UTIL_SOURCES}
-        ${LIB_SOURCES}
     )
     add_executable(${PROJECT_NAME} ${SALMON_SOURCES})
 

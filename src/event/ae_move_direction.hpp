@@ -46,9 +46,9 @@ class AeMoveDirection : public Event<Actor>{
         static const std::string m_alias;
         PropertyListener<AeMoveDirection> m_property_listener;
         // vv Add members with default values
-        Direction m_direction = Direction::up;
+        salmon::Direction m_direction = salmon::Direction::up;
         int m_duration = 1; ///< How many frames the movement persists
-        AnimationType m_animation = AnimationType::walk;
+        salmon::AnimationType m_animation = salmon::AnimationType::walk;
         float m_speed = 250.0f;
 };
 

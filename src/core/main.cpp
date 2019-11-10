@@ -18,7 +18,7 @@
  */
 #include <iostream>
 
-#include "include/gameinfo.hpp"
+#include "core/gameinfo.hpp"
 #include "util/logger.hpp"
 
 #if defined(_WIN32)
@@ -30,7 +30,7 @@
 int main()
 {
     // Better read resolution from config file
-    salmon::GameInfo game(1920, 1080);
+    GameInfo game(1920, 1080);
 
     if(!game.load_map("main.tmx")) {
         Logger(Logger::fatal) << "Engine startup failed! Entry point \"main.tmx\" couldn't be load!";

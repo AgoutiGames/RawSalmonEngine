@@ -60,7 +60,7 @@ class Tileset{
 
         bool render(Uint32 local_tile_id, int x, int y) const;
 
-        std::map<Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h) const;
+        std::map<salmon::Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h) const;
 
         unsigned get_first_gid() {return m_first_gid;}
 

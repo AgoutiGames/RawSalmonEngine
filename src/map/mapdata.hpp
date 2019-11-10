@@ -138,7 +138,7 @@ class MapData {
         Actor get_actor(std::string name) const;
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
-        void add_actor_animation(std::string name, AnimationType anim, Direction dir, Tile* tile);
+        void add_actor_animation(std::string name, salmon::AnimationType anim, salmon::Direction dir, Tile* tile);
 
         Actor* fetch_actor(std::string name);
 

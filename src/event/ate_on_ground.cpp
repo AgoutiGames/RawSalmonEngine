@@ -42,8 +42,8 @@ EventSignal AteOnGround::process(Actor& actor) {
     listen(m_property_listener, *this, actor);
 
     // Parse and check direction value
-    Direction dir = str_to_direction(m_direction_string);
-    if(dir == Direction::invalid || dir == Direction::current) {
+    salmon::Direction dir = str_to_direction(m_direction_string);
+    if(dir == salmon::Direction::invalid || dir == salmon::Direction::current) {
         Logger(Logger::error) << info() << " Direction: " << m_direction_string << " is an invalid direction";
         return EventSignal::abort;
     }

@@ -24,16 +24,16 @@ using salmon::ActorRef;
 
 ActorRef::ActorRef(Actor& impl) : m_impl{&impl} {}
 
-bool ActorRef::animate(AnimationType anim, Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
-bool ActorRef::set_animation(AnimationType anim, Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
-salmon::AnimSignal ActorRef::animate_trigger(AnimationType anim, Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}
-AnimationType ActorRef::get_animation() const {return m_impl->get_animation();}
-Direction ActorRef::get_direction() const {return m_impl->get_direction();}
+bool ActorRef::animate(salmon::AnimationType anim, salmon::Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
+bool ActorRef::set_animation(salmon::AnimationType anim, salmon::Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
+salmon::AnimSignal ActorRef::animate_trigger(salmon::AnimationType anim, salmon::Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}
+salmon::AnimationType ActorRef::get_animation() const {return m_impl->get_animation();}
+salmon::Direction ActorRef::get_direction() const {return m_impl->get_direction();}
 std::string ActorRef::get_name() const {return m_impl->get_name();}
 std::string ActorRef::get_type() const {return m_impl->get_type();}
 
 bool ActorRef::move(float x_factor, float y_factor, bool absolute) {return m_impl->move(x_factor, y_factor, absolute);}
-bool ActorRef::on_ground(Direction dir, int tolerance) const {return m_impl->on_ground(dir, tolerance);}
+bool ActorRef::on_ground(salmon::Direction dir, int tolerance) const {return m_impl->on_ground(dir, tolerance);}
 
 double ActorRef::get_angle() const {return m_impl->get_angle();}
 void ActorRef::set_angle(double angle) {return m_impl->set_angle(angle);}

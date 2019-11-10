@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "util/game_types.hpp"
+#include "./types.hpp"
 
 class InputCache;
 

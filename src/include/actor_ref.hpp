@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "util/game_types.hpp"
+#include "./types.hpp"
 #include "./data_block_ref.hpp"
 
 class Actor;
@@ -32,16 +32,16 @@ namespace salmon {
         public:
             ActorRef(Actor& impl);
 
-            bool animate(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
-            bool set_animation(AnimationType anim = AnimationType::current, Direction dir = Direction::current, int frame = 0);
-            salmon::AnimSignal animate_trigger(AnimationType anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
-            AnimationType get_animation() const;
-            Direction get_direction() const;
+            bool animate(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+            bool set_animation(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
+            salmon::AnimSignal animate_trigger(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+            salmon::AnimationType get_animation() const;
+            salmon::Direction get_direction() const;
             std::string get_name() const;
             std::string get_type() const;
 
             bool move(float x_factor, float y_factor, bool absolute = false);
-            bool on_ground(Direction dir = Direction::down, int tolerance = 0) const;
+            bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
             double get_angle() const;
             void set_angle(double angle);

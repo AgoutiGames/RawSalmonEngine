@@ -57,7 +57,7 @@ class TilesetCollection{
         unsigned get_tile_h() const {return m_tile_h;} ///< Return base tile height
         unsigned get_tile_w() const {return m_tile_w;} ///< Return base tile width
 
-        unsigned get_overhang(Direction dir) const;
+        unsigned get_overhang(salmon::Direction dir) const;
 
         Uint32 get_gid(Tile* tile)  const;
         Tile* get_tile(Uint32 tile_id) const;
