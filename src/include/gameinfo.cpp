@@ -34,6 +34,7 @@ bool salmon::GameInfo::update() {return m_impl->update();}
 
 bool salmon::GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load_map(mapfile, absolute);}
 void salmon::GameInfo::close_map() {m_impl->close_map();}
+salmon::MapRef salmon::GameInfo::get_map() {return m_impl->get_map();}
 
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
 salmon::InputCacheRef salmon::GameInfo::get_input_cache() {return m_impl->get_input_cache();}

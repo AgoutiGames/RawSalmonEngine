@@ -162,7 +162,9 @@ bool GameInfo::update() {
 
     //Event handler
     SDL_Event e;
+    #ifndef LIB_BUILD
     InputHandler& handler = m_maps.top().get_input_handler();
+    #endif // LIB_BUILD
 
     m_input_cache.clear();
 
@@ -174,11 +176,15 @@ bool GameInfo::update() {
         }
         //User presses a key
         else if( e.type == SDL_KEYDOWN && (m_key_repeat == true || e.key.repeat == false)) {
+            #ifndef LIB_BUILD
             handler.process_key_down(e.key);
+            #endif // LIB_BUILD
             m_input_cache.set(e.key.keysym.sym, true);
         }
         else if( e.type == SDL_KEYUP && (m_key_repeat == true || e.key.repeat == false)) {
+            #ifndef LIB_BUILD
             handler.process_key_up(e.key);
+            #endif // LIB_BUILD
             m_input_cache.set(e.key.keysym.sym, false);
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
@@ -192,15 +198,19 @@ bool GameInfo::update() {
         }
     }
 
+    #ifndef LIB_BUILD
     // In addition to pressed and released events also check for down state of button
     handler.process_keys_sustained();
+    #endif // LIB_BUILD
 
     m_input_cache.poll();
 
     m_maps.top().update();
 
+    #ifndef LIB_BUILD
     // Do nothing with returned signal because we don't have to
     m_events.process_events(*this);
+    #endif // LIB_BUILD
 
     return true;
 }
@@ -219,6 +229,10 @@ void GameInfo::update_path() {
     m_current_path = m_maps.top().get_file_path();
     m_current_path.erase(m_current_path.find_last_of('/') + 1);
 }
+
+
+MapData& GameInfo::get_map() {return m_maps.top();}
+std::stack<MapData>& GameInfo::get_maps() {return m_maps;}
 
 /// Cleans up SDL2 stuff
 void GameInfo::close() {

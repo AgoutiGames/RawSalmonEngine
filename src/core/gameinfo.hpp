@@ -24,9 +24,12 @@
 #include <stack>
 
 #include "actor/data_block.hpp"
-#include "event/event_queue.hpp"
 #include "core/input_cache.hpp"
 #include "core/font_manager.hpp"
+
+#ifndef LIB_BUILD
+#include "event/event_queue.hpp"
+#endif // LIB_BUILD
 
 class MapData;
 
@@ -36,6 +39,13 @@ class MapData;
  */
 
 class GameInfo {
+#ifndef LIB_BUILD
+public:
+    EventQueue<GameInfo>& get_event_queue() {return m_events;}
+private:
+    EventQueue<GameInfo> m_events;
+#endif // LIB_BUILD
+
 public:
     GameInfo(unsigned screen_w, unsigned screen_h);
     ~GameInfo();
@@ -49,11 +59,12 @@ public:
     bool load_map(std::string mapfile, bool absolute = false);
     void close_map();
 
+    MapData& get_map();
+    std::stack<MapData>& get_maps();
     DataBlock& get_data() {return m_data;}
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
-    EventQueue<GameInfo>& get_event_queue() {return m_events;}
     FontManager& get_font_manager() {return m_font_manager;}
     InputCache& get_input_cache() {return m_input_cache;}
 
@@ -69,7 +80,6 @@ private:
     InputCache m_input_cache;
     DataBlock m_data; ///< This holds custom user values by string
 
-    EventQueue<GameInfo> m_events;
     FontManager m_font_manager;
 
     std::string m_current_path = "../data/";

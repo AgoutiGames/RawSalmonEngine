@@ -24,6 +24,7 @@
 
 #include "./data_block_ref.hpp"
 #include "./input_cache_ref.hpp"
+#include "./map_ref.hpp"
 
 class GameInfo;
 
@@ -41,6 +42,7 @@ namespace salmon {
 
             bool load_map(std::string mapfile, bool absolute = false);
             void close_map();
+            salmon::MapRef get_map();
 
             DataBlockRef get_data();
             InputCacheRef get_input_cache();
