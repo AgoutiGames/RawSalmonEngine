@@ -18,6 +18,7 @@
  */
 #include "map/mapdata.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -222,21 +223,29 @@ tinyxml2::XMLError MapData::parse_map_properties(tinyxml2::XMLElement* pMap) {
         std::string on_always = "";
         std::string on_resume = "";
 
+        std::string key_name = "KEY";
+        std::string event_name = "EVENT";
+
         // Parse names of possible on_* callbacks and filenames of possible symbolic tilesets
         XMLElement* pProp = pMap->FirstChildElement("properties");
         if (pProp != nullptr) {
             pProp = pProp->FirstChildElement("property");
             while(pProp != nullptr) {
-                if(std::string("ON_LOAD") == pProp->Attribute("name")) {
+
+                const char* p_name = pProp->Attribute("name");
+                std::string name = (p_name) ? p_name : "";
+
+                if(std::string("ON_LOAD") == p_name) {
                     on_load = pProp->Attribute("value");
                 }
-                else if(std::string("ON_ALWAYS") == pProp->Attribute("name")) {
+                else if(std::string("ON_ALWAYS") == p_name) {
                     on_always = pProp->Attribute("value");
                 }
-                else if(std::string("ON_RESUME") == pProp->Attribute("name")) {
+                else if(std::string("ON_RESUME") == p_name) {
                     on_resume = pProp->Attribute("value");
                 }
-                else {
+                // Check if symbolic tilesets start with KEY or EVENT
+                else if (std::equal(key_name.begin(), key_name.end(), name.begin()) || std::equal(event_name.begin(), event_name.end(), name.begin())) {
                     symbolic_tilesets.push_back(pProp->Attribute("value"));
                 }
                 pProp = pProp->NextSiblingElement();
