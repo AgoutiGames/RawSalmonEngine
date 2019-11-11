@@ -3,32 +3,32 @@ sudo: required
 language: cpp
 compiler: gcc
 env:
-- CONFIG=Release PLATFORM=linux   BIT=64 LIB=OFF
-- CONFIG=Release PLATFORM=linux   BIT=32 LIB=OFF
-- CONFIG=Release PLATFORM=windows BIT=64 LIB=OFF
-- CONFIG=Release PLATFORM=windows BIT=32 LIB=OFF
+- CONFIG=Release PLATFORM=linux   BIT=64 LIBRARY=OFF
+- CONFIG=Release PLATFORM=linux   BIT=32 LIBRARY=OFF
+- CONFIG=Release PLATFORM=windows BIT=64 LIBRARY=OFF
+- CONFIG=Release PLATFORM=windows BIT=32 LIBRARY=OFF
 
-- CONFIG=Release PLATFORM=linux   BIT=64 LIB=ON
-- CONFIG=Release PLATFORM=linux   BIT=32 LIB=ON
-- CONFIG=Release PLATFORM=windows BIT=64 LIB=ON
-- CONFIG=Release PLATFORM=windows BIT=32 LIB=ON
+- CONFIG=Release PLATFORM=linux   BIT=64 LIBRARY=ON
+- CONFIG=Release PLATFORM=linux   BIT=32 LIBRARY=ON
+- CONFIG=Release PLATFORM=windows BIT=64 LIBRARY=ON
+- CONFIG=Release PLATFORM=windows BIT=32 LIBRARY=ON
 
-- CONFIG=Debug PLATFORM=linux   BIT=64 LIB=OFF
-- CONFIG=Debug PLATFORM=linux   BIT=32 LIB=OFF
-- CONFIG=Debug PLATFORM=windows BIT=64 LIB=OFF
-- CONFIG=Debug PLATFORM=windows BIT=32 LIB=OFF
+- CONFIG=Debug PLATFORM=linux   BIT=64 LIBRARY=OFF
+- CONFIG=Debug PLATFORM=linux   BIT=32 LIBRARY=OFF
+- CONFIG=Debug PLATFORM=windows BIT=64 LIBRARY=OFF
+- CONFIG=Debug PLATFORM=windows BIT=32 LIBRARY=OFF
 
-- CONFIG=Debug PLATFORM=linux   BIT=64 LIB=ON
-- CONFIG=Debug PLATFORM=linux   BIT=32 LIB=ON
-- CONFIG=Debug PLATFORM=windows BIT=64 LIB=ON
-- CONFIG=Debug PLATFORM=windows BIT=32 LIB=ON
+- CONFIG=Debug PLATFORM=linux   BIT=64 LIBRARY=ON
+- CONFIG=Debug PLATFORM=linux   BIT=32 LIBRARY=ON
+- CONFIG=Debug PLATFORM=windows BIT=64 LIBRARY=ON
+- CONFIG=Debug PLATFORM=windows BIT=32 LIBRARY=ON
 install:
 - sudo apt-get update
 - sudo ./cmake/fetch_dev_dependencies.sh
 script:
 - mkdir build
 - cd build
-- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DLIB_TARGET=${LIB} -DCMAKE_TOOLCHAIN_FILE="../cmake/${PLATFORM}${BIT}-toolchain.cmake" ..
+- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DLIBRARY_TARGET=${LIBRARY} -DCMAKE_TOOLCHAIN_FILE="../cmake/${PLATFORM}${BIT}-toolchain.cmake" ..
 - make
 before_deploy:
 - cd ../

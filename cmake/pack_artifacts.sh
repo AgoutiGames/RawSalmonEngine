@@ -43,7 +43,9 @@ if [ "$P" = "linux" ]
 then
     if [ "$L" = "ON" ]
     then
-        tar cfvz ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.tar.gz -C ./cmake fetch_dependencies.sh -C ../build libSalmon.so
+        cp -r ./src/include ./
+        tar cfvz ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.tar.gz include -C ./cmake fetch_dependencies.sh -C ../build libSalmon.so
+        rm -r ./include
     elif [ "$L" = "OFF" ]
     then
         cp ./build/Salmon ./bin
@@ -59,7 +61,9 @@ then
     then
         cp ./build/libSalmon.dll ./bin
         cp ./build/libSalmon.dll.a ./bin
-        zip -r ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.zip ./bin 
+        cp -r ./src/include ./
+        zip -r ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.zip ./bin ./include
+        rm -r ./include
     elif [ "$L" = "OFF" ]
     then
         cp ./build/Salmon.exe ./bin
