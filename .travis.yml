@@ -28,7 +28,7 @@ install:
 script:
 - mkdir build
 - cd build
-- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DLIB_TARGET=${LIB} -DCMAKE_TOOLCHAIN_FILE="../cmake/${Toolchain}-toolchain.cmake" ..
+- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DLIB_TARGET=${LIB} -DCMAKE_TOOLCHAIN_FILE="../cmake/${PLATFORM}${BIT}-toolchain.cmake" ..
 - make
 before_deploy:
 - cd ../
