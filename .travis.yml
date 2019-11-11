@@ -2,43 +2,36 @@ dist: bionic
 sudo: required
 language: cpp
 compiler: gcc
-matrix:
-  include:
-  - env: CONFIG=Release       Toolchain=linux64
-    install:
-    - sudo apt-get install libtinyxml2-dev zlib1g-dev libb64-dev libsdl2-dev libsdl2-image-dev
-      libsdl2-ttf-dev libsdl2-mixer-dev
-    before_deploy:
-    - sh ../cmake/pack-${Toolchain}.sh
-    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.tar.gz
-  - env: CONFIG=Release       Toolchain=linux32
-    install:
-    - sudo apt-get install libglib2.0-dev:i386
-    - sudo apt-get install libpulse-dev:i386
-    - sudo apt-get install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386
-      libtinyxml2-dev:i386
-    - sudo apt-get install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386
-      libsdl2-ttf-dev:i386
-    before_deploy:
-    - sh ../cmake/pack-${Toolchain}.sh
-    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.tar.gz
-  - env: CONFIG=Release       Toolchain=win32
-    install:
-    - sudo apt-get install mingw-w64
-    before_deploy:
-    - sh ../cmake/pack-${Toolchain}.sh
-    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.zip
-  - env: CONFIG=Release       Toolchain=win64
-    install:
-    - sudo apt-get install mingw-w64
-    before_deploy:
-    - sh ../cmake/pack-${Toolchain}.sh
-    - mv Archive* RawSalmonEngine-${TRAVIS_TAG}-${Toolchain}.zip
+env:
+- CONFIG=Release PLATFORM=linux   BIT=64 LIB=OFF
+- CONFIG=Release PLATFORM=linux   BIT=32 LIB=OFF
+- CONFIG=Release PLATFORM=windows BIT=64 LIB=OFF
+- CONFIG=Release PLATFORM=windows BIT=32 LIB=OFF
+
+- CONFIG=Release PLATFORM=linux   BIT=64 LIB=ON
+- CONFIG=Release PLATFORM=linux   BIT=32 LIB=ON
+- CONFIG=Release PLATFORM=windows BIT=64 LIB=ON
+- CONFIG=Release PLATFORM=windows BIT=32 LIB=ON
+
+- CONFIG=Debug PLATFORM=linux   BIT=64 LIB=OFF
+- CONFIG=Debug PLATFORM=linux   BIT=32 LIB=OFF
+- CONFIG=Debug PLATFORM=windows BIT=64 LIB=OFF
+- CONFIG=Debug PLATFORM=windows BIT=32 LIB=OFF
+
+- CONFIG=Debug PLATFORM=linux   BIT=64 LIB=ON
+- CONFIG=Debug PLATFORM=linux   BIT=32 LIB=ON
+- CONFIG=Debug PLATFORM=windows BIT=64 LIB=ON
+- CONFIG=Debug PLATFORM=windows BIT=32 LIB=ON
+install:
+- sudo ./cmake/fetch_dev_dependencies.sh
 script:
 - mkdir build
 - cd build
-- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_TOOLCHAIN_FILE="../cmake/${Toolchain}-toolchain.cmake" ..
+- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DLIB_TARGET=${LIB} -DCMAKE_TOOLCHAIN_FILE="../cmake/${Toolchain}-toolchain.cmake" ..
 - make
+before_deploy:
+- cd ../
+- ./cmake/pack_artifacts.sh
 deploy:
   provider: releases
   skip_cleanup: true
@@ -52,4 +45,4 @@ deploy:
       repo: AgoutiGames/RawSalmonEngine
   api_key:
     secure: RN+Wgtl5VulBoFqwwjnJQ49CImrqNBYLmxcAaPjguTA+wsuAgGGyt8z84fl8D0mdU2ZxFRGrAQkXI9i9RjLi8uU/EA/yUEBW2f3A4Q/haQHplo9OyCC2roBOdz5I/zYtlKmAunX0NG6Mpu/vnyQbAqcndYhS+Wz3HVmZQ2xmH70i3Rj/l+p9MA/KzH2AM8kR18sBkpL6tbkNx+WVGhDFLNrR6VBDl8DGTOGBsrQYfxlu2064EZv16qa2HrwAFdE+5QUaY5ESsScCIbkaz5/XwIoR6hNLSN2ltmoUOruSvqL8iP/B/mJD3xIdRH9hwEhXL3PkJG3xScorfGYFwhW48+Vt5br0Writ5QOJpPtkz57KPoC6R6rSM8g6K7LLcvt+DXnRcSCjC9JkwlBRsEe70zBrT11nTe0SdBZitwsc3qPxJrox2LHf0PEqcC2qypNuSG6CdTXVbGqnDE+0MGsurLKNcF142Md8cknFC4DplYgKsIk+u49s2DGhAkigeALyWr326Cg2VdhO2aFaSLAL012BlnaUuHscWDx66/DHbTkg4U2NEKOpwB/JLw70GDNarjyrWrD/FQtmquGITxtSi/cQkxsRK781q9FYb+9UpK+OZpO9yTD/BlEqt2wGeNbS7QqTtdM0Zb3pFpJjjRqwy8Ufsbgx4fvzBQHFKuViIzM=
-  file: RawSalmonEngine-*
+  file: RawSalmon*
