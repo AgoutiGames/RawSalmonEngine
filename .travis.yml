@@ -23,6 +23,7 @@ env:
 - CONFIG=Debug PLATFORM=windows BIT=64 LIB=ON
 - CONFIG=Debug PLATFORM=windows BIT=32 LIB=ON
 install:
+- sudo apt-get update
 - sudo ./cmake/fetch_dev_dependencies.sh
 script:
 - mkdir build
