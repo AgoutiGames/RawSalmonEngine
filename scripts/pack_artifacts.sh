@@ -62,9 +62,7 @@ if [ "$P" = "linux" ]
 then
     if [ "$L" = "ON" ]
     then
-        cp -r ./src/include ./
-        tar cfvz ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.tar.gz include -C ./cmake fetch_dependencies.sh -C ../build libSalmon.so
-        rm -r ./include
+        tar cfvz ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.tar.gz -C ./src/ include -C ../cmake fetch_dependencies.sh -C ../build libSalmon.so -C ../data libSalmon_objecttypes.xml
     elif [ "$L" = "OFF" ]
     then
         cp ./build/Salmon ./bin
@@ -80,6 +78,7 @@ then
     then
         cp ./build/libSalmon.dll ./bin
         cp ./build/libSalmon.dll.a ./bin
+        cp ./data/libSalmon_objecttypes.xml ./bin
         cp -r ./src/include ./
         zip -r ./RawSalmonLib-${TRAVIS_TAG}-${P}${B}.zip ./bin ./include
         rm -r ./include

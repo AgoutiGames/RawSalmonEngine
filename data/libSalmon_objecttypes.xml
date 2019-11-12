@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+ <objecttype name="ACTOR_ANIMATION" color="#ff55ff">
+  <property name="ACTOR_NAME" type="string"/>
+  <property name="ANIMATION_TYPE" type="string" default=""/>
+  <property name="DIRECTION" type="string"/>
+  <property name="TRIGGER_FRAME" type="int" default="0"/>
+ </objecttype>
+ <objecttype name="ACTOR_TEMPLATE" color="#00007f">
+  <property name="ACTOR_NAME" type="string"/>
+  <property name="ANIMATION_TYPE" type="string" default="NONE"/>
+  <property name="DIRECTION" type="string" default="NONE"/>
+ </objecttype>
+</objecttypes>

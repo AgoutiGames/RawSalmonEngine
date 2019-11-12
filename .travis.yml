@@ -24,15 +24,11 @@ env:
 - CONFIG=Debug PLATFORM=windows BIT=32 LIBRARY=ON
 install:
 - sudo apt-get update
-- sudo ./cmake/fetch_dev_dependencies.sh
+- sudo ./scripts/fetch_dev_dependencies.sh
 script:
-- mkdir build
-- cd build
-- cmake -DCMAKE_BUILD_TYPE=${CONFIG} -DLIB_TARGET=${LIBRARY} -DCMAKE_TOOLCHAIN_FILE="../cmake/${PLATFORM}${BIT}-toolchain.cmake" ..
-- make
+- ./scripts/compile.sh
 before_deploy:
-- cd ../
-- ./cmake/pack_artifacts.sh
+- ./scripts/pack_artifacts.sh
 deploy:
   provider: releases
   skip_cleanup: true

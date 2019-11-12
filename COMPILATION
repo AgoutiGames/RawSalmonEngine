@@ -1,5 +1,5 @@
 For a fully automated build process execute the build.sh bash script located in
-the cmake folder. For information about proper usage execute "./build.sh -h".
+the scripts folder. For information about proper usage execute "./build.sh -h".
 
 We currently supply a native linux build and a windows cross-compilation build
 via mingw-64 under linux. There is also 64 bit and a 32 bit compile option. You
@@ -11,7 +11,7 @@ own projects.
 Note: When compiling the linux32 version it will break your 64 bit sdl2 dev libs
       so make sure to reinstall sdl2 afterwards to avoid hiccups later on.
 
-Scripts located in cmake folder:
+Scripts located in ./scripts folder:
 
 fetch_dev_dependencies.sh : Installls needed dependencies for compilation of the
                             project via aptitude
