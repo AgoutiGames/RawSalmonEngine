@@ -21,6 +21,19 @@ else
     B=$BIT
 fi
 
+if [ "$P" != "linux" ] && [ "$P" != "windows" ]
+then
+    echo "PLATFORM parameter or env var is not properly set! Value is: \"${P}\"!"
+    echo "Please check help page via \"./fetch_dependencies -h\""
+    exit
+fi
+if [ "$B" != "64" ] && [ "$B" != "32" ]
+then
+    echo "BIT parameter or env var is not properly set! Value is: \"${B}\"!"
+    echo "Please check help page via \"./fetch_dependencies -h\""
+    exit
+fi
+
 if [ "$P" == "linux" ]
 then
     if [ "$B" == "64" ]

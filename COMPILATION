@@ -1,18 +1,31 @@
-For Linux 32bit cross-compilation:
-    $ sudo apt install gcc-multilib g++-multilib zlib1g-dev:i386 libb64-dev:i386 libtinyxml2-dev:i386
-    
-    This may break your 64bit SDL2 install which you'll typically want to reinstall after
-    $ sudo apt install libsdl2-dev:i386 libsdl2-image-dev:i386 libsdl2-mixer-dev:i386 libsdl2-ttf-dev:i386 
-    
-    $ cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/linux32-toolchain.cmake" ../
-    
-For Linux windows cross compilation with mingw-w64:
-    make sure to pull "dependencies" submodule or build libraries yourself
-    
-    $ sudo apt-get install mingw-w64
-    
-    $ cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/win64-toolchain.cmake" ../
-    or
-    $ cmake -DCMAKE_TOOLCHAIN_FILE="../cmake/win32-toolchain.cmake" ../
-    
-    Dont' forget: To run the executable you'll have to put all dlls into the same folder as the exe.
+For a fully automated build process execute the build.sh bash script located in
+the cmake folder. For information about proper usage execute "./build.sh -h".
+
+We currently supply a native linux build and a windows cross-compilation build
+via mingw-64 under linux. There is also 64 bit and a 32 bit compile option. You
+can either build the full engine which works with the builtin event system
+driven by symbolic tiles in the Tiled map file. The other option is to build the
+library version with stripped event functionality which you can link into your
+own projects.
+
+Note: When compiling the linux32 version it will break your 64 bit sdl2 dev libs
+      so make sure to reinstall sdl2 afterwards to avoid hiccups later on.
+
+Scripts located in cmake folder:
+
+fetch_dev_dependencies.sh : Installls needed dependencies for compilation of the
+                            project via aptitude
+
+fetch_dependencies.sh     : Installs dependencies for end users who whish to run
+                            the engine or applications built with the library
+
+startGame.sh              : A script included in linux engine build which runs
+                            the Salmon executable file
+
+compile.sh                : Compiles the project inside a build folder at
+                            project root level
+
+pack_artifacts.sh         : Packs the compiled artifacts and supplementary files
+                          : into an archive at project root level
+
+clean_up.sh               : Deletes the build folder

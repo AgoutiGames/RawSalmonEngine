@@ -1,5 +1,5 @@
 #!/bin/bash
-usage="Usage: ./pack_artifact.sh [PLATFORM] [BIT] [LIBRARY] [VERSION]
+usage="Usage: ./pack_artifacts.sh [PLATFORM] [BIT] [LIBRARY] [VERSION]
 PLATFORM: \"linux\", \"windows\"
 BIT: \"64\", \"32\"
 LIBRARY: \"ON\", \"OFF\"
@@ -34,6 +34,25 @@ fi
 if [ "$4" ]
 then
     TRAVIS_TAG=$4
+fi
+
+if [ "$P" != "linux" ] && [ "$P" != "windows" ]
+then
+    echo "PLATFORM parameter or env var is not properly set! Value is: \"${P}\"!"
+    echo "Please check help page via \"./pack_artifacts -h\""
+    exit
+fi
+if [ "$B" != "64" ] && [ "$B" != "32" ]
+then
+    echo "BIT parameter or env var is not properly set! Value is: \"${B}\"!"
+    echo "Please check help page via \"./pack_artifacts -h\""
+    exit
+fi
+if [ "$L" != "ON" ] && [ "$L" != "OFF" ]
+then
+    echo "LIBRARY parameter or env var is not properly set! Value is: \"${L}\"!"
+    echo "Please check help page via \"./pack_artifacts -h\""
+    exit
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
