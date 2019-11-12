@@ -10,7 +10,7 @@ set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
 set(CMAKE_CXX_FLAGS -m32)
 
 # here is the target environment located
-set(CMAKE_FIND_ROOT_PATH "/usr/${TOOLCHAIN_PREFIX}/" "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win32/")
+set(CMAKE_FIND_ROOT_PATH "/usr/${TOOLCHAIN_PREFIX}/" "${CMAKE_CURRENT_LIST_DIR}/../dependencies/win32/")
 
 # adjust the default behaviour of the FIND_XXX() commands:
 # search headers and libraries in the target environment, search
@@ -18,5 +18,3 @@ set(CMAKE_FIND_ROOT_PATH "/usr/${TOOLCHAIN_PREFIX}/" "${CMAKE_CURRENT_SOURCE_DIR
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-
-link_libraries(-static-libgcc -static-libstdc++)

@@ -1,5 +1,9 @@
 project("Salmon")
 
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    link_libraries(-static-libgcc -static-libstdc++)
+endif()
+
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 set(CMAKE_CXX_STANDARD 14)
