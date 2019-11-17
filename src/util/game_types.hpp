@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 #include <SDL.h>
-#include "include/types.hpp"
+#include "../../include/types.hpp"
 
 
 /**

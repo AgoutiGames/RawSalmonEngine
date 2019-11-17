@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "include/data_block_ref.hpp"
+#include "data_block_ref.hpp"
 
 #include "actor/data_block.hpp"
 
