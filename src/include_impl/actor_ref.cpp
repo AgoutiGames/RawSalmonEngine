@@ -23,6 +23,7 @@
 using salmon::ActorRef;
 
 ActorRef::ActorRef(Actor& impl) : m_impl{&impl} {}
+ActorRef::ActorRef(Actor* impl) : m_impl{impl} {}
 
 bool ActorRef::animate(salmon::AnimationType anim, salmon::Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
 bool ActorRef::set_animation(salmon::AnimationType anim, salmon::Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}

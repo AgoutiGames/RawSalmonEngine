@@ -31,6 +31,7 @@ namespace salmon {
     class MapRef {
         public:
             MapRef(MapData& impl);
+            MapRef(MapData* impl);
 
             bool render() const;
             void update();

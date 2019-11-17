@@ -18,10 +18,7 @@
  */
 #include "gameinfo.hpp"
 
-#include <SDL.h>
-
 #include "core/gameinfo.hpp"
-#include "actor/data_block.hpp"
 
 salmon::GameInfo::GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen) : m_impl{std::make_unique<::GameInfo>(screen_w,screen_h,fullscreen)} {}
 salmon::GameInfo::~GameInfo() {}

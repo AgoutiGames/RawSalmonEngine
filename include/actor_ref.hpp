@@ -31,6 +31,7 @@ namespace salmon {
         friend class CameraRef;
         public:
             ActorRef(Actor& impl);
+            ActorRef(Actor* impl);
 
             bool animate(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
             bool set_animation(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);

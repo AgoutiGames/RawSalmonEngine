@@ -23,6 +23,7 @@
 using salmon::MapRef;
 
 MapRef::MapRef(MapData& impl) : m_impl{&impl} {}
+MapRef::MapRef(MapData* impl) : m_impl{impl} {}
 
 bool MapRef::render() const {return m_impl->render();}
 void MapRef::update() {m_impl->update();}
