@@ -47,7 +47,7 @@ private:
 #endif // LIB_BUILD
 
 public:
-    GameInfo(unsigned screen_w, unsigned screen_h);
+    GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen = true);
     ~GameInfo();
 
     bool init();
@@ -74,8 +74,9 @@ private:
     SDL_Window* m_window = nullptr;
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
-    unsigned m_screen_w;
-    unsigned m_screen_h;
+    unsigned m_screen_w = 800;
+    unsigned m_screen_h = 600;
+    bool m_fullscreen = true;
 
     InputCache m_input_cache;
     DataBlock m_data; ///< This holds custom user values by string

@@ -31,7 +31,7 @@ class GameInfo;
 namespace salmon {
     class GameInfo{
         public:
-            GameInfo(unsigned screen_w, unsigned screen_h);
+            GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen);
             ~GameInfo();
 
             bool init();

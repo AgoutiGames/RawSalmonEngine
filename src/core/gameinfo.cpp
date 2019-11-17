@@ -32,8 +32,8 @@
 #include "util/logger.hpp"
 
 /// Constructs a @c GameInfo Object
-GameInfo::GameInfo(unsigned screen_w, unsigned screen_h)
-: m_screen_w {screen_w}, m_screen_h {screen_h}
+GameInfo::GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen)
+: m_screen_w {screen_w}, m_screen_h {screen_h}, m_fullscreen{fullscreen}
 {
     //Start up SDL and create window
 	if( !init() ) {
@@ -66,7 +66,9 @@ bool GameInfo::init() {
 		}
 
 		//Create window
-		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_screen_w, m_screen_h, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		int fullscreen_bits = 0;
+		if(m_fullscreen) {fullscreen_bits = SDL_WINDOW_FULLSCREEN_DESKTOP;}
+		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_screen_w, m_screen_h, SDL_WINDOW_SHOWN | fullscreen_bits);
 		if( m_window == nullptr )
 		{
 			Logger(Logger::error) << "Window could not be created! SDL Error: "<< SDL_GetError();
