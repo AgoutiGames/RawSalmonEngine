@@ -33,5 +33,6 @@ bool salmon::GameInfo::load_map(std::string mapfile, bool absolute) {return m_im
 void salmon::GameInfo::close_map() {m_impl->close_map();}
 salmon::MapRef salmon::GameInfo::get_map() {return m_impl->get_map();}
 
+salmon::AudioManagerRef salmon::GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
 salmon::InputCacheRef salmon::GameInfo::get_input_cache() {return m_impl->get_input_cache();}

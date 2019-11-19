@@ -86,6 +86,7 @@ class MapData {
 
         // Trivial Getters
         SDL_Renderer* get_renderer() const {return *mpp_renderer;} ///< Return pointer to the SDL_Renderer
+        void set_file_path(std::string path) {m_base_path = path;}
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
         std::string get_full_path() const {return m_full_path;} ///< Return path including name of the map
 

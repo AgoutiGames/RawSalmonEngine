@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -33,7 +33,23 @@ class SoundEffect {
         SoundEffect() = default;
         SoundEffect(std::string path);
         bool good() const {return (m_sound.get() == nullptr) ? false : true ;}
-        void play() const;
+        void play(int loops = 0, int length_ms = -1);
+        void play_fadein(int fadein_ms, int loops = 0, int length_ms = -1);
+        void pause();
+        void resume();
+        void halt();
+        void halt_fadeout(int fadeout_ms);
+
+        void set_position(int angle, float distance = 0);
+        void reset_position() {m_angle = 0; m_distance = 0;}
+
+        float get_volume();
+        void set_volume(float factor);
+        bool playing();
+        bool paused();
+
+        static float get_global_volume();
+        static void set_global_volume(float factor);
 
         struct Deleter {
             void operator()(Mix_Chunk* p) {
@@ -42,7 +58,18 @@ class SoundEffect {
         };
 
     private:
+        bool active();
+
+        void set_position();
+
+        static const int MAX_DISTANCE = 255;
+        static constexpr bool POSITIONAL_AUDIO = true;
+
         std::shared_ptr<Mix_Chunk> m_sound;
+
+        int m_current_channel = -1;
+        Uint8 m_distance = 0;
+        Sint16 m_angle = 0;
 };
 
 

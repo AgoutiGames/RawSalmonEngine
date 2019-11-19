@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -30,6 +30,81 @@ m_sound(Mix_LoadWAV(path.c_str()), SoundEffect::Deleter())
 /**
  * @brief Plays the sound once
  */
-void SoundEffect::play() const {
-    Mix_PlayChannel(-1, m_sound.get(), 0);
+void SoundEffect::play(int loops, int length_ms) {
+    m_current_channel = Mix_PlayChannelTimed(-1, m_sound.get(), loops, length_ms);
+    set_position();
 }
+
+void SoundEffect::play_fadein(int fadein_ms, int loops, int length_ms) {
+    m_current_channel = Mix_FadeInChannelTimed(-1, m_sound.get(), loops, fadein_ms, length_ms);
+    set_position();
+}
+
+void SoundEffect::pause() {
+    if(playing()) {Mix_Pause(m_current_channel);}
+}
+
+void SoundEffect::resume() {
+    if(paused()) {Mix_Resume(m_current_channel);}
+}
+
+void SoundEffect::halt() {
+    if(playing()) {Mix_HaltChannel(m_current_channel);}
+    m_current_channel = -1;
+}
+
+void SoundEffect::halt_fadeout(int fadeout_ms) {
+    if(playing()) {Mix_FadeOutChannel(m_current_channel, fadeout_ms);}
+    m_current_channel = -1;
+}
+
+void SoundEffect::set_volume(float factor) {
+    if(factor > 1.0f) {factor = 1.0f;}
+    else if(factor < 0.0f) {factor = 0.0f;}
+    Mix_VolumeChunk(m_sound.get(), static_cast<int>(MIX_MAX_VOLUME * factor));
+}
+
+void SoundEffect::set_global_volume(float factor) {
+    if(factor > 1.0f) {factor = 1.0f;}
+    else if(factor < 0.0f) {factor = 0.0f;}
+    Mix_Volume(-1, static_cast<int>(MIX_MAX_VOLUME * factor));
+}
+
+float SoundEffect::get_volume() {
+    return static_cast<float>(Mix_VolumeChunk(m_sound.get(), -1)) / MIX_MAX_VOLUME;
+}
+
+float SoundEffect::get_global_volume() {
+    return static_cast<float>(Mix_Volume(-1, -1)) / MIX_MAX_VOLUME;
+}
+
+bool SoundEffect::active() {
+    if(m_current_channel < 0) {return false;}
+    else if(Mix_GetChunk(m_current_channel) == m_sound.get()) {
+        return true;
+    }
+    else {
+        m_current_channel = -1;
+        return false;
+    }
+}
+
+bool SoundEffect::playing() {
+    return (active() && Mix_Playing(m_current_channel));
+}
+
+bool SoundEffect::paused() {
+    return (active() && Mix_Paused(m_current_channel));
+}
+
+void SoundEffect::set_position() {
+    if(POSITIONAL_AUDIO) {Mix_SetPosition(m_current_channel, m_angle, m_distance);}
+}
+
+void SoundEffect::set_position(int angle, float distance) {
+    m_angle = static_cast<Sint16>(angle);
+    if(distance > 1.0f) {distance = 1.0f;}
+    else if(distance < 0.0f) {distance = 0.0f;}
+    m_distance = static_cast<Uint8>(1.0f * MAX_DISTANCE);
+}
+

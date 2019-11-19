@@ -24,6 +24,7 @@
 #include <stack>
 
 #include "actor/data_block.hpp"
+#include "audio/audio_manager.hpp"
 #include "core/input_cache.hpp"
 #include "core/font_manager.hpp"
 
@@ -65,6 +66,7 @@ public:
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
+    AudioManager& get_audio_manager() {return m_audio_manager;}
     FontManager& get_font_manager() {return m_font_manager;}
     InputCache& get_input_cache() {return m_input_cache;}
 
@@ -78,6 +80,7 @@ private:
     unsigned m_screen_h = 600;
     bool m_fullscreen = true;
 
+    AudioManager m_audio_manager;
     InputCache m_input_cache;
     DataBlock m_data; ///< This holds custom user values by string
 

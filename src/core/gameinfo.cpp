@@ -89,12 +89,17 @@ bool GameInfo::init() {
 				SDL_SetRenderDrawColor( m_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 				//Initialize PNG loading
-				int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
-				if( !( IMG_Init( imgFlags ) & imgFlags ) )
+				int img_flags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
+				if( (IMG_Init(img_flags) & img_flags) != img_flags)
 				{
 					Logger(Logger::error) << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError();
 					success = false;
 				}
+
+				int mix_flags = MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC;
+                if( (Mix_Init(mix_flags) & mix_flags) != mix_flags) {
+                    Logger(Logger::error) << "Mix_Init: Failed to init required ogg support! SDL_mixer Errof: " << Mix_GetError();
+                }
 
 				//Initialize SDL_mixer
 				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )

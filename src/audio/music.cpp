@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -27,9 +27,48 @@ m_sound(Mix_LoadMUS(path.c_str()), Music::Deleter())
     }
 }
 
-/**
- * @brief Plays the music indefinitely with a possible fade in
- */
-void Music::play(int repetitions, int fade_in) const {
-    Mix_FadeInMusic(m_sound.get(), repetitions, fade_in);
+void Music::play(int loops) {
+    Mix_PlayMusic(m_sound.get(), loops);
 }
+void Music::play_fadein(int fadein_ms, int loops) {
+    Mix_FadeInMusic(m_sound.get(), loops, fadein_ms);
+}
+void Music::play_fadein_pos(double seconds, int fadein_ms, int loops) {
+    Mix_FadeInMusicPos(m_sound.get(), loops, fadein_ms, seconds);
+}
+
+void Music::pause() {
+    Mix_PauseMusic();
+}
+void Music::resume() {
+    Mix_ResumeMusic();
+}
+void Music::halt() {
+    Mix_HaltMusic();
+}
+void Music::halt_fadeout(int fadeout_ms) {
+    Mix_FadeOutMusic(fadeout_ms);
+}
+void Music::rewind() {
+    Mix_RewindMusic();
+}
+void Music::set_position(double seconds) {
+    if(Mix_GetMusicType(m_sound.get()) == MUS_MP3) {rewind();}
+    Mix_SetMusicPosition(seconds);
+}
+
+float Music::get_volume() {
+    return static_cast<float>(Mix_VolumeMusic(-1)) / MIX_MAX_VOLUME;
+}
+void Music::set_volume(float factor) {
+    if(factor > 1.0f) {factor = 1.0f;}
+    else if(factor < 0.0f) {factor = 0.0f;}
+    Mix_VolumeMusic(static_cast<int>(MIX_MAX_VOLUME * factor));
+}
+bool Music::playing() {
+    return Mix_PlayingMusic();
+}
+bool Music::paused() {
+    return Mix_PausedMusic();
+}
+

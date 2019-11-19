@@ -53,6 +53,9 @@ if(LIB_TARGET)
 endif()
 
 set(LIB_SOURCES
+    src/include_impl/audio_manager_ref.cpp
+    src/include_impl/sound_ref.cpp
+    src/include_impl/music_ref.cpp
     src/include_impl/gameinfo.cpp
     src/include_impl/data_block_ref.cpp
     src/include_impl/input_cache_ref.cpp
@@ -71,6 +74,7 @@ set(ACTOR_SOURCES
     )
 
 set(AUDIO_SOURCES
+    src/audio/audio_manager.cpp
     src/audio/sound_effect.cpp
     src/audio/music.cpp
     )

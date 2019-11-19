@@ -161,8 +161,16 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
 
     if(p_tile != nullptr) {
 
+        // Temporarily set base path to tileset location so the path of file attributes is right
+        std::string backup = ts_collection.get_mapdata().get_file_path();
+        ts_collection.get_mapdata().set_file_path(full_path);
+
         // Method of MapData object deals with the parsing of all tiles
         eResult = parse_tile_info(p_tile);
+
+        // Reset file path
+        ts_collection.get_mapdata().set_file_path(backup);
+
         if(eResult != XML_SUCCESS) {
             Logger(Logger::error) << "Failed at loading tile info of tileset: " << m_name;
             return eResult;

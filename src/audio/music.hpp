@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -33,7 +33,20 @@ class Music {
         Music() = default;
         Music(std::string path);
         bool good() const {return (m_sound.get() == nullptr) ? false : true ;}
-        void play(int repetitions = -1, int fade_in = 0) const;
+        void play(int loops = -1);
+        void play_fadein(int fadein_ms, int loops = -1);
+        void play_fadein_pos(double seconds, int fadein_ms, int loops = -1);
+        void pause();
+        void resume();
+        void halt();
+        void halt_fadeout(int fadeout_ms);
+        void rewind();
+        void set_position(double seconds);
+
+        float get_volume();
+        void set_volume(float factor);
+        bool playing();
+        bool paused();
 
         struct Deleter {
             void operator()(Mix_Music* p) {

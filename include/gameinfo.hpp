@@ -22,6 +22,7 @@
 #include <string>
 #include <memory>
 
+#include "./audio_manager_ref.hpp"
 #include "./data_block_ref.hpp"
 #include "./input_cache_ref.hpp"
 #include "./map_ref.hpp"
@@ -44,6 +45,7 @@ namespace salmon {
             void close_map();
             salmon::MapRef get_map();
 
+            AudioManagerRef get_audio_manager();
             DataBlockRef get_data();
             InputCacheRef get_input_cache();
 
