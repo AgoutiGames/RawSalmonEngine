@@ -42,7 +42,7 @@ class ObjectLayer : public Layer{
 
         LayerType get_type() override {return LayerType::object;}
 
-        void add_actor(Actor a);
+        Actor* add_actor(Actor a);
         std::vector<Actor*> get_actors();
         std::vector<Actor*> get_actors(std::string name);
         Actor* get_actor(std::string name);
@@ -79,6 +79,8 @@ class ObjectLayer : public Layer{
         std::list<Actor> m_obj_grid;
         std::list<Smart<Primitive>> m_primitives;
         bool m_suspended = false;
+
+        static unsigned next_object_id;
 };
 
 

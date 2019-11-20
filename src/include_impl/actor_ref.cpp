@@ -32,12 +32,24 @@ salmon::AnimationType ActorRef::get_animation() const {return m_impl->get_animat
 salmon::Direction ActorRef::get_direction() const {return m_impl->get_direction();}
 std::string ActorRef::get_name() const {return m_impl->get_name();}
 std::string ActorRef::get_type() const {return m_impl->get_type();}
+unsigned ActorRef::get_id() const {return m_impl->get_id();}
 
 bool ActorRef::move(float x_factor, float y_factor, bool absolute) {return m_impl->move(x_factor, y_factor, absolute);}
 bool ActorRef::on_ground(salmon::Direction dir, int tolerance) const {return m_impl->on_ground(dir, tolerance);}
 
 double ActorRef::get_angle() const {return m_impl->get_angle();}
 void ActorRef::set_angle(double angle) {return m_impl->set_angle(angle);}
+
+std::vector<salmon::CollisionRef> ActorRef::get_collisions() {
+    std::vector<Collision>& temp = m_impl->get_collisions();
+    std::vector<salmon::CollisionRef> out;
+    for(auto& c : temp) {
+        out.emplace_back(c);
+    }
+    return out;
+}
+void ActorRef::clear_collisions() {m_impl->clear_collisions();}
+void ActorRef::register_collisions(bool r) {m_impl->register_collisions(r);}
 
 float ActorRef::get_x() const {return m_impl->get_x();}
 float ActorRef::get_y() const {return m_impl->get_y();}

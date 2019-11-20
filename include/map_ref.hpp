@@ -19,6 +19,7 @@
 #ifndef MAP_REF_HPP_INCLUDED
 #define MAP_REF_HPP_INCLUDED
 
+#include <string>
 #include <vector>
 
 #include "./actor_ref.hpp"
@@ -39,6 +40,10 @@ namespace salmon {
 
             std::vector<salmon::ActorRef> get_actors();
             CameraRef get_camera();
+
+            salmon::ActorRef add_actor(std::string actor_template_name, std::string layer_name);
+            salmon::ActorRef add_actor(salmon::ActorRef actor, std::string layer_name);
+            bool remove_actor(salmon::ActorRef actor);
 
             unsigned get_w() const;
             unsigned get_h() const;

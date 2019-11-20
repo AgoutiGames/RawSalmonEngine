@@ -46,6 +46,13 @@ class Actor{
         // Actor() = default;
         Actor(MapData* map);
 
+        /*
+        Actor(const Actor& other);
+        Actor& operator=(const Actor& other);
+        Actor(Actor&& other) = default;
+        Actor& operator=(Actor&& other) = default;
+        */
+
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
         tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
@@ -85,13 +92,16 @@ class Actor{
         bool valid_anim_state(salmon::AnimationType anim, salmon::Direction dir) const;
         bool valid_anim_state() const {return valid_anim_state(m_anim_state, m_direction);}
         bool is_valid() const {return m_base_tile.is_valid();}
+        unsigned get_id() const {return m_id;}
+        void set_id(unsigned id) {m_id = id;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
 
-        void add_collision(Collision c) {m_collisions.push_back(c);}
-        std::vector<Collision> get_collisions() {return m_collisions;}
+        void add_collision(Collision c) {if(m_register_collisions) {m_collisions.push_back(c);}}
+        std::vector<Collision>& get_collisions() {return m_collisions;}
         void clear_collisions() {m_collisions.clear();}
+        void register_collisions(bool r) {if(!r) {clear_collisions();} m_register_collisions = r;}
 
         #ifndef LIB_BUILD
             void update();
@@ -124,6 +134,9 @@ class Actor{
         DataBlock m_data; ///< This holds custom user values by string
 
         std::vector<Collision> m_collisions;
+        bool m_register_collisions = true;
+
+        unsigned m_id = 0;
 
         bool m_late_polling = false;
 };

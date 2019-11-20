@@ -28,6 +28,8 @@
 #include "map/camera.hpp"
 #include "util/logger.hpp"
 
+unsigned ObjectLayer::next_object_id = 1;
+
 /// Factory function which retrieves a pointer owning the object layer
 ObjectLayer* ObjectLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
     return new ObjectLayer(source, name, layer_collection, eresult);
@@ -244,11 +246,13 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
     return actor_list;
 }
 
-void ObjectLayer::add_actor(Actor a) {
+Actor* ObjectLayer::add_actor(Actor a) {
     #ifndef LIB_BUILD
         a.respond(Response::on_spawn);
     #endif // LIB_BUILD
     m_obj_grid.push_back(a);
+    m_obj_grid.back().set_id(next_object_id++);
+    return &m_obj_grid.back();
 }
 
 /// Remove actor with given name from layer

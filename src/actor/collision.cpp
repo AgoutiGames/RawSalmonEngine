@@ -71,3 +71,5 @@ std::string Collision::get_type() const {
     }
 }
 
+unsigned Collision::get_actor_id() const {return get_actor()->get_id();}
+

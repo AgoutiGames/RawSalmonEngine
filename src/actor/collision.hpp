@@ -58,6 +58,7 @@ class Collision{
 
         // Return cause objects
         Actor* get_actor() const {return type == CollisionType::actor ? data.actor : nullptr;}
+        unsigned get_actor_id() const;
         Tile* get_tile() const {return type == CollisionType::tile ? data.tile : nullptr;}
 
         std::string get_type() const;

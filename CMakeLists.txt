@@ -54,6 +54,7 @@ endif()
 
 set(LIB_SOURCES
     src/include_impl/audio_manager_ref.cpp
+    src/include_impl/collision_ref.cpp
     src/include_impl/sound_ref.cpp
     src/include_impl/music_ref.cpp
     src/include_impl/gameinfo.cpp

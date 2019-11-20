@@ -20,8 +20,10 @@
 #define ACTOR_REF_HPP_INCLUDED
 
 #include <string>
+#include <vector>
 
 #include "./types.hpp"
+#include "./collision_ref.hpp"
 #include "./data_block_ref.hpp"
 
 class Actor;
@@ -29,10 +31,13 @@ class Actor;
 namespace salmon {
     class ActorRef {
         friend class CameraRef;
+        friend class MapRef;
         public:
             ActorRef(Actor& impl);
             ActorRef(Actor* impl);
             virtual ~ActorRef() = default;
+
+            bool good() const {return (m_impl == nullptr) ? false : true ;}
 
             bool animate(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
             bool set_animation(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
@@ -41,12 +46,17 @@ namespace salmon {
             salmon::Direction get_direction() const;
             std::string get_name() const;
             std::string get_type() const;
+            unsigned get_id() const;
 
             bool move(float x_factor, float y_factor, bool absolute = false);
             bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
             double get_angle() const;
             void set_angle(double angle);
+
+            std::vector<CollisionRef> get_collisions();
+            void clear_collisions();
+            void register_collisions(bool r);
 
             float get_x() const;
             float get_y() const;
