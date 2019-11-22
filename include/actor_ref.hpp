@@ -54,6 +54,9 @@ namespace salmon {
             double get_angle() const;
             void set_angle(double angle);
 
+            int get_current_anim_frame() const;
+            int get_anim_frame_count() const;
+
             std::vector<CollisionRef> get_collisions();
             void clear_collisions();
             void register_collisions(bool r);

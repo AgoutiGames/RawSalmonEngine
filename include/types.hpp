@@ -21,13 +21,17 @@
 
 namespace salmon {
     enum class Direction {
-        up,
-        down,
-        left,
-        right,
-        current, ///< Keyword for last used direction
-        none,
-        invalid,
+        up = 0,
+        up_right = 45,
+        right = 90,
+        down_right = 135,
+        down = 180,
+        down_left = 225,
+        left = 270,
+        up_left = 315,
+        current = -2, ///< Keyword for last used direction
+        none = -1,
+        invalid = -3,
     };
 
     enum class AnimationType {

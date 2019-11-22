@@ -57,6 +57,13 @@ void ActorRef::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
 bool ActorRef::get_hidden() const {return m_impl->get_hidden();}
 void ActorRef::set_hidden(bool mode) {m_impl->set_hidden(mode);}
 
+int ActorRef::get_current_anim_frame() const {
+    return m_impl->get_animation_tile().get_current_frame();
+}
+int ActorRef::get_anim_frame_count() const {
+    return m_impl->get_animation_tile().get_frame_count();
+}
+
 float ActorRef::get_x() const {return m_impl->get_x();}
 float ActorRef::get_y() const {return m_impl->get_y();}
 unsigned ActorRef::get_w() const {return m_impl->get_w();}

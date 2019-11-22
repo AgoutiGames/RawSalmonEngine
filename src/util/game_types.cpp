@@ -44,9 +44,13 @@ salmon::AnimationType str_to_anim_type(const std::string& name) {
 /// Converts a @c string to an @c enum of @c Direction
 salmon::Direction str_to_direction(const std::string& name) {
     if(name == "UP") return salmon::Direction::up;
-    if(name == "DOWN") return salmon::Direction::down;
-    if(name == "LEFT") return salmon::Direction::left;
+    if(name == "UP_RIGHT") return salmon::Direction::up_right;
     if(name == "RIGHT") return salmon::Direction::right;
+    if(name == "DOWN_RIGHT") return salmon::Direction::down_right;
+    if(name == "DOWN") return salmon::Direction::down;
+    if(name == "DOWN_LEFT") return salmon::Direction::down_left;
+    if(name == "LEFT") return salmon::Direction::left;
+    if(name == "UP_LEFT") return salmon::Direction::up_left;
     if(name == "CURRENT") return salmon::Direction::current;
     if(name == "NONE") return salmon::Direction::none;
     else return salmon::Direction::invalid;
