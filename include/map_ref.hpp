@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "./actor_ref.hpp"
+#include "./text_ref.hpp"
 #include "./data_block_ref.hpp"
 #include "./camera_ref.hpp"
 
@@ -41,9 +42,18 @@ namespace salmon {
             std::vector<salmon::ActorRef> get_actors();
             CameraRef get_camera();
 
-            salmon::ActorRef add_actor(std::string actor_template_name, std::string layer_name);
-            salmon::ActorRef add_actor(salmon::ActorRef actor, std::string layer_name);
+            // Generate new actor from template
+            salmon::ActorRef add_actor(std::string actor_template_name, std::string layer_name, std::string actor_name = "GENERATED");
+            // Duplicate and reinsert valid actor with a new name
+            salmon::ActorRef add_actor(salmon::ActorRef actor, std::string layer_name, std::string actor_name = "GENERATED");
             bool remove_actor(salmon::ActorRef actor);
+
+            salmon::TextRef get_text(std::string name);
+            salmon::TextRef add_text(std::string text_name, std::string layer_name, float x_pos, float y_pos, std::string text, TextRef::Attributes a);
+            bool remove_text(salmon::TextRef text);
+
+            bool hide_layer(std::string layer_name);
+            bool unhide_layer(std::string layer_name);
 
             unsigned get_w() const;
             unsigned get_h() const;

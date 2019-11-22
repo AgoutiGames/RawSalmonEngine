@@ -58,6 +58,12 @@ namespace salmon {
             void clear_collisions();
             void register_collisions(bool r);
 
+            bool get_static_mode() const;
+            void set_static_mode(bool mode);
+
+            bool get_hidden() const;
+            void set_hidden(bool mode);
+
             float get_x() const;
             float get_y() const;
             unsigned get_w() const;

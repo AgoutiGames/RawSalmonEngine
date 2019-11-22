@@ -74,6 +74,8 @@ class Collision{
         std::string my_hitbox_name = "";
         std::string other_hitbox_name = "";
 
+        unsigned actor_id = 0;
+
 };
 
 

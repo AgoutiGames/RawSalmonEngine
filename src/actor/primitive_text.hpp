@@ -33,7 +33,7 @@ class PrimitiveText : public Primitive {
             bool wrap = false, bold = false, italic = false, underline = false, strikeout = false, kerning = true;
         };
 
-        PrimitiveText(float x_pos, float y_pos, int w, int h, std::string text, Attributes atr, MapData& mapdata, std::string name = "");
+        PrimitiveText(float x_pos, float y_pos, std::string text, Attributes atr, MapData& mapdata, std::string name = "");
 
         bool render(int x_cam, int y_cam) const override;
         PrimitiveType get_type() const override {return PrimitiveType::text;}
@@ -48,8 +48,6 @@ class PrimitiveText : public Primitive {
 
         void set_text(std::string text) {m_text = text;}
         void set_attributes(Attributes attributes) {m_attributes = attributes;}
-        void set_w(int w) {m_width = w;}
-        void set_h(int h) {m_height = h;}
 
         bool generate_texture();
 
@@ -58,8 +56,8 @@ class PrimitiveText : public Primitive {
         MapData* m_mapdata;
         Texture m_texture;
 
-        int m_width;
-        int m_height;
+        int m_width = 0;
+        int m_height = 0;
         std::string m_text;
         Attributes m_attributes;
 };

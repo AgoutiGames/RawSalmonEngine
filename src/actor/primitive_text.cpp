@@ -28,13 +28,15 @@
 #include "util/attribute_parser.hpp"
 #include "util/logger.hpp"
 
-PrimitiveText::PrimitiveText(float x_pos, float y_pos, int w, int h, std::string text, Attributes atr, MapData& mapdata, std::string name)
-: Primitive(x_pos, y_pos, mapdata, name), m_mapdata{&mapdata}, m_width{w}, m_height{h}, m_text{text}, m_attributes{atr} {
+PrimitiveText::PrimitiveText(float x_pos, float y_pos, std::string text, Attributes atr, MapData& mapdata, std::string name)
+: Primitive(x_pos, y_pos, mapdata, name), m_mapdata{&mapdata}, m_text{text}, m_attributes{atr} {
     generate_texture();
 }
 
 bool PrimitiveText::render(int x_cam, int y_cam) const {
+    if(m_hidden) {return true;}
     SDL_Rect rect{0,0,m_width,m_height};
+    if(m_static_mode) {x_cam = 0; y_cam = 0;}
     m_texture.render(static_cast<int>(m_x_pos-x_cam), static_cast<int>(m_y_pos-y_cam), &rect);
     return true;
 }
@@ -82,7 +84,7 @@ PrimitiveText* PrimitiveText::parse(tinyxml2::XMLElement* source, MapData& base_
         return nullptr;
     }
 
-    return new PrimitiveText(x,y,w,h,std::string(text_p), atr, base_map, name);
+    return new PrimitiveText(x,y,std::string(text_p), atr, base_map, name);
 }
 
 bool PrimitiveText::generate_texture() {
@@ -103,5 +105,7 @@ bool PrimitiveText::generate_texture() {
     else {
         m_texture.loadFromRenderedText(m_renderer, m_text, m_attributes.color, font);
     }
+    m_width = m_texture.getWidth();
+    m_height = m_texture.getHeight();
     return true;
 }

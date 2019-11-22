@@ -28,43 +28,6 @@ using namespace salmon;
 
 Actor::Actor(MapData* map) : m_map{map} {}
 
-/*
-Actor::Actor(MapData* map) : m_map{map}, m_id{current_id++} {}
-Actor::Actor(const Actor& other) {*this = other;}
-
-Actor& Actor::operator=(const Actor& other) {
-    m_map = other.m_map;
-
-    m_x = other.m_x;
-    m_y = other.m_y;
-    m_width = other.m_width;
-    m_height = other.m_height;
-    m_name = other.m_name;
-    m_type = other.m_type;
-
-    m_angle = other.m_angle;
-
-    m_anim_state = other.m_anim_state;
-    m_direction = other.m_direction;
-    m_animations = other.m_animations;
-    m_base_tile = other.m_base_tile;
-
-    #ifndef LIB_BUILD
-        m_response = other.m_response;
-        m_events = other.m_events;
-    #endif // LIB_BUILD
-
-    m_data = other.m_data;
-
-    m_collisions = other.m_collisions;
-    m_register_collisions = other.m_register_collisions;
-
-    m_id = current_id++;
-
-    m_late_polling = other.m_late_polling;
-    return *this;
-}
-*/
 /**
  * @brief Initialize actor dimensions and name from XML info
  * @param source The @c XMLElement which contains the information
@@ -263,9 +226,12 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
  * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
  */
 void Actor::render(int x_cam, int y_cam) const {
+    if(m_hidden) {return;}
     const Tile* current_tile = nullptr;
     if(m_anim_state != salmon::AnimationType::none && valid_anim_state()) {current_tile = &m_animations.at(m_anim_state).at(m_direction);}
     else {current_tile = &m_base_tile;}
+
+    if(m_static_mode) {x_cam = 0; y_cam = 0;}
 
     if(m_angle > 0.1 || m_angle < -0.1) {
         SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};

@@ -44,6 +44,7 @@ Collision::Collision(Actor* actor, std::string my_hitbox, std::string other_hitb
     data.actor = actor;
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
+    actor_id = actor->get_id();
 }
 
 // Constructor for mouse
@@ -71,5 +72,5 @@ std::string Collision::get_type() const {
     }
 }
 
-unsigned Collision::get_actor_id() const {return get_actor()->get_id();}
+unsigned Collision::get_actor_id() const {return actor_id;}
 

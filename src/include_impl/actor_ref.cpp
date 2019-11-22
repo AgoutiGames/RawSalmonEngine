@@ -51,6 +51,12 @@ std::vector<salmon::CollisionRef> ActorRef::get_collisions() {
 void ActorRef::clear_collisions() {m_impl->clear_collisions();}
 void ActorRef::register_collisions(bool r) {m_impl->register_collisions(r);}
 
+bool ActorRef::get_static_mode() const {return m_impl->get_static_mode();}
+void ActorRef::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
+
+bool ActorRef::get_hidden() const {return m_impl->get_hidden();}
+void ActorRef::set_hidden(bool mode) {m_impl->set_hidden(mode);}
+
 float ActorRef::get_x() const {return m_impl->get_x();}
 float ActorRef::get_y() const {return m_impl->get_y();}
 unsigned ActorRef::get_w() const {return m_impl->get_w();}

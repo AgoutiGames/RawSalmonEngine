@@ -43,15 +43,7 @@ class MapData;
 class Actor{
 
     public:
-        // Actor() = default;
         Actor(MapData* map);
-
-        /*
-        Actor(const Actor& other);
-        Actor& operator=(const Actor& other);
-        Actor(Actor&& other) = default;
-        Actor& operator=(Actor&& other) = default;
-        */
 
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
@@ -61,6 +53,7 @@ class Actor{
         salmon::AnimSignal animate_trigger(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor, bool absolute = false);
+        bool move_static(float x_factor, float y_factor, bool absolute = true);
         bool unstuck();
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
@@ -94,6 +87,10 @@ class Actor{
         bool is_valid() const {return m_base_tile.is_valid();}
         unsigned get_id() const {return m_id;}
         void set_id(unsigned id) {m_id = id;}
+        bool get_static_mode() const {return m_static_mode;}
+        void set_static_mode(bool mode) {m_static_mode = mode;}
+        bool get_hidden() const {return m_hidden;}
+        void set_hidden(bool mode) {m_hidden = mode;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
@@ -139,6 +136,12 @@ class Actor{
         unsigned m_id = 0;
 
         bool m_late_polling = false;
+
+        // When true position is relative to screen and not map
+        // Be cautious, collisions don't work properly from here
+        bool m_static_mode = false;
+
+        bool m_hidden = false;
 };
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list

@@ -21,6 +21,8 @@
 #include <SDL.h>
 
 bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
+    if(m_hidden) {return true;}
+    if(m_static_mode) {x_cam = 0; y_cam = 0;}
     SDL_Rect rect{static_cast<int>(m_x_pos-x_cam), static_cast<int>(m_y_pos-y_cam),m_width,m_height};
 
     return SDL_RenderDrawRect(m_renderer, &rect) == 0;

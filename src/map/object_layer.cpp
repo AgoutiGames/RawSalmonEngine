@@ -325,3 +325,13 @@ bool ObjectLayer::erase_primitive(std::string name) {
     }
     return false;
 }
+
+bool ObjectLayer::erase_primitive(Primitive* p) {
+    for(auto elem = m_primitives.begin(); elem != m_primitives.end(); elem++) {
+        if(elem->get() == p) {
+            m_primitives.erase(elem);
+            return true;
+        }
+    }
+    return false;
+}
