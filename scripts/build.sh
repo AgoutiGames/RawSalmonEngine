@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 usage="Usage: ./build.sh [CONFIG] [PLATFORM] [BIT] [LIBRARY] [VERSION]
 CONFIG: \"Release\", \"Debug\", \"Profile\"
 PLATFORM: \"linux\", \"windows\"

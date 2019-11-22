@@ -40,7 +40,7 @@ EventSignal MePlayMusic::process(MapData& scope) {
     // Syncs members with possibly linked DataBlock variables
     listen(m_property_listener, *this, scope);
 
-    m_music.play(m_repititions, m_fade_in);
+    m_music.play_fadein(m_fade_in, m_repititions);
     return EventSignal::end;
 }
 

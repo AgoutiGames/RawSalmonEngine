@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 usage="Usage: ./compile.sh [CONFIG] [PLATFORM] [BIT] [LIBRARY]
 CONFIG: \"Release\", \"Debug\", \"Profile\"
 PLATFORM: \"linux\", \"windows\"
@@ -42,25 +43,25 @@ if [ "$C" != "Release" ] && [ "$C" != "Debug" ] && [ "$C" != "Profile" ]
 then
     echo "CONFIG parameter or env var is not properly set! Value is: \"${C}\"!"
     echo "Please check help page via \"./compile -h\""
-    exit
+    exit 1
 fi
 if [ "$P" != "linux" ] && [ "$P" != "windows" ]
 then
     echo "PLATFORM parameter or env var is not properly set! Value is: \"${P}\"!"
     echo "Please check help page via \"./compile -h\""
-    exit
+    exit 1
 fi
 if [ "$B" != "64" ] && [ "$B" != "32" ]
 then
     echo "BIT parameter or env var is not properly set! Value is: \"${B}\"!"
     echo "Please check help page via \"./compile -h\""
-    exit
+    exit 1
 fi
 if [ "$L" != "ON" ] && [ "$L" != "OFF" ]
 then
     echo "LIBRARY parameter or env var is not properly set! Value is: \"${L}\"!"
     echo "Please check help page via \"./compile -h\""
-    exit
+    exit 1
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")"

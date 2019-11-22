@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 usage="Usage: ./fetch_dependencies.sh [PLATFORM] [BIT]
 PLATFORM: \"linux\", \"windows\"
 BIT: \"64\", \"32\""
@@ -25,13 +26,13 @@ if [ "$P" != "linux" ] && [ "$P" != "windows" ]
 then
     echo "PLATFORM parameter or env var is not properly set! Value is: \"${P}\"!"
     echo "Please check help page via \"./fetch_dependencies -h\""
-    exit
+    exit 1
 fi
 if [ "$B" != "64" ] && [ "$B" != "32" ]
 then
     echo "BIT parameter or env var is not properly set! Value is: \"${B}\"!"
     echo "Please check help page via \"./fetch_dependencies -h\""
-    exit
+    exit 1
 fi
 
 if [ "$P" == "linux" ]

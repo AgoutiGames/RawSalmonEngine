@@ -78,7 +78,7 @@ EventSignal AeSpawnText::process(Actor& scope) {
     }
 
     Primitive* text_primitive = new PrimitiveText(x_pos, y_pos,
-                                                  m_width, m_height, m_text, atr, scope.get_map(), m_primitive_name);
+                                                  m_text, atr, scope.get_map(), m_primitive_name);
 
     target_layer->add_primitive(text_primitive);
     return EventSignal::end;
