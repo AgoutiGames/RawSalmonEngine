@@ -57,6 +57,8 @@ void ActorRef::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
 bool ActorRef::get_hidden() const {return m_impl->get_hidden();}
 void ActorRef::set_hidden(bool mode) {m_impl->set_hidden(mode);}
 
+std::string ActorRef::get_layer() const {return m_impl->get_layer();}
+
 int ActorRef::get_current_anim_frame() const {
     return m_impl->get_animation_tile().get_current_frame();
 }

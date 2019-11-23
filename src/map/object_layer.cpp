@@ -252,6 +252,7 @@ Actor* ObjectLayer::add_actor(Actor a) {
     #endif // LIB_BUILD
     m_obj_grid.push_back(a);
     m_obj_grid.back().set_id(next_object_id++);
+    m_obj_grid.back().set_layer(m_name);
     return &m_obj_grid.back();
 }
 

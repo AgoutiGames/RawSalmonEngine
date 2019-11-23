@@ -91,6 +91,8 @@ class Actor{
         void set_static_mode(bool mode) {m_static_mode = mode;}
         bool get_hidden() const {return m_hidden;}
         void set_hidden(bool mode) {m_hidden = mode;}
+        void set_layer(std::string layer) {m_layer_name = layer;}
+        std::string get_layer() const {return m_layer_name;}
 
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
@@ -115,6 +117,7 @@ class Actor{
         unsigned m_height = 0;
         std::string m_name;
         std::string m_type;
+        std::string m_layer_name;
 
         double m_angle = 0.0;
 

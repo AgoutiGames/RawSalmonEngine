@@ -67,6 +67,8 @@ namespace salmon {
             bool get_hidden() const;
             void set_hidden(bool mode);
 
+            std::string get_layer() const;
+
             float get_x() const;
             float get_y() const;
             unsigned get_w() const;
