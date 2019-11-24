@@ -51,6 +51,9 @@ namespace salmon {
             bool move(float x_factor, float y_factor, bool absolute = false);
             bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
+            bool scale(float x, float y);
+            bool scale(float s);
+
             double get_angle() const;
             void set_angle(double angle);
 

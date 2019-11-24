@@ -37,6 +37,9 @@ unsigned ActorRef::get_id() const {return m_impl->get_id();}
 bool ActorRef::move(float x_factor, float y_factor, bool absolute) {return m_impl->move(x_factor, y_factor, absolute);}
 bool ActorRef::on_ground(salmon::Direction dir, int tolerance) const {return m_impl->on_ground(dir, tolerance);}
 
+bool ActorRef::scale(float x, float y) {return m_impl->scale(x,y);}
+bool ActorRef::scale(float s) {return m_impl->scale(s);}
+
 double ActorRef::get_angle() const {return m_impl->get_angle();}
 void ActorRef::set_angle(double angle) {return m_impl->set_angle(angle);}
 

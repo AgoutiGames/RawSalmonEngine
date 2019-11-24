@@ -221,6 +221,23 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
+bool Actor::scale(float x, float y) {
+    bool success = true;
+    if(x > 0.0f) {m_x_scale = x;}
+    else {success = false;}
+    if(y > 0.0f) {m_y_scale = y;}
+    else {success = false;}
+
+    constexpr float tolerance = 0.001f;
+    if(m_x_scale > 1.0f + tolerance || m_x_scale < 1.0f - tolerance || m_y_scale > 1.0f + tolerance || m_y_scale < 1.0f - tolerance) {
+        m_scaled = true;
+    }
+    else {
+        m_scaled = false;
+    }
+    return success;
+}
+
 /**
  * @brief Render the actor at it's position relative to the camera position
  * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
@@ -233,13 +250,29 @@ void Actor::render(int x_cam, int y_cam) const {
 
     if(m_static_mode) {x_cam = 0; y_cam = 0;}
 
-    if(m_angle > 0.1 || m_angle < -0.1) {
-        SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-        current_tile->render_extra(dest, m_angle, false, false);
+    if(m_scaled) {
+        float current_x = m_x - (m_x_scale - 1.0f) * m_width * 0.5f;
+        float current_y = m_y + (m_y_scale - 1.0f) * m_height * 0.5f;
+        unsigned current_h = m_height * m_y_scale;
+        unsigned current_w = m_width * m_x_scale;
+        if(m_angle > 0.1 || m_angle < -0.1) {
+            SDL_Rect dest {static_cast<int>(current_x - x_cam), static_cast<int>(current_y - current_h - y_cam), static_cast<int>(current_w), static_cast<int>(current_h)};
+            current_tile->render_extra(dest, m_angle, false, false);
+        }
+        else {
+            SDL_Rect dest {static_cast<int>(current_x - x_cam), static_cast<int>(current_y - current_h - y_cam), static_cast<int>(current_w), static_cast<int>(current_h)};
+            current_tile->render(dest);
+        }
     }
     else {
-        SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-        current_tile->render(dest);
+        if(m_angle > 0.1 || m_angle < -0.1) {
+            SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
+            current_tile->render_extra(dest, m_angle, false, false);
+        }
+        else {
+            SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
+            current_tile->render(dest);
+        }
     }
 }
 

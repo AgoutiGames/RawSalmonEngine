@@ -94,6 +94,9 @@ class Actor{
         void set_layer(std::string layer) {m_layer_name = layer;}
         std::string get_layer() const {return m_layer_name;}
 
+        bool scale(float x, float y);
+        bool scale(float s) {return scale(s,s);}
+
         SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
 
@@ -115,6 +118,9 @@ class Actor{
         float m_y = 0; ///< @warning LOWER left corner!
         unsigned m_width = 0;
         unsigned m_height = 0;
+        float m_x_scale = 1.0f; ///< @warning The collision boxes don't scale with the texture!
+        float m_y_scale = 1.0f; ///< @warning The collision boxes don't scale with the texture!
+        bool m_scaled = false;
         std::string m_name;
         std::string m_type;
         std::string m_layer_name;
