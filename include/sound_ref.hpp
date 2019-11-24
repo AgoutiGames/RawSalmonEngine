@@ -6,6 +6,7 @@ class SoundEffect;
 namespace salmon {
     class SoundRef {
         public:
+            SoundRef();
             SoundRef(SoundEffect& impl);
 
             bool good() const;

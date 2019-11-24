@@ -4,6 +4,7 @@
 
 using salmon::SoundRef;
 
+SoundRef::SoundRef() : m_impl{SoundEffect::get_null_sound()} {}
 SoundRef::SoundRef(SoundEffect& impl) : m_impl{&impl} {}
 
 bool SoundRef::good() const {return m_impl->good();}

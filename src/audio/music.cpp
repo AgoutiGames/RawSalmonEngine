@@ -27,6 +27,11 @@ m_sound(Mix_LoadMUS(path.c_str()), Music::Deleter())
     }
 }
 
+Music* Music::get_null_music() {
+    static Music empty_music;
+    return &empty_music;
+}
+
 void Music::play(int loops) {
     Mix_PlayMusic(m_sound.get(), loops);
 }

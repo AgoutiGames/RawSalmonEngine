@@ -54,6 +54,8 @@ class Music {
             }
         };
 
+        static Music* get_null_music();
+
     private:
         std::shared_ptr<Mix_Music> m_sound;
 };

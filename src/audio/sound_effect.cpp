@@ -27,6 +27,11 @@ m_sound(Mix_LoadWAV(path.c_str()), SoundEffect::Deleter())
     }
 }
 
+SoundEffect* SoundEffect::get_null_sound() {
+    static SoundEffect empty_sound;
+    return &empty_sound;
+}
+
 /**
  * @brief Plays the sound once
  */

@@ -4,6 +4,7 @@
 
 using salmon::MusicRef;
 
+MusicRef::MusicRef() : m_impl{Music::get_null_music()} {}
 MusicRef::MusicRef(Music& impl) : m_impl{&impl} {}
 
 bool MusicRef::good() const {return m_impl->good();}

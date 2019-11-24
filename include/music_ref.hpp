@@ -6,6 +6,7 @@ class Music;
 namespace salmon {
     class MusicRef {
         public:
+            MusicRef();
             MusicRef(Music& impl);
 
             bool good() const;

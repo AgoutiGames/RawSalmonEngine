@@ -57,6 +57,8 @@ class SoundEffect {
             }
         };
 
+        static SoundEffect* get_null_sound();
+
     private:
         bool active();
 
