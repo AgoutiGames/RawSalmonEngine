@@ -40,6 +40,8 @@ namespace salmon {
             void bind_map();
             void unbind_map();
 
+            void update();
+
         private:
             Camera* m_impl;
     };

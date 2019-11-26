@@ -35,3 +35,5 @@ void CameraRef::unbind_actor() {m_impl->unbind_actor();}
 
 void CameraRef::bind_map() {m_impl->bind_map();}
 void CameraRef::unbind_map() {m_impl->unbind_map();}
+
+void CameraRef::update() {m_impl->update();}

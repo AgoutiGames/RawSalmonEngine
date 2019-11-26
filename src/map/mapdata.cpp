@@ -103,15 +103,21 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
     for(auto& actor_pair : m_actor_templates) {
         if(!actor_pair.second.is_valid()) {
             Logger(Logger::error) << "Actor called: " << actor_pair.first << " failed to properly parse! Aborting!";
+            Logger(Logger::error) << "Probably the name of Actor Animation and Actor Template doesn't match or the template is missing!";
             return XML_ERROR_MISMATCHED_ELEMENT;
         }
     }
 
-    // Get the first Element that isn't a tileset (can be layer, imagelayer or objectgroup)
-    XMLElement* pLa;
-    for(pLa = pMap->FirstChildElement("tileset");
-        pLa != nullptr && std::string("tileset") == pLa->Name();
-        pLa = pLa->NextSiblingElement()) {;}
+    // Get the first layer of three possible layer types
+    std::string l = "layer";
+    std::string i = "imagelayer";
+    std::string o = "objectgroup";
+    XMLElement* pLa = pMap->FirstChildElement();
+    while(pLa != nullptr) {
+        const char* name = pLa->Name();
+        if(name == l || name == i || name == o) {break;}
+        pLa = pLa->NextSiblingElement();
+    }
 
     // Parse all layers of the map file
     eResult = m_layer_collection.init(pLa, *this);
