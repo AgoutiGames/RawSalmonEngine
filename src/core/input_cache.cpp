@@ -37,7 +37,6 @@ void InputCache::set(SDL_Keycode key, bool pressed) {
 }
 
 void InputCache::poll() {
-    poll_mouse();
     // poll keyboard
     m_keys = SDL_GetKeyboardState(NULL);
 }
@@ -45,7 +44,22 @@ void InputCache::poll() {
 void InputCache::clear() {
      m_pressed.clear();
      m_released.clear();
-     m_mouse = salmon::MouseState();
+     //m_mouse = salmon::MouseState();
+     // Preserve x_pos, y_pos and down values
+     m_mouse.x_delta = 0;
+     m_mouse.y_delta = 0;
+     m_mouse.x_scroll = 0;
+     m_mouse.y_scroll = 0;
+     m_mouse.left.pressed = false;
+     m_mouse.left.released = false;
+     m_mouse.middle.pressed = false;
+     m_mouse.middle.released = false;
+     m_mouse.right.pressed = false;
+     m_mouse.right.released = false;
+     m_mouse.extra1.pressed = false;
+     m_mouse.extra1.released = false;
+     m_mouse.extra2.pressed = false;
+     m_mouse.extra2.released = false;
 }
 
 void InputCache::set(SDL_MouseButtonEvent event) {
@@ -59,9 +73,11 @@ void InputCache::set(SDL_MouseButtonEvent event) {
 
     if(event.state == SDL_PRESSED) {
         button->pressed = true;
+        button->down = true;
     }
     else {
         button->released = true;
+        button->down = false;
     }
     m_mouse.x_pos = event.x;
     m_mouse.y_pos = event.y;
@@ -72,9 +88,6 @@ void InputCache::set(SDL_MouseWheelEvent event) {
     if(event.direction == SDL_MOUSEWHEEL_FLIPPED) {flipped = -1;}
     m_mouse.x_scroll += event.x * flipped;
     m_mouse.y_scroll += event.y * flipped;
-
-    m_mouse.x_pos = event.x;
-    m_mouse.y_pos = event.y;
 }
 
 void InputCache::set(SDL_MouseMotionEvent event) {
@@ -82,15 +95,6 @@ void InputCache::set(SDL_MouseMotionEvent event) {
     m_mouse.y_delta += event.yrel;
     m_mouse.x_pos = event.x;
     m_mouse.y_pos = event.y;
-}
-
-void InputCache::poll_mouse() {
-    Uint32 buttons = SDL_GetMouseState(&m_mouse.x_pos, &m_mouse.y_pos);
-    if(buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) {m_mouse.left.down = true;}
-    if(buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) {m_mouse.right.down = true;}
-    if(buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {m_mouse.middle.down = true;}
-    if(buttons & SDL_BUTTON(SDL_BUTTON_X1)) {m_mouse.extra1.down = true;}
-    if(buttons & SDL_BUTTON(SDL_BUTTON_X2)) {m_mouse.extra2.down = true;}
 }
 
 SDL_Keycode InputCache::convert_key(std::string key) {

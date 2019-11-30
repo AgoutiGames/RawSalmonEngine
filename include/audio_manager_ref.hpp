@@ -13,14 +13,11 @@ namespace salmon {
         public:
             AudioManagerRef(AudioManager& impl);
 
-            bool load_music(std::string path);
-            bool load_sound(std::string path);
+            bool load_music(std::string path, bool absolute = false);
+            bool load_sound(std::string path, bool absolute = false);
 
-            MusicRef get_music(std::string path);
-            SoundRef get_sound(std::string path);
-
-            void set_music_path(std::string path);
-            void set_sound_path(std::string path);
+            MusicRef get_music(std::string path, bool absolute = false);
+            SoundRef get_sound(std::string path, bool absolute = false);
 
             void set_master_sound_volume(float factor);
             float get_master_sound_volume();

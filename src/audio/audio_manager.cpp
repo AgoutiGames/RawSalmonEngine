@@ -19,8 +19,8 @@
 #include "audio/audio_manager.hpp"
 
 
-bool AudioManager::load_music(std::string path) {
-    path = m_music_base_path + path;
+bool AudioManager::load_music(std::string path, bool absolute) {
+    if(!absolute) {path = m_music_base_path + path;}
     Music temp(path);
     if(temp.good()) {
         m_music[path] = temp;
@@ -30,8 +30,8 @@ bool AudioManager::load_music(std::string path) {
         return false;
     }
 }
-bool AudioManager::load_sound(std::string path) {
-    path = m_sounds_base_path + path;
+bool AudioManager::load_sound(std::string path, bool absolute) {
+    if(!absolute) {path = m_sounds_base_path + path;}
     SoundEffect temp(path);
     if(temp.good()) {
         m_sounds[path] = temp;
@@ -42,9 +42,9 @@ bool AudioManager::load_sound(std::string path) {
     }
 }
 
-Music& AudioManager::get_music(std::string path) {
-    path = m_music_base_path + path;
-    if(m_music.find(path) != m_music.end() || load_music(path)) {
+Music& AudioManager::get_music(std::string path, bool absolute) {
+    if(!absolute) {path = m_music_base_path + path;}
+    if(m_music.find(path) != m_music.end() || load_music(path, true)) {
         return m_music.at(path);
     }
     else {
@@ -52,9 +52,9 @@ Music& AudioManager::get_music(std::string path) {
     }
 
 }
-SoundEffect& AudioManager::get_sound(std::string path) {
-    path = m_sounds_base_path + path;
-    if(m_sounds.find(path) != m_sounds.end() || load_sound(path)) {
+SoundEffect& AudioManager::get_sound(std::string path, bool absolute) {
+    if(!absolute) {path = m_sounds_base_path + path;}
+    if(m_sounds.find(path) != m_sounds.end() || load_sound(path, true)) {
         return m_sounds.at(path);
     }
     else {

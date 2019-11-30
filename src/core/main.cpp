@@ -30,7 +30,9 @@
 int main()
 {
     // Better read resolution from config file
-    GameInfo game(1920, 1080);
+    GameInfo game;
+    game.set_game_resolution(1920,1080);
+    game.set_fullscreen(true);
 
     if(!game.load_map("main.tmx")) {
         Logger(Logger::fatal) << "Engine startup failed! Entry point \"main.tmx\" couldn't be load!";

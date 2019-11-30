@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <chrono>
 #include <ctime>
+#include <SDL.h>
 
 // Define static vars
 const char* Logger::s_log_filename = "log.txt";
@@ -39,7 +40,20 @@ Logger::~Logger() {
 
 std::ofstream Logger::open_log() {
     std::ofstream logfile;
-    logfile.open (s_log_filename, std::ios::app);
+
+    // Make logfile local to the executable
+    // Wrapping the call to GetBasePath in SDL_Init and SDL_Quit is preferred method in mailinglist
+    SDL_Init(0);
+    char* base_path_char = SDL_GetBasePath();
+    std::string base_path;
+    // If base path is not available, the current directory is used instead
+    if(base_path_char != nullptr) {
+        base_path = base_path_char;
+        SDL_free(base_path_char);
+    }
+    SDL_Quit();
+
+    logfile.open (base_path + s_log_filename, std::ios::app);
     logfile << "--------Start Logging--------\n";
     return logfile;
 }

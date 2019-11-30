@@ -20,7 +20,7 @@
 
 #include "core/gameinfo.hpp"
 
-salmon::GameInfo::GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen) : m_impl{std::make_unique<::GameInfo>(screen_w,screen_h,fullscreen)} {}
+salmon::GameInfo::GameInfo() : m_impl{std::make_unique<::GameInfo>()} {}
 salmon::GameInfo::~GameInfo() {}
 
 bool salmon::GameInfo::init() {return m_impl->init();}
@@ -32,6 +32,11 @@ bool salmon::GameInfo::update() {return m_impl->update();}
 bool salmon::GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load_map(mapfile, absolute);}
 void salmon::GameInfo::close_map() {m_impl->close_map();}
 salmon::MapRef salmon::GameInfo::get_map() {return m_impl->get_map();}
+
+void salmon::GameInfo::set_window_size(unsigned width, unsigned height) {m_impl->set_window_size(width,height);}
+bool salmon::GameInfo::set_fullscreen(bool mode) {return m_impl->set_fullscreen(mode);}
+bool salmon::GameInfo::set_game_resolution(unsigned width, unsigned height) {return m_impl->set_game_resolution(width,height);}
+bool salmon::GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
 
 salmon::AudioManagerRef salmon::GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}

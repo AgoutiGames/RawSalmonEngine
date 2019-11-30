@@ -32,13 +32,22 @@
 #include "util/logger.hpp"
 
 /// Constructs a @c GameInfo Object
-GameInfo::GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen)
-: m_screen_w {screen_w}, m_screen_h {screen_h}, m_fullscreen{fullscreen}
-{
+GameInfo::GameInfo() {
     //Start up SDL and create window
 	if( !init() ) {
 		Logger(Logger::error) << "Failed to initialize SDL!";
 	}
+
+    char* base_path = SDL_GetBasePath();
+    if(base_path != nullptr) {m_base_path = base_path;}
+    else {
+        Logger(Logger::error) << "Couldn't get location of executable! Probably running on currently unsupported OS";
+    }
+    m_resource_path = m_base_path + m_resource_path;
+    m_current_path = m_resource_path;
+
+    m_audio_manager.set_music_path(m_resource_path);
+    m_audio_manager.set_sound_path(m_resource_path);
 }
 
 /**
@@ -65,10 +74,12 @@ bool GameInfo::init() {
 			Logger(Logger::warning) << "Linear texture filtering not enabled!";
 		}
 
+
+
 		//Create window
 		int fullscreen_bits = 0;
 		if(m_fullscreen) {fullscreen_bits = SDL_WINDOW_FULLSCREEN_DESKTOP;}
-		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_screen_w, m_screen_h, SDL_WINDOW_SHOWN | fullscreen_bits);
+		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_screen_w, m_screen_h, SDL_WINDOW_SHOWN | fullscreen_bits);
 		if( m_window == nullptr )
 		{
 			Logger(Logger::error) << "Window could not be created! SDL Error: "<< SDL_GetError();
@@ -121,6 +132,60 @@ bool GameInfo::init() {
 	return success;
 }
 
+void GameInfo::set_window_size(unsigned width, unsigned height) {
+    SDL_SetWindowSize(m_window,width,height);
+    SDL_SetWindowPosition(m_window,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED);
+}
+bool GameInfo::set_fullscreen(bool mode) {
+    Uint32 flags;
+    // Use "fake" fullscreen because its much less error prone on linux and windows
+    if(mode) {flags = SDL_WINDOW_FULLSCREEN_DESKTOP;}
+    else {flags = 0;}
+    if(SDL_SetWindowFullscreen(m_window,flags)) {
+        if(mode) {
+            Logger(Logger::error) << "Failed to set window to fullscreen, SDL Error: " << SDL_GetError();
+        }
+        else {
+            Logger(Logger::error) << "Failed to set windowed mode, SDL Error: " << SDL_GetError();
+        }
+        return false;
+    }
+    if(mode) {m_fullscreen = true;}
+    else {m_fullscreen = false;}
+    return true;
+}
+bool GameInfo::set_game_resolution(unsigned width, unsigned height) {
+    if(SDL_RenderSetLogicalSize(m_renderer,width,height)) {
+        Logger(Logger::error) << "Failed to set game resolution to " << width << "x" << height <<" , SDL Error: " << SDL_GetError();
+        return false;
+    }
+    m_screen_w = width;
+    m_screen_h = height;
+    for(MapData& map : m_maps) {
+        map.get_camera().set_size(width,height);
+    }
+    return true;
+}
+bool GameInfo::set_linear_filtering(bool mode) {
+    if(mode) {
+        //Set texture filtering to linear
+        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+        {
+            Logger(Logger::warning) << "Linear texture filtering not enabled!";
+            return false;
+        }
+    }
+    else {
+        //Set texture filtering to nearest neighour
+        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "0" ) )
+        {
+            Logger(Logger::warning) << "Nearest neighbour filtering not enabled!";
+            return false;
+        }
+    }
+    return true;
+}
+
 /**
  * @brief Loads the supplied mapfile
  * @param mapfile Name of the .tmx map
@@ -128,10 +193,13 @@ bool GameInfo::init() {
  * @warning The SDL2 renderer must be initialized prior loading!
  */
 bool GameInfo::load_map(std::string mapfile, bool absolute) {
-    m_maps.emplace(this, m_screen_w, m_screen_h);
+    m_maps.emplace_back(this);
+
+    m_maps.back().get_camera().set_size(m_screen_w,m_screen_h);
+
     if(!absolute) {mapfile = m_current_path + mapfile;}
     Logger() << "Load map at: " << mapfile;
-    tinyxml2::XMLError eResult = m_maps.top().init_map(mapfile, &m_renderer);
+    tinyxml2::XMLError eResult = m_maps.back().init_map(mapfile, &m_renderer);
     if(eResult == tinyxml2::XML_SUCCESS) {
         Logger() << "Successfully loaded map";
         update_path();
@@ -139,7 +207,7 @@ bool GameInfo::load_map(std::string mapfile, bool absolute) {
     }
     else {
         Logger(Logger::error) << "Failed loading map:" << mapfile;
-        m_maps.pop();
+        m_maps.pop_back();
         return false;
     }
 }
@@ -148,10 +216,10 @@ bool GameInfo::load_map(std::string mapfile, bool absolute) {
  * @brief Remove the currently active map from map stack
  */
 void GameInfo::close_map() {
-    Logger() << "Close map at: " << m_maps.top().get_full_path();
-    m_maps.pop();
+    Logger() << "Close map at: " << m_maps.back().get_full_path();
+    m_maps.pop_back();
     if(!m_maps.empty()) {
-        m_maps.top().resume();
+        m_maps.back().resume();
         update_path();
     }
 }
@@ -212,7 +280,7 @@ bool GameInfo::update() {
 
     m_input_cache.poll();
 
-    m_maps.top().update();
+    m_maps.back().update();
 
     #ifndef LIB_BUILD
     // Do nothing with returned signal because we don't have to
@@ -227,19 +295,20 @@ bool GameInfo::update() {
  */
 void GameInfo::render() {
     if(!m_maps.empty()) {
-        m_maps.top().render();
+        m_maps.back().render();
         SDL_RenderPresent(m_renderer);
     }
 }
 
 void GameInfo::update_path() {
-    m_current_path = m_maps.top().get_file_path();
-    m_current_path.erase(m_current_path.find_last_of('/') + 1);
+    m_current_path = m_maps.back().get_file_path();
+    // The path gets trimmed by map already
+    // m_current_path.erase(m_current_path.find_last_of('/') + 1);
 }
 
 
-MapData& GameInfo::get_map() {return m_maps.top();}
-std::stack<MapData>& GameInfo::get_maps() {return m_maps;}
+MapData& GameInfo::get_map() {return m_maps.back();}
+std::vector<MapData>& GameInfo::get_maps() {return m_maps;}
 
 /// Cleans up SDL2 stuff
 void GameInfo::close() {

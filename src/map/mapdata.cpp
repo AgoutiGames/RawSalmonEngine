@@ -32,8 +32,8 @@
 #include "util/logger.hpp"
 
 /// Plain constructor
-MapData::MapData(GameInfo* game, unsigned screen_w, unsigned screen_h) : m_game{game},
-m_camera{0, 0, static_cast<int>(screen_w), static_cast<int>(screen_h), this}
+MapData::MapData(GameInfo* game) : m_game{game},
+m_camera{0, 0, 0, 0, this}
 #ifndef LIB_BUILD
     ,m_input_handler{*this}
 #endif // LIB_BUILD

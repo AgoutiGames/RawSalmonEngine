@@ -6,14 +6,11 @@ using salmon::AudioManagerRef;
 
 AudioManagerRef::AudioManagerRef(AudioManager& impl) : m_impl{&impl} {}
 
-bool AudioManagerRef::load_music(std::string path) {return m_impl->load_music(path);}
-bool AudioManagerRef::load_sound(std::string path) {return m_impl->load_sound(path);}
+bool AudioManagerRef::load_music(std::string path, bool absolute) {return m_impl->load_music(path,absolute);}
+bool AudioManagerRef::load_sound(std::string path, bool absolute) {return m_impl->load_sound(path,absolute);}
 
-salmon::MusicRef AudioManagerRef::get_music(std::string path) {return m_impl->get_music(path);}
-salmon::SoundRef AudioManagerRef::get_sound(std::string path) {return m_impl->get_sound(path);}
-
-void AudioManagerRef::set_music_path(std::string path) {m_impl->set_music_path(path);}
-void AudioManagerRef::set_sound_path(std::string path) {m_impl->set_sound_path(path);}
+salmon::MusicRef AudioManagerRef::get_music(std::string path, bool absolute) {return m_impl->get_music(path,absolute);}
+salmon::SoundRef AudioManagerRef::get_sound(std::string path, bool absolute) {return m_impl->get_sound(path,absolute);}
 
 void AudioManagerRef::set_master_sound_volume(float factor) {m_impl->set_master_sound_volume(factor);}
 float AudioManagerRef::get_master_sound_volume() {return m_impl->get_master_sound_volume();}

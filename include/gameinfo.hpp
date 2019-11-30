@@ -32,7 +32,7 @@ class GameInfo;
 namespace salmon {
     class GameInfo{
         public:
-            GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen);
+            GameInfo();
             ~GameInfo();
 
             bool init();
@@ -44,6 +44,11 @@ namespace salmon {
             bool load_map(std::string mapfile, bool absolute = false);
             void close_map();
             salmon::MapRef get_map();
+
+            void set_window_size(unsigned width, unsigned height);
+            bool set_fullscreen(bool mode);
+            bool set_game_resolution(unsigned width, unsigned height);
+            bool set_linear_filtering(bool mode);
 
             AudioManagerRef get_audio_manager();
             DataBlockRef get_data();

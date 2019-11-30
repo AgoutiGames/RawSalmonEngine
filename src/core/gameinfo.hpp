@@ -48,7 +48,7 @@ private:
 #endif // LIB_BUILD
 
 public:
-    GameInfo(unsigned screen_w, unsigned screen_h, bool fullscreen = true);
+    GameInfo();
     ~GameInfo();
 
     bool init();
@@ -60,9 +60,16 @@ public:
     bool load_map(std::string mapfile, bool absolute = false);
     void close_map();
 
+    void set_window_size(unsigned width, unsigned height);
+    bool set_fullscreen(bool mode);
+    bool set_game_resolution(unsigned width, unsigned height);
+    bool set_linear_filtering(bool mode);
+
     MapData& get_map();
-    std::stack<MapData>& get_maps();
+    std::vector<MapData>& get_maps();
     DataBlock& get_data() {return m_data;}
+    std::string get_base_path() const {return m_base_path;}
+    std::string get_resource_path() const {return m_resource_path;}
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
@@ -76,9 +83,10 @@ private:
     SDL_Window* m_window = nullptr;
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
+    // default screen resolution
     unsigned m_screen_w = 800;
     unsigned m_screen_h = 600;
-    bool m_fullscreen = true;
+    bool m_fullscreen = false;
 
     AudioManager m_audio_manager;
     InputCache m_input_cache;
@@ -86,9 +94,11 @@ private:
 
     FontManager m_font_manager;
 
-    std::string m_current_path = "../data/";
+    std::string m_base_path = ""; ///< Path to the directory where the executable lies
+    std::string m_resource_path = "../data/"; ///< Path to the data directory where typically all game assets are
+    std::string m_current_path = ""; ///< Path to the directory of the currently active mapfile
 
-    std::stack<MapData> m_maps; ///< Stores the currently active game map
+    std::vector<MapData> m_maps; ///< Stores the currently active game map
 };
 
 #endif // GAMEINFO_HPP_INCLUDED

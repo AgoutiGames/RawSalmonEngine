@@ -66,7 +66,7 @@ class MapData {
         };
 
     public:
-        MapData(GameInfo* game, unsigned screen_w, unsigned screen_h);
+        MapData(GameInfo* game);
 
         MapData(const MapData& other) = delete;
         MapData& operator=(const MapData& other) = delete;

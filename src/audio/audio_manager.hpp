@@ -27,11 +27,11 @@
 
 class AudioManager {
 public:
-    bool load_music(std::string path);
-    bool load_sound(std::string path);
+    bool load_music(std::string path, bool absolute = false);
+    bool load_sound(std::string path, bool absolute = false);
 
-    Music& get_music(std::string path);
-    SoundEffect& get_sound(std::string path);
+    Music& get_music(std::string path, bool absolute = false);
+    SoundEffect& get_sound(std::string path, bool absolute = false);
 
     void set_music_path(std::string path) {m_music_base_path = path;}
     void set_sound_path(std::string path) {m_sounds_base_path = path;}
