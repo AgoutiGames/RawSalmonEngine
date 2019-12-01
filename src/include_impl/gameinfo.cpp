@@ -37,6 +37,7 @@ void salmon::GameInfo::set_window_size(unsigned width, unsigned height) {m_impl-
 bool salmon::GameInfo::set_fullscreen(bool mode) {return m_impl->set_fullscreen(mode);}
 bool salmon::GameInfo::set_game_resolution(unsigned width, unsigned height) {return m_impl->set_game_resolution(width,height);}
 bool salmon::GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
+void salmon::GameInfo::set_window_resizable(bool mode) {m_impl->set_window_resizable(mode);}
 
 salmon::AudioManagerRef salmon::GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}

@@ -49,6 +49,9 @@ namespace salmon {
             bool set_fullscreen(bool mode);
             bool set_game_resolution(unsigned width, unsigned height);
             bool set_linear_filtering(bool mode);
+            void set_window_resizable(bool mode);
+
+            // Implement Getters for screen resolution and current game resolution!!!
 
             AudioManagerRef get_audio_manager();
             DataBlockRef get_data();

@@ -64,6 +64,7 @@ public:
     bool set_fullscreen(bool mode);
     bool set_game_resolution(unsigned width, unsigned height);
     bool set_linear_filtering(bool mode);
+    void set_window_resizable(bool mode); ///< Currently not working properly! Need to handle resize events!
 
     MapData& get_map();
     std::vector<MapData>& get_maps();

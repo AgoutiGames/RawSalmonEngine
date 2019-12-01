@@ -185,6 +185,14 @@ bool GameInfo::set_linear_filtering(bool mode) {
     }
     return true;
 }
+void GameInfo::set_window_resizable(bool mode) {
+    if(mode) {
+        SDL_SetWindowResizable(m_window,SDL_TRUE);
+    }
+    else {
+        SDL_SetWindowResizable(m_window,SDL_FALSE);
+    }
+}
 
 /**
  * @brief Loads the supplied mapfile
