@@ -246,7 +246,7 @@ bool GameInfo::update() {
     //Event handler
     SDL_Event e;
     #ifndef LIB_BUILD
-    InputHandler& handler = m_maps.top().get_input_handler();
+    InputHandler& handler = m_maps.back().get_input_handler();
     #endif // LIB_BUILD
 
     m_input_cache.clear();
