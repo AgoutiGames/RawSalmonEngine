@@ -53,7 +53,7 @@ EventSignal AteMouseButtons::process(Actor& scope) {
     }
     salmon::MouseState mouse = scope.get_map().get_game().get_input_cache().get_mouse_state();
 
-    salmon::MouseButtonState button;
+    salmon::ButtonState button;
     switch(m_mouse_button_index) {
         case 1: {button = mouse.left; break;}
         case 2: {button = mouse.middle; break;}

@@ -26,7 +26,7 @@
 #include "util/logger.hpp"
 
 using salmon::MouseState;
-using salmon::MouseButtonState;
+using salmon::ButtonState;
 
 InputHandler::InputHandler(MapData& mapdata) : m_mapdata{mapdata} {}
 
