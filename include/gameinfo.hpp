@@ -51,6 +51,9 @@ namespace salmon {
             bool set_linear_filtering(bool mode);
             void set_window_resizable(bool mode);
 
+            bool window_minimized() const;
+            bool window_active() const;
+
             // Implement Getters for screen resolution and current game resolution!!!
 
             AudioManagerRef get_audio_manager();

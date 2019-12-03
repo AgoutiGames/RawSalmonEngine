@@ -63,24 +63,54 @@ namespace salmon {
         wrap = 3,
     };
 
-    struct MouseButtonState {
+    struct ButtonState {
         bool pressed = false;
         bool released = false;
         bool down = false;
     };
 
     struct MouseState {
-        MouseButtonState left;
-        MouseButtonState right;
-        MouseButtonState middle;
-        MouseButtonState extra1;
-        MouseButtonState extra2;
+        ButtonState left;
+        ButtonState right;
+        ButtonState middle;
+        ButtonState extra1;
+        ButtonState extra2;
         int x_scroll = 0;
         int y_scroll = 0;
         int x_pos = 0;
         int y_pos = 0;
         int x_delta = 0;
         int y_delta = 0;
+        bool mouse_focus = false;
+    };
+
+    struct GamepadState {
+        struct {
+        ButtonState a;
+        ButtonState b;
+        ButtonState x;
+        ButtonState y;
+        ButtonState back;
+        ButtonState guide; /// Many gamepads don't have this one
+        ButtonState start;
+        ButtonState left_stick;
+        ButtonState right_stick;
+        ButtonState left_shoulder;
+        ButtonState right_shoulder;
+        ButtonState up;
+        ButtonState down;
+        ButtonState left;
+        ButtonState right;
+        } button;
+
+        struct {
+        float left_x = 0; /// Range from -1 to 1
+        float left_y = 0; /// Range from -1 to 1
+        float right_x = 0; /// Range from -1 to 1
+        float right_y = 0; /// Range from -1 to 1
+        float trigger_left = 0; /// Range from 0 to 1
+        float trigger_right = 0; /// Range from 0 to 1
+        } axis;
     };
 }
 

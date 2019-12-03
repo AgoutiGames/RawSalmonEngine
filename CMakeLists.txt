@@ -86,6 +86,7 @@ set(CORE_SOURCES
     src/core/gameinfo.cpp
     src/core/font_manager.cpp
     src/core/input_cache.cpp
+    src/core/gamepad.cpp
     )
 
 set(EVENT_SOURCES

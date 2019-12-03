@@ -23,10 +23,14 @@
 #include <unordered_set>
 #include <SDL.h>
 
+#include "core/gamepad.hpp"
 #include "util/game_types.hpp"
 
 class InputCache {
     public:
+        // Although noted otherwise not needed
+        //void init_controllers();
+
         bool is_down(std::string key) const;
         bool just_pressed(std::string key) const;
         bool just_released(std::string key) const;
@@ -39,10 +43,18 @@ class InputCache {
         void set(SDL_MouseButtonEvent event);
         void set(SDL_MouseWheelEvent event);
         void set(SDL_MouseMotionEvent event);
+        void set(SDL_WindowEvent event);
+        void set(SDL_ControllerDeviceEvent event);
+        void set(SDL_ControllerAxisEvent event);
+        void set(SDL_ControllerButtonEvent event);
 
         void poll();
-        void poll_mouse();
         void clear();
+
+        unsigned get_gamepad_count() const {return m_controllers.size();}
+        salmon::GamepadState get_gamepad(int index) const {return m_controllers.at(index).get_state();}
+        bool rumble(int gamepad_index, float strength, unsigned length_ms) const;
+        bool stop_rumble(int gamepad_index) const;
 
         salmon::MouseState get_mouse_state() const {return m_mouse;}
 
@@ -52,6 +64,12 @@ class InputCache {
         std::unordered_set<SDL_Keycode> m_released;
         const Uint8 * m_keys;
         salmon::MouseState m_mouse;
+
+        bool add_controller(int joystick_device_index);
+        bool remove_controller(SDL_JoystickID instance_id);
+        Gamepad* get_controller(SDL_JoystickID instance_id);
+
+        std::vector<Gamepad> m_controllers;
 };
 
 

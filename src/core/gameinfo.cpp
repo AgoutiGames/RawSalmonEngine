@@ -61,7 +61,7 @@ bool GameInfo::init() {
 	Logger() << "Initialize SDL and its subsystems";
 
 	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0 )
 	{
 		Logger(Logger::error) << "SDL could not initialize! SDL Error: " << SDL_GetError();
 		success = false;
@@ -129,6 +129,9 @@ bool GameInfo::init() {
         success = false;
     }
 
+    // Strangely not needed at all
+    // m_input_cache.init_controllers();
+
 	return success;
 }
 
@@ -192,6 +195,7 @@ void GameInfo::set_window_resizable(bool mode) {
     else {
         SDL_SetWindowResizable(m_window,SDL_FALSE);
     }
+    Logger(Logger::info) << SDL_GetWindowFlags(m_window);
 }
 
 /**
@@ -252,32 +256,107 @@ bool GameInfo::update() {
     m_input_cache.clear();
 
     while( SDL_PollEvent( &e ) != 0 ) {
+
+        switch(e.type) {
         //User requests quit
-        if( e.type == SDL_QUIT )
-        {
-            return false;
-        }
-        //User presses a key
-        else if( e.type == SDL_KEYDOWN && (m_key_repeat == true || e.key.repeat == false)) {
-            #ifndef LIB_BUILD
-            handler.process_key_down(e.key);
-            #endif // LIB_BUILD
-            m_input_cache.set(e.key.keysym.sym, true);
-        }
-        else if( e.type == SDL_KEYUP && (m_key_repeat == true || e.key.repeat == false)) {
-            #ifndef LIB_BUILD
-            handler.process_key_up(e.key);
-            #endif // LIB_BUILD
-            m_input_cache.set(e.key.keysym.sym, false);
-        }
-        else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-            m_input_cache.set(e.button);
-        }
-        else if(e.type == SDL_MOUSEWHEEL) {
-            m_input_cache.set(e.wheel);
-        }
-        else if(e.type == SDL_MOUSEMOTION) {
-            m_input_cache.set(e.motion);
+            case SDL_QUIT : {
+                // Close game by aborting update
+                return false;
+            }
+            //User presses a key
+            case SDL_KEYDOWN : {
+                if(m_key_repeat == true || e.key.repeat == false) {
+                    #ifndef LIB_BUILD
+                    handler.process_key_down(e.key);
+                    #endif // LIB_BUILD
+                    m_input_cache.set(e.key.keysym.sym, true);
+                }
+                break;
+            }
+            case SDL_KEYUP : {
+                if(m_key_repeat == true || e.key.repeat == false) {
+                    #ifndef LIB_BUILD
+                    handler.process_key_up(e.key);
+                    #endif // LIB_BUILD
+                    m_input_cache.set(e.key.keysym.sym, false);
+                }
+                break;
+            }
+            case SDL_MOUSEBUTTONDOWN : {
+                m_input_cache.set(e.button);
+                break;
+            }
+            case SDL_MOUSEBUTTONUP : {
+                m_input_cache.set(e.button);
+                break;
+            }
+            case SDL_MOUSEWHEEL : {
+                m_input_cache.set(e.wheel);
+                break;
+            }
+            case SDL_MOUSEMOTION : {
+                m_input_cache.set(e.motion);
+                break;
+            }
+            case SDL_CONTROLLERAXISMOTION : {
+                m_input_cache.set(e.caxis);
+                break;
+            } /**< Game controller axis motion */
+            case SDL_CONTROLLERBUTTONDOWN : {
+                m_input_cache.set(e.cbutton);
+                break;
+            }          /**< Game controller button pressed */
+            case SDL_CONTROLLERBUTTONUP : {
+                m_input_cache.set(e.cbutton);
+                break;
+            }            /**< Game controller button released */
+            case SDL_CONTROLLERDEVICEADDED : {
+                m_input_cache.set(e.cdevice);
+                break;
+            }         /**< A new Game controller has been inserted into the system */
+            case SDL_CONTROLLERDEVICEREMOVED : {
+                m_input_cache.set(e.cdevice);
+                break;
+            }       /**< An opened Game controller has been removed */
+            case SDL_CONTROLLERDEVICEREMAPPED : {
+                m_input_cache.set(e.cdevice);
+                break;
+            }
+            case SDL_WINDOWEVENT : {
+                switch(e.window.event) {
+                    case SDL_WINDOWEVENT_CLOSE : {
+                        // Close game by aborting update
+                        return false;
+                    }
+                    case SDL_WINDOWEVENT_SHOWN : {
+                        m_window_minimized = false;
+                        break;
+                    }
+                    case SDL_WINDOWEVENT_MINIMIZED : {
+                        m_window_minimized = true;
+                        break;
+                    }
+                    case SDL_WINDOWEVENT_ENTER : {
+                        m_input_cache.set(e.window);
+                        break;
+                    }
+                    case SDL_WINDOWEVENT_LEAVE : {
+                        m_input_cache.set(e.window);
+                        break;
+                    }
+                    case SDL_WINDOWEVENT_FOCUS_GAINED : {
+                        m_window_active = true;
+                        break;
+                    }
+                    case SDL_WINDOWEVENT_FOCUS_LOST : {
+                        m_window_active = false;
+                        break;
+                    }
+                    default : {break;}
+                }
+                break;
+            }
+            default : {break;}
         }
     }
 
@@ -302,7 +381,7 @@ bool GameInfo::update() {
  * @brief Draws the current map to screen
  */
 void GameInfo::render() {
-    if(!m_maps.empty()) {
+    if(!m_maps.empty() && !m_window_minimized) {
         m_maps.back().render();
         SDL_RenderPresent(m_renderer);
     }

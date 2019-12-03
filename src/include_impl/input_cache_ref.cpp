@@ -29,3 +29,8 @@ bool InputCacheRef::just_pressed(std::string key) const {return m_impl->just_pre
 bool InputCacheRef::just_released(std::string key) const {return m_impl->just_released(key);}
 
 salmon::MouseState InputCacheRef::get_mouse_state() const {return m_impl->get_mouse_state();}
+unsigned InputCacheRef::get_gamepad_count() const {return m_impl->get_gamepad_count();}
+salmon::GamepadState InputCacheRef::get_gamepad(int index) const {return m_impl->get_gamepad(index);}
+
+bool InputCacheRef::rumble(int gamepad_index, float strength, unsigned length_ms) const {return m_impl->rumble(gamepad_index, strength, length_ms);}
+bool InputCacheRef::stop_rumble(int gamepad_index) const {return m_impl->stop_rumble(gamepad_index);}

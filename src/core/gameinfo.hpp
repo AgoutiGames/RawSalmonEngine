@@ -66,6 +66,9 @@ public:
     bool set_linear_filtering(bool mode);
     void set_window_resizable(bool mode); ///< Currently not working properly! Need to handle resize events!
 
+    bool window_minimized() const {return m_window_minimized;}
+    bool window_active() const {return m_window_active;}
+
     MapData& get_map();
     std::vector<MapData>& get_maps();
     DataBlock& get_data() {return m_data;}
@@ -88,6 +91,9 @@ private:
     unsigned m_screen_w = 800;
     unsigned m_screen_h = 600;
     bool m_fullscreen = false;
+
+    bool m_window_minimized = false;
+    bool m_window_active = true;
 
     AudioManager m_audio_manager;
     InputCache m_input_cache;

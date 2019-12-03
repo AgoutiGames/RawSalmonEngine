@@ -35,6 +35,12 @@ namespace salmon {
             bool just_released(std::string key) const;
 
             salmon::MouseState get_mouse_state() const;
+            unsigned get_gamepad_count() const;
+            /// @note Starts at zero!
+            salmon::GamepadState get_gamepad(int index) const;
+
+            bool rumble(int gamepad_index, float strength, unsigned length_ms) const;
+            bool stop_rumble(int gamepad_index) const;
         private:
             InputCache* m_impl;
     };

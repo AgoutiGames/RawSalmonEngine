@@ -39,6 +39,9 @@ bool salmon::GameInfo::set_game_resolution(unsigned width, unsigned height) {ret
 bool salmon::GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
 void salmon::GameInfo::set_window_resizable(bool mode) {m_impl->set_window_resizable(mode);}
 
+bool salmon::GameInfo::window_minimized() const {return m_impl->window_minimized();}
+bool salmon::GameInfo::window_active() const {return m_impl->window_active();}
+
 salmon::AudioManagerRef salmon::GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
 salmon::InputCacheRef salmon::GameInfo::get_input_cache() {return m_impl->get_input_cache();}

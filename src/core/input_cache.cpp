@@ -21,7 +21,7 @@
 #include "util/logger.hpp"
 
 using salmon::MouseState;
-using salmon::MouseButtonState;
+using salmon::ButtonState;
 
 bool InputCache::is_down(SDL_Keycode key) const {return m_keys[SDL_GetScancodeFromKey(key)];}
 bool InputCache::just_pressed(SDL_Keycode key) const {return m_pressed.count(key);}
@@ -60,10 +60,15 @@ void InputCache::clear() {
      m_mouse.extra1.released = false;
      m_mouse.extra2.pressed = false;
      m_mouse.extra2.released = false;
+
+     // Add clearing of gamepads
+     for(Gamepad& g : m_controllers) {
+        g.clear();
+     }
 }
 
 void InputCache::set(SDL_MouseButtonEvent event) {
-    MouseButtonState* button = nullptr;
+    ButtonState* button = nullptr;
     if(event.button == SDL_BUTTON_LEFT) {button = &m_mouse.left;}
     else if(event.button == SDL_BUTTON_RIGHT) {button = &m_mouse.right;}
     else if(event.button == SDL_BUTTON_MIDDLE) {button = &m_mouse.middle;}
@@ -95,6 +100,119 @@ void InputCache::set(SDL_MouseMotionEvent event) {
     m_mouse.y_delta += event.yrel;
     m_mouse.x_pos = event.x;
     m_mouse.y_pos = event.y;
+}
+
+void InputCache::set(SDL_WindowEvent event) {
+    switch(event.event) {
+        case SDL_WINDOWEVENT_ENTER : {
+            m_mouse.mouse_focus = true;
+            break;
+        }
+        case SDL_WINDOWEVENT_LEAVE : {
+            m_mouse.mouse_focus = false;
+            break;
+        }
+        default : {
+            Logger(Logger::error) << "Invalid window event: " << event.type << " passed to input cache!";
+        }
+    }
+}
+
+void InputCache::set(SDL_ControllerDeviceEvent event) {
+    switch(event.type) {
+        case SDL_CONTROLLERDEVICEADDED : {
+            add_controller(event.which);
+            break;
+        }
+        case SDL_CONTROLLERDEVICEREMOVED : {
+            remove_controller(event.which);
+            break;
+        }
+        case SDL_CONTROLLERDEVICEREMAPPED : {
+            // NO IDEA WHAT TO DO HERE
+            break;
+        }
+        default : {
+            Logger(Logger::error) << "Invalid controller device event: " << event.type << " passed to input cache!";
+        }
+    }
+}
+void InputCache::set(SDL_ControllerAxisEvent event) {
+    SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(event.axis);
+    Gamepad* pad = get_controller(event.which);
+    if(pad == nullptr) {
+        Logger(Logger::error) << "Unable to find controller: " << event.which << " for axis movement!";
+    }
+    else {
+        pad->set(axis, event.value);
+    }
+}
+void InputCache::set(SDL_ControllerButtonEvent event) {
+    SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(event.button);
+    Gamepad* pad = get_controller(event.which);
+    if(pad == nullptr) {
+        Logger(Logger::error) << "Unable to find controller: " << event.which << " for button press!";
+    }
+    else {
+        bool down;
+        if(event.state == SDL_PRESSED) {down = true;}
+        else {down = false;}
+        pad->set(button, down);
+    }
+}
+
+/*
+void InputCache::init_controllers() {
+    int controller_count = SDL_NumJoysticks();
+    for(int i = 0; i < controller_count; i++) {
+        add_controller(i);
+    }
+}*/
+
+bool InputCache::add_controller(int joystick_device_index) {
+    if(SDL_IsGameController(joystick_device_index)) {
+        SDL_GameController* cont = SDL_GameControllerOpen(joystick_device_index);
+        if(cont != nullptr) {
+            m_controllers.emplace_back(cont);
+            Logger() << "Properly recognized game controller: " << SDL_GameControllerName(cont);
+            return true;
+        }
+        else {
+            Logger(Logger::warning) << "The controller called: " << SDL_JoystickNameForIndex(joystick_device_index) << " can't be recognized!";
+        }
+    }
+    else {
+        Logger(Logger::warning) << "The controller called: " << SDL_JoystickNameForIndex(joystick_device_index) << " can't be recognized!";
+    }
+    return false;
+}
+
+bool InputCache::remove_controller(SDL_JoystickID instance_id) {
+    for(size_t i = 0; i < m_controllers.size(); i++) {
+        if(m_controllers[i].get_id() == instance_id) {
+            Logger() << "Removed game controller: " << m_controllers[i].get_name();
+            m_controllers[i].close();
+            m_controllers.erase(m_controllers.begin()+i);
+            return true;
+        }
+    }
+    return false;
+}
+
+Gamepad* InputCache::get_controller(SDL_JoystickID instance_id) {
+    for(size_t i = 0; i < m_controllers.size(); i++) {
+        if(m_controllers.at(i).get_id() == instance_id) {
+            return &m_controllers.at(i);
+        }
+    }
+    return nullptr;
+}
+
+bool InputCache::rumble(int gamepad_index, float strength, unsigned length_ms) const {
+    return m_controllers.at(gamepad_index).rumble(strength,length_ms);
+}
+bool InputCache::stop_rumble(int gamepad_index) const {
+    return m_controllers.at(gamepad_index).stop_rumble();
 }
 
 SDL_Keycode InputCache::convert_key(std::string key) {
