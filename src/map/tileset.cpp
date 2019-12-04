@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -22,6 +22,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "core/gameinfo.hpp"
 #include "map/mapdata.hpp"
 #include "map/tile.hpp"
 #include "util/logger.hpp"
@@ -91,7 +92,11 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
     const char* p_ts_source;
     p_ts_source = p_image->Attribute("source");
     if (p_ts_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-    m_image.loadFromFile(mp_ts_collection->get_mapdata().get_renderer(), full_path + std::string(p_ts_source));
+    m_image = mp_ts_collection->get_mapdata().get_game().get_texture_cache().get(full_path + std::string(p_ts_source));
+    if(!m_image.valid()) {
+        Logger(Logger::error) << "Failed to load tileset: " << m_name << " image file: " << full_path + std::string(p_ts_source);
+        return XML_ERROR_FILE_COULD_NOT_BE_OPENED;
+    }
     eResult = p_image->QueryUnsignedAttribute("width", &m_width);
     if(eResult != XML_SUCCESS) return eResult;
     eResult = p_image->QueryUnsignedAttribute("height", &m_height);

@@ -129,6 +129,7 @@ set(EVENT_SOURCES
 
 set(GRAPHICS_SOURCES
     src/graphics/texture.cpp
+    src/graphics/texture_cache.cpp
     )
 
 set(MAP_SOURCES
@@ -149,6 +150,7 @@ set(UTIL_SOURCES
     src/util/game_types.cpp
     src/util/logger.cpp
     src/util/parse.cpp
+    src/util/preloader.cpp
     )
 
 if(NOT LIB_TARGET)
@@ -187,4 +189,4 @@ find_package(SDL2_mixer REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TinyXML2_INCLUDE_DIRS} ${B64_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_MIXER_LIBRARIES} ${ZLIB_LIBRARIES} ${TinyXML2_LIBRARIES} ${B64_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} stdc++fs ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_MIXER_LIBRARIES} ${ZLIB_LIBRARIES} ${TinyXML2_LIBRARIES} ${B64_LIBRARIES})

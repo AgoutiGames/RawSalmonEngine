@@ -32,7 +32,7 @@
 #include "util/logger.hpp"
 
 /// Constructs a @c GameInfo Object
-GameInfo::GameInfo() : m_input_cache{this} {
+GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
     //Start up SDL and create window
 	if( !init() ) {
 		Logger(Logger::error) << "Failed to initialize SDL!";
@@ -45,6 +45,9 @@ GameInfo::GameInfo() : m_input_cache{this} {
     }
     m_resource_path = m_base_path + m_resource_path;
     m_current_path = m_resource_path;
+
+    m_preloader.add_directory(m_resource_path);
+    m_preloader.load_recursive(300000);
 
     m_audio_manager.set_music_path(m_resource_path);
     m_audio_manager.set_sound_path(m_resource_path);
@@ -106,6 +109,8 @@ bool GameInfo::init() {
 					Logger(Logger::error) << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError();
 					success = false;
 				}
+
+				m_texture_cache.init(m_renderer);
 
 				int mix_flags = MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC;
                 if( (Mix_Init(mix_flags) & mix_flags) != mix_flags) {

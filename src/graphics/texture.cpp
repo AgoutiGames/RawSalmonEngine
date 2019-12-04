@@ -30,6 +30,10 @@ Texture::Texture()
 	free();
 }
 
+bool Texture::valid() const {
+    return (mTexture.get() != nullptr);
+}
+
 /**
  * @brief Loads the supplied image file to a SDL2 texture
  * @param renderer Supplied renderer to use

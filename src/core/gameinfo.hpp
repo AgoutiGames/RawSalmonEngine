@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -27,6 +27,8 @@
 #include "audio/audio_manager.hpp"
 #include "core/input_cache.hpp"
 #include "core/font_manager.hpp"
+#include "graphics/texture_cache.hpp"
+#include "util/preloader.hpp"
 
 #ifndef LIB_BUILD
 #include "event/event_queue.hpp"
@@ -86,6 +88,7 @@ public:
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
+    TextureCache& get_texture_cache() {return m_texture_cache;}
     AudioManager& get_audio_manager() {return m_audio_manager;}
     FontManager& get_font_manager() {return m_font_manager;}
     InputCache& get_input_cache() {return m_input_cache;}
@@ -108,6 +111,8 @@ private:
     bool m_window_minimized = false;
     bool m_window_active = true;
 
+    Preloader m_preloader;
+    TextureCache m_texture_cache;
     AudioManager m_audio_manager;
     InputCache m_input_cache;
     DataBlock m_data; ///< This holds custom user values by string
