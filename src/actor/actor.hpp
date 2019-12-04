@@ -59,6 +59,10 @@ class Actor{
         bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
         bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
+        // No collision check here!
+        void set_x(float x) {m_x = x;}
+        void set_y(float y) {m_y = y;}
+
         void set_w(unsigned w) {m_width = w;}
         void set_h(unsigned h) {m_height = h;}
         void set_name(std::string name) {m_name = name;}

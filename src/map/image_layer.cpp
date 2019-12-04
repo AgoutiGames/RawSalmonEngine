@@ -23,6 +23,7 @@
 #include "map/mapdata.hpp"
 #include "util/parse.hpp"
 #include "util/logger.hpp"
+#include "core/gameinfo.hpp"
 
 /// Factory function which retrieves a pointer owning the image layer
 ImageLayer* ImageLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -44,11 +45,11 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
     XMLError eResult;
 
     // Parse image position
-    eResult = source->QueryIntAttribute("offsetx", &m_offset_x);
+    eResult = source->QueryFloatAttribute("offsetx", &m_offset_x);
     if(eResult != XML_SUCCESS) {
         m_offset_x = 0;
     }
-    eResult = source->QueryIntAttribute("offsety", &m_offset_y);
+    eResult = source->QueryFloatAttribute("offsety", &m_offset_y);
     if(eResult != XML_SUCCESS) {
         m_offset_y = 0;
     }
@@ -96,6 +97,14 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
                 eResult = p_property->QueryBoolAttribute("value", &m_static);
                 if(eResult != XML_SUCCESS) return eResult;
             }
+            else if(name == "STRETCH") {
+                eResult = p_property->QueryBoolAttribute("value", &m_stretch);
+                if(eResult != XML_SUCCESS) return eResult;
+            }
+            else if(name == "KEEP_SIZE") {
+                eResult = p_property->QueryBoolAttribute("value", &m_keep_size);
+                if(eResult != XML_SUCCESS) return eResult;
+            }
             else{
                 Logger(Logger::error) << "Unknown image layer property " << p_name << " occured";
                 return XML_ERROR_PARSING;
@@ -126,7 +135,50 @@ bool ImageLayer::render(const Camera& camera) const {
         m_img.render(-x_trans_fact, -y_trans_fact);
     }
     else if(m_static) {
-        m_img.render(m_offset_x,m_offset_y);
+        if(m_stretch) {
+            SDL_Rect full{0,0,m_img.getWidth(),m_img.getHeight()};
+            GameInfo& game = m_layer_collection->get_base_map().get_game();
+            SDL_Rect dest{0,0,
+            static_cast<int>(game.get_game_x_resolution()),
+            static_cast<int>(game.get_game_y_resolution())};
+            m_img.render_resize(&full,&dest);
+        }
+        else {
+            int x_pos;
+            int y_pos;
+            int width;
+            int height;
+            // Size relative to window, not resolution
+            if(m_keep_size) {
+                GameInfo& game = m_layer_collection->get_base_map().get_game();
+                float x_ratio = static_cast<float>(game.get_game_x_resolution()) / game.get_window_x_resolution();
+                float y_ratio = static_cast<float>(game.get_game_y_resolution()) / game.get_window_y_resolution();
+                width = m_img.getWidth() * x_ratio;
+                height = m_img.getHeight() * y_ratio;
+            }
+            else {
+                width = m_img.getWidth();
+                height = m_img.getHeight();
+            }
+            if(m_offset_x > 0.0f && m_offset_x < 1.0f) {
+                GameInfo& game = m_layer_collection->get_base_map().get_game();
+                x_pos = static_cast<int>(m_offset_x * game.get_game_x_resolution()) - width/2;
+            }
+            else {
+                x_pos = static_cast<int>(m_offset_x);
+            }
+            if(m_offset_y > 0.0f && m_offset_y < 1.0f) {
+                GameInfo& game = m_layer_collection->get_base_map().get_game();
+                y_pos = static_cast<int>(m_offset_y * game.get_game_y_resolution()) - height/2;
+            }
+            else {
+                y_pos = static_cast<int>(m_offset_y);
+            }
+
+            SDL_Rect full{0,0,m_img.getWidth(),m_img.getHeight()};
+            SDL_Rect dest{x_pos,y_pos,width,height};
+            m_img.render_resize(&full,&dest);
+        }
     }
     else{
         int x = m_offset_x - camera.x();

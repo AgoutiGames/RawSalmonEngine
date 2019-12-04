@@ -50,6 +50,13 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     XMLError eResult;
     MapData& mapdata = m_layer_collection->get_base_map();
 
+    // Parse layer offset
+    float offsetx, offsety;
+    eResult = source->QueryFloatAttribute("offsetx", &offsetx);
+    if(eResult == XML_SUCCESS) m_offset_x = offsetx;
+    eResult = source->QueryFloatAttribute("offsety", &offsety);
+    if(eResult == XML_SUCCESS) m_offset_y = offsety;
+
     // Parse user specified properties of the object_layer (only suspended right now)
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
     if(p_tile_properties != nullptr) {
@@ -98,6 +105,10 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
                 Logger(Logger::error) << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
+
+            // Apply layer offset
+            m_obj_grid.back().set_x( m_obj_grid.back().get_x() + m_offset_x);
+            m_obj_grid.back().set_y( m_obj_grid.back().get_y() + m_offset_y);
         }
         else {
 

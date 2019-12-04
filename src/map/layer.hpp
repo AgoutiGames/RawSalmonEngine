@@ -69,8 +69,8 @@ class Layer {
     protected:
         LayerCollection* m_layer_collection;
         std::string m_name;
-        int m_offset_x = 0;
-        int m_offset_y = 0;
+        float m_offset_x = 0;
+        float m_offset_y = 0;
         bool m_hidden = false;
 };
 
