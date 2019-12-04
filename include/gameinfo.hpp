@@ -54,7 +54,14 @@ namespace salmon {
             bool window_minimized() const;
             bool window_active() const;
 
-            // Implement Getters for screen resolution and current game resolution!!!
+            unsigned get_game_x_resolution() const;
+            unsigned get_game_y_resolution() const;
+
+            unsigned get_window_x_resolution() const;
+            unsigned get_window_y_resolution() const;
+
+            unsigned get_screen_x_resolution() const;
+            unsigned get_screen_y_resolution() const;
 
             AudioManagerRef get_audio_manager();
             DataBlockRef get_data();

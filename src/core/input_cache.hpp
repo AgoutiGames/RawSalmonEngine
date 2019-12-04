@@ -26,8 +26,11 @@
 #include "core/gamepad.hpp"
 #include "util/game_types.hpp"
 
+class GameInfo;
+
 class InputCache {
     public:
+        InputCache(GameInfo* game);
         // Although noted otherwise not needed
         //void init_controllers();
 
@@ -47,6 +50,7 @@ class InputCache {
         void set(SDL_ControllerDeviceEvent event);
         void set(SDL_ControllerAxisEvent event);
         void set(SDL_ControllerButtonEvent event);
+        void set(SDL_TouchFingerEvent event);
 
         void poll();
         void clear();
@@ -60,10 +64,17 @@ class InputCache {
 
         static SDL_Keycode convert_key(std::string key);
     private:
+        GameInfo* m_game;
+
         std::unordered_set<SDL_Keycode> m_pressed;
         std::unordered_set<SDL_Keycode> m_released;
         const Uint8 * m_keys;
         salmon::MouseState m_mouse;
+
+        // Only track the first finger with a down event as mouse
+        // Mixing touch and mouse should get really weird results!
+        SDL_FingerID m_current_finger = 0;
+        bool m_emulate_touch_as_mouse = true;
 
         bool add_controller(int joystick_device_index);
         bool remove_controller(SDL_JoystickID instance_id);

@@ -66,6 +66,15 @@ public:
     bool set_linear_filtering(bool mode);
     void set_window_resizable(bool mode); ///< Currently not working properly! Need to handle resize events!
 
+    unsigned get_game_x_resolution() const {return m_x_resolution;}
+    unsigned get_game_y_resolution() const {return m_y_resolution;}
+
+    unsigned get_window_x_resolution() const;
+    unsigned get_window_y_resolution() const;
+
+    unsigned get_screen_x_resolution() const;
+    unsigned get_screen_y_resolution() const;
+
     bool window_minimized() const {return m_window_minimized;}
     bool window_active() const {return m_window_active;}
 
@@ -88,8 +97,12 @@ private:
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
     // default screen resolution
-    unsigned m_screen_w = 800;
-    unsigned m_screen_h = 600;
+    unsigned m_x_resolution = 800;
+    unsigned m_y_resolution = 600;
+
+    unsigned m_window_w = 800;
+    unsigned m_window_h = 600;
+
     bool m_fullscreen = false;
 
     bool m_window_minimized = false;

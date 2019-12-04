@@ -32,7 +32,7 @@
 #include "util/logger.hpp"
 
 /// Constructs a @c GameInfo Object
-GameInfo::GameInfo() {
+GameInfo::GameInfo() : m_input_cache{this} {
     //Start up SDL and create window
 	if( !init() ) {
 		Logger(Logger::error) << "Failed to initialize SDL!";
@@ -79,7 +79,7 @@ bool GameInfo::init() {
 		//Create window
 		int fullscreen_bits = 0;
 		if(m_fullscreen) {fullscreen_bits = SDL_WINDOW_FULLSCREEN_DESKTOP;}
-		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_screen_w, m_screen_h, SDL_WINDOW_SHOWN | fullscreen_bits);
+		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_window_w, m_window_h, SDL_WINDOW_SHOWN | fullscreen_bits);
 		if( m_window == nullptr )
 		{
 			Logger(Logger::error) << "Window could not be created! SDL Error: "<< SDL_GetError();
@@ -138,6 +138,42 @@ bool GameInfo::init() {
 void GameInfo::set_window_size(unsigned width, unsigned height) {
     SDL_SetWindowSize(m_window,width,height);
     SDL_SetWindowPosition(m_window,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED);
+    m_window_w = width;
+    m_window_h = height;
+}
+unsigned GameInfo::get_window_x_resolution() const {
+    if(m_fullscreen) {return get_screen_x_resolution();}
+    else {return m_window_w;}
+}
+unsigned GameInfo::get_window_y_resolution() const {
+    if(m_fullscreen) {return get_screen_y_resolution();}
+    else {return m_window_h;}
+}
+unsigned GameInfo::get_screen_x_resolution() const {
+    int display_index = SDL_GetWindowDisplayIndex(m_window);
+    if(display_index < 0) {
+        Logger(Logger::error) << "Cant query current display index, SDL Error: " << SDL_GetError();
+        return 0;
+    }
+    SDL_DisplayMode mode;
+    if(SDL_GetCurrentDisplayMode(display_index,&mode) != 0) {
+        Logger(Logger::error) << "Cant query current display mode, SDL Error: " << SDL_GetError();
+        return 0;
+    }
+    return static_cast<unsigned>(mode.w);
+}
+unsigned GameInfo::get_screen_y_resolution() const {
+    int display_index = SDL_GetWindowDisplayIndex(m_window);
+    if(display_index < 0) {
+        Logger(Logger::error) << "Cant query current display index, SDL Error: " << SDL_GetError();
+        return 0;
+    }
+    SDL_DisplayMode mode;
+    if(SDL_GetCurrentDisplayMode(display_index,&mode) != 0) {
+        Logger(Logger::error) << "Cant query current display mode, SDL Error: " << SDL_GetError();
+        return 0;
+    }
+    return static_cast<unsigned>(mode.h);
 }
 bool GameInfo::set_fullscreen(bool mode) {
     Uint32 flags;
@@ -162,8 +198,8 @@ bool GameInfo::set_game_resolution(unsigned width, unsigned height) {
         Logger(Logger::error) << "Failed to set game resolution to " << width << "x" << height <<" , SDL Error: " << SDL_GetError();
         return false;
     }
-    m_screen_w = width;
-    m_screen_h = height;
+    m_x_resolution = width;
+    m_y_resolution = height;
     for(MapData& map : m_maps) {
         map.get_camera().set_size(width,height);
     }
@@ -207,7 +243,7 @@ void GameInfo::set_window_resizable(bool mode) {
 bool GameInfo::load_map(std::string mapfile, bool absolute) {
     m_maps.emplace_back(this);
 
-    m_maps.back().get_camera().set_size(m_screen_w,m_screen_h);
+    m_maps.back().get_camera().set_size(m_x_resolution,m_y_resolution);
 
     if(!absolute) {mapfile = m_current_path + mapfile;}
     Logger() << "Load map at: " << mapfile;
@@ -320,6 +356,18 @@ bool GameInfo::update() {
             }       /**< An opened Game controller has been removed */
             case SDL_CONTROLLERDEVICEREMAPPED : {
                 m_input_cache.set(e.cdevice);
+                break;
+            }
+            case SDL_FINGERDOWN : {
+                m_input_cache.set(e.tfinger);
+                break;
+            }
+            case SDL_FINGERUP : {
+                m_input_cache.set(e.tfinger);
+                break;
+            }
+            case SDL_FINGERMOTION : {
+                m_input_cache.set(e.tfinger);
                 break;
             }
             case SDL_WINDOWEVENT : {

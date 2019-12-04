@@ -19,9 +19,12 @@
 #include "core/input_cache.hpp"
 
 #include "util/logger.hpp"
+#include "core/gameinfo.hpp"
 
 using salmon::MouseState;
 using salmon::ButtonState;
+
+InputCache::InputCache(GameInfo* game) : m_game{game} {}
 
 bool InputCache::is_down(SDL_Keycode key) const {return m_keys[SDL_GetScancodeFromKey(key)];}
 bool InputCache::just_pressed(SDL_Keycode key) const {return m_pressed.count(key);}
@@ -158,6 +161,47 @@ void InputCache::set(SDL_ControllerButtonEvent event) {
         if(event.state == SDL_PRESSED) {down = true;}
         else {down = false;}
         pad->set(button, down);
+    }
+}
+
+void InputCache::set(SDL_TouchFingerEvent event) {
+    if(m_emulate_touch_as_mouse) {
+        switch(event.type) {
+            case SDL_FINGERDOWN : {
+                if(m_current_finger == 0) {
+                    m_current_finger = event.fingerId;
+                    m_mouse.left.pressed = true;
+                    m_mouse.left.down = true;
+                }
+                break;
+            }
+            case SDL_FINGERUP : {
+                if(m_current_finger == event.fingerId) {
+                    m_current_finger = 0;
+                    m_mouse.left.down = false;
+                    m_mouse.left.released = true;
+                }
+                break;
+            }
+            case SDL_FINGERMOTION : {
+                if(m_current_finger == event.fingerId) {
+                    m_mouse.x_delta = static_cast<int>(event.dx * m_game->get_game_x_resolution());
+                    m_mouse.y_delta = static_cast<int>(event.dy * m_game->get_game_y_resolution());
+                }
+                break;
+            }
+            default : {
+                Logger(Logger::error) << "Invalid touch finger event: " << event.type << " passed to input cache!";
+                return;
+            }
+        }
+        if(m_current_finger == event.fingerId) {
+            m_mouse.x_pos = static_cast<int>(event.x * m_game->get_game_x_resolution());
+            m_mouse.y_pos = static_cast<int>(event.y * m_game->get_game_y_resolution());
+        }
+    }
+    else {
+        // Here should go the proper touch implementation
     }
 }
 

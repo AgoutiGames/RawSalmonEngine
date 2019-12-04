@@ -39,6 +39,15 @@ bool salmon::GameInfo::set_game_resolution(unsigned width, unsigned height) {ret
 bool salmon::GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
 void salmon::GameInfo::set_window_resizable(bool mode) {m_impl->set_window_resizable(mode);}
 
+unsigned salmon::GameInfo::get_game_x_resolution() const {return m_impl->get_game_x_resolution();}
+unsigned salmon::GameInfo::get_game_y_resolution() const {return m_impl->get_game_y_resolution();}
+
+unsigned salmon::GameInfo::get_window_x_resolution() const {return m_impl->get_window_x_resolution();}
+unsigned salmon::GameInfo::get_window_y_resolution() const {return m_impl->get_window_y_resolution();}
+
+unsigned salmon::GameInfo::get_screen_x_resolution() const {return m_impl->get_screen_x_resolution();}
+unsigned salmon::GameInfo::get_screen_y_resolution() const {return m_impl->get_screen_y_resolution();}
+
 bool salmon::GameInfo::window_minimized() const {return m_impl->window_minimized();}
 bool salmon::GameInfo::window_active() const {return m_impl->window_active();}
 
