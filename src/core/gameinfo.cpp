@@ -48,7 +48,8 @@ GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
     }
     m_resource_path = m_base_path + m_resource_path;
     make_path_absolute(m_resource_path);
-    m_resource_path = m_resource_path + fs::path::preferred_separator;
+    m_resource_path = m_resource_path + "/";
+    m_resource_path = fs::path(m_resource_path).make_preferred().string();
     m_current_path = m_resource_path;
 
     m_audio_manager.set_music_path(m_resource_path);
