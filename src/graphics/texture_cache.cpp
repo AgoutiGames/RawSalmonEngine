@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -20,13 +20,17 @@
 
 #include <iostream>
 
+#include "util/game_types.hpp"
+
 Texture TextureCache::get(std::string full_path) {
+    make_path_absolute(full_path);
     if(!load(full_path)) {return m_empty_texture;}
     else {return m_textures.at(full_path);}
 }
 bool TextureCache::load(std::string full_path) {
-    std::cout << full_path << "\n";
+    make_path_absolute(full_path);
     if(has(full_path)) {return true;}
+    //std::cout << full_path << "\n";
 
     Texture temp;
     if(temp.loadFromFile(m_renderer,full_path)) {

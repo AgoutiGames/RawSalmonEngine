@@ -17,10 +17,12 @@
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "audio/audio_manager.hpp"
-
+#include "util/game_types.hpp"
 
 bool AudioManager::load_music(std::string path, bool absolute) {
     if(!absolute) {path = m_music_base_path + path;}
+    make_path_absolute(path);
+    //std::cout << path << "\n";
     Music temp(path);
     if(temp.good()) {
         m_music[path] = temp;
@@ -32,6 +34,8 @@ bool AudioManager::load_music(std::string path, bool absolute) {
 }
 bool AudioManager::load_sound(std::string path, bool absolute) {
     if(!absolute) {path = m_sounds_base_path + path;}
+    make_path_absolute(path);
+    //std::cout << path << "\n";
     SoundEffect temp(path);
     if(temp.good()) {
         m_sounds[path] = temp;
@@ -44,6 +48,7 @@ bool AudioManager::load_sound(std::string path, bool absolute) {
 
 Music& AudioManager::get_music(std::string path, bool absolute) {
     if(!absolute) {path = m_music_base_path + path;}
+    make_path_absolute(path);
     if(m_music.find(path) != m_music.end() || load_music(path, true)) {
         return m_music.at(path);
     }
@@ -54,6 +59,7 @@ Music& AudioManager::get_music(std::string path, bool absolute) {
 }
 SoundEffect& AudioManager::get_sound(std::string path, bool absolute) {
     if(!absolute) {path = m_sounds_base_path + path;}
+    make_path_absolute(path);
     if(m_sounds.find(path) != m_sounds.end() || load_sound(path, true)) {
         return m_sounds.at(path);
     }

@@ -70,6 +70,7 @@ Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
 SDL_Color str_to_color(const std::string& name);
+void make_path_absolute(std::string& path);
 
 std::vector<float> dir_to_mov(const salmon::Direction dir);
 

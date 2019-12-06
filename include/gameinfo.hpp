@@ -63,6 +63,9 @@ namespace salmon {
             unsigned get_screen_x_resolution() const;
             unsigned get_screen_y_resolution() const;
 
+            void add_preload_directory(std::string);
+            bool preload(float seconds);
+
             AudioManagerRef get_audio_manager();
             DataBlockRef get_data();
             InputCacheRef get_input_cache();

@@ -42,6 +42,7 @@ bool Preloader::load_recursive(Uint32 milliseconds) {
                 m_files.push_back(p.path().string());
             }
         }
+        m_directories.clear();
     }
     Uint32 start = SDL_GetTicks();
     while(!m_files.empty()) {

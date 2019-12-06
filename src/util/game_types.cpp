@@ -19,6 +19,10 @@
 #include "util/game_types.hpp"
 #include <iostream>
 
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
+
 /// Converts a @c string to an @c enum of @c AnimationType
 salmon::AnimationType str_to_anim_type(const std::string& name) {
     if(name == "IDLE") return salmon::AnimationType::idle;
@@ -115,4 +119,8 @@ SDL_Color str_to_color(const std::string& name) {
         color.b = std::stoul(std::string(n, 4, 2), nullptr, 16);
 
         return color;
+}
+
+void make_path_absolute(std::string& path) {
+    path = fs::canonical(path).string();
 }

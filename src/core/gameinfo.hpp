@@ -88,6 +88,7 @@ public:
 
     bool m_key_repeat = false; // If false, ignores automatically repeated key presses
 
+    Preloader& get_preloader() {return m_preloader;}
     TextureCache& get_texture_cache() {return m_texture_cache;}
     AudioManager& get_audio_manager() {return m_audio_manager;}
     FontManager& get_font_manager() {return m_font_manager;}

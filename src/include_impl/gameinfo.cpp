@@ -51,6 +51,13 @@ unsigned salmon::GameInfo::get_screen_y_resolution() const {return m_impl->get_s
 bool salmon::GameInfo::window_minimized() const {return m_impl->window_minimized();}
 bool salmon::GameInfo::window_active() const {return m_impl->window_active();}
 
+void salmon::GameInfo::add_preload_directory(std::string dir) {
+    m_impl->get_preloader().add_directory(m_impl->get_resource_path() + dir);
+}
+bool salmon::GameInfo::preload(float seconds) {
+    return m_impl->get_preloader().load_recursive(static_cast<Uint32>(seconds * 1000));
+}
+
 salmon::AudioManagerRef salmon::GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
 salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
 salmon::InputCacheRef salmon::GameInfo::get_input_cache() {return m_impl->get_input_cache();}
