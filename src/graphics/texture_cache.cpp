@@ -30,7 +30,7 @@ Texture TextureCache::get(std::string full_path) {
 bool TextureCache::load(std::string full_path) {
     make_path_absolute(full_path);
     if(has(full_path)) {return true;}
-    //std::cout << full_path << "\n";
+    std::cout << full_path << "\n";
 
     Texture temp;
     if(temp.loadFromFile(m_renderer,full_path)) {

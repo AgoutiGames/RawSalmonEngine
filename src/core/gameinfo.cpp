@@ -31,6 +31,9 @@
 #include "map/layer.hpp"
 #include "util/logger.hpp"
 
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
     //Start up SDL and create window
@@ -43,9 +46,10 @@ GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
     else {
         Logger(Logger::error) << "Couldn't get location of executable! Probably running on currently unsupported OS";
     }
-    m_resource_path = m_base_path + m_resource_path;
+    m_resource_path = m_base_path + fs::path(m_resource_path).string();
     make_path_absolute(m_resource_path);
     m_resource_path = m_resource_path + "/";
+    m_resource_path = fs::path(m_resource_path).make_preferred();
     m_current_path = m_resource_path;
 
     m_audio_manager.set_music_path(m_resource_path);
