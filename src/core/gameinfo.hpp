@@ -121,7 +121,7 @@ private:
     FontManager m_font_manager;
 
     std::string m_base_path = ""; ///< Path to the directory where the executable lies
-    std::string m_resource_path = "../data/"; ///< Path to the data directory where typically all game assets are
+    std::string m_resource_path = "../data"; ///< Path to the data directory where typically all game assets are
     std::string m_current_path = ""; ///< Path to the directory of the currently active mapfile
 
     std::vector<MapData> m_maps; ///< Stores the currently active game map
