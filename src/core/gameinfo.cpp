@@ -46,7 +46,8 @@ GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
     else {
         Logger(Logger::error) << "Couldn't get location of executable! Probably running on currently unsupported OS";
     }
-    m_resource_path = m_base_path + fs::path(m_resource_path).string();
+    m_resource_path = m_base_path + m_resource_path;
+    m_resource_path = fs::path(m_resource_path).make_preferred().string();
     make_path_absolute(m_resource_path);
     m_resource_path = m_resource_path + "/";
     m_resource_path = fs::path(m_resource_path).make_preferred().string();
