@@ -564,6 +564,19 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     // Otherwise adjust hitbox position and return
     current_hitbox.x += get_x();
     current_hitbox.y += get_y() - get_h();
+
+    // Adjust hitbox by scale
+    if(m_x_scale != 1.0f) {
+        int x_size_delta = static_cast<int>((m_x_scale - 1.0f) * m_width);
+        current_hitbox.x += x_size_delta / 2;
+        current_hitbox.w += x_size_delta;
+    }
+    if(m_y_scale != 1.0f) {
+        int y_size_delta = static_cast<int>((m_y_scale - 1.0f) * m_height);
+        current_hitbox.y += y_size_delta / 2;
+        current_hitbox.h += y_size_delta;
+    }
+
     return current_hitbox;
 }
 
