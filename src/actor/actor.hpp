@@ -154,6 +154,9 @@ class Actor{
         // Be cautious, collisions don't work properly from here
         bool m_static_mode = false;
 
+        // If true the hitbox grows and shrinks with varying size
+        bool m_resize_hitbox = true;
+
         bool m_hidden = false;
 };
 

@@ -42,11 +42,23 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
     if(eResult != XML_SUCCESS) return eResult;
     eResult = source->QueryFloatAttribute("y", &m_y);
     if(eResult != XML_SUCCESS) return eResult;
-    eResult = source->QueryUnsignedAttribute("width", &m_width);
+    unsigned individual_width, individual_height;
+    eResult = source->QueryUnsignedAttribute("width", &individual_width);
     if(eResult != XML_SUCCESS) return eResult;
-    eResult = source->QueryUnsignedAttribute("height", &m_height);
+    eResult = source->QueryUnsignedAttribute("height", &individual_height);
     if(eResult != XML_SUCCESS) return eResult;
 
+    // If a custom scale is supplied, scale accordingly and adjust position to match
+    if(individual_width != m_width) {
+        m_x_scale = static_cast<float>(individual_width) / m_width;
+        m_x += (m_x_scale - 1.0f) * m_width * 0.5f;
+        m_scaled = true;
+    }
+    if(individual_height != m_height) {
+        m_y_scale = static_cast<float>(individual_height) / m_height;
+        m_y += (m_y_scale - 1.0f) * m_height * 0.5f;
+        m_scaled = true;
+    }
     // Parse the (unique) name of the actor
     const char* p_actor_name;
     p_actor_name = source->Attribute("name");
@@ -248,7 +260,7 @@ void Actor::render(int x_cam, int y_cam) const {
 
     if(m_scaled) {
         float current_x = m_x - (m_x_scale - 1.0f) * m_width * 0.5f;
-        float current_y = m_y + (m_y_scale - 1.0f) * m_height * 0.5f;
+        float current_y = m_y - (m_y_scale - 1.0f) * m_height * 0.5f;
         unsigned current_h = m_height * m_y_scale;
         unsigned current_w = m_width * m_x_scale;
         if(m_angle > 0.1 || m_angle < -0.1) {
@@ -565,16 +577,27 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     current_hitbox.x += get_x();
     current_hitbox.y += get_y() - get_h();
 
-    // Adjust hitbox by scale
-    if(m_x_scale != 1.0f) {
-        int x_size_delta = static_cast<int>((m_x_scale - 1.0f) * m_width);
-        current_hitbox.x += x_size_delta / 2;
-        current_hitbox.w += x_size_delta;
+    if(m_resize_hitbox) {
+        // Adjust hitbox by scale around center
+        if(m_x_scale != 1.0f) {
+            int x_size_delta = static_cast<int>((m_x_scale - 1.0f) * m_width);
+            current_hitbox.x += x_size_delta / 2;
+            current_hitbox.w += x_size_delta;
+        }
+        if(m_y_scale != 1.0f) {
+            int y_size_delta = static_cast<int>((m_y_scale - 1.0f) * m_height);
+            current_hitbox.y += y_size_delta / 2;
+            current_hitbox.h += y_size_delta;
+        }
     }
-    if(m_y_scale != 1.0f) {
-        int y_size_delta = static_cast<int>((m_y_scale - 1.0f) * m_height);
-        current_hitbox.y += y_size_delta / 2;
-        current_hitbox.h += y_size_delta;
+    else {
+        // Only center hitbox
+        if(m_x_scale != 1.0f) {
+            current_hitbox.x = static_cast<int>(m_x_scale * current_hitbox.x);
+        }
+        if(m_y_scale != 1.0f) {
+            current_hitbox.y = static_cast<int>(m_y_scale * current_hitbox.y);
+        }
     }
 
     return current_hitbox;
