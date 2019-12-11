@@ -574,31 +574,7 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
     if(SDL_RectEmpty((&current_hitbox))) {return current_hitbox;}
 
     // Otherwise adjust hitbox position and return
-    current_hitbox.x += get_x();
-    current_hitbox.y += get_y() - get_h();
-
-    if(m_resize_hitbox) {
-        // Adjust hitbox by scale around center
-        if(m_x_scale != 1.0f) {
-            int x_size_delta = static_cast<int>((m_x_scale - 1.0f) * m_width);
-            current_hitbox.x += x_size_delta / 2;
-            current_hitbox.w += x_size_delta;
-        }
-        if(m_y_scale != 1.0f) {
-            int y_size_delta = static_cast<int>((m_y_scale - 1.0f) * m_height);
-            current_hitbox.y += y_size_delta / 2;
-            current_hitbox.h += y_size_delta;
-        }
-    }
-    else {
-        // Only center hitbox
-        if(m_x_scale != 1.0f) {
-            current_hitbox.x = static_cast<int>(m_x_scale * current_hitbox.x);
-        }
-        if(m_y_scale != 1.0f) {
-            current_hitbox.y = static_cast<int>(m_y_scale * current_hitbox.y);
-        }
-    }
+    transform_hitbox(current_hitbox);
 
     return current_hitbox;
 }
@@ -618,12 +594,31 @@ const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
             hitboxes[hitbox_pair.first] = hitbox_pair.second;
         }
     }
-    // Adjust each hibox position and return
+    // Adjust each hitbox position and return
     for(auto& hitbox_pair : hitboxes) {
-        hitbox_pair.second.x += get_x();
-        hitbox_pair.second.y += get_y() - get_h();
+        transform_hitbox(hitbox_pair.second);
     }
     return hitboxes;
+}
+
+void Actor::transform_hitbox(SDL_Rect& hitbox) const {
+    if(m_resize_hitbox && m_scaled) {
+
+        hitbox.y -= static_cast<int>(get_h());
+        hitbox.y *= m_y_scale;
+        hitbox.h *= m_y_scale;
+        hitbox.y -= (m_y_scale - 1.0f) * get_h() / 2;
+        hitbox.y += get_y();
+
+        hitbox.x *= m_x_scale;
+        hitbox.w *= m_x_scale;
+        hitbox.x -= (m_x_scale - 1.0f) * get_w() / 2;
+        hitbox.x += get_x();
+    }
+    else {
+        hitbox.x += get_x();
+        hitbox.y += get_y() - static_cast<int>(get_h());
+    }
 }
 
 /**

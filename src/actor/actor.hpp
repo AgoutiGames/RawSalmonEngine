@@ -116,6 +116,8 @@ class Actor{
         #endif // LIB_BUILD
 
     private:
+        void transform_hitbox(SDL_Rect& hitbox) const;
+
         MapData* m_map;
 
         float m_x = 0; ///< Coordinate of lower left image corner
