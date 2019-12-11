@@ -59,7 +59,6 @@ class PropertyParser{
         void add(Priority& value, std::string name) {m_priority[name] = &value;}
         void add(EventSignal& value, std::string name) {m_signal[name] = &value;}
         void add(salmon::Direction& value, std::string name) {m_direction[name] = &value;}
-        void add(salmon::AnimationType& value, std::string name) {m_animation_type[name] = &value;}
 
         void add(std::vector<std::string>& value) {m_iterate = &value;}
 
@@ -116,9 +115,6 @@ class PropertyParser{
 
         std::map<std::string, salmon::Direction*> m_direction;
         tinyxml2::XMLError parse_direction(tinyxml2::XMLElement* source);
-
-        std::map<std::string, salmon::AnimationType*> m_animation_type;
-        tinyxml2::XMLError parse_animation_type(tinyxml2::XMLElement* source);
 
 
         std::vector<std::string>* m_iterate = nullptr;
@@ -506,33 +502,6 @@ tinyxml2::XMLError PropertyParser<EventType>::parse_direction(tinyxml2::XMLEleme
     salmon::Direction dir = str_to_direction(value);
     if(dir == salmon::Direction::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
     *m_direction.at(name) = dir;
-    return XML_SUCCESS;
-}
-
-/**
- * @brief Check if attribute is known and parse by specified type
- * @param source The @c XMLElement which stores possibly matching attribute
- * @return @c XMLError which is XML_SUCESS if attribute is known and parsed properly
- *                              XML_ERROR_MISMATCHED_ELEMENT if attribute of this type isn't known
- *                              other XML_ERROR if something went wrong during parsing
- */
- template<class EventType>
-tinyxml2::XMLError PropertyParser<EventType>::parse_animation_type(tinyxml2::XMLElement* source) {
-    using namespace tinyxml2;
-
-    std::string name(source->Attribute("name"));
-
-    if(m_animation_type.find(name) == m_animation_type.end()) {
-        return XML_ERROR_MISMATCHED_ELEMENT;
-    }
-
-    const char* p_value = source->Attribute("value");
-    if(p_value == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-    std::string value(p_value);
-    salmon::AnimationType anim = str_to_anim_type(value);
-    if(anim == salmon::AnimationType::invalid) {return XML_ERROR_PARSING_ATTRIBUTE;}
-    *m_animation_type.at(name) = anim;
     return XML_SUCCESS;
 }
 
