@@ -36,6 +36,25 @@ namespace salmon {
         invalid = -3,
     };
 
+
+    namespace AnimationType {
+        // Reserved Keywords for special behaviour
+        const std::string none = "NONE";
+        const std::string current = "CURRENT";
+        const std::string invalid = "INVALID";
+
+        // Generic AnimationTypes for not having to deal with magic values
+        const std::string idle = "IDLE";
+        const std::string walk = "WALK";
+        const std::string run = "RUN";
+        const std::string jump = "JUMP";
+        const std::string fall = "FALL";
+        const std::string attack = "ATTACK";
+        const std::string action = "ACTION";
+        const std::string die = "DIE";
+    }
+
+    /*
     enum class AnimationType {
         idle,
         walk,
@@ -55,7 +74,7 @@ namespace salmon {
         current, ///< Keyord for last used AnimationType
         none,
         invalid,
-    };
+    };*/
 
     enum class AnimSignal{
         missing = -1,

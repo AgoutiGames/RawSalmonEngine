@@ -25,10 +25,10 @@ using salmon::ActorRef;
 ActorRef::ActorRef(Actor& impl) : m_impl{&impl} {}
 ActorRef::ActorRef(Actor* impl) : m_impl{impl} {}
 
-bool ActorRef::animate(salmon::AnimationType anim, salmon::Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
-bool ActorRef::set_animation(salmon::AnimationType anim, salmon::Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
-salmon::AnimSignal ActorRef::animate_trigger(salmon::AnimationType anim, salmon::Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}
-salmon::AnimationType ActorRef::get_animation() const {return m_impl->get_animation();}
+bool ActorRef::animate(std::string anim, salmon::Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
+bool ActorRef::set_animation(std::string anim, salmon::Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
+salmon::AnimSignal ActorRef::animate_trigger(std::string anim, salmon::Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}
+std::string ActorRef::get_animation() const {return m_impl->get_animation();}
 salmon::Direction ActorRef::get_direction() const {return m_impl->get_direction();}
 std::string ActorRef::get_name() const {return m_impl->get_name();}
 std::string ActorRef::get_type() const {return m_impl->get_type();}

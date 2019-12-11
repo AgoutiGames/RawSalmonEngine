@@ -64,7 +64,7 @@ enum class Priority{
     invalid = -1,
 };
 
-salmon::AnimationType str_to_anim_type(const std::string& name);
+// salmon::AnimationType str_to_anim_type(const std::string& name);
 salmon::Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);

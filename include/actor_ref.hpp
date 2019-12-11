@@ -39,10 +39,10 @@ namespace salmon {
 
             bool good() const {return (m_impl == nullptr) ? false : true ;}
 
-            bool animate(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
-            bool set_animation(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
-            salmon::AnimSignal animate_trigger(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
-            salmon::AnimationType get_animation() const;
+            bool animate(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+            bool set_animation(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
+            salmon::AnimSignal animate_trigger(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+            std::string get_animation() const;
             salmon::Direction get_direction() const;
             std::string get_name() const;
             std::string get_type() const;

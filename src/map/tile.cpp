@@ -140,7 +140,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
 
     // Initialize temporary variables
     std::string actor_name = "_";
-    salmon::AnimationType anim = salmon::AnimationType::invalid;
+    std::string anim = salmon::AnimationType::invalid;
     salmon::Direction dir = salmon::Direction::invalid;
 
 
@@ -169,11 +169,7 @@ tinyxml2::XMLError Tile::parse_actor_anim(tinyxml2::XMLElement* source) {
             else if(name == "ANIMATION_TYPE") {
                 const char* p_anim_type = p_property->Attribute("value");
                 if(p_anim_type != nullptr) {
-                    anim = str_to_anim_type(std::string(p_anim_type));
-                    if(anim == salmon::AnimationType::invalid) {
-                        Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name;
-                        return XML_WRONG_ATTRIBUTE_TYPE;
-                    }
+                    anim = p_anim_type;
                     if(anim == salmon::AnimationType::current) {
                         Logger(Logger::error) << "You can't define a specific animation type as the current one";
                         Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\" in actor animation for " << actor_name;

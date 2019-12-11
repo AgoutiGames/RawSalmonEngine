@@ -48,9 +48,9 @@ class Actor{
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
         tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
-        bool animate(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
-        bool set_animation(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
-        salmon::AnimSignal animate_trigger(salmon::AnimationType anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+        bool animate(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+        bool set_animation(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
+        salmon::AnimSignal animate_trigger(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
         void render(int x_cam, int y_cam) const;
         bool move(float x_factor, float y_factor, bool absolute = false);
         bool move_static(float x_factor, float y_factor, bool absolute = true);
@@ -68,9 +68,9 @@ class Actor{
         void set_name(std::string name) {m_name = name;}
 
         // Trivial Getters
-        salmon::AnimationType get_animation() const {return m_anim_state;}
+        std::string get_animation() const {return m_anim_state;}
         Tile& get_animation_tile() {return m_animations.at(m_anim_state).at(m_direction);}
-        std::map<salmon::AnimationType, std::map<salmon::Direction, Tile>>& get_animation_container() {return m_animations;}
+        std::map<std::string, std::map<salmon::Direction, Tile>>& get_animation_container() {return m_animations;}
         salmon::Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
         std::string get_type() const {return m_type;}
@@ -86,7 +86,7 @@ class Actor{
         double get_angle() const {return m_angle;}
         void set_angle(double angle) {m_angle = angle;}
         void set_tile(Tile tile) {m_base_tile = tile;}
-        bool valid_anim_state(salmon::AnimationType anim, salmon::Direction dir) const;
+        bool valid_anim_state(std::string anim, salmon::Direction dir) const;
         bool valid_anim_state() const {return valid_anim_state(m_anim_state, m_direction);}
         bool is_valid() const {return m_base_tile.is_valid();}
         unsigned get_id() const {return m_id;}
@@ -131,9 +131,9 @@ class Actor{
 
         double m_angle = 0.0;
 
-        salmon::AnimationType m_anim_state = salmon::AnimationType::none; ///< Currently active animation
+        std::string m_anim_state = salmon::AnimationType::none; ///< Currently active animation
         salmon::Direction m_direction = salmon::Direction::none; ///< Current direction facing
-        std::map<salmon::AnimationType, std::map<salmon::Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
+        std::map<std::string, std::map<salmon::Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         Tile m_base_tile;
 
         #ifndef LIB_BUILD

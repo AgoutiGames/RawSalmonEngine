@@ -118,11 +118,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         else if(name == "ANIMATION_TYPE") {
             const char* p_anim_type = p_property->Attribute("value");
             if(p_anim_type != nullptr) {
-                salmon::AnimationType anim = str_to_anim_type(std::string(p_anim_type));
-                if(anim == salmon::AnimationType::invalid) {
-                    Logger(Logger::error) << "Invalid animation type \"" << p_anim_type << "\"";
-                    return XML_WRONG_ATTRIBUTE_TYPE;
-                }
+                std::string anim = p_anim_type;
                 if(anim == salmon::AnimationType::current) {
                     Logger(Logger::error) << "You can't define a specific animation type as the current one";
                     return XML_WRONG_ATTRIBUTE_TYPE;
@@ -402,7 +398,7 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
  * @param dir The direction of the animation
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
  */
-bool Actor::animate(salmon::AnimationType anim, salmon::Direction dir, float speed) {
+bool Actor::animate(std::string anim, salmon::Direction dir, float speed) {
     if(anim == salmon::AnimationType::current) {anim = m_anim_state;}
     if(dir == salmon::Direction::current) {dir = m_direction;}
 
@@ -425,7 +421,7 @@ bool Actor::animate(salmon::AnimationType anim, salmon::Direction dir, float spe
 /**
  * @brief Set animation tile to specific frame
  */
-bool Actor::set_animation(salmon::AnimationType anim, salmon::Direction dir, int frame) {
+bool Actor::set_animation(std::string anim, salmon::Direction dir, int frame) {
     if(anim == salmon::AnimationType::current) {anim = m_anim_state;}
     if(dir == salmon::Direction::current) {dir = m_direction;}
 
@@ -451,7 +447,7 @@ bool Actor::set_animation(salmon::AnimationType anim, salmon::Direction dir, int
  * @param dir The direction of the animation
  * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger frame
  */
-AnimSignal Actor::animate_trigger(salmon::AnimationType anim, salmon::Direction dir, float speed) {
+AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float speed) {
     if(anim == salmon::AnimationType::current) {anim = m_anim_state;}
     if(dir == salmon::Direction::current) {dir = m_direction;}
 
@@ -530,14 +526,14 @@ bool Actor::collide(const SDL_Rect* rect, std::string type) const{
 #endif // LIB_BUILD
 
 /// Checks if the currently set animation state and direction are existin
-bool Actor::valid_anim_state(salmon::AnimationType anim, salmon::Direction dir) const {
+bool Actor::valid_anim_state(std::string anim, salmon::Direction dir) const {
     //if(m_anim_state == AnimationType::none) {return true;}
     if(m_animations.find(anim) == m_animations.end()) {
-        Logger(Logger::error) << "Animation state " << static_cast<int>(anim) << " for actor " << m_name << " is not defined!";
+        Logger(Logger::error) << "Animation state " << anim << " for actor " << m_name << " is not defined!";
         return false;
     }
     if(m_animations.at(anim).find(dir) == m_animations.at(anim).end()) {
-        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << static_cast<int>(anim) << " of actor " << m_name << " is not defined!";
+        Logger(Logger::error) << "Direction" << static_cast<int>(dir) << " for animation state " << anim << " of actor " << m_name << " is not defined!";
         return false;
     }
     return true;

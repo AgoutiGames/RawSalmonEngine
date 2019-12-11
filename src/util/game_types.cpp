@@ -23,6 +23,7 @@
 
 namespace fs = std::experimental::filesystem;
 
+/*
 /// Converts a @c string to an @c enum of @c AnimationType
 salmon::AnimationType str_to_anim_type(const std::string& name) {
     if(name == "IDLE") return salmon::AnimationType::idle;
@@ -43,7 +44,7 @@ salmon::AnimationType str_to_anim_type(const std::string& name) {
     if(name == "CURRENT") return salmon::AnimationType::current;
     if(name == "NONE") return salmon::AnimationType::none;
     else return salmon::AnimationType::invalid;
-}
+}*/
 
 /// Converts a @c string to an @c enum of @c Direction
 salmon::Direction str_to_direction(const std::string& name) {

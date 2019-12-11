@@ -50,7 +50,7 @@ class AeAnimate : public Event<Actor>{
         PropertyListener<AeAnimate> m_property_listener;
         // vv Add members with default values
         bool m_first = true;
-        salmon::AnimationType m_animation = salmon::AnimationType::idle;
+        std::string m_animation = salmon::AnimationType::idle;
         salmon::Direction m_direction = salmon::Direction::current;
         int m_cycles = 0;
         int m_anim_frames = 0;
