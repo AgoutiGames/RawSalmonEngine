@@ -66,7 +66,7 @@ class PropertyParser{
         tinyxml2::XMLError parse_ignore_unknown(tinyxml2::XMLElement* source);
 
     private:
-        static constexpr int type_count = 15;
+        static constexpr int type_count = 14;
         PropertyListener<EventType>* m_property_listener;
         EventType* m_event;
 
@@ -548,9 +548,8 @@ PropertyParser<EventType>::PropertyParser(PropertyListener<EventType>& property_
     parsers[10] = &PropertyParser::parse_priority;
     parsers[11] = &PropertyParser::parse_signal;
     parsers[12] = &PropertyParser::parse_direction;
-    parsers[13] = &PropertyParser::parse_animation_type;
 
-    parsers[14] = &PropertyParser::parse_iteration;
+    parsers[13] = &PropertyParser::parse_iteration;
     /// ! Don't forget adding new parsing member function here!
 }
 
