@@ -20,6 +20,8 @@
 #define SALMON_TYPES_HPP_INCLUDED
 
 namespace salmon {
+    const std::string DEFAULT_HITBOX = "DEFAULT";
+
     enum class Direction {
         up = 0,
         up_right = 45,

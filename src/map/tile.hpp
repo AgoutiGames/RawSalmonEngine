@@ -42,7 +42,7 @@ public:
     void render(SDL_Rect& dest) const; // Resizable render
     void render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const;
 
-    SDL_Rect get_hitbox(std::string name = "COLLIDE", bool aligned = false) const;
+    SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, bool skip_properties = false);
@@ -62,7 +62,7 @@ public:
     Tileset& get_tileset() {return *mp_tileset;}
 
 private:
-    SDL_Rect get_hitbox_self(std::string name = "COLLIDE", bool aligned = false) const;
+    SDL_Rect get_hitbox_self(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes_self(bool aligned = false) const;
 
     const SDL_Rect& get_clip_self() const {return m_clip;}

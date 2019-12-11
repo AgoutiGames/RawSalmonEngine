@@ -102,7 +102,7 @@ tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::s
         float temp;
         std::string name;
         const char* p_name = source->Attribute("name");
-        if(p_name == nullptr) {name = "COLLIDE";}
+        if(p_name == nullptr) {name = salmon::DEFAULT_HITBOX;}
         else{name = p_name;}
 
         eResult = source->QueryFloatAttribute("x", &temp);

@@ -117,7 +117,7 @@ bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_m
         for(auto t : layer->clip(rect)) {
             if(std::get<0>(t) != 0) {
                 Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
-                SDL_Rect tile_rect = tile->get_hitbox("COLLIDE",true);
+                SDL_Rect tile_rect = tile->get_hitbox(salmon::DEFAULT_HITBOX,true);
                 // Only check collision for tiles with valid hitbox
                 if(!SDL_RectEmpty(&tile_rect)) {
                     // Move tile hitbox to tile coordinates
@@ -159,7 +159,7 @@ bool LayerCollection::collide_terrain(const SDL_Rect& rect) {
  * @param notify If true the actors on_collide callback is triggered on collision
  */
 bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify) {
-    SDL_Rect rect = actor->get_hitbox("COLLIDE");
+    SDL_Rect rect = actor->get_hitbox(salmon::DEFAULT_HITBOX);
     if(SDL_RectEmpty(&rect)) {return false;}
     bool collide = false;
     // Iterate through all map_layers
@@ -167,7 +167,7 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
         for(auto t : layer->clip(rect)) {
             if(std::get<0>(t) != 0) {
                 Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
-                SDL_Rect tile_rect = tile->get_hitbox("COLLIDE", true);
+                SDL_Rect tile_rect = tile->get_hitbox(salmon::DEFAULT_HITBOX, true);
                 // Only check collision for tiles with valid hitbox
                 if(!SDL_RectEmpty(&tile_rect)) {
                     // Move tile hitbox to tile coordinates
@@ -184,7 +184,7 @@ bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool
 
                         collide = true;
                         if(notify) {
-                            Collision c = Collision(tile, "COLLIDE", "COLLIDE");
+                            Collision c = Collision(tile, salmon::DEFAULT_HITBOX, salmon::DEFAULT_HITBOX);
                             //actor->respond(Response::on_collision, c);
                             actor->add_collision(c);
                         }
@@ -318,7 +318,7 @@ void LayerCollection::collision_check() {
                     const TilesetCollection& tsc = m_base_map->get_ts_collection();
                     Tile* tile_pointer = tsc.get_tile(std::get<0>(tile));
                     auto hitboxes = tile_pointer->get_hitboxes(true);
-                    hitboxes.erase("COLLIDE");
+                    hitboxes.erase(salmon::DEFAULT_HITBOX);
 
                     // Iterate over the hitboxes of the tile and check each for collision
                     for(auto& hitbox_right : hitboxes) {

@@ -55,8 +55,8 @@ class Actor{
         bool move(float x_factor, float y_factor, bool absolute = false);
         bool move_static(float x_factor, float y_factor, bool absolute = true);
         bool unstuck();
-        bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = "COLLIDE") const;
-        bool collide(const SDL_Rect* rect, std::string type = "COLLIDE") const;
+        bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = salmon::DEFAULT_HITBOX) const;
+        bool collide(const SDL_Rect* rect, std::string type = salmon::DEFAULT_HITBOX) const;
         bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
         // No collision check here!
@@ -101,7 +101,7 @@ class Actor{
         bool scale(float x, float y);
         bool scale(float s) {return scale(s,s);}
 
-        SDL_Rect get_hitbox(std::string type = "COLLIDE") const;
+        SDL_Rect get_hitbox(std::string type = salmon::DEFAULT_HITBOX) const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
 
         void add_collision(Collision c) {if(m_register_collisions) {m_collisions.push_back(c);}}
