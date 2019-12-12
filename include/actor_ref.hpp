@@ -53,6 +53,11 @@ namespace salmon {
 
             bool scale(float x, float y);
             bool scale(float s);
+            float get_x_scale() const;
+            float get_y_scale() const;
+
+            void set_resize_hitbox(bool mode);
+            bool get_resize_hitbox() const;
 
             double get_angle() const;
             void set_angle(double angle);

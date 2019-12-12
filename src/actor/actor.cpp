@@ -284,6 +284,15 @@ void Actor::render(int x_cam, int y_cam) const {
     }
 }
 
+float Actor::get_bottom() const {
+    if(m_scaled) {
+        return get_y() - (m_y_scale - 1.0f) * m_height * 0.5f;
+    }
+    else {
+        return get_y();
+    }
+}
+
 /**
  * @brief Checks if actor collides with tiles and moves it away
  * @note This approach has to check for collision twice because we don't know if the actor is

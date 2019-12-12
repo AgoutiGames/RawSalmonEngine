@@ -77,6 +77,8 @@ class Actor{
         MapData& get_map() {return *m_map;}
         float get_x() const {return m_x;}
         float get_y() const {return m_y;}
+        float get_bottom() const;
+
         unsigned get_w() const {return m_width;}
         unsigned get_h() const {return m_height;}
         int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
@@ -100,6 +102,11 @@ class Actor{
 
         bool scale(float x, float y);
         bool scale(float s) {return scale(s,s);}
+        float get_x_scale() const {return m_x_scale;}
+        float get_y_scale() const {return m_y_scale;}
+
+        bool get_resize_hitbox() const {return m_resize_hitbox;}
+        void set_resize_hitbox(bool mode) {m_resize_hitbox = mode;}
 
         SDL_Rect get_hitbox(std::string type = salmon::DEFAULT_HITBOX) const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
@@ -164,8 +171,8 @@ class Actor{
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list
 inline bool operator< (const Actor& lhs, const Actor& rhs) {
-    if(lhs.get_y() != rhs.get_y()) {
-        return lhs.get_y() < rhs.get_y();
+    if(lhs.get_bottom() != rhs.get_bottom()) {
+        return lhs.get_bottom() < rhs.get_bottom();
     }
     else {
         return lhs.get_x() < rhs.get_x();

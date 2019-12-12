@@ -39,6 +39,11 @@ bool ActorRef::on_ground(salmon::Direction dir, int tolerance) const {return m_i
 
 bool ActorRef::scale(float x, float y) {return m_impl->scale(x,y);}
 bool ActorRef::scale(float s) {return m_impl->scale(s);}
+float ActorRef::get_x_scale() const {return m_impl->get_x_scale();}
+float ActorRef::get_y_scale() const {return m_impl->get_y_scale();}
+
+void ActorRef::set_resize_hitbox(bool mode) {m_impl->set_resize_hitbox(mode);}
+bool ActorRef::get_resize_hitbox() const {return m_impl->get_resize_hitbox();}
 
 double ActorRef::get_angle() const {return m_impl->get_angle();}
 void ActorRef::set_angle(double angle) {return m_impl->set_angle(angle);}
