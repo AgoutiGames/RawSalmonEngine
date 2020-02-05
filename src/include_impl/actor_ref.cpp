@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -58,9 +58,6 @@ std::vector<salmon::CollisionRef> ActorRef::get_collisions() {
 }
 void ActorRef::clear_collisions() {m_impl->clear_collisions();}
 void ActorRef::register_collisions(bool r) {m_impl->register_collisions(r);}
-
-bool ActorRef::get_static_mode() const {return m_impl->get_static_mode();}
-void ActorRef::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
 
 bool ActorRef::get_hidden() const {return m_impl->get_hidden();}
 void ActorRef::set_hidden(bool mode) {m_impl->set_hidden(mode);}

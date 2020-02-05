@@ -519,7 +519,7 @@ SDL_Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
  * but if the tile is animated the hitboxes of the active frame get added and
  * may override the hitboxes of the base tile
  */
-const std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
+std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
     if(m_animated) {
         std::map<std::string, SDL_Rect> hitboxes = get_hitboxes_self(aligned);
 

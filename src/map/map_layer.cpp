@@ -190,6 +190,15 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const 
     return tiles;
 }
 
+std::vector<TileInstance> MapLayer::get_clip(SDL_Rect rect) const {
+    std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
+    std::vector<TileInstance> tiles;
+    for(std::tuple<Uint32, int, int> tile : old) {
+        tiles.push_back({m_ts_collection->get_tile(std::get<0>(tile)),std::get<1>(tile)+rect.x,std::get<2>(tile)+rect.y});
+    }
+    return tiles;
+}
+
 /**
  * @brief Generates a vector of tiles information for tiles possibly bounding with a rect
  * @param rect The rectangular space which the tiles are bounding with

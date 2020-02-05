@@ -29,10 +29,10 @@ Collision::Collision() :
 }
 
 // Constructor for tile
-Collision::Collision(Tile* tile, std::string my_hitbox, std::string other_hitbox) :
+Collision::Collision(TileInstance tile, std::string my_hitbox, std::string other_hitbox) :
  type{CollisionType::tile}
 {
-    data.tile = tile;
+    data.tile = tile.get_tile();
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
 }

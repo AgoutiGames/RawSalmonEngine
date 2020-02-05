@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -22,6 +22,12 @@
 namespace salmon {
     const std::string DEFAULT_HITBOX = "DEFAULT";
 
+    enum class Collidees {
+        tile = 1,
+        actor = 2,
+        tile_and_actor = 3,
+    };
+
     enum class Direction {
         up = 0,
         up_right = 45,
@@ -35,7 +41,6 @@ namespace salmon {
         none = -1,
         invalid = -3,
     };
-
 
     namespace AnimationType {
         // Reserved Keywords for special behaviour
@@ -53,28 +58,6 @@ namespace salmon {
         const std::string action = "ACTION";
         const std::string die = "DIE";
     }
-
-    /*
-    enum class AnimationType {
-        idle,
-        walk,
-        run,
-        jump,
-        fall,
-        die,
-        custom1,
-        custom2,
-        custom3,
-        custom4,
-        custom5,
-        custom6,
-        custom7,
-        custom8,
-        custom9,
-        current, ///< Keyord for last used AnimationType
-        none,
-        invalid,
-    };*/
 
     enum class AnimSignal{
         missing = -1,

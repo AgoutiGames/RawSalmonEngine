@@ -27,6 +27,7 @@
 #include <tuple>
 
 #include "map/layer.hpp"
+#include "map/tile.hpp"
 
 class TilesetCollection;
 
@@ -39,6 +40,7 @@ class MapLayer : public Layer{
         bool render(const Camera& camera) const override;
 
         std::vector< std::tuple<Uint32, int, int> > clip(SDL_Rect rect) const;
+        std::vector<TileInstance> get_clip(SDL_Rect rect) const;
 
         LayerType get_type() override {return LayerType::map;}
 

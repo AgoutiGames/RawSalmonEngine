@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,6 +21,8 @@
 #include <iostream>
 
 #include "map/mapdata.hpp"
+#include "map/map_layer.hpp"
+#include "map/object_layer.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
@@ -256,8 +258,6 @@ void Actor::render(int x_cam, int y_cam) const {
     if(m_anim_state != salmon::AnimationType::none && valid_anim_state()) {current_tile = &m_animations.at(m_anim_state).at(m_direction);}
     else {current_tile = &m_base_tile;}
 
-    if(m_static_mode) {x_cam = 0; y_cam = 0;}
-
     if(m_scaled) {
         float current_x = m_x - (m_x_scale - 1.0f) * m_width * 0.5f;
         float current_y = m_y - (m_y_scale - 1.0f) * m_height * 0.5f;
@@ -294,34 +294,6 @@ float Actor::get_bottom() const {
 }
 
 /**
- * @brief Checks if actor collides with tiles and moves it away
- * @note This approach has to check for collision twice because we don't know if the actor is
- *       left or right/ontop or below the tile. We try either way and check for collision again.
- *       With another collide function providing this information we could increase the performance.
- */
-bool Actor::unstuck() {
-    int x_inter_depth = 0;
-    int y_inter_depth = 0;
-    if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
-        // Do stuff with the intersection depth
-        if(x_inter_depth < y_inter_depth) {
-            m_x += x_inter_depth;
-            if(m_map->get_layer_collection().collide_terrain(this, false)) {
-                m_x -= 2 * x_inter_depth;
-            }
-        }
-        else {
-            m_y += y_inter_depth;
-            if(m_map->get_layer_collection().collide_terrain(this, false)) {
-                m_y -= 2 * y_inter_depth;
-            }
-        }
-        return true;
-    }
-    return false;
-}
-
-/**
  * @brief Move actor to a direction by float factors
  * @param x_factor, y_factor Which indicate direction and extent of movement
  * @return a @c bool which indicates collision
@@ -332,58 +304,86 @@ bool Actor::unstuck() {
  */
 bool Actor::move(float x_factor, float y_factor, bool absolute) {
 
-    // Somewhat hacky approach to fix runtime switch of actor hitboxes via animation
-    unstuck();
-
-    bool moved = true;
-    // Move the Actor
-    float x_step;
-    float y_step;
-    x_step = x_factor;
-    y_step = y_factor;
-
-    // Position actor exactly at the word coords of x and y
+    unstuck(salmon::Collidees::tile,{salmon::DEFAULT_HITBOX},{salmon::DEFAULT_HITBOX},true);
     if(absolute) {
-        x_step = x_factor - m_x;
-        y_step = y_factor - m_y;
-    }
-
-    // Determine if it can collide/ has hitbox
-    SDL_Rect temp = get_hitbox();
-    if(!SDL_RectEmpty(&temp)) {
-
-        // Apply position of actor to hitbox
-        m_x += x_step;
-        // Check for x_axis collision
-        if(x_factor != 0) {
-            // Check for x-axis collision
-            int x_inter_depth = 0;
-            int y_inter_depth = 0;
-            if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
-                // Do stuff with the intersection depth
-                if(x_factor < 0) {x_inter_depth = -x_inter_depth;}
-                m_x -= x_inter_depth;
-                moved = false;
-            }
-        }
-        // Check for y_axis collision
-        if(y_factor != 0){
-            // Apply y movement
-            m_y += y_step;
-            // Check for y-axis collision
-            int x_inter_depth = 0;
-            int y_inter_depth = 0;
-            if(m_map->get_layer_collection().collide_terrain(this, x_inter_depth, y_inter_depth, true)) {
-                // Do stuff with the intersection depth
-                if(y_factor < 0) {y_inter_depth = -y_inter_depth;}
-                m_y -= y_inter_depth;
-                moved = false;
-            }
-        }
+        return move_absolute(x_factor,y_factor,salmon::Collidees::tile,{salmon::DEFAULT_HITBOX},{salmon::DEFAULT_HITBOX},true);
     }
     else {
-        m_x += x_step;
-        m_y += y_step;
+        return move_relative(x_factor,y_factor,salmon::Collidees::tile,{salmon::DEFAULT_HITBOX},{salmon::DEFAULT_HITBOX},true);
+    }
+}
+
+bool Actor::move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    move_relative(x,y);
+    normalize(x,y);
+    return !unstuck_along_path(-x,-y,target,my_hitboxes,other_hitboxes,notify);
+}
+bool Actor::move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    move_absolute(x,y);
+    normalize(x,y);
+    return !unstuck_along_path(-x,-y,target,my_hitboxes,other_hitboxes,notify);
+}
+
+void Actor::move_relative(float x, float y) {
+    m_x += x;
+    m_y += y;
+}
+void Actor::move_absolute(float x, float y) {
+    m_x = x;
+    m_y = y;
+}
+
+bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    LayerCollection& layer_collection = get_map().get_layer_collection();
+    SDL_Rect bounds = get_boundary();
+    bool moved = false;
+    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+        for(MapLayer* map : layer_collection.get_map_layers()) {
+            for(TileInstance& tile : map->get_clip(bounds)) {
+                if(separate(tile,my_hitboxes,other_hitboxes,notify)) {
+                    moved = true;
+                }
+            }
+        }
+    }
+    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+        for(ObjectLayer* obj : layer_collection.get_object_layers()) {
+            for(Actor* actor : obj->get_clip(bounds)) {
+                if(separate(*actor,my_hitboxes,other_hitboxes, notify)) {
+                    moved = true;
+                }
+            }
+        }
+    }
+    return moved;
+}
+
+bool Actor::unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    LayerCollection& layer_collection = get_map().get_layer_collection();
+    SDL_Rect bounds = get_boundary();
+    bool moved = false;
+    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+        for(MapLayer* map : layer_collection.get_map_layers()) {
+            for(TileInstance& tile : map->get_clip(bounds)) {
+                if(separate_along_path(x,y,tile,my_hitboxes,other_hitboxes,notify)) {
+                    moved = true;
+                }
+            }
+        }
+    }
+    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+        std::vector<Actor*> actors;
+        for(ObjectLayer* obj : layer_collection.get_object_layers()) {
+            std::vector<Actor*> new_actors = obj->get_clip(bounds);
+            actors.insert(actors.end(),new_actors.begin(),new_actors.end());
+        }
+        if(actors.empty()) {return moved;}
+        for(Actor* actor : actors) {
+            if(actor == this) {continue;}
+            if(separate_along_path(x,y,*actor,my_hitboxes,other_hitboxes, notify)) {
+                moved = true;
+            }
+        }
     }
     return moved;
 }
@@ -665,6 +665,292 @@ bool Actor::on_ground(salmon::Direction dir, int tolerance) const {
     else {
         return false;
     }
-    return m_map->get_layer_collection().collide_terrain(temp);
+    return m_map->get_layer_collection().check_collision(temp, salmon::Collidees::tile,{salmon::DEFAULT_HITBOX});
 }
 
+bool Actor::separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    bool moved = false;
+    for(std::string first_hitbox_name : my_hitboxes) {
+        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        for(std::string second_hitbox_name : other_hitboxes) {
+            SDL_Rect second_hitbox = tile.get_hitbox(second_hitbox_name);
+            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            if(separate(first_hitbox, second_hitbox)) {
+                moved = true;
+                if(notify) {
+                    add_collision({tile,first_hitbox_name,second_hitbox_name});
+                }
+            }
+        }
+    }
+    return moved;
+}
+
+bool Actor::separate(Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    bool moved = false;
+    for(std::string first_hitbox_name : my_hitboxes) {
+        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        for(std::string second_hitbox_name : other_hitboxes) {
+            SDL_Rect second_hitbox = actor.get_hitbox(second_hitbox_name);
+            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            if(separate(first_hitbox, second_hitbox)) {
+                moved = true;
+                if(notify) {
+                    add_collision({&actor,first_hitbox_name,second_hitbox_name});
+                    actor.add_collision({this,second_hitbox_name,first_hitbox_name});
+                }
+            }
+        }
+    }
+    return moved;
+}
+
+bool Actor::separate(const SDL_Rect& first, const SDL_Rect& second) {
+    SDL_Rect intersect;
+    if(!SDL_IntersectRect(&first, &second, &intersect)) {return false;}
+    SDL_Point delta = rect_center_difference(first,second);
+
+    // Move in y direction
+    if(intersect.w > intersect.h) {
+        // first is above second
+        if(delta.y > 0) {
+            move_relative(0,-intersect.h);
+        }
+        // first is below second
+        else {
+            move_relative(0,intersect.h);
+        }
+    }
+    // Move in x direction
+    else {
+        // first is left of second
+        if(delta.x > 0) {
+            move_relative(-intersect.w,0);
+        }
+        // first is right of second
+        else {
+            move_relative(intersect.w,0);
+        }
+    }
+
+    return true;
+}
+
+bool Actor::separate_along_path(float x, float y,TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    bool moved = false;
+    for(std::string first_hitbox_name : my_hitboxes) {
+        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        for(std::string second_hitbox_name : other_hitboxes) {
+            SDL_Rect second_hitbox = tile.get_hitbox(second_hitbox_name);
+            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            if(separate_along_path(x, y,first_hitbox, second_hitbox)) {
+                moved = true;
+                if(notify) {
+                    add_collision({tile,first_hitbox_name,second_hitbox_name});
+                }
+            }
+        }
+    }
+    return moved;
+}
+
+bool Actor::separate_along_path(float x, float y,Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    bool moved = false;
+    for(std::string first_hitbox_name : my_hitboxes) {
+        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        for(std::string second_hitbox_name : other_hitboxes) {
+            SDL_Rect second_hitbox = actor.get_hitbox(second_hitbox_name);
+            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            if(separate_along_path(x, y,first_hitbox, second_hitbox)) {
+                moved = true;
+                if(notify) {
+                    add_collision({&actor,first_hitbox_name,second_hitbox_name});
+                    actor.add_collision({this,second_hitbox_name,first_hitbox_name});
+                }
+            }
+        }
+    }
+    return moved;
+}
+
+
+bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SDL_Rect& second) {
+    if(!SDL_HasIntersection(&first, &second)) {return false;}
+    if(x == 0.0) {
+        // No direction value means separate via shortest distance
+        if(y == 0.0) {return separate(first,second);}
+        // Move down
+        if(y > 0.0) {
+            // Move by distance of firsts upper ledge and seconds lower ledge
+            move_relative(0,second.y + second.h - first.y);
+        }
+        // Move up
+        else {
+            // Move by distance of firsts lower ledge and seconds upper ledge
+            move_relative(0, -(first.y + first.h - second.y) );
+        }
+    }
+    else if(y == 0.0) {
+        // Move right
+        if(x > 0.0) {
+            // Move by distance of firsts left ledge and seconds right ledge
+            move_relative(second.x + second.w - first.x,0);
+        }
+        // Move left
+        else {
+            // Move by distance of firsts right ledge and seconds left ledge
+            move_relative(-(first.x + first.w - second.x) ,0);
+        }
+    }
+    else {
+        if(x > 0.0) {
+            // Move Right Down
+            if(y > 0.0) {
+                SDL_Point upper_left_corner = {first.x,first.y};
+                int right_dist = second.x + second.w - upper_left_corner.x;
+                int down_dist = second.y + second.h - upper_left_corner.y;
+
+                float x_steps = right_dist / std::abs(x);
+                float y_steps = down_dist / std::abs(y);
+
+                if(x_steps < y_steps) {
+                    move_relative(right_dist,static_cast<int>(x_steps * y));
+                }
+                else {
+                    move_relative(static_cast<int>(y_steps * x),down_dist);
+                }
+            }
+            // Move Right Up
+            else {
+                SDL_Point lower_left_corner = {first.x,first.y + first.h};
+                int right_dist = second.x + second.w - lower_left_corner.x;
+                int up_dist = lower_left_corner.y - second.y;
+
+                float x_steps = right_dist / std::abs(x);
+                float y_steps = up_dist / std::abs(y);
+
+                if(x_steps < y_steps) {
+                    move_relative(right_dist, static_cast<int>(x_steps * y));
+                }
+                else {
+                    move_relative(static_cast<int>(y_steps * x),-up_dist);
+                }
+            }
+        }
+        else {
+            // Move Left Down
+            if(y > 0.0) {
+                SDL_Point upper_right_corner = {first.x+first.w,first.y};
+                int left_dist = upper_right_corner.x - second.x;
+                int down_dist = second.y + second.h - upper_right_corner.y;
+
+                float x_steps = left_dist / std::abs(x);
+                float y_steps = down_dist / std::abs(y);
+
+                if(x_steps < y_steps) {
+                    move_relative(-left_dist, static_cast<int>(x_steps * y));
+                }
+                else {
+                    move_relative(static_cast<int>(y_steps * x),down_dist);
+                }
+            }
+            // Move Left Up
+            else {
+                SDL_Point lower_right_corner = {first.x+first.w,first.y+first.h};
+                int left_dist = lower_right_corner.x - second.x;
+                int up_dist = lower_right_corner.y - second.y;
+
+                float x_steps = left_dist / std::abs(x);
+                float y_steps = up_dist / std::abs(y);
+
+                if(x_steps < y_steps) {
+                    move_relative(-left_dist, static_cast<int>(x_steps * y));
+                }
+                else {
+                    move_relative(static_cast<int>(y_steps * x),-up_dist);
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool Actor::check_collision(Actor& other, bool notify) {
+    bool collided = false;
+    for(auto first_hitbox : get_hitboxes()) {
+        SDL_Rect& first = first_hitbox.second;
+        if(SDL_RectEmpty(&first)) {continue;}
+        for(auto second_hitbox : other.get_hitboxes()) {
+            SDL_Rect& second = second_hitbox.second;
+            if(SDL_RectEmpty(&second)) {continue;}
+            if(SDL_HasIntersection(&first,&second)) {
+                collided = true;
+                if(notify) {
+                    add_collision({&other,first_hitbox.first,second_hitbox.first});
+                    other.add_collision({this,second_hitbox.first,first_hitbox.first});
+                }
+            }
+        }
+    }
+    return collided;
+}
+bool Actor::check_collision(Actor& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    bool collided = false;
+    for(std::string first_hitbox_name : my_hitboxes) {
+        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        for(std::string second_hitbox_name : other_hitboxes) {
+            SDL_Rect second_hitbox = other.get_hitbox(second_hitbox_name);
+            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            if(SDL_HasIntersection(&first_hitbox,&second_hitbox)) {
+                collided = true;
+                if(notify) {
+                    add_collision({&other,first_hitbox_name,second_hitbox_name});
+                    other.add_collision({this,second_hitbox_name,first_hitbox_name});
+                }
+            }
+        }
+    }
+    return collided;
+}
+
+bool Actor::check_collision(TileInstance& other, bool notify) {
+    bool collided = false;
+    for(auto first_hitbox : get_hitboxes()) {
+        SDL_Rect& first = first_hitbox.second;
+        if(SDL_RectEmpty(&first)) {continue;}
+        for(auto second_hitbox : other.get_hitboxes()) {
+            SDL_Rect& second = second_hitbox.second;
+            if(SDL_RectEmpty(&second)) {continue;}
+            if(SDL_HasIntersection(&first,&second)) {
+                collided = true;
+                if(notify) {
+                    add_collision({other,first_hitbox.first,second_hitbox.first});
+                }
+            }
+        }
+    }
+    return collided;
+}
+bool Actor::check_collision(TileInstance& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    bool collided = false;
+    for(std::string first_hitbox_name : my_hitboxes) {
+        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        for(std::string second_hitbox_name : other_hitboxes) {
+            SDL_Rect second_hitbox = other.get_hitbox(second_hitbox_name);
+            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            if(SDL_HasIntersection(&first_hitbox,&second_hitbox)) {
+                collided = true;
+                if(notify) {
+                    add_collision({other,first_hitbox_name,second_hitbox_name});
+                }
+            }
+        }
+    }
+    return collided;
+}

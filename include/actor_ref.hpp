@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -68,11 +68,6 @@ namespace salmon {
             std::vector<CollisionRef> get_collisions();
             void clear_collisions();
             void register_collisions(bool r);
-
-            /// @warning The static mode is broken/bugged! Use camera relative movement instead
-            bool get_static_mode() const;
-            /// @warning The static mode is broken/bugged! Use camera relative movement instead
-            void set_static_mode(bool mode);
 
             bool get_hidden() const;
             void set_hidden(bool mode);

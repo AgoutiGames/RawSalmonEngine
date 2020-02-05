@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -18,33 +18,11 @@
  */
 #include "util/game_types.hpp"
 #include <iostream>
+#include <cmath>
 
 #include <experimental/filesystem>
 
 namespace fs = std::experimental::filesystem;
-
-/*
-/// Converts a @c string to an @c enum of @c AnimationType
-salmon::AnimationType str_to_anim_type(const std::string& name) {
-    if(name == "IDLE") return salmon::AnimationType::idle;
-    if(name == "WALK") return salmon::AnimationType::walk;
-    if(name == "RUN") return salmon::AnimationType::run;
-    if(name == "JUMP") return salmon::AnimationType::jump;
-    if(name == "FALL") return salmon::AnimationType::fall;
-    if(name == "DIE") return salmon::AnimationType::die;
-    if(name == "CUSTOM1") return salmon::AnimationType::custom1;
-    if(name == "CUSTOM2") return salmon::AnimationType::custom2;
-    if(name == "CUSTOM3") return salmon::AnimationType::custom3;
-    if(name == "CUSTOM4") return salmon::AnimationType::custom4;
-    if(name == "CUSTOM5") return salmon::AnimationType::custom5;
-    if(name == "CUSTOM6") return salmon::AnimationType::custom6;
-    if(name == "CUSTOM7") return salmon::AnimationType::custom7;
-    if(name == "CUSTOM8") return salmon::AnimationType::custom8;
-    if(name == "CUSTOM9") return salmon::AnimationType::custom9;
-    if(name == "CURRENT") return salmon::AnimationType::current;
-    if(name == "NONE") return salmon::AnimationType::none;
-    else return salmon::AnimationType::invalid;
-}*/
 
 /// Converts a @c string to an @c enum of @c Direction
 salmon::Direction str_to_direction(const std::string& name) {
@@ -125,4 +103,16 @@ SDL_Color str_to_color(const std::string& name) {
 void make_path_absolute(std::string& path) {
     path = fs::path(path).make_preferred().string();
     path = fs::canonical(path).string();
+}
+
+SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second) {
+    SDL_Point first_center = {first.x + (first.w / 2), first.y + (first.h / 2)};
+    SDL_Point second_center = {second.x + (second.w / 2), second.y + (second.h / 2)};
+    return {second_center.x - first_center.x, second_center.y - first_center.y};
+}
+
+void normalize(float& x, float& y) {
+    float len = std::sqrt(x*x + y*y);
+    x /= len;
+    y /= len;
 }

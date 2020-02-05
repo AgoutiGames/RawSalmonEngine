@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -72,6 +72,9 @@ Response str_to_response(const std::string& name);
 SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
+SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second);
+
 std::vector<float> dir_to_mov(const salmon::Direction dir);
+void normalize(float& x, float& y);
 
 #endif // GAME_TYPES_HPP_INCLUDED

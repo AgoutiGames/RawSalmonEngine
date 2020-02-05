@@ -43,7 +43,7 @@ public:
     void render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const;
 
     SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
-    const std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
+    std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, bool skip_properties = false);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
@@ -81,6 +81,31 @@ private:
     std::vector<unsigned> m_durations;
     Uint32 m_anim_timestamp = 0;
     float m_time_delta = 0;
+};
+
+class TileInstance {
+    public:
+        TileInstance(Tile* tile, int x, int y) : m_tile{tile}, m_x{x}, m_y{y} {}
+
+        SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const {
+            SDL_Rect temp = m_tile->get_hitbox(name,aligned);
+            temp.x += m_x;
+            temp.y += m_y;
+            return temp;
+        }
+        std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const {
+            std::map<std::string, SDL_Rect> hitboxes = m_tile->get_hitboxes(aligned);
+            for(auto& hb : hitboxes) {hb.second.x += m_x; hb.second.y += m_y;}
+            return hitboxes;
+        }
+        Tile* get_tile() {return m_tile;}
+        int get_x() {return m_x;}
+        int get_y() {return m_y;}
+
+    private:
+        Tile* m_tile;
+        int m_x;
+        int m_y;
 };
 
 
