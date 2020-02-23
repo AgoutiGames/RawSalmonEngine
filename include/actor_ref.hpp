@@ -69,11 +69,6 @@ namespace salmon {
             void clear_collisions();
             void register_collisions(bool r);
 
-            /// @warning The static mode is broken/bugged! Use camera relative movement instead
-            bool get_static_mode() const;
-            /// @warning The static mode is broken/bugged! Use camera relative movement instead
-            void set_static_mode(bool mode);
-
             bool get_hidden() const;
             void set_hidden(bool mode);
 

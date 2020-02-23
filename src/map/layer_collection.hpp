@@ -53,13 +53,8 @@ class LayerCollection {
         bool erase_actor(std::string name);
         bool erase_actor(Actor* pointer);
 
-        bool collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify = false);
-        bool collide_terrain(Actor* actor, bool notify = false);
-
-        bool collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max);
-        bool collide_terrain(const SDL_Rect& rect);
-
         void collision_check();
+        bool check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes);
 
         std::vector<MapLayer*> get_map_layers();
         std::vector<ImageLayer*> get_image_layers();

@@ -107,8 +107,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             }
 
             // Apply layer offset
-            m_obj_grid.back().set_x( m_obj_grid.back().get_x() + m_offset_x);
-            m_obj_grid.back().set_y( m_obj_grid.back().get_y() + m_offset_y);
+            m_obj_grid.back().move_relative(m_offset_x,m_offset_y);
         }
         else {
 

@@ -25,6 +25,7 @@
 #include "util/game_types.hpp"
 
 class Actor;
+class TileInstance;
 class Tile;
 
 /**
@@ -44,7 +45,7 @@ class Collision{
     public:
         Collision();
         Collision(std::string my_hitbox);
-        Collision(Tile* tile, std::string my_hitbox, std::string other_hitbox);
+        Collision(TileInstance tile, std::string my_hitbox, std::string other_hitbox);
         Collision(Actor* actor, std::string my_hitbox, std::string other_hitbox);
 
         // Checks against tile types
@@ -70,6 +71,9 @@ class Collision{
             Actor* actor;
             Tile* tile;
         } data;
+
+        int x = 0;
+        int y = 0;
 
         std::string my_hitbox_name = "";
         std::string other_hitbox_name = "";

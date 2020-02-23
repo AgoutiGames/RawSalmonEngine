@@ -104,109 +104,6 @@ void LayerCollection::update(bool late) {
 }
 
 /**
- * @brief checks if a given rect collides with the default hitboxes of the map layer
- * @param rect The rect which is checked for collision
- * @param x_max The maximum x-axis intersection depth between the rect and tile hitboxes
- * @param y_max The maximum y-axis intersection depth between the rect and tile hitboxes
- */
-bool LayerCollection::collide_terrain(const SDL_Rect& rect, int& x_max, int& y_max) {
-    if(SDL_RectEmpty(&rect)) {return false;}
-    bool collide = false;
-    // Iterate through all map_layers
-    for(auto layer : get_map_layers()) {
-        for(auto t : layer->clip(rect)) {
-            if(std::get<0>(t) != 0) {
-                Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
-                SDL_Rect tile_rect = tile->get_hitbox(salmon::DEFAULT_HITBOX,true);
-                // Only check collision for tiles with valid hitbox
-                if(!SDL_RectEmpty(&tile_rect)) {
-                    // Move tile hitbox to tile coordinates
-                    tile_rect.x += std::get<1>(t);
-                    tile_rect.y += std::get<2>(t);
-
-                    SDL_Rect relative {0,0,rect.w,rect.h};
-                    SDL_Rect intersect;
-                    // Get intersection from supplied rect and tile rect
-                    if(SDL_IntersectRect(&relative, &tile_rect, &intersect)) {
-                        // Possibly overwrite maximum collision depth value
-                        if(intersect.w > x_max) {x_max = intersect.w;}
-                        if(intersect.h > y_max) {y_max = intersect.h;}
-
-                        collide = true;
-                    }
-                }
-            }
-        }
-    }
-    return collide;
-}
-
-/**
- * @brief checks if a given rect collides with the default hitboxes of the map layer
- * @note This function could have better performance if it wouldn't just wrap the more
- *       granular function discarding some of its information
- */
-bool LayerCollection::collide_terrain(const SDL_Rect& rect) {
-    int x,y;
-    return collide_terrain(rect, x,y);
-}
-
-/**
- * @brief checks if a given actor collides with the default hitboxes of the map layer
- * @param actor The actor which is checked for collision
- * @param x_max The maximum x-axis intersection depth between the rect and tile hitboxes
- * @param y_max The maximum y-axis intersection depth between the rect and tile hitboxes
- * @param notify If true the actors on_collide callback is triggered on collision
- */
-bool LayerCollection::collide_terrain(Actor* actor, int& x_max, int& y_max, bool notify) {
-    SDL_Rect rect = actor->get_hitbox(salmon::DEFAULT_HITBOX);
-    if(SDL_RectEmpty(&rect)) {return false;}
-    bool collide = false;
-    // Iterate through all map_layers
-    for(auto layer : get_map_layers()) {
-        for(auto t : layer->clip(rect)) {
-            if(std::get<0>(t) != 0) {
-                Tile* tile = m_base_map->get_ts_collection().get_tile(std::get<0>(t));
-                SDL_Rect tile_rect = tile->get_hitbox(salmon::DEFAULT_HITBOX, true);
-                // Only check collision for tiles with valid hitbox
-                if(!SDL_RectEmpty(&tile_rect)) {
-                    // Move tile hitbox to tile coordinates
-                    tile_rect.x += std::get<1>(t);
-                    tile_rect.y += std::get<2>(t);
-
-                    SDL_Rect relative {0,0,rect.w,rect.h};
-                    SDL_Rect intersect;
-                    // Get intersection from supplied rect and tile rect
-                    if(SDL_IntersectRect(&relative, &tile_rect, &intersect)) {
-                        // Possibly overwrite maximum collision depth value
-                        if(intersect.w > x_max) {x_max = intersect.w;}
-                        if(intersect.h > y_max) {y_max = intersect.h;}
-
-                        collide = true;
-                        if(notify) {
-                            Collision c = Collision(tile, salmon::DEFAULT_HITBOX, salmon::DEFAULT_HITBOX);
-                            //actor->respond(Response::on_collision, c);
-                            actor->add_collision(c);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return collide;
-}
-
-/**
- * @brief checks if a given actor collides with the default hitboxes of the map layer
- * @note This function could have better performance if it wouldn't just wrap the more
- *       granular function discarding some of its information
- */
-bool LayerCollection::collide_terrain(Actor* actor, bool notify) {
-    int x,y;
-    return collide_terrain(actor, x,y, notify);
-}
-
-/**
  * @brief return a vector of pointers to each actor of each object layer
  */
 std::vector<Actor*> LayerCollection::get_actors() {
@@ -291,49 +188,19 @@ std::vector<ObjectLayer*> LayerCollection::get_object_layers() {
  */
 void LayerCollection::collision_check() {
     // Iterate over the hitboxes of all actors
-    for(Actor* left_actor : get_actors()) {
-        for(auto& hitbox_left : left_actor->get_hitboxes()) {
+    std::vector<Actor*> actors = get_actors();
+    if(actors.empty()) {return;}
+    for(unsigned i = 0; i < actors.size()-1; i++) {
+        for(unsigned j = i + 1; j < actors.size(); j++) {
+            actors[i]->check_collision(*actors[j],true);
+        }
+    }
 
-            // Iterate over all actors possibly bounding with the hitbox
-            for(ObjectLayer* layer : get_object_layers()) {
-                for(Actor* right_actor : layer->get_clip(hitbox_left.second)) {
-                    if(left_actor == right_actor) {continue;}
-
-                    // Iterate over the hitboxes of the other actor and check each for collision
-                    for(auto& hitbox_right : right_actor->get_hitboxes()) {
-                        SDL_Rect intersect;
-                        if(SDL_IntersectRect(&hitbox_left.second, &hitbox_right.second, &intersect)) {
-                            // Trigger callback of left actor
-                            Collision c = Collision(right_actor, hitbox_left.first, hitbox_right.first);
-                            // left_actor->respond(Response::on_collision, c);
-                            left_actor->add_collision(c);
-                        }
-                    }
-                }
-            }
-
-            // Iterate over all tiles possibly bounding with the hitbox
-            for(MapLayer* layer : get_map_layers()) {
-                for(auto& tile : layer->clip(hitbox_left.second)) {
-                    const TilesetCollection& tsc = m_base_map->get_ts_collection();
-                    Tile* tile_pointer = tsc.get_tile(std::get<0>(tile));
-                    auto hitboxes = tile_pointer->get_hitboxes(true);
-                    hitboxes.erase(salmon::DEFAULT_HITBOX);
-
-                    // Iterate over the hitboxes of the tile and check each for collision
-                    for(auto& hitbox_right : hitboxes) {
-                        hitbox_right.second.x += std::get<1>(tile);
-                        hitbox_right.second.y += std::get<2>(tile);
-                        SDL_Rect relative_left {0,0,hitbox_left.second.w,hitbox_left.second.h};
-                        SDL_Rect intersect;
-                        if(SDL_IntersectRect(&relative_left, &hitbox_right.second, &intersect)) {
-                            // Trigger callback of actor
-                            Collision c = Collision(tile_pointer, hitbox_left.first, hitbox_right.first);
-                            // left_actor->respond(Response::on_collision, c);
-                            left_actor->add_collision(c);
-                        }
-                    }
-                }
+    for(Actor* actor : actors) {
+        SDL_Rect bounds = actor->get_boundary();
+        for(MapLayer* layer : get_map_layers()) {
+            for(auto tile : layer->get_clip(bounds)) {
+                actor->check_collision(tile,true);
             }
         }
     }
@@ -401,4 +268,29 @@ void LayerCollection::mouse_collision() {
             }
         }
     }
+}
+
+bool LayerCollection::check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes) {
+    bool collided = false;
+    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+        for(MapLayer* map : get_map_layers()) {
+            for(TileInstance& tile : map->get_clip(rect)) {
+                for(std::string hitbox_name : other_hitboxes) {
+                    SDL_Rect other_rect = tile.get_hitbox(hitbox_name);
+                    if(SDL_HasIntersection(&rect,&other_rect)) {collided = true;}
+                }
+            }
+        }
+    }
+    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+        for(ObjectLayer* obj : get_object_layers()) {
+            for(Actor* actor : obj->get_clip(rect)) {
+                for(std::string hitbox_name : other_hitboxes) {
+                    SDL_Rect other_rect = actor->get_hitbox(hitbox_name);
+                    if(SDL_HasIntersection(&rect,&other_rect)) {collided = true;}
+                }
+            }
+        }
+    }
+    return collided;
 }

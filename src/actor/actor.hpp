@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -48,20 +48,47 @@ class Actor{
         // Core functions
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
         tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
+
         bool animate(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
         bool set_animation(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
         salmon::AnimSignal animate_trigger(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+
         void render(int x_cam, int y_cam) const;
+
+        // DEPRECATED! Use move_relative and move_absolute instead!
         bool move(float x_factor, float y_factor, bool absolute = false);
-        bool move_static(float x_factor, float y_factor, bool absolute = true);
-        bool unstuck();
+
+        // Move with collision
+        bool move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        // Move without collision
+        void move_relative(float x, float y);
+        void move_absolute(float x, float y);
+
+        bool unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+        bool unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+        bool check_collision(Actor& other, bool notify);
+        bool check_collision(Actor& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+        bool check_collision(TileInstance& other, bool notify);
+        bool check_collision(TileInstance& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
         bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = salmon::DEFAULT_HITBOX) const;
         bool collide(const SDL_Rect* rect, std::string type = salmon::DEFAULT_HITBOX) const;
+
         bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
-        // No collision check here!
-        void set_x(float x) {m_x = x;}
-        void set_y(float y) {m_y = y;}
+        // Seperate hitboxes after collision
+        bool separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool separate(Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool separate(const SDL_Rect& first, const SDL_Rect& second);
+
+        // Separate hitboxes after collision restricted to one normalized direction given in x y values
+        bool separate_along_path(float x, float y,TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool separate_along_path(float x, float y,Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool separate_along_path(float x, float y,const SDL_Rect& first, const SDL_Rect& second);
 
         void set_w(unsigned w) {m_width = w;}
         void set_h(unsigned h) {m_height = h;}
@@ -85,18 +112,23 @@ class Actor{
         int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
         DataBlock& get_data() {return m_data;}
         bool late_polling() const {return m_late_polling;}
+
         double get_angle() const {return m_angle;}
         void set_angle(double angle) {m_angle = angle;}
+
         void set_tile(Tile tile) {m_base_tile = tile;}
+
         bool valid_anim_state(std::string anim, salmon::Direction dir) const;
         bool valid_anim_state() const {return valid_anim_state(m_anim_state, m_direction);}
+
         bool is_valid() const {return m_base_tile.is_valid();}
+
         unsigned get_id() const {return m_id;}
         void set_id(unsigned id) {m_id = id;}
-        bool get_static_mode() const {return m_static_mode;}
-        void set_static_mode(bool mode) {m_static_mode = mode;}
+
         bool get_hidden() const {return m_hidden;}
         void set_hidden(bool mode) {m_hidden = mode;}
+
         void set_layer(std::string layer) {m_layer_name = layer;}
         std::string get_layer() const {return m_layer_name;}
 
@@ -110,6 +142,9 @@ class Actor{
 
         SDL_Rect get_hitbox(std::string type = salmon::DEFAULT_HITBOX) const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
+
+        // Get bounds in which hitbox and texture may exist
+        SDL_Rect get_boundary() const {return {static_cast<int>(m_x),static_cast<int>(m_y - m_height),static_cast<int>(m_width),static_cast<int>(m_height)};}
 
         void add_collision(Collision c) {if(m_register_collisions) {m_collisions.push_back(c);}}
         std::vector<Collision>& get_collisions() {return m_collisions;}
@@ -158,10 +193,6 @@ class Actor{
         unsigned m_id = 0;
 
         bool m_late_polling = false;
-
-        // When true position is relative to screen and not map
-        // Be cautious, collisions don't work properly from here
-        bool m_static_mode = false;
 
         // If true the hitbox grows and shrinks with varying size
         bool m_resize_hitbox = true;
