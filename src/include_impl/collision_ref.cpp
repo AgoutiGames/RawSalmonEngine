@@ -15,3 +15,6 @@ std::string CollisionRef::my_hitbox() const {return m_impl->my_hitbox();}
 std::string CollisionRef::other_hitbox() const {return m_impl->other_hitbox();}
 std::string CollisionRef::get_tile_type() const {return m_impl->get_type();}
 unsigned CollisionRef::get_actor_id() const {return m_impl->get_actor_id();}
+
+int CollisionRef::get_x() const {return m_impl->get_x();}
+int CollisionRef::get_y() const {return m_impl->get_y();}

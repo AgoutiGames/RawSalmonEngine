@@ -35,6 +35,9 @@ Collision::Collision(TileInstance tile, std::string my_hitbox, std::string other
     data.tile = tile.get_tile();
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
+
+    x = tile.get_x();
+    y = tile.get_y();
 }
 
 // Constructor for actor
@@ -45,6 +48,9 @@ Collision::Collision(Actor* actor, std::string my_hitbox, std::string other_hitb
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
     actor_id = actor->get_id();
+
+    x = actor->get_x();
+    y = actor->get_y();
 }
 
 // Constructor for mouse

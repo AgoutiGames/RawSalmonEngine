@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -172,6 +172,11 @@ bool MapLayer::render(const Camera& camera) const {
     return success;
 }
 
+/**
+ * @brief Fetch and return all tiles which are possibly bounding with the given rect
+ * @param A rect which is usually a camera or the bounding box of a collider
+ * @return A vector of 3-tuples consisting of the tile id and xy-coords relative to the rect origin!
+ */
 std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const {
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     std::vector< std::tuple<Uint32, int, int> > tiles;
@@ -190,6 +195,11 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const 
     return tiles;
 }
 
+/**
+ * @brief Fetch and return all tiles which are possibly bounding with the given rect
+ * @param A rect which is usually the bounding box of a collider
+ * @return A vector of TileInstance objects holding a pointer to the tile and xy-coords relative to the world origin!
+ */
 std::vector<TileInstance> MapLayer::get_clip(SDL_Rect rect) const {
     std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
     std::vector<TileInstance> tiles;
@@ -260,7 +270,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
 /**
  * @brief Generates a vector of tiles information for tiles possibly bounding with a rect
  * @param rect The rectangular space which the tiles are bounding with
- * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
+ * @return A vector of TileId, x-coord(relative to rect origin), y-coord(relative to rect origin), tuples
  */
 std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(SDL_Rect rect) const {
 

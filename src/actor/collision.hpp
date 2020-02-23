@@ -63,6 +63,8 @@ class Collision{
         Tile* get_tile() const {return type == CollisionType::tile ? data.tile : nullptr;}
 
         std::string get_type() const;
+        int get_x() const {return x;}
+        int get_y() const {return y;}
 
     private:
         CollisionType type;
