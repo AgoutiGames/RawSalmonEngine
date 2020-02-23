@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -67,6 +67,7 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
         return XML_NO_ATTRIBUTE;
     }
     m_name = p_actor_name;
+
     return XML_SUCCESS;
 }
 

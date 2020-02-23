@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -45,6 +45,8 @@ class DataBlock{
         float get_val_float(std::string name) const;
         std::string get_val_string(std::string name) const;
         //Actor& get_val_actor(std::string name);
+
+        void clear();
 
     private:
         std::map<std::string, bool> m_data_bool;

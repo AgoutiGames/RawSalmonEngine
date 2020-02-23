@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -43,6 +43,8 @@ namespace salmon {
             int get_val_int(std::string name) const;
             float get_val_float(std::string name) const;
             std::string get_val_string(std::string name) const;
+
+            void clear();
         private:
             DataBlock* m_impl;
     };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -449,13 +449,14 @@ tinyxml2::XMLError Tileset::parse_tile_info(tinyxml2::XMLElement* source) {
             eResult = tile.parse_actor_anim(source);
         }
         // Parse Actor_Template
-        else if(tile_type == "ACTOR_TEMPLATE") {
+        else /*if(tile_type == "ACTOR_TEMPLATE")*/ {
             eResult = tile.parse_actor_templ(source);
         }
+        /*
         else {
             Logger(Logger::error) << "Unknown tile type: " << tile_type;
             return XML_WRONG_ATTRIBUTE_TYPE;
-        }
+        }*/
 
         if(eResult != XML_SUCCESS) {
             Logger(Logger::error) << "Failed at loading tile gid: " << tile_id + m_first_gid << " local id: " << tile_id;

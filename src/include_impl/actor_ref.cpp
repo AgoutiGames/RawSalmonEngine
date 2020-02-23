@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -31,7 +31,7 @@ salmon::AnimSignal ActorRef::animate_trigger(std::string anim, salmon::Direction
 std::string ActorRef::get_animation() const {return m_impl->get_animation();}
 salmon::Direction ActorRef::get_direction() const {return m_impl->get_direction();}
 std::string ActorRef::get_name() const {return m_impl->get_name();}
-std::string ActorRef::get_type() const {return m_impl->get_type();}
+std::string ActorRef::get_template_name() const {return m_impl->get_type();}
 unsigned ActorRef::get_id() const {return m_impl->get_id();}
 
 bool ActorRef::move(float x_factor, float y_factor, bool absolute) {return m_impl->move(x_factor, y_factor, absolute);}

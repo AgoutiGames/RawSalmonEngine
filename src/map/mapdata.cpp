@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -504,7 +504,7 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
     }
 
     if(temp.get_type() == "") {
-        Logger(Logger::error) << "Actor template with is missing a type!";
+        Logger(Logger::error) << "Actor template is missing ACTOR_NAME field!";
         return XML_NO_ATTRIBUTE;
     }
 
@@ -521,13 +521,22 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
         return eResult;
     }
     if(current_actor.get_type() == "") {
-        Logger(Logger::error) << "Actor template with is missing a type!";
+        Logger(Logger::error) << "Actor template is missing ACTOR_NAME field!";
         return XML_NO_ATTRIBUTE;
     }
 
     current_actor.set_w(tile->get_tileset().get_tile_width());
     current_actor.set_h(tile->get_tileset().get_tile_height());
     current_actor.set_tile(*tile);
+
+    // If type of tile isn't ACTOR_TEMPLATE use it as type property
+    const char* p_type;
+    p_type = source->Attribute("type");
+    std::string tile_type;
+    if(p_type != nullptr) tile_type = p_type;
+    if(tile_type != "ACTOR_TEMPLATE") {
+        current_actor.get_data().set_val("type", tile_type);
+    }
 
     // Make gid an alias of actor template type name
     m_gid_to_actor_temp_name[m_ts_collection.get_gid(tile)] = temp.get_type();

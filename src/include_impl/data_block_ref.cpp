@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -38,3 +38,5 @@ bool DataBlockRef::get_val_bool(std::string name) const {return m_impl->get_val_
 int DataBlockRef::get_val_int(std::string name) const {return m_impl->get_val_int(name);}
 float DataBlockRef::get_val_float(std::string name) const {return m_impl->get_val_float(name);}
 std::string DataBlockRef::get_val_string(std::string name) const {return m_impl->get_val_string(name);}
+
+void DataBlockRef::clear() {m_impl->clear();}
