@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -36,29 +36,84 @@ namespace salmon {
             MapRef(MapData* impl);
             virtual ~MapRef() = default;
 
+            /// Renders this map to screen
             bool render() const;
+            /// Updates the maps content (sorts actors for proper rendering order)
             void update();
 
+            /// Returns a vector of references to all actors on all map layers
             std::vector<salmon::ActorRef> get_actors();
+            /// Returns reference to the camera controlling rendering frame
             CameraRef get_camera();
 
-            // Generate new actor from template
+            /**
+             * @brief Generate a new actor from a template
+             * @param actor_template_name The name of the actor template
+             * @param layer_name The name of the layer for the actor to reside in
+             * @param actor_name The name of the newly generated actor used to identify him
+             * @return ActorRef object which may be invalid if actor_template or layer doesn't exist
+             * @warning Always check if returned ActorRef returns true on good() method
+             */
             salmon::ActorRef add_actor(std::string actor_template_name, std::string layer_name, std::string actor_name = "GENERATED");
-            // Duplicate and reinsert valid actor with a new name
+
+            /**
+             * @brief Generate a new actor from existing actor
+             * @param actor The actor to be duplicated
+             * @param layer_name The name of the layer for the actor to reside in
+             * @param actor_name The name of the newly generated actor used to identify him
+             * @return ActorRef object which may be invalid if actor is invalid or layer doesn't exist
+             * @warning Always check if returned ActorRef returns true on good() method
+             */
             salmon::ActorRef add_actor(salmon::ActorRef actor, std::string layer_name, std::string actor_name = "GENERATED");
+
+            /// Removes actor from this map. Returns true if removal worked
             bool remove_actor(salmon::ActorRef actor);
 
+            /**
+             * @brief Retrieve text object by name
+             * @param name The name of the text object
+             * @return TextRef object which may be invalid if no text object with the supplied name exists
+             * @warning Always check if returned TextRef returns true on good() method
+             */
             salmon::TextRef get_text(std::string name);
+
+            /**
+             * @brief Add text object by to map
+             * @param text_name The name of the text object
+             * @param layer_name The name of the layer to add the text to
+             * @param x_pos, y_pos The position of the text object in world coords relative to upper left corner of text
+             * @param text The text to be displayed on screen
+             * @param a The attribute object describing the appearance of the text
+             * @return TextRef object which may be invalid if layer doesn't exist
+             * @warning Always check if returned TextRef returns true on good() method
+             */
             salmon::TextRef add_text(std::string text_name, std::string layer_name, float x_pos, float y_pos, std::string text, TextRef::Attributes a);
+
+            /// Removes text object from this map. Returns true if removal worked
             bool remove_text(salmon::TextRef text);
 
+            /**
+             * @brief Supress rendering of a layer
+             * @param layer_name The name of the to be hidden layer
+             * @return True if layer exists
+             */
             bool hide_layer(std::string layer_name);
+            /**
+             * @brief Reenable rendering of a layer
+             * @param layer_name The name of the to be hidden layer
+             * @return True if layer exists
+             */
             bool unhide_layer(std::string layer_name);
 
+            /// Returns map width in pixels (not taking layer offset into account)
             unsigned get_w() const;
+            /// Returns map height in pixels (not taking layer offset into account)
             unsigned get_h() const;
+            /// Returns time in seconds which has passed since last update
             float get_delta_time() const;
+            /// Returns the full path to the directory of this .tmx map file
             std::string get_path() const;
+            /// Returns reference to DataBlock of this map which holds all property values supplied via tiled
             DataBlockRef get_data();
         private:
             MapData* m_impl;

@@ -25,6 +25,8 @@ using salmon::ActorRef;
 ActorRef::ActorRef(Actor& impl) : m_impl{&impl} {}
 ActorRef::ActorRef(Actor* impl) : m_impl{impl} {}
 
+bool ActorRef::good() const {return (m_impl == nullptr) ? false : true ;}
+
 bool ActorRef::animate(std::string anim, salmon::Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
 bool ActorRef::set_animation(std::string anim, salmon::Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
 salmon::AnimSignal ActorRef::animate_trigger(std::string anim, salmon::Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}

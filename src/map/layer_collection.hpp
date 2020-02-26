@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -53,7 +53,6 @@ class LayerCollection {
         bool erase_actor(std::string name);
         bool erase_actor(Actor* pointer);
 
-        void collision_check();
         bool check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes);
 
         std::vector<MapLayer*> get_map_layers();
@@ -73,6 +72,7 @@ class LayerCollection {
 
     private:
         void mouse_collision();
+        void collision_check();
 
         MapData* m_base_map;
         std::vector<std::unique_ptr<Layer>> m_layers;

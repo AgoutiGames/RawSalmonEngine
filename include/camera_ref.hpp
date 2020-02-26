@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -28,18 +28,27 @@ namespace salmon {
         public:
             CameraRef(Camera& impl);
 
+            /// Return x coordinate of upper left corner of camera in world space
             int get_x() const;
+            /// Return y coordinate of upper left corner of camera in world space
             int get_y() const;
 
+            /// Set x coordinate of upper left corner of camera in world space
             void set_x(int x);
+            /// Set y coordinate of upper left corner of camera in world space
             void set_y(int y);
 
+            /// Make camera always center on supplied actor
             void bind_actor(ActorRef actor);
+            /// Stop camera from centering on actor
             void unbind_actor();
 
+            /// Bind camera to map borders. It may not scroll over the world edges
             void bind_map();
+            /// Ubind camera from map borders
             void unbind_map();
 
+            /// Apply possible actor or map limitations
             void update();
 
         private:

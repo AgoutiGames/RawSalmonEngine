@@ -20,14 +20,17 @@
 #define SALMON_TYPES_HPP_INCLUDED
 
 namespace salmon {
+    /// The name of a hitbox if you don't specify an actual
     const std::string DEFAULT_HITBOX = "DEFAULT";
 
+    /// Determine with what kind of objects you can collide
     enum class Collidees {
         tile = 1,
         actor = 2,
         tile_and_actor = 3,
     };
 
+    /// Useful enum used in many different contexts
     enum class Direction {
         up = 0,
         up_right = 45,
@@ -42,6 +45,7 @@ namespace salmon {
         invalid = -3,
     };
 
+    /// String constants which may be used as animation state keywords
     namespace AnimationType {
         // Reserved Keywords for special behaviour
         const std::string none = "NONE";
@@ -59,35 +63,52 @@ namespace salmon {
         const std::string die = "DIE";
     }
 
+    /// Return value for animation methods
     enum class AnimSignal{
-        missing = -1,
-        none = 0,
-        next = 1,
-        trigger = 2,
-        wrap = 3,
+        missing = -1, ///< Animation tile is missing
+        none = 0, ///< Success but still on same frame
+        next = 1, ///< Advanced one animation frame
+        trigger = 2, ///< Just reached the predefined trigger frame
+        wrap = 3, ///< Just reached first frame again after finishing the last frame
     };
 
+    /// Show the state of a button
     struct ButtonState {
-        bool pressed = false;
-        bool released = false;
-        bool down = false;
+        bool pressed = false; ///< True if up in frame before and now down
+        bool released = false; ///< True if down in frame before and now up
+        bool down = false; ///< True if button is down right now
     };
 
+    /// Bundle mouse buttons and values in one struct
     struct MouseState {
-        ButtonState left;
-        ButtonState right;
-        ButtonState middle;
-        ButtonState extra1;
-        ButtonState extra2;
-        int x_scroll = 0;
-        int y_scroll = 0;
-        int x_pos = 0;
-        int y_pos = 0;
-        int x_delta = 0;
-        int y_delta = 0;
-        bool mouse_focus = false;
+        ButtonState left; ///< Left mouse button
+        ButtonState right; ///< Right mouse button
+        ButtonState middle; ///< Mousewheel click or dedicated midddle button
+        ButtonState extra1; ///< First extra mouse button
+        ButtonState extra2; ///< Second extra mouse button
+        int x_scroll = 0; ///< Amount of vertical scroll since last frame
+        int y_scroll = 0; ///< Amount of horizontal scroll since last frame
+        int x_pos = 0; ///< Current x-coord of mouse pointer relative to upper left corner of window
+        int y_pos = 0; ///< Current y-coord of mouse pointer relative to upper left corner of window
+        int x_delta = 0; ///< Amount of x-movement since last frame
+        int y_delta = 0; ///< Amount of y-movement since last frame
+        bool mouse_focus = false; ///< True if mouse is inside window frame
     };
 
+    /// Collection of buttons and axis for a controller
+    /// Button layout closely mimics xbox 360 controller
+    ///   l-tr         r-tr
+    ///   l-sh         r-sh
+    ///    _____        _____
+    ///   /     |______/     |
+    ///  /                    |
+    /// /   ^   bk |g| st   Y  |
+    /// | <lst>           X   B |
+    /// |   v    ^      ^   A   |
+    /// |      <dpd>  <rst>     |
+    /// |     ___v______v___    |
+    /// |    /              |   |
+    ///  |__/                |__/
     struct GamepadState {
         struct {
         ButtonState a;

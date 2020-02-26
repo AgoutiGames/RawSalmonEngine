@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -89,10 +89,14 @@ bool LayerCollection::render(const Camera& camera) const{
 
 /**
  * @brief Updates each object layer state
+ *
+ * First poll possible actor - actor, actor - tile and actor - mouse intersections
+ * Then call update for each object layer (Establishes correct render order for actors)
+ * @note Doesn't poll collisions on late updates
  */
 void LayerCollection::update(bool late) {
     if(!late) {
-        // Send possible on_collide per actors
+        // Add possible collisions to actors
         collision_check();
         mouse_collision();
     }
@@ -183,8 +187,7 @@ std::vector<ObjectLayer*> LayerCollection::get_object_layers() {
 }
 
 /**
- * @brief Checks for actor -- actor and actor -- tile(without default hitboxes) collision
- * and then calls the on_collision callback of each actor
+ * @brief Adds collisions for actor -- actor and actor -- tile hitbox intersections
  */
 void LayerCollection::collision_check() {
     // Iterate over the hitboxes of all actors
@@ -244,6 +247,9 @@ Layer* LayerCollection::get_layer(std::string name) {
     return nullptr;
 }
 
+/**
+ * @brief Tests if any actors hitbox intersects with the mouse pointer location. If yes, adds a collision to the actor.
+ */
 void LayerCollection::mouse_collision() {
     SDL_Rect cam = m_base_map->get_camera().get_rect();
     // Transform cursor from camera space to global space
@@ -270,6 +276,13 @@ void LayerCollection::mouse_collision() {
     }
 }
 
+/**
+ * @brief Tests if hitbox collides with specified targets hitboxes
+ * @param rect The box to check collision for
+ * @param target Enum value which tells if to check against tiles, actors or both
+ * @param other_hitboxes A vector of hitbox names to check against collision
+ * @return true if there is any collision and false if there is none
+ */
 bool LayerCollection::check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes) {
     bool collided = false;
     if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
