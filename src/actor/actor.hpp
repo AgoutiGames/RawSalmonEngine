@@ -75,20 +75,22 @@ class Actor{
         bool check_collision(TileInstance& other, bool notify);
         bool check_collision(TileInstance& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
 
-        bool collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type = salmon::DEFAULT_HITBOX) const;
-        bool collide(const SDL_Rect* rect, std::string type = salmon::DEFAULT_HITBOX) const;
-
-        bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
+        // DEPRECATED! Use more granular overload instead
+        bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const {return on_ground(salmon::Collidees::tile, salmon::DEFAULT_HITBOX, {salmon::DEFAULT_HITBOX},dir,tolerance);}
+        bool on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
         // Seperate hitboxes after collision
         bool separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         bool separate(Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         bool separate(const SDL_Rect& first, const SDL_Rect& second);
 
-        // Separate hitboxes after collision restricted to one normalized direction given in x y values
+        // Separate hitboxes after collision restricted to one direction given in x y values
         bool separate_along_path(float x, float y,TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         bool separate_along_path(float x, float y,Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         bool separate_along_path(float x, float y,const SDL_Rect& first, const SDL_Rect& second);
+
+        // Separate this and another actor by supplied vectors each
+        bool separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
 
         void set_w(unsigned w) {m_width = w;}
         void set_h(unsigned h) {m_height = h;}

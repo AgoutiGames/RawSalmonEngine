@@ -35,9 +35,35 @@ salmon::Direction ActorRef::get_direction() const {return m_impl->get_direction(
 std::string ActorRef::get_name() const {return m_impl->get_name();}
 std::string ActorRef::get_template_name() const {return m_impl->get_type();}
 unsigned ActorRef::get_id() const {return m_impl->get_id();}
+bool ActorRef::valid_anim_state(std::string anim, salmon::Direction dir) const {return m_impl->valid_anim_state(anim,dir);}
 
-bool ActorRef::move(float x_factor, float y_factor, bool absolute) {return m_impl->move(x_factor, y_factor, absolute);}
-bool ActorRef::on_ground(salmon::Direction dir, int tolerance) const {return m_impl->on_ground(dir, tolerance);}
+bool ActorRef::move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {return m_impl->move_relative(x,y,target,my_hitboxes,other_hitboxes,notify);}
+bool ActorRef::move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {return m_impl->move_absolute(x,y,target,my_hitboxes,other_hitboxes,notify);}
+void ActorRef::move_relative(float x, float y) {m_impl->move_relative(x,y);}
+void ActorRef::move_absolute(float x, float y) {m_impl->move_absolute(x,y);}
+
+bool ActorRef::unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    return m_impl->unstuck(target,my_hitboxes,other_hitboxes,notify);
+}
+bool ActorRef::unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    return m_impl->unstuck_along_path(x,y,target,my_hitboxes,other_hitboxes,notify);
+}
+
+bool ActorRef::check_collision(ActorRef other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    return m_impl->check_collision(*other.m_impl,my_hitboxes,other_hitboxes,notify);
+}
+
+bool ActorRef::separate(ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
+    return m_impl->separate(*actor.m_impl,my_hitboxes,other_hitboxes,false);
+}
+bool ActorRef::separate(float x, float y, ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
+    return m_impl->separate_along_path(x,y,*actor.m_impl,my_hitboxes,other_hitboxes,false);
+}
+bool ActorRef::separate(float x1, float y1, float x2, float y2, ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
+    return m_impl->separate_along_path(x1,y1,x2,y2,*actor.m_impl,my_hitboxes,other_hitboxes);
+}
+
+bool ActorRef::on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir, int tolerance) const {return m_impl->on_ground(target,my_hitbox,other_hitboxes,dir,tolerance);}
 
 bool ActorRef::scale(float x, float y) {return m_impl->scale(x,y);}
 bool ActorRef::scale(float s) {return m_impl->scale(s);}

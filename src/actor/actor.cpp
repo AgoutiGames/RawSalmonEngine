@@ -316,12 +316,10 @@ bool Actor::move(float x_factor, float y_factor, bool absolute) {
 
 bool Actor::move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     move_relative(x,y);
-    normalize(x,y);
     return !unstuck_along_path(-x,-y,target,my_hitboxes,other_hitboxes,notify);
 }
 bool Actor::move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     move_absolute(x,y);
-    normalize(x,y);
     return !unstuck_along_path(-x,-y,target,my_hitboxes,other_hitboxes,notify);
 }
 
@@ -489,44 +487,6 @@ AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float
     return current_tile->push_anim_trigger(speed);
 }
 
-/**
- * @brief Returns true if actor collides with rect
- * @note Hitbox width and height should be at least 10px
- *       when max actor speed is 500px per second
- * @param rect The rect against which collision gets checked
- * @param x_depth, y_depth The minimum x and y values to go back to not intersect anymore
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool Actor::collide(const SDL_Rect* rect, int& x_depth, int& y_depth, std::string type) const{
-    SDL_Rect temp = get_hitbox(type);
-    if(SDL_RectEmpty(&temp)) {return false;}
-    SDL_Rect inter;
-    if(SDL_IntersectRect(&temp, rect, &inter) && !SDL_RectEquals(&temp, rect)) {
-        x_depth = inter.w;
-        y_depth = inter.h;
-        return true;
-    }
-    return false;
-}
-
-/**
- * @brief Returns true if actor collides with rect
- * @note Hitbox width and height should be at least 10px
- *       when max actor speed is 500px per second
- * @param rect The rect against which collision gets checked
- * @param type The type of the hitbox
- * @return @c bool which indicates collision
- */
-bool Actor::collide(const SDL_Rect* rect, std::string type) const{
-    SDL_Rect temp = get_hitbox(type);
-    if(SDL_RectEmpty(&temp)) {return false;}
-    if(SDL_HasIntersection(&temp, rect) && !SDL_RectEquals(&temp, rect)) {
-        return true;
-    }
-    return false;
-}
-
 #ifndef LIB_BUILD
     /**
      * @brief Triggers event bound to Response value
@@ -611,6 +571,7 @@ const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
     return hitboxes;
 }
 
+/// Translate supplied hitbox from local actor coordinates to world coordinates with scale applied
 void Actor::transform_hitbox(SDL_Rect& hitbox) const {
     if(m_resize_hitbox && m_scaled) {
 
@@ -631,13 +592,15 @@ void Actor::transform_hitbox(SDL_Rect& hitbox) const {
     }
 }
 
+
 /**
  * @brief Checks if the actor is standing on ground
  * @param dir The direction of gravity
  * @return @c bool which is True if the actor is on ground
  */
-bool Actor::on_ground(salmon::Direction dir, int tolerance) const {
-    SDL_Rect pos = get_hitbox();
+bool Actor::on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir, int tolerance) const {
+    SDL_Rect pos = get_hitbox(my_hitbox);
+    if(SDL_RectEmpty(&pos)) {return false;}
     SDL_Rect temp;
     if(dir == salmon::Direction::up) {
         temp.x = pos.x;
@@ -666,7 +629,7 @@ bool Actor::on_ground(salmon::Direction dir, int tolerance) const {
     else {
         return false;
     }
-    return m_map->get_layer_collection().check_collision(temp, salmon::Collidees::tile,{salmon::DEFAULT_HITBOX});
+    return m_map->get_layer_collection().check_collision(temp, target,other_hitboxes);
 }
 
 bool Actor::separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
@@ -879,6 +842,49 @@ bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SD
     }
     return true;
 }
+
+bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
+    float old_x = get_x();
+    float old_y = get_y();
+
+    // Combine both separation vectors
+    float combined_x = x1 - x2;
+    float combined_y = y1 - y2;
+
+    // Separate this actor from other by combined vector
+    if(separate_along_path(combined_x,combined_y,actor,my_hitboxes,other_hitboxes,false)) {
+        // Get the actual separation vector
+        float delta_x = get_x() - old_x;
+        float delta_y = get_y() - old_y;
+        move_absolute(old_x,old_y);
+
+        // Get factor from nonzero combined vector component
+        float factor;
+        if(combined_x != 0.0) {
+            // Get factor which determines how "much" of the combined vector is in the final vector
+            factor = delta_x / combined_x;
+        }
+        else if(combined_y != 0.0) {
+            // Get factor which determines how "much" of the combined vector is in the final vector
+            factor = delta_y / combined_y;
+        }
+        else {
+            Logger(Logger::error) << "You cant separate two actors by equal separation vectors!";
+            return false;
+        }
+
+        // Apply the two base vectors by determined factor to each actor
+        move_relative(factor * x1, factor * y1);
+        actor.move_relative(factor * x2, factor * y2);
+
+        return true;
+    }
+    // If there wasn't an intersection at all, return false
+    else {
+        return false;
+    }
+}
+
 
 bool Actor::check_collision(Actor& other, bool notify) {
     bool collided = false;

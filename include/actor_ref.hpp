@@ -76,14 +76,12 @@ namespace salmon {
              */
             salmon::AnimSignal animate_trigger(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
 
-            /// @todo Add anim_is_valid
-            /// @todo Fix on_ground method
-            /// @todo Add new movement and collision methods
-
             /// Returns the type string of the currently active animation
             std::string get_animation() const;
             /// Returns the direction value of the currently active animation
             salmon::Direction get_direction() const;
+            /// Returns true if there is a valid animation tile representing animation type and direction
+            bool valid_anim_state(std::string anim, salmon::Direction dir) const;
 
             /// Returns the name of the actor
             std::string get_name() const;
@@ -92,8 +90,101 @@ namespace salmon {
             /// Returns the unique id of the actor
             unsigned get_id() const;
 
-            bool move(float x_factor, float y_factor, bool absolute = false);
-            bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
+            /**
+             * @brief Moves relative to current position respecting potential collision
+             * @param x, y The amount of movement in pixels
+             * @param target Determine if actors, or tiles, or both are checked for collision
+             * @param my_hitboxes A list of hitbox names for this actor to check with
+             * @param other_hitboxes A list of hitbox names for collidees to check against
+             * @param notify If true a collision may be generated and added to collider and collidee
+             * @return false if movement was limited by a collision
+             *
+             * @note The resolution of collisions works better when moving relative in comparison to moving by absolute coordinates
+             */
+            bool move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+            /**
+             * @brief Moves relative to the world origin respecting potential collision
+             * @param x, y The amount of movement in pixels
+             * @param target Determine if actors, or tiles, or both are checked for collision
+             * @param my_hitboxes A list of hitbox names for this actor to check with
+             * @param other_hitboxes A list of hitbox names for collidees to check against
+             * @param notify If true a collision may be generated and added to collider and collidee
+             * @return false if movement was limited by a collision
+             *
+             * @note The resolution of collisions works better when moving relative in comparison to moving by absolute coordinates
+             */
+            bool move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+            /**
+             * @brief Moves relative to current position with no collision check
+             * @param x, y The amount of movement in pixels
+             */
+            void move_relative(float x, float y);
+            /**
+             * @brief Moves relative to the world origin with no collision check
+             * @param x, y The amount of movement in pixels
+             */
+            void move_absolute(float x, float y);
+
+            /**
+             * @brief Separate this actor from all possible collidees
+             * @param target Determines to check against tiles, actors or both
+             * @param my_hitboxes A vector of hitbox names to check against for this actor
+             * @param other_hitboxes A vector of hitbox names to check against for the collidee
+             * @param notify If true a collision object will be added to all actors taking part in a collision
+             * @return True if at least one collision happened/got resolved, false if there wasn't any collision
+             */
+            bool unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+            /**
+             * @brief Separate this actor from all possible collidees by moving in a distinct direction
+             * @param x, y The vector indicating the direction used for resolving collisions
+             * @note see unstuck for other params
+             */
+            bool unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+            /**
+             * @brief Test if this actor is colliding with another actor
+             * @param other The other actor to test collision against
+             * @param my_hitboxes A vector of hitbox names to check against for this actor
+             * @param other_hitboxes A vector of hitbox names to check against for the collidee
+             * @param notify If true a collision object will be added to both actors taking part in a collision
+             * @return True if a collision occured, false otherwise
+             */
+            bool check_collision(ActorRef other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+
+            /**
+             * @brief Separate this actor from another actor
+             * @param my_hitboxes A vector of hitbox names to check against for this actor
+             * @param other_hitboxes A vector of hitbox names to check against for the collidee
+             * @return True if at least one collision happened/got resolved, false if there wasn't any collision
+             */
+            bool separate(ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
+            /**
+             * @brief Separate this actor from another actor by moving along supplied direction vector
+             * @param x, y The vector indicating the direction used for resolving collisions
+             * @note see basic function for more information
+             */
+            bool separate(float x, float y, ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
+            /**
+             * @brief Separate two actors from each other by moving along two distinct vectors
+             * @param x1, y1 The direction supplied for this actor
+             * @param x2, y2 The direction supplied for the other actor
+             * @note see basic function for more information
+             */
+            bool separate(float x1, float y1, float x2, float y2, ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
+
+            /**
+             * @brief Returns true if hitbox is touching other hitboxes of tiles or actors in a specific direction
+             * @param target Determines to check collision against tiles, actors or both
+             * @param my_hitbox The name of this actors hitbox to check against
+             * @param other_hitboxes A list of hitbox names for others to check against
+             * @param dir The direction of touch to check against
+             * @param tolerance The maximum amount of pixels between the hitboxes to still count them as touching
+             * @return true if there is at least one hitbox pair touching
+             */
+            bool on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
 
             /**
              * @brief Scales actors width and height
@@ -101,7 +192,10 @@ namespace salmon {
              * @param y The height scale which must be greater than 0.0
              * @return false if a scale less or equal zero is entered, true otherwise
              *
+             * @note The scaling doesn't affect width, height or x-,y-position retrieved by getters. Scale is applied internally.
+             *
              * @warning When scaling greater than 1.0, pop in artifacts will occur due to offscreen tile culling
+             *          If you want your object to scale dynamically during execution, import at max size and scale it down
              */
             bool scale(float x, float y);
             /// Scales actor proportionally. See overload for details
@@ -146,9 +240,9 @@ namespace salmon {
             float get_x() const;
             /// Returns the x coordinate of the actor from its lower left corner
             float get_y() const;
-            /// Returns the width of the actor in pixels
+            /// Returns the base width of the actor in pixels regardless of x_scale
             unsigned get_w() const;
-            /// Returns the height of the actor in pixels
+            /// Returns the base height of the actor in pixels regardless of y_scale
             unsigned get_h() const;
             /// Returns the x coordinate of the actor from its center
             int get_x_center() const;
