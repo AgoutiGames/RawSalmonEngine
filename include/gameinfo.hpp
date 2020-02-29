@@ -35,15 +35,6 @@ namespace salmon {
             GameInfo();
             ~GameInfo();
 
-            /**
-             * @brief Initialize video, audio and controllers
-             * @return True if the initialization succeeded
-             * @note This has to be called once at startup before loading any map.
-             */
-            bool init();
-            /// Deinitalize video, audio, etc. Do this before returning from main function.
-            void close();
-
             /// Render the game to screen
             void render();
             /**

@@ -23,9 +23,6 @@
 salmon::GameInfo::GameInfo() : m_impl{std::make_unique<::GameInfo>()} {}
 salmon::GameInfo::~GameInfo() {}
 
-bool salmon::GameInfo::init() {return m_impl->init();}
-void salmon::GameInfo::close() {return m_impl->close();}
-
 void salmon::GameInfo::render() {m_impl->render();}
 bool salmon::GameInfo::update() {return m_impl->update();}
 

@@ -53,9 +53,6 @@ public:
     GameInfo();
     ~GameInfo();
 
-    bool init();
-    void close();
-
     void render();
     bool update();
 
@@ -95,6 +92,9 @@ public:
     InputCache& get_input_cache() {return m_input_cache;}
 
 private:
+    bool init();
+    void close();
+
     void update_path();
 
     SDL_Window* m_window = nullptr;
