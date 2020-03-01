@@ -64,6 +64,7 @@ set(LIB_SOURCES
     src/include_impl/actor_ref.cpp
     src/include_impl/map_ref.cpp
     src/include_impl/text_ref.cpp
+    src/include_impl/tile_instance.cpp
     )
 
 set(ACTOR_SOURCES

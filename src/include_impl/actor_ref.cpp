@@ -105,5 +105,6 @@ unsigned ActorRef::get_w() const {return m_impl->get_w();}
 unsigned ActorRef::get_h() const {return m_impl->get_h();}
 int ActorRef::get_x_center() const {return m_impl->get_x_center();}
 int ActorRef::get_y_center() const {return m_impl->get_y_center();}
+salmon::Rect ActorRef::get_hitbox(std::string name) const {return make_rect(m_impl->get_hitbox(name));}
 
 salmon::DataBlockRef ActorRef::get_data() {return m_impl->get_data();}

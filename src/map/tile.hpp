@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -61,6 +61,9 @@ public:
     std::string get_type() const {return m_type;}
     Tileset& get_tileset() {return *mp_tileset;}
 
+    int get_w() const {return get_clip().w;}
+    int get_h() const {return get_clip().h;}
+
 private:
     SDL_Rect get_hitbox_self(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes_self(bool aligned = false) const;
@@ -98,14 +101,16 @@ class TileInstance {
             for(auto& hb : hitboxes) {hb.second.x += m_x; hb.second.y += m_y;}
             return hitboxes;
         }
-        Tile* get_tile() {return m_tile;}
-        int get_x() {return m_x;}
-        int get_y() {return m_y;}
+        Tile* get_tile() const {return m_tile;}
+        int get_x() const {return m_x;}
+        int get_y() const {return m_y;}
+
+        bool valid() const {return (m_tile == nullptr) ? false : true ;}
 
     private:
-        Tile* m_tile;
-        int m_x;
-        int m_y;
+        Tile* m_tile = nullptr;
+        int m_x = 0;
+        int m_y = 0;
 };
 
 

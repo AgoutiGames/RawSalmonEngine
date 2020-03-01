@@ -111,6 +111,10 @@ SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second) 
     return {second_center.x - first_center.x, second_center.y - first_center.y};
 }
 
+salmon::Rect make_rect(const SDL_Rect& rect) {
+    return salmon::Rect{rect.x,rect.y,rect.w,rect.h};
+}
+
 void normalize(float& x, float& y) {
     float len = std::sqrt(x*x + y*y);
     x /= len;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -61,8 +61,8 @@ class Collision{
         Actor* get_actor() const {return type == CollisionType::actor ? data.actor : nullptr;}
         unsigned get_actor_id() const;
         Tile* get_tile() const {return type == CollisionType::tile ? data.tile : nullptr;}
+        TileInstance get_tile_instance() const;
 
-        std::string get_type() const;
         int get_x() const {return x;}
         int get_y() const {return y;}
 

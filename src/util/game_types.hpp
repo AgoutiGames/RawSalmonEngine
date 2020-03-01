@@ -73,6 +73,7 @@ SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
 SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second);
+salmon::Rect make_rect(const SDL_Rect& rect);
 
 std::vector<float> dir_to_mov(const salmon::Direction dir);
 void normalize(float& x, float& y);

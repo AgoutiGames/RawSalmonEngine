@@ -20,6 +20,14 @@
 #define SALMON_TYPES_HPP_INCLUDED
 
 namespace salmon {
+    /// A rectangle with its origin in the upper left corner
+    struct Rect {
+        bool empty() const {return (w <= 0 || h <= 0) ? true : false ;}
+
+        int x, y;
+        int w, h;
+    };
+
     /// The name of a hitbox if you don't specify an actual
     const std::string DEFAULT_HITBOX = "DEFAULT";
 

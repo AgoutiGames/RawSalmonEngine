@@ -248,6 +248,8 @@ namespace salmon {
             int get_x_center() const;
             /// Returns the y coordinate of the actor from its center
             int get_y_center() const;
+            /// Returns the hitbox matching the supplied name. If there is none, w or h is zero.
+            salmon::Rect get_hitbox(std::string name) const;
 
             /// Returns reference to DataBlock of this actor which holds all property values supplied via tiled
             DataBlockRef get_data();

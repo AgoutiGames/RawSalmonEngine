@@ -21,6 +21,8 @@
 
 #include <string>
 
+#include "tile_instance.hpp"
+
 class Collision;
 
 namespace salmon {
@@ -47,8 +49,9 @@ namespace salmon {
 
             /// Return the actor id of the collidee if it is of type actor, otherwise return 0
             unsigned get_actor_id() const;
-            /// Return type value of tile or template name of actor or empty string depending on collidee
-            std::string get_tile_type() const;
+
+            /// Returns the instance of the tile collided with
+            salmon::TileInstance get_tile() const;
 
             /// Return x-pos of actor or tile relative to world origin
             int get_x() const;

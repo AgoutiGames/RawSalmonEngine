@@ -60,23 +60,8 @@ Collision::Collision(std::string my_hitbox) :
     my_hitbox_name = my_hitbox;
 }
 
-/**
- * @brief Return the type of the cause
- * @return Type as a string
- * @note Only actor and tiles return a type,
- *       key returns an empty string
- */
-std::string Collision::get_type() const {
-    if(type == CollisionType::tile) {
-        return data.tile->get_type();
-    }
-    else if(type == CollisionType::actor) {
-        return data.actor->get_type();
-    }
-    else {
-        return std::string{""};
-    }
-}
-
 unsigned Collision::get_actor_id() const {return actor_id;}
 
+TileInstance Collision::get_tile_instance() const {
+    return {get_tile(),get_x(),get_y()};
+}
