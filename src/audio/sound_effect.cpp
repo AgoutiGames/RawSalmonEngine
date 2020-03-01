@@ -111,5 +111,6 @@ void SoundEffect::set_position(int angle, float distance) {
     if(distance > 1.0f) {distance = 1.0f;}
     else if(distance < 0.0f) {distance = 0.0f;}
     m_distance = static_cast<Uint8>(1.0f * MAX_DISTANCE);
+    if(active()) {set_position();}
 }
 
