@@ -74,6 +74,9 @@ class Tileset{
         unsigned m_width;       // Dimensions of the whole tileset image
         unsigned m_height;
 
+        unsigned m_margin = 0;
+        unsigned m_spacing = 0;
+
         TilesetCollection* mp_ts_collection;
 
         // Setting these values too high can severely impact performance

@@ -74,6 +74,12 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
     if(eResult != XML_SUCCESS) return eResult;
     eResult = ts_file->QueryUnsignedAttribute("tileheight", &m_tile_height);
     if(eResult != XML_SUCCESS) return eResult;
+
+    // margin and spacing are optional so it's okay to not return XML_SUCCESS
+    eResult = ts_file->QueryUnsignedAttribute("margin", &m_margin);
+    eResult = ts_file->QueryUnsignedAttribute("spacing", &m_spacing);
+    Logger() << "Margin: " << m_margin << " Spacing: " << m_spacing;
+
     eResult = ts_file->QueryUnsignedAttribute("tilecount", &m_tile_count);
     if(eResult != XML_SUCCESS) return eResult;
 
@@ -102,38 +108,34 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
     eResult = p_image->QueryUnsignedAttribute("height", &m_height);
     if(eResult != XML_SUCCESS) return eResult;
 
-    // Check for matching image dimensions
-    // If tiles don't perfectly fit, the tileset gets rejected
-    if(m_width % m_tile_width != 0) {
-        Logger(Logger::error) << "Image width isn't divisible by its tile width in tileset: " << m_name;
-        return XML_ERROR_PARSING;
-    }
-    if(m_height % m_tile_height != 0) {
-        Logger(Logger::error) << "Image height isn't divisible by its tile height in tileset: " << m_name;
-        return XML_ERROR_PARSING;
-    }
-    if(m_tile_count != (m_width / m_tile_width) * (m_height / m_tile_height)) {
-        Logger(Logger::error) << "Wrong tile count given in .tmx/.tsx file in tileset: " << m_name;
-        return XML_ERROR_PARSING;
-    }
-
     // Set reserve to keep pointers to tile stable!
     m_tiles.reserve(m_tile_count);
 
-    for(unsigned i_tile = 0; i_tile < m_tile_count; i_tile++) {
-        // Set the clip rect of each tile in the tileset
-        SDL_Rect temp;
-        temp.x = i_tile % (m_width / m_tile_width) * m_tile_width;
-        temp.y = i_tile / (m_width / m_tile_width) * m_tile_height;
-        temp.w = m_tile_width;
-        temp.h = m_tile_height;
+    unsigned i_tile = 0;
+    SDL_Rect temp;
+    temp.w = m_tile_width;
+    temp.h = m_tile_height;
 
-        // Construct each tile of the tilset and store in m_tiles
-        m_tiles.push_back(Tile(this, temp));
-        if(!ts_collection.register_tile(&m_tiles.back(), i_tile + m_first_gid)) {
-            Logger(Logger::error) << "Failed to register Tile, abort parsing process!";
-            return XML_ERROR_PARSING;
+    int y_advance = m_spacing + m_tile_height;
+    int x_advance = m_spacing + m_tile_width;
+    int y_limit = m_height - m_tile_height - m_margin;
+    int x_limit = m_width - m_tile_width - m_margin;
+
+    for(temp.y = m_margin; temp.y <= y_limit; temp.y += y_advance) {
+        for(temp.x = m_margin; temp.x <= x_limit; temp.x += x_advance) {
+            // Construct each tile of the tilset and store in m_tiles
+            m_tiles.push_back(Tile(this, temp));
+            if(!ts_collection.register_tile(&m_tiles.back(), i_tile + m_first_gid)) {
+                Logger(Logger::error) << "Failed to register Tile, abort parsing process!";
+                return XML_ERROR_PARSING;
+            }
+            i_tile++;
         }
+    }
+
+    if(i_tile != m_tile_count) {
+        Logger(Logger::error) << "Wrong tile count given in .tmx/.tsx file in tileset: " << m_name;
+        return XML_ERROR_PARSING;
     }
 
     // Parse user specified properties of the tileset (only blend mode right now)

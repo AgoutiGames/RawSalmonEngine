@@ -35,7 +35,7 @@ using namespace salmon;
  * @param ts Pointer to the corresponding tileset
  * @param clp @c SDL_Rect which determines the snippet of the whole tileset image
  */
-Tile::Tile(Tileset* ts, SDL_Rect& clp) :
+Tile::Tile(Tileset* ts, const SDL_Rect& clp) :
 mp_tileset{ts}, m_clip{clp}
 {
 
