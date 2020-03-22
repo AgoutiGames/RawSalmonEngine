@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-201 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -67,8 +67,18 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
     MapData& base_map = m_layer_collection->get_base_map();
     m_img_src = base_map.get_file_path() + std::string(p_source);
 
+    const char* p_color_key;
+    p_color_key = p_image->Attribute("trans");
     // Parse the actual image data
-    m_img = base_map.get_game().get_texture_cache().get(m_img_src);
+    if (p_color_key == nullptr) {
+        m_img = base_map.get_game().get_texture_cache().get(m_img_src);
+    }
+    else {
+        std::string color_string = p_color_key;
+        SDL_Color color_key = str_to_color(color_string);
+        m_img = base_map.get_game().get_texture_cache().get(m_img_src,color_key);
+    }
+
     if(!m_img.valid()) {
         Logger(Logger::error) << "Failed to load image layer: " << m_name << " image file: " << m_img_src;
         return XML_ERROR_PARSING;
