@@ -32,6 +32,10 @@ class TextureCache {
         Texture get(std::string full_path);
         bool load(std::string full_path);
 
+        /// @warning
+        /// These functions will always load from disk even if the texture
+        /// got already loaded. This is for making sure that it's always loaded
+        /// with the correct color key. Ugly workaround for seldomly used edge case.
         Texture get(std::string full_path, SDL_Color color_key);
         bool load(std::string full_path, SDL_Color color_key);
 

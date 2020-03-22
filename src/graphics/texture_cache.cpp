@@ -46,7 +46,9 @@ Texture TextureCache::get(std::string full_path, SDL_Color color_key) {
 }
 bool TextureCache::load(std::string full_path, SDL_Color color_key) {
     make_path_absolute(full_path);
-    if(has(full_path)) {return true;}
+
+    // Always load the image again if a color key is supplied
+    // if(has(full_path)) {return true;}
 
     Texture temp;
     if(temp.loadFromFile(m_renderer,full_path,color_key)) {
