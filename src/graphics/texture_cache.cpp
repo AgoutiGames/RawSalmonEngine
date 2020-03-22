@@ -38,6 +38,24 @@ bool TextureCache::load(std::string full_path) {
     }
     else {return false;}
 }
+
+Texture TextureCache::get(std::string full_path, SDL_Color color_key) {
+    make_path_absolute(full_path);
+    if(!load(full_path, color_key)) {return m_empty_texture;}
+    else {return m_textures.at(full_path);}
+}
+bool TextureCache::load(std::string full_path, SDL_Color color_key) {
+    make_path_absolute(full_path);
+    if(has(full_path)) {return true;}
+
+    Texture temp;
+    if(temp.loadFromFile(m_renderer,full_path,color_key)) {
+        m_textures[full_path] = temp;
+        return true;
+    }
+    else {return false;}
+}
+
 bool TextureCache::has(std::string full_path) {
     return (m_textures.find(full_path) != m_textures.end());
 }

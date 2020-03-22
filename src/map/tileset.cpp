@@ -78,7 +78,6 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
     // margin and spacing are optional so it's okay to not return XML_SUCCESS
     eResult = ts_file->QueryUnsignedAttribute("margin", &m_margin);
     eResult = ts_file->QueryUnsignedAttribute("spacing", &m_spacing);
-    Logger() << "Margin: " << m_margin << " Spacing: " << m_spacing;
 
     eResult = ts_file->QueryUnsignedAttribute("tilecount", &m_tile_count);
     if(eResult != XML_SUCCESS) return eResult;
@@ -98,7 +97,18 @@ tinyxml2::XMLError Tileset::init(tinyxml2::XMLElement* ts_file, TilesetCollectio
     const char* p_ts_source;
     p_ts_source = p_image->Attribute("source");
     if (p_ts_source == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-    m_image = mp_ts_collection->get_mapdata().get_game().get_texture_cache().get(full_path + std::string(p_ts_source));
+
+    const char* p_color_key;
+    p_color_key = p_image->Attribute("trans");
+    if (p_color_key == nullptr) {
+        m_image = mp_ts_collection->get_mapdata().get_game().get_texture_cache().get(full_path + std::string(p_ts_source));
+    }
+    else {
+        std::string color_string = p_color_key;
+        SDL_Color color_key = str_to_color(color_string);
+        m_image = mp_ts_collection->get_mapdata().get_game().get_texture_cache().get(full_path + std::string(p_ts_source),color_key);
+    }
+
     if(!m_image.valid()) {
         Logger(Logger::error) << "Failed to load tileset: " << m_name << " image file: " << full_path + std::string(p_ts_source);
         return XML_ERROR_FILE_COULD_NOT_BE_OPENED;

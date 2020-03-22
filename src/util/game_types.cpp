@@ -79,11 +79,15 @@ std::vector<float> dir_to_mov(const salmon::Direction dir) {
 }
 
 /// Converts a @c string to an @c SDL_Color
-/// @note Format is #RRGGBB or #AARRGGBB, no error checking!
+/// @note Format is #RRGGBB or #AARRGGBB, or RRGGBB or AARRGGBB, no error checking!
 SDL_Color str_to_color(const std::string& name) {
         std::string n = name;
         SDL_Color color;
-        n.erase(n.begin()); // Delete leading # sign
+
+        // Delete leading # sign if it's there
+        if(*n.cbegin() == '#') {
+            n.erase(n.begin());
+        }
 
         // Check for possible alpha value (since ARGB and RGB is possible)
         if(n.length() > 6) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -31,6 +31,10 @@ class TextureCache {
 
         Texture get(std::string full_path);
         bool load(std::string full_path);
+
+        Texture get(std::string full_path, SDL_Color color_key);
+        bool load(std::string full_path, SDL_Color color_key);
+
         bool has(std::string full_path);
 
     private:

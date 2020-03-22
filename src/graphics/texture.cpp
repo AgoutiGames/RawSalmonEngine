@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -83,6 +83,57 @@ bool Texture::loadFromFile( SDL_Renderer* renderer, std::string path )
 	//Return success
 	return mTexture.get() != nullptr;
 }
+
+/**
+ * @brief Loads the supplied image file to a SDL2 texture
+ * @param renderer Supplied renderer to use
+ * @param path Path to the image file
+ * @param color The color key of the image which will be transparent when rendered
+ * @return @c bool which indicates success or failure
+ */
+bool Texture::loadFromFile(SDL_Renderer* renderer, std::string path , SDL_Color color) {
+    //Get rid of preexisting texture
+    free();
+
+    mRenderer = renderer;
+
+	//The final texture
+	SDL_Texture* newTexture = nullptr;
+
+	//Load image at specified path
+	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
+	if( loadedSurface == nullptr )
+	{
+		Logger(Logger::error) << "Unable to load image " << path.c_str() << "! SDL_image Error: " << IMG_GetError();
+	}
+	else
+	{
+		//Color key image
+		SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, color.r, color.g, color.b ) );
+
+		//Create texture from surface pixels
+        newTexture = SDL_CreateTextureFromSurface( renderer, loadedSurface );
+		if( newTexture == nullptr )
+		{
+			Logger(Logger::error) << "Unable to create texture from " << path.c_str() << "! SDL_image Error: " << SDL_GetError();
+		}
+		else
+		{
+			//Get image dimensions
+			mWidth = loadedSurface->w;
+			mHeight = loadedSurface->h;
+		}
+
+		//Get rid of old loaded surface
+		SDL_FreeSurface( loadedSurface );
+	}
+
+	mTexture = std::shared_ptr<SDL_Texture>(newTexture, Texture::Deleter());
+
+	//Return success
+	return mTexture.get() != nullptr;
+}
+
 /**
  * @brief Creates a texture from a text
  * @param renderer Supplied renderer to use

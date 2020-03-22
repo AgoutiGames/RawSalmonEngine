@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -41,6 +41,8 @@ class Texture
 
 		//Loads image at specified path
 		bool loadFromFile(SDL_Renderer* renderer, std::string path );
+		// Loads color keyed image at specified path
+		bool loadFromFile(SDL_Renderer* renderer, std::string path , SDL_Color color);
 
 		//Creates image from font string
 		bool loadFromRenderedText( SDL_Renderer* renderer, std::string textureText, SDL_Color textColor, TTF_Font *font, Uint32 wrap = 0);
