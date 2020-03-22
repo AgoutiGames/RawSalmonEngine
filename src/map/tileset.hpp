@@ -44,11 +44,6 @@ class Tileset{
 
         tinyxml2::XMLError init(tinyxml2::XMLElement* ts_file, TilesetCollection& ts_collection); // Initialize single object
 
-        #ifndef LIB_BUILD
-            /// @todo Put parse_symbolic back into mapdata or even better embedd inside some kind of actor handler
-            static tinyxml2::XMLError parse_symbolic(tinyxml2::XMLElement* source, MapData& base_map);
-        #endif // LIB_BUILD
-
         tinyxml2::XMLError parse_tile_info(tinyxml2::XMLElement* source);
 
         const Texture* get_image_pointer() const {return &m_image;}

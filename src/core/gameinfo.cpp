@@ -293,9 +293,6 @@ bool GameInfo::update() {
 
     //Event handler
     SDL_Event e;
-    #ifndef LIB_BUILD
-    InputHandler& handler = m_maps.back().get_input_handler();
-    #endif // LIB_BUILD
 
     m_input_cache.clear();
 
@@ -310,18 +307,12 @@ bool GameInfo::update() {
             //User presses a key
             case SDL_KEYDOWN : {
                 if(m_key_repeat == true || e.key.repeat == false) {
-                    #ifndef LIB_BUILD
-                    handler.process_key_down(e.key);
-                    #endif // LIB_BUILD
                     m_input_cache.set(e.key.keysym.sym, true);
                 }
                 break;
             }
             case SDL_KEYUP : {
                 if(m_key_repeat == true || e.key.repeat == false) {
-                    #ifndef LIB_BUILD
-                    handler.process_key_up(e.key);
-                    #endif // LIB_BUILD
                     m_input_cache.set(e.key.keysym.sym, false);
                 }
                 break;
@@ -416,19 +407,9 @@ bool GameInfo::update() {
         }
     }
 
-    #ifndef LIB_BUILD
-    // In addition to pressed and released events also check for down state of button
-    handler.process_keys_sustained();
-    #endif // LIB_BUILD
-
     m_input_cache.poll();
 
     m_maps.back().update();
-
-    #ifndef LIB_BUILD
-    // Do nothing with returned signal because we don't have to
-    m_events.process_events(*this);
-    #endif // LIB_BUILD
 
     return true;
 }

@@ -1,6 +1,7 @@
 # Build directories
 [Bb]uild/
 [Bb]in/
+[Ll]ib/
 
 # Prerequisites
 *.d

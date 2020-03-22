@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
-usage="Usage: ./build.sh [CONFIG] [PLATFORM] [BIT] [LIBRARY] [VERSION]
+usage="Usage: ./build.sh [CONFIG] [PLATFORM] [BIT] [VERSION]
 CONFIG: \"Release\", \"Debug\", \"Profile\"
 PLATFORM: \"linux\", \"windows\"
 BIT: \"64\", \"32\"
-LIBRARY: \"ON\", \"OFF\"
 VERSION: any string"
 
 if [ "$1" ==  "--help" ] || [ "$1" == "-h" ]
@@ -26,11 +25,7 @@ then
 fi
 if [ "$4" ]
 then
-    export LIBRARY="$4"
-fi
-if [ "$5" ]
-then
-    export TRAVIS_TAG="$5"
+    export TRAVIS_TAG="$4"
 fi
 
 if [ "$CONFIG" != "Release" ] && [ "$CONFIG" != "Debug" ] && [ "$CONFIG" != "Profile" ]
@@ -48,12 +43,6 @@ fi
 if [ "$BIT" != "64" ] && [ "$BIT" != "32" ]
 then
     echo "BIT parameter or env var is not properly set! Value is: \"${BIT}\"!"
-    echo "Please check help page via \"./build -h\""
-    exit
-fi
-if [ "$LIBRARY" != "ON" ] && [ "$LIBRARY" != "OFF" ]
-then
-    echo "LIBRARY parameter or env var is not properly set! Value is: \"${LIBRARY}\"!"
     echo "Please check help page via \"./build -h\""
     exit
 fi

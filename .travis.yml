@@ -3,25 +3,15 @@ sudo: required
 language: cpp
 compiler: gcc
 env:
-- CONFIG=Release PLATFORM=linux   BIT=64 LIBRARY=OFF
-- CONFIG=Release PLATFORM=linux   BIT=32 LIBRARY=OFF
-- CONFIG=Release PLATFORM=windows BIT=64 LIBRARY=OFF
-- CONFIG=Release PLATFORM=windows BIT=32 LIBRARY=OFF
+- CONFIG=Release PLATFORM=linux   BIT=64
+- CONFIG=Release PLATFORM=linux   BIT=32
+- CONFIG=Release PLATFORM=windows BIT=64
+- CONFIG=Release PLATFORM=windows BIT=32
 
-- CONFIG=Release PLATFORM=linux   BIT=64 LIBRARY=ON
-- CONFIG=Release PLATFORM=linux   BIT=32 LIBRARY=ON
-- CONFIG=Release PLATFORM=windows BIT=64 LIBRARY=ON
-- CONFIG=Release PLATFORM=windows BIT=32 LIBRARY=ON
-
-- CONFIG=Debug PLATFORM=linux   BIT=64 LIBRARY=OFF
-- CONFIG=Debug PLATFORM=linux   BIT=32 LIBRARY=OFF
-- CONFIG=Debug PLATFORM=windows BIT=64 LIBRARY=OFF
-- CONFIG=Debug PLATFORM=windows BIT=32 LIBRARY=OFF
-
-- CONFIG=Debug PLATFORM=linux   BIT=64 LIBRARY=ON
-- CONFIG=Debug PLATFORM=linux   BIT=32 LIBRARY=ON
-- CONFIG=Debug PLATFORM=windows BIT=64 LIBRARY=ON
-- CONFIG=Debug PLATFORM=windows BIT=32 LIBRARY=ON
+- CONFIG=Debug PLATFORM=linux   BIT=64
+- CONFIG=Debug PLATFORM=linux   BIT=32
+- CONFIG=Debug PLATFORM=windows BIT=64
+- CONFIG=Debug PLATFORM=windows BIT=32
 install:
 - sudo apt-get update
 - sudo ./scripts/fetch_dev_dependencies.sh

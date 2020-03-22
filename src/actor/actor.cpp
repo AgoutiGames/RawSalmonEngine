@@ -154,27 +154,6 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             }
         }
 
-        #ifndef LIB_BUILD
-            // Parse response values
-            else if(str_to_response(name) != Response::invalid) {
-                const char* p_event = p_property->Attribute("value");
-                if(p_event != nullptr) {
-                    std::string event(p_event);
-                    if(m_map->check_event_convert_actor(event)) {
-                        m_response.register_event(str_to_response(name), m_map->get_event_convert_actor(event));
-                    }
-                    else {
-                        Logger(Logger::error) << "An event called: " << event << " does not exist/ never got parsed!";
-                        return XML_ERROR_PARSING_ATTRIBUTE;
-                    }
-                }
-                else {
-                    Logger(Logger::error) << "Empty response event specified";
-                    return XML_NO_ATTRIBUTE;
-                }
-            }
-        #endif // LIB_BUILD
-
         else {
             XMLError eResult;
             const char* p_type = p_property->Attribute("type");
@@ -387,31 +366,6 @@ bool Actor::unstuck_along_path(float x, float y,salmon::Collidees target, const 
     return moved;
 }
 
-#ifndef LIB_BUILD
-    /**
-     * @brief Update the actor state
-     */
-    void Actor::update() {
-
-        respond(Response::on_always);
-
-        for(Collision c : m_collisions) {
-            if(c.mouse()) {respond(Response::on_mouse, c);}
-            else if(!c.none()) {respond(Response::on_collision, c);}
-            else {
-                Logger(Logger::error) << "Actor: " << m_name << " tried to respond to \"empty\" collision. This shouldn't happen!";
-            }
-        }
-        clear_collisions();
-
-        EventSignal sig = m_events.process_events(*this);
-
-        if(sig == EventSignal::end) {
-            respond(Response::on_idle);
-        }
-    }
-#endif // LIB_BUILD
-
 /**
  * @brief Animate the actor
  * @param anim The type of the animation
@@ -486,26 +440,6 @@ AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float
 
     return current_tile->push_anim_trigger(speed);
 }
-
-#ifndef LIB_BUILD
-    /**
-     * @brief Triggers event bound to Response value
-     * @param r the Response value
-     * @param c the Cause value which shows who triggered this response
-     * @return @c bool indication if response is defined/gets triggered
-     */
-    bool Actor::respond(Response r, Collision c) {
-        if(!m_response.check_event(r)) {
-            return false;
-        }
-        else {
-            SmartEvent<Actor> event = m_response.get_event(r);
-            event->set_collision(c);
-            m_events.add_event(event);
-            return true;
-        }
-    }
-#endif // LIB_BUILD
 
 /// Checks if the currently set animation state and direction are existin
 bool Actor::valid_anim_state(std::string anim, salmon::Direction dir) const {

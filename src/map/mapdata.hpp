@@ -35,19 +35,6 @@ class GameInfo;
 class Tile;
 class Layer;
 
-#ifndef LIB_BUILD
-    #include "event/input_handler.hpp"
-    #include "event/ae_me_wrapper.hpp"
-    #include "event/ae_ge_wrapper.hpp"
-    #include "event/me_ge_wrapper.hpp"
-    #include "event/event_collection.hpp"
-    #include "event/event_queue.hpp"
-    #include "event/wide_event_collection.hpp"
-
-    template <class Scope>
-    class SmartEvent;
-#endif // LIB_BUILD
-
 /**
  * @brief Container for the layers, tilesets, additional data, key/event matrix and camera of the map.
  *
@@ -104,34 +91,6 @@ class MapData {
         // Binds or unbinds camera from player position
         void bind_camera_to_actor(bool state) {if(!state) {m_camera.unbind_actor();} m_bind_camera_to_actor = state;}
 
-        #ifndef LIB_BUILD
-            // Event management
-            EventQueue<MapData>& get_event_queue() {return m_events;}
-            std::string get_key_target() const {return m_key_target;}
-            InputHandler& get_input_handler() {return m_input_handler;}
-
-            template<class Scope=Actor, class Key=std::string>
-            void register_event(std::pair<Key, SmartEvent<Scope>> event) {m_event_archive.register_event<Scope,Key>(event);} ///< Link event name with @c Event<Actor>*
-
-            template<class Scope=Actor, class Key=std::string>
-            SmartEvent<Scope> get_event(Key name) const {return m_event_archive.get_event<Scope,Key>(name);}
-
-            template<class Scope=Actor, class Key=std::string>
-            bool check_event(Key name) const {return m_event_archive.check_event<Scope,Key>(name);} ///< Return true if event is defined
-
-            template<class Key=std::string>
-            bool check_event_convert_actor(Key name) const;
-
-            template<class Key=std::string>
-            bool check_event_convert_map(Key name) const;
-
-            template<class Key=std::string>
-            SmartEvent<Actor> get_event_convert_actor(Key name) const;
-
-            template<class Key=std::string>
-            SmartEvent<MapData> get_event_convert_map(Key name) const;
-        #endif // LIB_BUILD
-
         // Actor management
         bool is_actor(Uint32 gid) const;
         bool is_actor(std::string name) const;
@@ -170,68 +129,7 @@ class MapData {
         std::map<std::string, Actor> m_actor_templates; ///< List of all actor templates by name
         std::map<Uint32, std::string> m_gid_to_actor_temp_name; ///< List of actor template names by global tile id
 
-        #ifndef LIB_BUILD
-            InputHandler m_input_handler;
-
-            std::string m_key_target = "PLAYER";
-
-            WideEventCollection m_event_archive;
-
-            EventQueue<MapData> m_events;
-            SmartEvent<MapData> m_on_load;
-            SmartEvent<MapData> m_on_always;
-            SmartEvent<MapData> m_on_resume;
-        #endif // LIB_BUILD
-
         SDL_Renderer** mpp_renderer = nullptr;
 };
-
-#ifndef LIB_BUILD
-    /// Return true if event is defined as either Game/Map or ActorEvent
-    template<class Key>
-    bool MapData::check_event_convert_actor(Key name) const {
-        return m_event_archive.check_event<Actor,Key>(name) ||
-        m_event_archive.check_event<MapData,Key>(name) ||
-        m_event_archive.check_event<GameInfo,Key>(name);
-    }
-
-    /// Return true if event is defined as either Game or MapEvent
-    template<class Key>
-    bool MapData::check_event_convert_map(Key name) const {
-        return m_event_archive.check_event<MapData,Key>(name) ||
-        m_event_archive.check_event<GameInfo,Key>(name);
-    }
-
-    /// Return ActorEvent and if needed wrap Game or MapEvent as an ActorEvent
-    template<class Key>
-    SmartEvent<Actor> MapData::get_event_convert_actor(Key name) const {
-        if(m_event_archive.check_event<Actor,Key>(name)) {
-            return m_event_archive.get_event<Actor,Key>(name);
-        }
-        else if(m_event_archive.check_event<MapData,Key>(name)) {
-            return SmartEvent<Actor>(new AeMeWrapper("generated", m_event_archive.get_event<MapData,Key>(name)));
-        }
-        else if(m_event_archive.check_event<GameInfo,Key>(name)) {
-            return SmartEvent<Actor>(new AeGeWrapper("generated", m_event_archive.get_event<GameInfo,Key>(name)));
-        }
-        else {
-            return SmartEvent<Actor>();
-        }
-    }
-
-    /// Return MapEvent and if needed wrap GameEvent as a MapEvent
-    template<class Key>
-    SmartEvent<MapData> MapData::get_event_convert_map(Key name) const {
-        if(m_event_archive.check_event<MapData,Key>(name)) {
-            return m_event_archive.get_event<MapData,Key>(name);
-        }
-        else if(m_event_archive.check_event<GameInfo,Key>(name)) {
-            return SmartEvent<MapData>(new MeGeWrapper("generated", m_event_archive.get_event<GameInfo,Key>(name)));
-        }
-        else {
-            return SmartEvent<MapData>();
-        }
-    }
-#endif // LIB_BUILD
 
 #endif // MAPDATA_HPP_INCLUDED

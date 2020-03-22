@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
-usage="Usage: ./compile.sh [CONFIG] [PLATFORM] [BIT] [LIBRARY]
+usage="Usage: ./compile.sh [CONFIG] [PLATFORM] [BIT]
 CONFIG: \"Release\", \"Debug\", \"Profile\"
 PLATFORM: \"linux\", \"windows\"
-BIT: \"64\", \"32\"
-LIBRARY: \"ON\", \"OFF\""
+BIT: \"64\", \"32\""
 if [ "$1" ==  "--help" ] || [ "$1" == "-h" ]
 then
     echo "$usage"
@@ -32,13 +31,6 @@ else
     B=$BIT
 fi
 
-if [ "$4" ]
-then
-    L=$4
-else
-    L=$LIBRARY
-fi
-
 if [ "$C" != "Release" ] && [ "$C" != "Debug" ] && [ "$C" != "Profile" ]
 then
     echo "CONFIG parameter or env var is not properly set! Value is: \"${C}\"!"
@@ -57,17 +49,12 @@ then
     echo "Please check help page via \"./compile -h\""
     exit 1
 fi
-if [ "$L" != "ON" ] && [ "$L" != "OFF" ]
-then
-    echo "LIBRARY parameter or env var is not properly set! Value is: \"${L}\"!"
-    echo "Please check help page via \"./compile -h\""
-    exit 1
-fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 cd ../
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=${C} -DLIB_TARGET=${L} -DCMAKE_TOOLCHAIN_FILE="../cmake/${P}${B}-toolchain.cmake" ..
-make -j4
+cmake -DCMAKE_BUILD_TYPE=${C} -DCMAKE_TOOLCHAIN_FILE="../cmake/${P}${B}-toolchain.cmake" ..
+make -j$(nproc)
+make install
 echo "Successfully compiled"

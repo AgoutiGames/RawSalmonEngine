@@ -153,18 +153,10 @@ bool ObjectLayer::render(const Camera& camera) const {
  * This function currently triggers the update function of every
  * object of an object type layer. When it returns false, this is
  * a signal to delete the object.
+ * @todo Remove late update parameter
  */
 void ObjectLayer::update(bool late) {
-    #ifndef LIB_BUILD
-        if(m_suspended) {return;}
-        for(Actor& a : m_obj_grid) {
-            if(a.late_polling() == late) {
-                a.update();
-            }
-        }
-    #else
     (void) late;
-    #endif // LIB_BUILD
     // Establish correct rendering order
     m_obj_grid.sort();
 }
@@ -257,9 +249,6 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
 }
 
 Actor* ObjectLayer::add_actor(Actor a) {
-    #ifndef LIB_BUILD
-        a.respond(Response::on_spawn);
-    #endif // LIB_BUILD
     m_obj_grid.push_back(a);
     m_obj_grid.back().set_id(next_object_id++);
     m_obj_grid.back().set_layer(m_name);

@@ -46,12 +46,6 @@ if (NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wfatal-errors")
 endif()
 
-option(LIB_TARGET "Build library version without event support" OFF)
-
-if(LIB_TARGET)
-  add_definitions(-DLIB_BUILD)
-endif()
-
 set(LIB_SOURCES
     src/include_impl/audio_manager_ref.cpp
     src/include_impl/collision_ref.cpp
@@ -90,44 +84,6 @@ set(CORE_SOURCES
     src/core/gamepad.cpp
     )
 
-set(EVENT_SOURCES
-    src/event/input_handler.cpp
-    src/event/ae_accelerate.cpp
-    src/event/ae_decelerate.cpp
-    src/event/ae_erase_this.cpp
-    src/event/ae_move.cpp
-    src/event/ae_move_direction.cpp
-    src/event/ae_move_static.cpp
-    src/event/ae_animate.cpp
-    src/event/ae_fall.cpp
-    src/event/ae_multi.cpp
-    src/event/ae_spawn_actor.cpp
-    src/event/ate_on_ground.cpp
-    src/event/ate_math.cpp
-    src/event/ate_mouse_buttons.cpp
-    src/event/ate_single.cpp
-    src/event/ate_switch.cpp
-    src/event/ae_set_var.cpp
-    src/event/ae_set_anim_frame.cpp
-    src/event/ae_sound.cpp
-    src/event/ae_ge_wrapper.cpp
-    src/event/ae_me_wrapper.cpp
-    src/event/ae_spawn_text.cpp
-    src/event/ae_rotate.cpp
-    src/event/ate_collision.cpp
-    src/event/ae_wait.cpp
-    src/event/me_erase_actor.cpp
-    src/event/me_ge_wrapper.cpp
-    src/event/me_play_music.cpp
-    src/event/me_layer_state.cpp
-    src/event/me_set_var.cpp
-    src/event/me_template_layer.cpp
-    src/event/ge_change_map.cpp
-    src/event/ge_close_map.cpp
-    src/event/ge_set_var.cpp
-    src/event/ge_quit.cpp
-    )
-
 set(GRAPHICS_SOURCES
     src/graphics/texture.cpp
     src/graphics/texture_cache.cpp
@@ -154,20 +110,7 @@ set(UTIL_SOURCES
     src/util/preloader.cpp
     )
 
-if(NOT LIB_TARGET)
-    set(SALMON_SOURCES
-        ${ACTOR_SOURCES}
-        ${AUDIO_SOURCES}
-        ${CORE_SOURCES}
-        ${EVENT_SOURCES}
-        ${GRAPHICS_SOURCES}
-        ${MAP_SOURCES}
-        ${UTIL_SOURCES}
-    )
-    add_executable(${PROJECT_NAME} ${SALMON_SOURCES})
-
-else()
-    set(SALMON_SOURCES
+set(SALMON_SOURCES
         ${ACTOR_SOURCES}
         ${AUDIO_SOURCES}
         ${CORE_SOURCES}
@@ -176,9 +119,7 @@ else()
         ${UTIL_SOURCES}
         ${LIB_SOURCES}
     )
-    add_library(${PROJECT_NAME} SHARED ${SALMON_SOURCES})
-    target_include_directories(${PROJECT_NAME} PUBLIC include)
-endif()
+add_library(${PROJECT_NAME} SHARED ${SALMON_SOURCES})
 
 find_package(B64 REQUIRED)
 find_package(TinyXML2 REQUIRED)
@@ -188,6 +129,10 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TinyXML2_INCLUDE_DIRS} ${B64_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} stdc++fs ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_MIXER_LIBRARIES} ${ZLIB_LIBRARIES} ${TinyXML2_LIBRARIES} ${B64_LIBRARIES})
+
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)

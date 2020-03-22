@@ -30,10 +30,6 @@
 #include "graphics/texture_cache.hpp"
 #include "util/preloader.hpp"
 
-#ifndef LIB_BUILD
-#include "event/event_queue.hpp"
-#endif // LIB_BUILD
-
 class MapData;
 
 /**
@@ -42,13 +38,6 @@ class MapData;
  */
 
 class GameInfo {
-#ifndef LIB_BUILD
-public:
-    EventQueue<GameInfo>& get_event_queue() {return m_events;}
-private:
-    EventQueue<GameInfo> m_events;
-#endif // LIB_BUILD
-
 public:
     GameInfo();
     ~GameInfo();

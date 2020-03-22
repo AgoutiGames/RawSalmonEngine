@@ -31,11 +31,6 @@
 
 class MapData;
 
-#ifndef LIB_BUILD
-    #include "event/event_collection.hpp"
-    #include "event/event_queue.hpp"
-#endif // LIB_BUILD
-
 /**
  * @brief Parse, store and manage all actors
  *
@@ -153,12 +148,6 @@ class Actor{
         void clear_collisions() {m_collisions.clear();}
         void register_collisions(bool r) {if(!r) {clear_collisions();} m_register_collisions = r;}
 
-        #ifndef LIB_BUILD
-            void update();
-            EventQueue<Actor>& get_event_queue() {return m_events;}
-            bool respond(Response r, Collision c = Collision());
-        #endif // LIB_BUILD
-
     private:
         void transform_hitbox(SDL_Rect& hitbox) const;
 
@@ -181,11 +170,6 @@ class Actor{
         salmon::Direction m_direction = salmon::Direction::none; ///< Current direction facing
         std::map<std::string, std::map<salmon::Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         Tile m_base_tile;
-
-        #ifndef LIB_BUILD
-            EventCollection<Actor, Response> m_response; ///< EventCollection which yields events for response values
-            EventQueue<Actor> m_events;
-        #endif // LIB_BUILD
 
         DataBlock m_data; ///< This holds custom user values by string
 
