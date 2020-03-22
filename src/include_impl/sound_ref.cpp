@@ -23,7 +23,24 @@
 using salmon::SoundRef;
 
 SoundRef::SoundRef() : m_impl{SoundEffect::get_null_sound()} {}
-SoundRef::SoundRef(SoundEffect& impl) : m_impl{&impl} {}
+SoundRef::SoundRef(SoundEffect& impl) : m_impl{new SoundEffect(impl)} {}
+
+SoundRef::SoundRef(const SoundRef& sound) : SoundRef(*sound.m_impl) {}
+SoundRef::SoundRef(SoundRef&& sound) : m_impl{sound.m_impl} {
+    sound.m_impl = nullptr;
+}
+SoundRef& SoundRef::operator=(const SoundRef& sound) {
+    delete m_impl;
+    m_impl = new SoundEffect(*sound.m_impl);
+    return *this;
+}
+SoundRef& SoundRef::operator=(SoundRef&& sound) {
+    delete m_impl;
+    m_impl = sound.m_impl;
+    sound.m_impl = nullptr;
+    return *this;
+}
+SoundRef::~SoundRef() {if(m_impl != nullptr) {delete m_impl;}}
 
 bool SoundRef::good() const {return m_impl->good();}
 void SoundRef::play(int loops, int length_ms) {m_impl->play(loops,length_ms);}

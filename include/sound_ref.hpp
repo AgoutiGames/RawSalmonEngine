@@ -27,6 +27,12 @@ namespace salmon {
             SoundRef();
             SoundRef(SoundEffect& impl);
 
+            SoundRef(const SoundRef& sound);
+            SoundRef(SoundRef&& sound);
+            SoundRef& operator=(const SoundRef& sound);
+            SoundRef& operator=(SoundRef&& sound);
+            ~SoundRef();
+
             /// Returns true if the sound exists and could be loaded
             bool good() const;
 
