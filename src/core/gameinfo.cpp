@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -40,7 +40,7 @@ GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
 	if( !init() ) {
 		Logger(Logger::error) << "Failed to initialize SDL!";
 	}
-
+    
     char* base_path = SDL_GetBasePath();
     if(base_path != nullptr) {m_base_path = base_path;}
     else {
@@ -74,13 +74,12 @@ bool GameInfo::init() {
 	}
 	else
 	{
+	
 		//Set texture filtering to linear
 		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
 		{
 			Logger(Logger::warning) << "Linear texture filtering not enabled!";
 		}
-
-
 
 		//Create window
 		int fullscreen_bits = 0;
@@ -105,8 +104,11 @@ bool GameInfo::init() {
 				//Initialize renderer color
 				SDL_SetRenderDrawColor( m_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
-				//Initialize PNG loading
-				int img_flags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
+				#ifdef __EMSCRIPTEN__
+				    int img_flags = IMG_INIT_PNG;
+			    #else
+			        int img_flags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
+			    #endif
 				if( (IMG_Init(img_flags) & img_flags) != img_flags)
 				{
 					Logger(Logger::error) << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError();
@@ -115,9 +117,13 @@ bool GameInfo::init() {
 
 				m_texture_cache.init(m_renderer);
 
-				int mix_flags = MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC;
+                #ifdef __EMSCRIPTEN__
+				    int mix_flags = MIX_INIT_OGG;
+				#else
+				    int mix_flags = MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC;
+				#endif
                 if( (Mix_Init(mix_flags) & mix_flags) != mix_flags) {
-                    Logger(Logger::error) << "Mix_Init: Failed to init required ogg support! SDL_mixer Errof: " << Mix_GetError();
+                    Logger(Logger::error) << "Mix_Init: Failed to init required sound file support! SDL_mixer Error: " << Mix_GetError();
                 }
 
 				//Initialize SDL_mixer

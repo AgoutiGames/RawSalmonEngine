@@ -106,7 +106,9 @@ SDL_Color str_to_color(const std::string& name) {
 
 void make_path_absolute(std::string& path) {
     path = fs::path(path).make_preferred().string();
-    path = fs::canonical(path).string();
+    #ifndef __EMSCRIPTEN__
+        path = fs::canonical(path).string();
+    #endif
 }
 
 SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second) {

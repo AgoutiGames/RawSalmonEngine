@@ -24,9 +24,11 @@
 #include <ctime>
 #include <SDL.h>
 
-// Define static vars
-const char* Logger::s_log_filename = "log.txt";
-std::ofstream Logger::s_logfile = Logger::open_log();
+#ifndef __EMSCRIPTEN__
+    // Define static vars
+    const char* Logger::s_log_filename = "log.txt";
+    std::ofstream Logger::s_logfile = Logger::open_log();
+#endif
 
 /// If buffer isn't empty upon destruction, flush it
 Logger::~Logger() {
@@ -37,26 +39,27 @@ Logger::~Logger() {
     }
 }
 
+#ifndef __EMSCRIPTEN__
+    std::ofstream Logger::open_log() {
+        std::ofstream logfile;
 
-std::ofstream Logger::open_log() {
-    std::ofstream logfile;
+        // Make logfile local to the executable
+        // Wrapping the call to GetBasePath in SDL_Init and SDL_Quit is preferred method in mailinglist
+        SDL_Init(0);
+        char* base_path_char = SDL_GetBasePath();
+        std::string base_path;
+        // If base path is not available, the current directory is used instead
+        if(base_path_char != nullptr) {
+            base_path = base_path_char;
+            SDL_free(base_path_char);
+        }
+        SDL_Quit();
 
-    // Make logfile local to the executable
-    // Wrapping the call to GetBasePath in SDL_Init and SDL_Quit is preferred method in mailinglist
-    SDL_Init(0);
-    char* base_path_char = SDL_GetBasePath();
-    std::string base_path;
-    // If base path is not available, the current directory is used instead
-    if(base_path_char != nullptr) {
-        base_path = base_path_char;
-        SDL_free(base_path_char);
+        logfile.open (base_path + s_log_filename, std::ios::app);
+        logfile << "--------Start Logging--------\n";
+        return logfile;
     }
-    SDL_Quit();
-
-    logfile.open (base_path + s_log_filename, std::ios::app);
-    logfile << "--------Start Logging--------\n";
-    return logfile;
-}
+#endif
 
 /// Handle endl, flush, setw, setfill, etc.
 Logger& Logger::operator<<(ManipFn manip) {
@@ -107,8 +110,10 @@ void Logger::flush() {
         (*target) << time << level << ' ' << m_buffer.str() << "\u001b[0m";
     #endif
 
-    // Write log to log.txt
-    s_logfile << time << level << ' ' << m_buffer.str();
+    #ifndef __EMSCRIPTEN__
+        // Write log to log.txt
+        s_logfile << time << level << ' ' << m_buffer.str();
+    #endif
 
     // After each message reset the log level
     m_log_level = info;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -110,7 +110,13 @@ private:
     FontManager m_font_manager;
 
     std::string m_base_path = ""; ///< Path to the directory where the executable lies
-    std::string m_resource_path = "../data"; ///< Path to the data directory where typically all game assets are
+
+    #ifdef __EMSCRIPTEN__
+        std::string m_resource_path = "data"; ///< Path to the data directory where typically all game assets are
+    #else
+        std::string m_resource_path = "../data"; ///< Path to the data directory where typically all game assets are
+    #endif
+
     std::string m_current_path = ""; ///< Path to the directory of the currently active mapfile
 
     std::vector<MapData> m_maps; ///< Stores the currently active game map

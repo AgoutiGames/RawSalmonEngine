@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -24,9 +24,15 @@
 
 namespace fs = std::experimental::filesystem;
 
-const std::vector<std::string> Preloader::m_image_formats = {".png",".PNG",".jpg",".JPG",".jpeg",".JPEG",".tif", ".TIF", ".tiff", ".TIFF"};
-const std::vector<std::string> Preloader::m_music_formats = {".flac", ".FLAC", ".mp3",".MP3", "_M.ogg", "_M.OGG"};
-const std::vector<std::string> Preloader::m_sound_formats = {".wav", ".WAV", ".ogg", ".OGG"};
+#ifdef __EMSCRIPTEN__
+    const std::vector<std::string> Preloader::m_image_formats = {".png",".PNG"};
+    const std::vector<std::string> Preloader::m_music_formats = {"_M.ogg", "_M.OGG"};
+    const std::vector<std::string> Preloader::m_sound_formats = {".wav", ".WAV", ".ogg", ".OGG"};
+#else
+    const std::vector<std::string> Preloader::m_image_formats = {".png",".PNG",".jpg",".JPG",".jpeg",".JPEG",".tif", ".TIF", ".tiff", ".TIFF"};
+    const std::vector<std::string> Preloader::m_music_formats = {".flac", ".FLAC", ".mp3",".MP3", "_M.ogg", "_M.OGG"};
+    const std::vector<std::string> Preloader::m_sound_formats = {".wav", ".WAV", ".ogg", ".OGG"};
+#endif
 
 Preloader::Preloader(GameInfo* game) : m_game{game} {}
 

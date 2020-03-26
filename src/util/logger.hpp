@@ -73,9 +73,11 @@ private:
     LogLevel m_log_level = info;
     std::stringstream m_buffer;
 
-    static std::ofstream open_log();
-    static std::ofstream s_logfile;
-    static const char* s_log_filename;
+    #ifndef __EMSCRIPTEN__
+        static std::ofstream open_log();
+        static std::ofstream s_logfile;
+        static const char* s_log_filename;
+    #endif
 };
 
 
