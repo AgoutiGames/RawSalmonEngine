@@ -123,16 +123,23 @@ add_library(${PROJECT_NAME} SHARED ${SALMON_SOURCES})
 
 find_package(B64 REQUIRED)
 find_package(TinyXML2 REQUIRED)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL Emscripten)
 find_package(ZLIB REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TinyXML2_INCLUDE_DIRS} ${B64_INCLUDE_DIRS})
+
+if(NOT CMAKE_SYSTEM_NAME STREQUAL Emscripten)
 target_link_libraries(${PROJECT_NAME} stdc++fs ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_MIXER_LIBRARIES} ${ZLIB_LIBRARIES} ${TinyXML2_LIBRARIES} ${B64_LIBRARIES})
+else() # Explicitly linking experimental::fs freaks emscripten out
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_MIXER_LIBRARIES} ${ZLIB_LIBRARIES} ${TinyXML2_LIBRARIES} ${B64_LIBRARIES})
+endif()
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
