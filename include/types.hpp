@@ -28,6 +28,12 @@ namespace salmon {
         int w, h;
     };
 
+    #ifdef __EMSCRIPTEN__
+        constexpr bool WEB_BUILD = true;
+    #else
+        constexpr bool WEB_BUILD = false;
+    #endif // __EMSCRIPTEN__
+
     /// The name of a hitbox if you don't specify an actual
     const std::string DEFAULT_HITBOX = "DEFAULT";
 
