@@ -24,7 +24,6 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
   - [x] right-up
   - [x] left-down
   - [x] left-up
-* A scriptable actor-event system, focussing on reusability, driving all higher level game logic
 * Adaptive offscreen tile culling *(means: Better perfomance with huge maps or many Layers)*
 * Static and dynamic animation support
 * Layer offset and tileset offset support
@@ -34,33 +33,18 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
 * Collision detection via the *[Tiled](http://www.mapeditor.org)* hitboxes
 * *It actually works!*
 ## Dependencies
+<img align="right" src="/icons/TouchIt.png">
 * **[SDL](http://www.libsdl.org/)** **2.0.0**+
 * **[TinyXML2](https://github.com/leethomason/tinyxml2)** **2.2.0**+
 * **[Libb64](https://sourceforge.net/projects/libb64/)**
 * **[ZLIB](https://zlib.net)**
-
-For Debian/Ubuntu run:
-
-    $ sudo apt install zlib1g-dev libb64-dev libtinyxml2-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev  
-
 ## Compile and install
-For Linux run:
-
-<img align="right" src="/icons/TouchIt.png">
-
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ make
-    
+* Generally you can justuse the bash scripts in the [scripts folder](/scripts)
+* See [COMPILATION](/COMPILATION) for details
 ## Usage
-* ./Salmon
-* Loads template map at /data/main.tmx
-* Move via wasd, jump via space
-
-* Linux Releases are for Ubuntu Bionic and newer, but also work for Xenial if manually built (because of libtinyxml2 version)
-* Windows Releases should work for Vista and newer
-
+* All public headers are inside the include folder
+* By default only a shared library is built
+* Link against libSalmon.so or libSalmon.dll
 ## Contact
 * [Agouti Games (EN)](http://game.moonlighthiker.de/index.php/en/)
 * [Agouti Games (DE)](http://game.moonlighthiker.de/index.php/de/)

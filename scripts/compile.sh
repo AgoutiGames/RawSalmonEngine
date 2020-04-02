@@ -52,7 +52,7 @@ fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 cd ../
-mkdir build
+mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=${C} -DCMAKE_TOOLCHAIN_FILE="../cmake/${P}${B}-toolchain.cmake" ..
 make -j$(nproc)

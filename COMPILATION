@@ -15,13 +15,13 @@ fetch_dev_dependencies.sh : Installls needed dependencies for compilation of the
 fetch_dependencies.sh     : Installs dependencies for end users who whish to run
                             the engine or applications built with the library
 
-startGame.sh              : A script included in linux engine build which runs
-                            the Salmon executable file
-
 compile.sh                : Compiles the project inside a build folder at
                             project root level
 
 pack_artifacts.sh         : Packs the compiled artifacts and supplementary files
-                          : into an archive at project root level
+                            into an archive at project root level
 
 clean_up.sh               : Deletes the build folder
+
+build.sh                  : Executes all build scripts in order to emit an
+                            archive with all files needed for a release
