@@ -40,15 +40,14 @@ is the first game being developed with the RawSalmonEngine. It's a platformer ab
 * **[Libb64](https://sourceforge.net/projects/libb64/)**
 * **[ZLIB](https://zlib.net)**
 ## Compile and install
-* Generally you can justuse the bash scripts in the [scripts folder](/scripts)
+* Generally you can just use the bash scripts in the [scripts folder](/scripts)
 * See [COMPILATION](/COMPILATION) for details
 ## Usage
 * All public headers are inside the include folder
 * By default only a shared library is built
 * Link against libSalmon.so or libSalmon.dll
 ## Contact
-* [Agouti Games (EN)](http://game.moonlighthiker.de/index.php/en/)
-* [Agouti Games (DE)](http://game.moonlighthiker.de/index.php/de/)
+* [Agouti Games](https://agouti.games)
 * [Discord Server](https://discord.gg/thAaD9e)
 * [Tumblr](https://agoutigames.tumblr.com/)
 * [Soundcloud](https://soundcloud.com/agoutigames)
