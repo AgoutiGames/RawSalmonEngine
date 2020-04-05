@@ -5,10 +5,51 @@ A game engine utilising *"[Tiled](http://www.mapeditor.org)" map files*.
 
 The current state of  the project resembles a **basic programmable 2D Game Engine**. The clue of this engine is that it reads all game information **from the map files** an therefore the majority of game building will happen **inside the UI** of the streamlined *[Tiled Mapeditor](http://www.mapeditor.org)*. The ultimate goal of this project is to implement a full fledged game development environment via *[Tiled](http://www.mapeditor.org)*. The currently used **[Tiled](http://www.mapeditor.org) Version** is **1.1.4**. The minimum version is **1.0** because of the heavy use of typed tiles.
 ## Demo-Games
- <img align="right" src="https://github.com/AgoutiGames/TerraAustralis/raw/master/essentials/showcase/gameplay.gif">This and following games shall act as a kind of sandbox to properly showcase what the engine is actually capable of doing. Also it greatly helps with further developing the engine. Instead of theoretically figuring out what features are needed for developing a game, we experience it at first-hand. This is somewhat in the spirit of the blender open movies, but at a much smaller scale.
+This and following games shall act as a kind of sandbox to properly showcase what the engine is actually capable of doing. Also it greatly helps with further developing the engine. Instead of theoretically figuring out what features are needed for developing a game, we experience it at first-hand. This is somewhat in the spirit of the blender open movies, but at a much smaller scale.
  
- ### [Terra Australis](https://github.com/AgoutiGames/TerraAustralis)
-is the first game being developed with the RawSalmonEngine. It's a platformer about one of the last thylacines of Australia searching for his fellow marsupials. 
+### [Calaveras](https://github.com/AgoutiGames/Calaveras)
+<details><summary>Click to expand</summary>
+<p></p>
+ 
+**Calaveras** originated as an university assignment and is planned to be a smartphone "drag and release" platformer.
+<p></p>
+ 
+![Calaveras](https://github.com/AgoutiGames/Calaveras/blob/master/readme/Calaveras.gif?raw=true)
+
+</details>
+
+### [Plantower](https://github.com/AgoutiGames/GameOff-2019-Plantower)
+<details><summary>Click to expand</summary>
+<p></p>
+ 
+**Plantower** is a tower-defense action-adventure crossover made for the Github GameOff 2019, but it wasn't finished in time.
+<p></p>
+ 
+![Plantower](https://github.com/AgoutiGames/GameOff-2019-Plantower/blob/master/readme/plantower.gif?raw=true)
+ 
+</details>
+
+### [Sounds of Nothingness](https://github.com/AgoutiGames/ld-45-start-with-nothing)
+<details><summary>Click to expand</summary>
+<p></p>
+ 
+**Sounds of Nothingness** is a horror themed platformer made for the Ludum Dare 45.
+<p></p>
+
+![Sounds of Nothingness](https://github.com/AgoutiGames/ld-45-start-with-nothing/blob/master/readme/nothingness.gif?raw=true)
+
+</details>
+
+### [Terra Australis](https://github.com/AgoutiGames/TerraAustralis)
+<details><summary>Click to expand</summary>
+<p></p>
+ 
+**Terra Australis** is the first game being developed with the RawSalmonEngine. It's a platformer about one of the last thylacines of Australia searching for his fellow marsupials.
+<p></p>
+ 
+![Terra Australis](https://github.com/AgoutiGames/TerraAustralis/blob/master/essentials/showcase/gameplay.gif?raw=true)
+
+</details>
 
 ## Features ![Salmon Jump](/icons/RawSalmonLogo_Ver1_128px.png)
 * Supported map orientations 
