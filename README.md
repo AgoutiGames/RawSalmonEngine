@@ -51,27 +51,27 @@ This and following games shall act as a kind of sandbox to properly showcase wha
 
 </details>
 
-## Features ![Salmon Jump](/icons/RawSalmonLogo_Ver1_128px.png)
-* Supported map orientations 
-  - [x] Orthogonal
-  - [x] Isometric (staggered)
-  - [x] Hexagonal
-* Supported map formats
-  - [x] CSV
-  - [x] base64
-  - [x] base64(zlib)
-* Supported draw order
-  - [x] right-down
-  - [x] right-up
-  - [x] left-down
-  - [x] left-up
+## Features <img align="right" src="/icons/RawSalmonLogo_Ver1_128px.png">
+* Orthogonal, isometric and hexagonal map orientations
+* CSV, base64 and base64(zlib) map formats
+* All tile draw orders even for isometric or hexagonal maps
 * Adaptive offscreen tile culling *(means: Better perfomance with huge maps or many Layers)*
-* Static and dynamic animation support
+* Tilesets support color keying, tile spacing and borders
+* Tilesets and image layers can have bmp, png, jpg and tiff format
+* Static and dynamic animation support via sprite sheets
+* Animation via scale and rotation of actors
+* Flipped, mirrored and rotated static tiles
 * Layer offset and tileset offset support
-* Proper support for tiles not matching the base tile size
+* Support for tiles greater or smaller than the base tile size
 * Tilesets can have *Alpha*, *Add* or *Color Modulate* Blend Mode
 * Image layer suppport with optional parallax mapping
-* Collision detection via the *[Tiled](http://www.mapeditor.org)* hitboxes
+* Easy access to custom property values set inside [Tiled](http://www.mapeditor.org)
+* Collision detection via the *[Tiled](http://www.mapeditor.org)* hitboxes (only Axis Aligned Bounding Boxes yet)
+* Easy loading and playback of music and sound effects (flac, ogg, mp3, wav)
+* Positional sound
+* Text generation and rendering of TrueTypeFonts
+* Input via: keyboard, mouse, gamepad and touch(by mouse emulation)
+* Web build ready via emscripten (see [SalmonEngine](https://github.com/AgoutiGames/SalmonEngine))
 * *It actually works!*
 ## Dependencies
 <img align="right" src="/icons/TouchIt.png">
@@ -96,4 +96,4 @@ This and following games shall act as a kind of sandbox to properly showcase wha
 ## Why Salmon?
 <img align="left" src="/icons/lantern_cat.png">
 
-The main reason for developing the engine is and was the development of our own game [**Numotul - Path of Perception**](http://game.moonlighthiker.de/index.php/en/) , an action RPG in a *low fantasy* world, inspired by the culture and history of the native **Mesoamerican** tribes. The game emphasizes **narration**, **exploration** and **immersion**. You will make tough decisions enabling a truly individual gaming experience. The game's main protagonists are tribal **anthropomorphic big cats** with their own **high culture**. This is also the reason for the name of the engine, since there's not much a cat loves more than fish!
+The main reason for developing the engine is and was the development of our own game **Numotul - Path of Perception**, an action RPG in a *low fantasy* world, inspired by the culture and history of the native **Mesoamerican** tribes. The game emphasizes **narration**, **exploration** and **immersion**. You will make tough decisions enabling a truly individual gaming experience. The game's main protagonists are tribal **anthropomorphic big cats** with their own **high culture**. This is also the reason for the name of the engine, since there's not much a cat loves more than fish!
