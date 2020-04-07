@@ -88,11 +88,7 @@ This and following games shall act as a kind of sandbox to properly showcase wha
 * By default only a shared library is built
 * Link against libSalmon.so or libSalmon.dll
 ## Contact
-* [Agouti Games](https://agouti.games)
-* [Discord Server](https://discord.gg/thAaD9e)
-* [Tumblr](https://agoutigames.tumblr.com/)
-* [Soundcloud](https://soundcloud.com/agoutigames)
-* [Twitter](https://twitter.com/agoutigames)
+**[Patreon](https://www.patreon.com/agoutigames) | [Homepage](https://agouti.games) | [Discord](https://discord.gg/thAaD9e) | [Twitter](https://twitter.com/agoutigames) | [itch.io](https://agoutigames.itch.io/) | [Twitch](https://www.twitch.tv/agouti_games)**
 ## Why Salmon?
 <img align="left" src="/icons/lantern_cat.png">
 
