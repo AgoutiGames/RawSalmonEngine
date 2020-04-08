@@ -105,7 +105,7 @@ bool GameInfo::init() {
 				SDL_SetRenderDrawColor( m_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 				#ifdef __EMSCRIPTEN__
-				    int img_flags = IMG_INIT_PNG;
+				    int img_flags = IMG_INIT_PNG  | IMG_INIT_JPG;
 			    #else
 			        int img_flags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
 			    #endif
