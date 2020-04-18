@@ -40,7 +40,7 @@ GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
 	if( !init() ) {
 		Logger(Logger::error) << "Failed to initialize SDL!";
 	}
-    
+
     char* base_path = SDL_GetBasePath();
     if(base_path != nullptr) {m_base_path = base_path;}
     else {
@@ -74,7 +74,7 @@ bool GameInfo::init() {
 	}
 	else
 	{
-	
+
 		//Set texture filtering to linear
 		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
 		{
@@ -424,6 +424,9 @@ bool GameInfo::update() {
  * @brief Draws the current map to screen
  */
 void GameInfo::render() {
+    // Establish correct rendering order!
+    get_map().get_layer_collection().update(true);
+
     if(!m_maps.empty() && !m_window_minimized) {
         m_maps.back().render();
         SDL_RenderPresent(m_renderer);
