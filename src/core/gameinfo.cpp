@@ -54,6 +54,7 @@ GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
 
     m_audio_manager.set_music_path(m_resource_path);
     m_audio_manager.set_sound_path(m_resource_path);
+    m_font_manager.set_font_path(m_resource_path + "fonts/");
 }
 
 /**

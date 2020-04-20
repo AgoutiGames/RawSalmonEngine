@@ -35,6 +35,8 @@ class FontManager {
         FontManager(FontManager&& other) = delete;
         FontManager& operator=(FontManager&& other) = delete;
 
+        void set_font_path(std::string path) {m_base_path = path;}
+
         void clear();
 
         TTF_Font* get_font(std::string name, int pt_size);
