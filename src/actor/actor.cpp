@@ -299,7 +299,7 @@ bool Actor::move_relative(float x, float y, salmon::Collidees target, const std:
 }
 bool Actor::move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     move_absolute(x,y);
-    return !unstuck_along_path(-x,-y,target,my_hitboxes,other_hitboxes,notify);
+    return !unstuck(target,my_hitboxes,other_hitboxes,notify);
 }
 
 void Actor::move_relative(float x, float y) {
@@ -586,6 +586,7 @@ bool Actor::separate(TileInstance& tile, const std::vector<std::string>& my_hitb
 }
 
 bool Actor::separate(Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    if(&actor == this) {return false;}
     bool moved = false;
     for(std::string first_hitbox_name : my_hitboxes) {
         SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
@@ -656,6 +657,7 @@ bool Actor::separate_along_path(float x, float y,TileInstance& tile, const std::
 }
 
 bool Actor::separate_along_path(float x, float y,Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+    if(&actor == this) {return false;}
     bool moved = false;
     for(std::string first_hitbox_name : my_hitboxes) {
         SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
@@ -778,6 +780,7 @@ bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SD
 }
 
 bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
+    if(&actor == this) {return false;}
     float old_x = get_x();
     float old_y = get_y();
 
