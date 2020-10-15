@@ -26,7 +26,7 @@
 class Transform{
     public:
         // Generate transform with origin located at the lower left corner
-        Transform(float x_pos, float y_pos, float width, float height, float x_origin = 0.0f, float y_origin = 1.0);
+        Transform(float x_pos = 0.0f, float y_pos = 0.0f, float width = 0.0f, float height = 0.0f, float x_origin = 0.0f, float y_origin = 1.0);
 
         void set_pos(float x, float y) {m_x_pos = x; m_y_pos = y;}
         void move_pos(float x, float y) {m_x_pos += x; m_y_pos += y;}
@@ -42,14 +42,20 @@ class Transform{
         void set_rotation(double angle) {m_angle = angle;}
         void rotate(double angle) {m_angle += angle;}
 
-        double get_rotation() {return m_angle;}
+        double get_rotation() const {return m_angle;}
 
         // Get position at normalized coordinates x and y relative to upper left corner of transform
         // Example: 0.0,0.0 Upper left corner; 0.5,0.5 middle point; 1.0,1.0 lower right corner
-        std::pair<float, float> get_relative(float x, float y);
+        std::pair<float, float> get_relative(float x, float y) const;
+
+        std::pair<float, float> get_base_dimensions() const {return {m_width, m_height};}
+        std::pair<float, float> get_dimensions() const {return{m_width * m_x_scale, m_height * m_y_scale};}
+        std::pair<float, float> get_scale() const {return{m_x_scale,m_y_scale};}
 
         // Generate rect with position relative to upper left corner and casted to int
-        SDL_Rect to_rect();
+        SDL_Rect to_rect() const;
+
+        void transform_hitbox(SDL_Rect& hitbox) const;
 
     private:
         float m_x_pos;

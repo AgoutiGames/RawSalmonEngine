@@ -405,8 +405,10 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
         return XML_NO_ATTRIBUTE;
     }
 
-    current_actor.set_w(tile->get_tileset().get_tile_width());
-    current_actor.set_h(tile->get_tileset().get_tile_height());
+    unsigned tw, th;
+    tw = tile->get_tileset().get_tile_width();
+    th = tile->get_tileset().get_tile_height();
+    current_actor.get_transform().set_dimensions(tw,th);
     current_actor.set_tile(*tile);
 
     // If type of tile isn't ACTOR_TEMPLATE use it as type property

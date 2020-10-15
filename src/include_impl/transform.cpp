@@ -31,7 +31,7 @@ void Transform::set_origin(float x, float y) {
     m_y_origin = y;
 }
 
-std::pair<float, float> Transform::get_relative(float x, float y) {
+std::pair<float, float> Transform::get_relative(float x, float y) const {
     float x_pos = m_x_pos;
     float y_pos = m_y_pos;
     // relative difference of origin to point
@@ -42,7 +42,7 @@ std::pair<float, float> Transform::get_relative(float x, float y) {
     return {x_pos,y_pos};
 }
 
-SDL_Rect Transform::to_rect() {
+SDL_Rect Transform::to_rect() const {
     int x,y,w,h;
     auto loc = get_relative(0,0);
     x = std::round(loc.first);
@@ -50,4 +50,15 @@ SDL_Rect Transform::to_rect() {
     w = std::round(m_width * m_x_scale);
     h = std::round(m_height * m_y_scale);
     return SDL_Rect{x,y,w,h};
+}
+
+void Transform::transform_hitbox(SDL_Rect& hitbox) const {
+    float rel_x, rel_y;
+    rel_x = hitbox.x / m_width;
+    rel_y = hitbox.y / m_height;
+    auto pos = get_relative(rel_x,rel_y);
+    hitbox.x = std::round(pos.first);
+    hitbox.y = std::round(pos.second);
+    hitbox.w = std::round(hitbox.w * m_x_scale);
+    hitbox.h = std::round(hitbox.h * m_y_scale);
 }

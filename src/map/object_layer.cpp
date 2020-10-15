@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -204,46 +204,21 @@ Actor* ObjectLayer::get_actor(std::string name) {
  */
 std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
 
-    TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
-    SDL_Rect window = rect;
-    window.w += tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left) + tsc.get_overhang(salmon::Direction::right);
-    window.h += tsc.get_tile_h() + tsc.get_overhang(salmon::Direction::up) + tsc.get_overhang(salmon::Direction::down);
-    window.x -= tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left);
-    // Because origin of actor isn't upper left, but lower left, we don't need this
-    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up) * tsc.get_tile_h();
-
     std::vector<Actor*> actor_list;
     for(Actor& actor : m_obj_grid) {
-        // This could possibly refactored for performance gain
-        if(actor.get_x() > window.x &&
-           actor.get_x() < window.x + window.w &&
-           actor.get_y() > window.y &&
-           actor.get_y() < window.y + window.h)
-           {
-            actor_list.push_back(&actor);
-           }
+        SDL_Rect bounds = actor.get_boundary();
+        if(SDL_HasIntersection(&bounds,&rect)) {actor_list.push_back(&actor);}
     }
     return actor_list;
 }
 
 /// Const variant of get_clip(), needed for constant render() function
 std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
-    TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
-    SDL_Rect window = rect;
-    window.w += tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left) + tsc.get_overhang(salmon::Direction::right);
-    window.h += tsc.get_tile_h() + tsc.get_overhang(salmon::Direction::up) + tsc.get_overhang(salmon::Direction::down);
-    window.x -= tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left);
-    // Because origin of actor isn't upper left, but lower left, we don't need this
-    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up);
 
     std::vector<const Actor*> actor_list;
     for(const Actor& actor : m_obj_grid) {
-        if(actor.get_x() > window.x &&
-           actor.get_x() < window.x + window.w &&
-           actor.get_y() > window.y &&
-           actor.get_y() < window.y + window.h) {
-            actor_list.push_back(&actor);
-        }
+        SDL_Rect bounds = actor.get_boundary();
+        if(SDL_HasIntersection(&bounds,&rect)) {actor_list.push_back(&actor);}
     }
     return actor_list;
 }

@@ -40,32 +40,30 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
     XMLError eResult;
 
     // Parse position and size of actor
-    eResult = source->QueryFloatAttribute("x", &m_x);
+    float x_pos, y_pos;
+    eResult = source->QueryFloatAttribute("x", &x_pos);
     if(eResult != XML_SUCCESS) return eResult;
-    eResult = source->QueryFloatAttribute("y", &m_y);
+    eResult = source->QueryFloatAttribute("y", &y_pos);
     if(eResult != XML_SUCCESS) return eResult;
-    unsigned individual_width, individual_height;
-    eResult = source->QueryUnsignedAttribute("width", &individual_width);
+    float individual_width, individual_height;
+    eResult = source->QueryFloatAttribute("width", &individual_width);
     if(eResult != XML_SUCCESS) return eResult;
-    eResult = source->QueryUnsignedAttribute("height", &individual_height);
+    eResult = source->QueryFloatAttribute("height", &individual_height);
     if(eResult != XML_SUCCESS) return eResult;
 
+    m_transform.set_pos(x_pos,y_pos);
+
     // If a custom scale is supplied, scale accordingly and adjust position to match
-    if(individual_width != m_width) {
-        m_x_scale = static_cast<float>(individual_width) / m_width;
-        m_x += (m_x_scale - 1.0f) * m_width * 0.5f;
-        m_scaled = true;
+    auto base_dimensions = m_transform.get_base_dimensions();
+    if(individual_width != base_dimensions.first || individual_height != base_dimensions.second) {
+        m_transform.set_scale(individual_width / base_dimensions.first, individual_height / base_dimensions.second);
     }
-    if(individual_height != m_height) {
-        m_y_scale = static_cast<float>(individual_height) / m_height;
-        m_y += (m_y_scale - 1.0f) * m_height * 0.5f;
-        m_scaled = true;
-    }
+
     // Parse the (unique) name of the actor
     const char* p_actor_name;
     p_actor_name = source->Attribute("name");
     if(p_actor_name == nullptr) {
-        Logger(Logger::error) << "Actor at x: " << m_x << " y: " << m_y << " is missing a custom name!";
+        Logger(Logger::error) << "Actor at x: " << x_pos << " y: " << y_pos << " is missing a custom name!";
         return XML_NO_ATTRIBUTE;
     }
     m_name = p_actor_name;
@@ -211,23 +209,6 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
-bool Actor::scale(float x, float y) {
-    bool success = true;
-    if(x > 0.0f) {m_x_scale = x;}
-    else {success = false;}
-    if(y > 0.0f) {m_y_scale = y;}
-    else {success = false;}
-
-    constexpr float tolerance = 0.001f;
-    if(m_x_scale > 1.0f + tolerance || m_x_scale < 1.0f - tolerance || m_y_scale > 1.0f + tolerance || m_y_scale < 1.0f - tolerance) {
-        m_scaled = true;
-    }
-    else {
-        m_scaled = false;
-    }
-    return success;
-}
-
 /**
  * @brief Render the actor at it's position relative to the camera position
  * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
@@ -238,38 +219,16 @@ void Actor::render(int x_cam, int y_cam) const {
     if(m_anim_state != salmon::AnimationType::none && valid_anim_state()) {current_tile = &m_animations.at(m_anim_state).at(m_direction);}
     else {current_tile = &m_base_tile;}
 
-    if(m_scaled) {
-        float current_x = m_x - (m_x_scale - 1.0f) * m_width * 0.5f;
-        float current_y = m_y - (m_y_scale - 1.0f) * m_height * 0.5f;
-        unsigned current_h = m_height * m_y_scale;
-        unsigned current_w = m_width * m_x_scale;
-        if(m_angle > 0.1 || m_angle < -0.1) {
-            SDL_Rect dest {static_cast<int>(current_x - x_cam), static_cast<int>(current_y - current_h - y_cam), static_cast<int>(current_w), static_cast<int>(current_h)};
-            current_tile->render_extra(dest, m_angle, false, false);
-        }
-        else {
-            SDL_Rect dest {static_cast<int>(current_x - x_cam), static_cast<int>(current_y - current_h - y_cam), static_cast<int>(current_w), static_cast<int>(current_h)};
-            current_tile->render(dest);
-        }
-    }
-    else {
-        if(m_angle > 0.1 || m_angle < -0.1) {
-            SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-            current_tile->render_extra(dest, m_angle, false, false);
-        }
-        else {
-            SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-            current_tile->render(dest);
-        }
-    }
-}
+    SDL_Rect dest = m_transform.to_rect();
+    dest.x -= x_cam;
+    dest.y -= y_cam;
 
-float Actor::get_bottom() const {
-    if(m_scaled) {
-        return get_y() - (m_y_scale - 1.0f) * m_height * 0.5f;
+    double rotation = m_transform.get_rotation();
+    if(std::abs(rotation) > 0.1) {
+        current_tile->render_extra(dest, rotation, false, false);
     }
     else {
-        return get_y();
+        current_tile->render(dest);
     }
 }
 
@@ -303,12 +262,10 @@ bool Actor::move_absolute(float x, float y, salmon::Collidees target, const std:
 }
 
 void Actor::move_relative(float x, float y) {
-    m_x += x;
-    m_y += y;
+    m_transform.move_pos(x,y);
 }
 void Actor::move_absolute(float x, float y) {
-    m_x = x;
-    m_y = y;
+    m_transform.set_pos(x,y);
 }
 
 bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
@@ -384,6 +341,8 @@ bool Actor::animate(std::string anim, salmon::Direction dir, float speed) {
     else {return false;}
 
     if(m_anim_state != anim || m_direction != dir) {
+        // Set rendering dimensions to current tile
+        m_transform.set_dimensions(current_tile->get_w(), current_tile->get_h());
         m_anim_state = anim;
         m_direction = dir;
         current_tile->init_anim();
@@ -407,6 +366,8 @@ bool Actor::set_animation(std::string anim, salmon::Direction dir, int frame) {
     else {return false;}
 
     if(m_anim_state != anim || m_direction != dir) {
+        // Set rendering dimensions to current tile
+        m_transform.set_dimensions(current_tile->get_w(), current_tile->get_h());
         m_anim_state = anim;
         m_direction = dir;
         current_tile->init_anim();
@@ -433,6 +394,8 @@ AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float
     else {return AnimSignal::missing;}
 
     if(m_anim_state != anim || m_direction != dir) {
+        // Set rendering dimensions to current tile
+        m_transform.set_dimensions(current_tile->get_w(), current_tile->get_h());
         m_anim_state = anim;
         m_direction = dir;
         current_tile->init_anim();
@@ -441,7 +404,7 @@ AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float
     return current_tile->push_anim_trigger(speed);
 }
 
-/// Checks if the currently set animation state and direction are existin
+/// Checks if the currently set animation state and direction are existing
 bool Actor::valid_anim_state(std::string anim, salmon::Direction dir) const {
     //if(m_anim_state == AnimationType::none) {return true;}
     if(m_animations.find(anim) == m_animations.end()) {
@@ -507,23 +470,7 @@ const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
 
 /// Translate supplied hitbox from local actor coordinates to world coordinates with scale applied
 void Actor::transform_hitbox(SDL_Rect& hitbox) const {
-    if(m_resize_hitbox && m_scaled) {
-
-        hitbox.y -= static_cast<int>(get_h());
-        hitbox.y *= m_y_scale;
-        hitbox.h *= m_y_scale;
-        hitbox.y -= (m_y_scale - 1.0f) * get_h() / 2;
-        hitbox.y += get_y();
-
-        hitbox.x *= m_x_scale;
-        hitbox.w *= m_x_scale;
-        hitbox.x -= (m_x_scale - 1.0f) * get_w() / 2;
-        hitbox.x += get_x();
-    }
-    else {
-        hitbox.x += get_x();
-        hitbox.y += get_y() - static_cast<int>(get_h());
-    }
+    m_transform.transform_hitbox(hitbox);
 }
 
 

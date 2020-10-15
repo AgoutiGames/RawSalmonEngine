@@ -24,6 +24,7 @@
 #include <map>
 #include <tinyxml2.h>
 
+#include "transform.hpp"
 #include "actor/collision.hpp"
 #include "actor/data_block.hpp"
 #include "map/tile.hpp"
@@ -87,8 +88,25 @@ class Actor{
         // Separate this and another actor by supplied vectors each
         bool separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
 
-        void set_w(unsigned w) {m_width = w;}
-        void set_h(unsigned h) {m_height = h;}
+        Transform& get_transform() {return m_transform;}
+
+            // SOON TO BE REPLACED BY TRANSFORM
+            // Return lower left corner coords
+            float get_x() const {return m_transform.get_relative(0.0,1.0).first;}
+            float get_y() const {return m_transform.get_relative(0.0,1.0).second;}
+            float get_bottom() const {return m_transform.get_relative(0.0,1.0).second;}
+            unsigned get_w() const {return m_transform.get_base_dimensions().first;}
+            unsigned get_h() const {return m_transform.get_base_dimensions().second;}
+            int get_x_center() const {return static_cast<int>(m_transform.get_relative(0.5,0.5).first);}
+            int get_y_center() const {return static_cast<int>(m_transform.get_relative(0.5,0.5).second);}
+            double get_angle() const {return m_transform.get_rotation();}
+            void set_angle(double angle) {m_transform.set_rotation(angle);}
+            bool scale(float x, float y) {m_transform.set_scale(x,y);return true;}
+            bool scale(float s) {return scale(s,s);}
+            float get_x_scale() const {return m_transform.get_scale().first;}
+            float get_y_scale() const {return m_transform.get_scale().second;}
+            SDL_Rect get_boundary() const {return m_transform.to_rect();}
+
         void set_name(std::string name) {m_name = name;}
 
         // Trivial Getters
@@ -99,19 +117,9 @@ class Actor{
         std::string get_name() const {return m_name;}
         std::string get_type() const {return m_type;}
         MapData& get_map() {return *m_map;}
-        float get_x() const {return m_x;}
-        float get_y() const {return m_y;}
-        float get_bottom() const;
 
-        unsigned get_w() const {return m_width;}
-        unsigned get_h() const {return m_height;}
-        int get_x_center() const {return static_cast<int>(m_x + (m_width / 2));}
-        int get_y_center() const {return static_cast<int>(m_y - (m_height / 2));}
         DataBlock& get_data() {return m_data;}
         bool late_polling() const {return m_late_polling;}
-
-        double get_angle() const {return m_angle;}
-        void set_angle(double angle) {m_angle = angle;}
 
         void set_tile(Tile tile) {m_base_tile = tile;}
 
@@ -129,19 +137,11 @@ class Actor{
         void set_layer(std::string layer) {m_layer_name = layer;}
         std::string get_layer() const {return m_layer_name;}
 
-        bool scale(float x, float y);
-        bool scale(float s) {return scale(s,s);}
-        float get_x_scale() const {return m_x_scale;}
-        float get_y_scale() const {return m_y_scale;}
-
         bool get_resize_hitbox() const {return m_resize_hitbox;}
         void set_resize_hitbox(bool mode) {m_resize_hitbox = mode;}
 
         SDL_Rect get_hitbox(std::string type = salmon::DEFAULT_HITBOX) const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
-
-        // Get bounds in which hitbox and texture may exist
-        SDL_Rect get_boundary() const {return {static_cast<int>(m_x),static_cast<int>(m_y - m_height),static_cast<int>(m_width),static_cast<int>(m_height)};}
 
         void add_collision(Collision c) {if(m_register_collisions) {m_collisions.push_back(c);}}
         std::vector<Collision>& get_collisions() {return m_collisions;}
@@ -153,18 +153,11 @@ class Actor{
 
         MapData* m_map;
 
-        float m_x = 0; ///< Coordinate of lower left image corner
-        float m_y = 0; ///< @warning LOWER left corner!
-        unsigned m_width = 0;
-        unsigned m_height = 0;
-        float m_x_scale = 1.0f; ///< @warning The collision boxes don't scale with the texture!
-        float m_y_scale = 1.0f; ///< @warning The collision boxes don't scale with the texture!
-        bool m_scaled = false;
+        Transform m_transform;
+
         std::string m_name;
         std::string m_type;
         std::string m_layer_name;
-
-        double m_angle = 0.0;
 
         std::string m_anim_state = salmon::AnimationType::none; ///< Currently active animation
         salmon::Direction m_direction = salmon::Direction::none; ///< Current direction facing
