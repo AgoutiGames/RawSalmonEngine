@@ -248,7 +248,7 @@ void Texture::render_resize(const SDL_Rect* clip, const SDL_Rect* dest) const
 }
 
 /// @todo Add documentation
-void Texture::render_extra(int x, int y, const SDL_Rect* clip, double angle, bool x_flip, bool y_flip) const {
+void Texture::render_extra(int x, int y, const SDL_Rect* clip, double angle, bool x_flip, bool y_flip, SDL_Point* center) const {
     //Set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
 
@@ -261,15 +261,15 @@ void Texture::render_extra(int x, int y, const SDL_Rect* clip, double angle, boo
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	if(x_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_HORIZONTAL);}
 	if(y_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_VERTICAL);}
-    SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, &renderQuad, angle, nullptr, flip);
+    SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, &renderQuad, angle, center, flip);
 }
 
 /// @todo Add documentation
-void Texture::render_extra_resize(const SDL_Rect* clip, const SDL_Rect* dest, double angle, bool x_flip, bool y_flip) const {
+void Texture::render_extra_resize(const SDL_Rect* clip, const SDL_Rect* dest, double angle, bool x_flip, bool y_flip, SDL_Point* center) const {
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	if(x_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_HORIZONTAL);}
 	if(y_flip) {flip = static_cast<SDL_RendererFlip>(flip | SDL_FLIP_VERTICAL);}
-    SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, dest, angle, nullptr, flip);
+    SDL_RenderCopyEx(mRenderer, mTexture.get(), clip, dest, angle, center, flip);
 }
 
 int Texture::getWidth() const

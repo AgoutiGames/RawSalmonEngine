@@ -89,6 +89,7 @@ class Actor{
         bool separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
 
         Transform& get_transform() {return m_transform;}
+        const Transform& get_transform() const {return m_transform;}
 
             // SOON TO BE REPLACED BY TRANSFORM
             // Return lower left corner coords
@@ -105,7 +106,7 @@ class Actor{
             bool scale(float s) {return scale(s,s);}
             float get_x_scale() const {return m_transform.get_scale().first;}
             float get_y_scale() const {return m_transform.get_scale().second;}
-            SDL_Rect get_boundary() const {return m_transform.to_rect();}
+            SDL_Rect get_boundary() const {return m_transform.to_bounding_box();}
 
         void set_name(std::string name) {m_name = name;}
 
@@ -181,11 +182,14 @@ class Actor{
 
 /// Overloading of comparision operator to enable the sort() functionality in a std::list
 inline bool operator< (const Actor& lhs, const Actor& rhs) {
-    if(lhs.get_bottom() != rhs.get_bottom()) {
-        return lhs.get_bottom() < rhs.get_bottom();
+    auto lp = lhs.get_transform().get_sort_point();
+    auto rp = rhs.get_transform().get_sort_point();
+
+    if(lp.second != rp.second) {
+        return lp.second < rp.second;
     }
     else {
-        return lhs.get_x() < rhs.get_x();
+        return lp.first < rp.first;
     }
 }
 

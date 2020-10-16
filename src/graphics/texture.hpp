@@ -59,8 +59,8 @@ class Texture
 		//Renders texture at given point
 		void render(int x, int y, const SDL_Rect* clip = nullptr) const;
 		void render_resize(const SDL_Rect* clip, const SDL_Rect* dest) const;
-		void render_extra(int x, int y, const SDL_Rect* clip, double angle, bool x_flip, bool y_flip) const;
-		void render_extra_resize(const SDL_Rect* clip, const SDL_Rect* dest, double angle, bool x_flip, bool y_flip) const;
+		void render_extra(int x, int y, const SDL_Rect* clip, double angle, bool x_flip = false, bool y_flip = false, SDL_Point* center = nullptr) const;
+		void render_extra_resize(const SDL_Rect* clip, const SDL_Rect* dest, double angle, bool x_flip = false, bool y_flip = false, SDL_Point* center = nullptr) const;
 
 		//Gets image dimensions
 		int getWidth() const;

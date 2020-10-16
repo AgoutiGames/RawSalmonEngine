@@ -41,12 +41,18 @@ class Transform{
 
         void set_rotation(double angle) {m_angle = angle;}
         void rotate(double angle) {m_angle += angle;}
-
         double get_rotation() const {return m_angle;}
+        void set_rotation_center(float x, float y);
+        std::pair<float, float> get_rotation_center() const {return{m_x_rotate,m_y_rotate};}
+
+        bool is_rotated() const;
+        bool is_scaled() const;
 
         // Get position at normalized coordinates x and y relative to upper left corner of transform
         // Example: 0.0,0.0 Upper left corner; 0.5,0.5 middle point; 1.0,1.0 lower right corner
         std::pair<float, float> get_relative(float x, float y) const;
+        std::pair<float, float> get_relative_rotated(float x, float y) const;
+        std::pair<float, float> get_relative_bounding_box(float x, float y) const;
 
         std::pair<float, float> get_base_dimensions() const {return {m_width, m_height};}
         std::pair<float, float> get_dimensions() const {return{m_width * m_x_scale, m_height * m_y_scale};}
@@ -54,8 +60,28 @@ class Transform{
 
         // Generate rect with position relative to upper left corner and casted to int
         SDL_Rect to_rect() const;
+        // In case of rotation compute bounding box
+        SDL_Rect to_bounding_box() const;
 
+        // Apply transformation to scaled world coordinates
         void transform_hitbox(SDL_Rect& hitbox) const;
+
+        // Determine to what the sorting point is relative
+        // Only makes a difference if rotation is applied!
+        enum SortMode {
+            // Based on unrotated rectangle
+            base,
+            // Sort point moves with rotation
+            rotated,
+            // Based on relative coords of bounding box
+            bounding_box
+        };
+
+        void set_sort_mode(SortMode s) {m_sort_mode = s;}
+        SortMode get_sort_mode() const {return m_sort_mode;}
+
+        void set_sort_point(float x, float y) {m_x_sort = x;m_y_sort = y;}
+        std::pair<float, float> get_sort_point() const;
 
     private:
         float m_x_pos;
@@ -64,10 +90,25 @@ class Transform{
         float m_height;
         float m_x_scale = 1.0f;
         float m_y_scale = 1.0f;
-        double m_angle = 0.0;
 
-        float m_x_origin;
-        float m_y_origin;
+        double m_angle = 0.0;
+        // Origin from which is rotated
+        float m_x_rotate = 0.0f;
+        float m_y_rotate = 1.0f;
+
+        // Origin from which is scaled
+        float m_x_origin = 0.0f;
+        float m_y_origin = 1.0f;
+
+        // Relative coordinate used for render sorting
+        float m_x_sort = 0.0f;
+        float m_y_sort = 1.0f;
+
+        // Default for matching tiled preview independent of rotation point
+        SortMode m_sort_mode = SortMode::rotated;
+
+        static const float MIN_SCALE;
+        static const float MIN_ROTATION;
 };
 
 #endif // TRANSFORM_HPP_INCLUDED

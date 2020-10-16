@@ -423,13 +423,16 @@ void Tile::render(int x, int y) const {
 }
 
 /// @todo Add documentation
-void Tile::render_extra(int x, int y, double angle, bool x_flip, bool y_flip) const {
+void Tile::render_extra(int x, int y, double angle, bool x_flip, bool y_flip, float x_center, float y_center) const {
     const TilesetCollection& tsc = mp_tileset->get_ts_collection();
     x += mp_tileset->get_x_offset();
     y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render_extra(x, y, &get_clip(), angle, x_flip, y_flip);
+    const SDL_Rect& clip = get_clip();
+    SDL_Point center{static_cast<int>(std::round(x_center * clip.w)), static_cast<int>(std::round(y_center * clip.h))};
+    image->render_extra(x, y, &clip, angle, x_flip, y_flip, &center);
+
     return;
 }
 
@@ -456,12 +459,14 @@ void Tile::render(SDL_Rect& dest) const {
  *
  * @note This function can resize the tile image
  */
-void Tile::render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const {
+void Tile::render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip, float x_center, float y_center) const {
     dest.x += mp_tileset->get_x_offset();
     dest.y += mp_tileset->get_y_offset();
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render_extra_resize(&get_clip(), &dest, angle, x_flip, y_flip);
+    SDL_Point center{static_cast<int>(std::round(x_center * dest.w)), static_cast<int>(std::round(y_center * dest.h))};
+    image->render_extra_resize(&get_clip(), &dest, angle, x_flip, y_flip, &center);
+
     return;
 }
 

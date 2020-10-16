@@ -53,6 +53,12 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
 
     m_transform.set_pos(x_pos,y_pos);
 
+    double rotation = 0.0;
+    eResult = source->QueryDoubleAttribute("rotation", &rotation);
+    if(rotation != 0.0) {
+        m_transform.set_rotation(rotation);
+    }
+
     // If a custom scale is supplied, scale accordingly and adjust position to match
     auto base_dimensions = m_transform.get_base_dimensions();
     if(individual_width != base_dimensions.first || individual_height != base_dimensions.second) {
@@ -224,8 +230,9 @@ void Actor::render(int x_cam, int y_cam) const {
     dest.y -= y_cam;
 
     double rotation = m_transform.get_rotation();
-    if(std::abs(rotation) > 0.1) {
-        current_tile->render_extra(dest, rotation, false, false);
+    if(m_transform.is_rotated()) {
+        auto rot = m_transform.get_rotation_center();
+        current_tile->render_extra(dest, rotation, false, false, rot.first, rot.second);
     }
     else {
         current_tile->render(dest);

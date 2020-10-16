@@ -38,9 +38,9 @@ public:
     Tile(Tileset* ts, const SDL_Rect& clp); // The initializing constructor
 
     void render(int x, int y) const;
-    void render_extra(int x, int y, double angle, bool x_flip, bool y_flip) const;
+    void render_extra(int x, int y, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
     void render(SDL_Rect& dest) const; // Resizable render
-    void render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const;
+    void render_extra(SDL_Rect& dest, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
 
     SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
     std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
