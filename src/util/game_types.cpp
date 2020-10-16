@@ -121,6 +121,10 @@ salmon::Rect make_rect(const SDL_Rect& rect) {
     return salmon::Rect{rect.x,rect.y,rect.w,rect.h};
 }
 
+SDL_Rect make_rect(const salmon::Rect& rect) {
+    return SDL_Rect{rect.x,rect.y,rect.w,rect.h};
+}
+
 void normalize(float& x, float& y) {
     float len = std::sqrt(x*x + y*y);
     x /= len;

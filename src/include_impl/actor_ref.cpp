@@ -65,16 +65,8 @@ bool ActorRef::separate(float x1, float y1, float x2, float y2, ActorRef actor, 
 
 bool ActorRef::on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir, int tolerance) const {return m_impl->on_ground(target,my_hitbox,other_hitboxes,dir,tolerance);}
 
-bool ActorRef::scale(float x, float y) {return m_impl->scale(x,y);}
-bool ActorRef::scale(float s) {return m_impl->scale(s);}
-float ActorRef::get_x_scale() const {return m_impl->get_x_scale();}
-float ActorRef::get_y_scale() const {return m_impl->get_y_scale();}
-
 void ActorRef::set_resize_hitbox(bool mode) {m_impl->set_resize_hitbox(mode);}
 bool ActorRef::get_resize_hitbox() const {return m_impl->get_resize_hitbox();}
-
-double ActorRef::get_angle() const {return m_impl->get_angle();}
-void ActorRef::set_angle(double angle) {return m_impl->set_angle(angle);}
 
 std::vector<salmon::CollisionRef> ActorRef::get_collisions() {
     std::vector<Collision>& temp = m_impl->get_collisions();
@@ -101,10 +93,6 @@ int ActorRef::get_anim_frame_count() const {
 
 float ActorRef::get_x() const {return m_impl->get_x();}
 float ActorRef::get_y() const {return m_impl->get_y();}
-unsigned ActorRef::get_w() const {return m_impl->get_w();}
-unsigned ActorRef::get_h() const {return m_impl->get_h();}
-int ActorRef::get_x_center() const {return m_impl->get_x_center();}
-int ActorRef::get_y_center() const {return m_impl->get_y_center();}
 salmon::Rect ActorRef::get_hitbox(std::string name) const {return make_rect(m_impl->get_hitbox(name));}
 
 salmon::DataBlockRef ActorRef::get_data() {return m_impl->get_data();}

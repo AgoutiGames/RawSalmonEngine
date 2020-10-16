@@ -197,13 +197,13 @@ namespace salmon {
              * @warning When scaling greater than 1.0, pop in artifacts will occur due to offscreen tile culling
              *          If you want your object to scale dynamically during execution, import at max size and scale it down
              */
-            bool scale(float x, float y);
+            //bool scale(float x, float y);
             /// Scales actor proportionally. See overload for details
-            bool scale(float s);
+            //bool scale(float s);
             /// Return current x scale value
-            float get_x_scale() const;
+            //float get_x_scale() const;
             /// Return current y scale value
-            float get_y_scale() const;
+            //float get_y_scale() const;
 
             /// When set to true, hitboxes scale proportionally when the actor itself is scaled
             void set_resize_hitbox(bool mode);
@@ -211,9 +211,9 @@ namespace salmon {
             bool get_resize_hitbox() const;
 
             /// Returns the angle at which this actor is displayed. Zero by default
-            double get_angle() const;
+            //double get_angle() const;
             /// Sets the displaying angle in degrees rotating from the actors center
-            void set_angle(double angle);
+            //void set_angle(double angle);
 
             /// Returns the number of the currently active animation frame
             int get_current_anim_frame() const;
@@ -241,13 +241,13 @@ namespace salmon {
             /// Returns the x coordinate of the actor from its lower left corner
             float get_y() const;
             /// Returns the base width of the actor in pixels regardless of x_scale
-            unsigned get_w() const;
+            //unsigned get_w() const;
             /// Returns the base height of the actor in pixels regardless of y_scale
-            unsigned get_h() const;
+            //unsigned get_h() const;
             /// Returns the x coordinate of the actor from its center
-            int get_x_center() const;
+            //int get_x_center() const;
             /// Returns the y coordinate of the actor from its center
-            int get_y_center() const;
+            //int get_y_center() const;
             /// Returns the hitbox matching the supplied name. If there is none, w or h is zero.
             salmon::Rect get_hitbox(std::string name) const;
 

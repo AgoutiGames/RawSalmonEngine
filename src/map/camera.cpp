@@ -31,8 +31,9 @@ Camera::Camera(int x, int y, int w, int h, MapData* map) :
  */
 void Camera::update() {
     if(m_actor_bound) {
-        m_rect.x = m_player->get_x_center() - (m_rect.w / 2);
-        m_rect.y = m_player->get_y_center() - (m_rect.h / 2);
+        auto center = m_player->get_transform().get_relative(0.5,0.5);
+        m_rect.x = center.first - (m_rect.w / 2);
+        m_rect.y = center.second - (m_rect.h / 2);
     }
     if(m_map_bound) {
         // Check if map is less wide than the effective camera frame

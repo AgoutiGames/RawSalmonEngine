@@ -200,7 +200,7 @@ void LayerCollection::collision_check() {
     }
 
     for(Actor* actor : actors) {
-        SDL_Rect bounds = actor->get_boundary();
+        SDL_Rect bounds = actor->get_transform().to_bounding_box();
         for(MapLayer* layer : get_map_layers()) {
             for(auto tile : layer->get_clip(bounds)) {
                 actor->check_collision(tile,true);

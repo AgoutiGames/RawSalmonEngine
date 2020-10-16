@@ -49,8 +49,9 @@ Collision::Collision(Actor* actor, std::string my_hitbox, std::string other_hitb
     other_hitbox_name = other_hitbox;
     actor_id = actor->get_id();
 
-    x = actor->get_x();
-    y = actor->get_y();
+    auto pos = actor->get_transform().get_relative(0.0,1.0);
+    x = pos.first;
+    y = pos.second;
 }
 
 // Constructor for mouse

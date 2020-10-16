@@ -277,7 +277,7 @@ void Actor::move_absolute(float x, float y) {
 
 bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     LayerCollection& layer_collection = get_map().get_layer_collection();
-    SDL_Rect bounds = get_boundary();
+    SDL_Rect bounds = m_transform.to_bounding_box();
     bool moved = false;
     if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
         for(MapLayer* map : layer_collection.get_map_layers()) {
@@ -302,7 +302,7 @@ bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my
 
 bool Actor::unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     LayerCollection& layer_collection = get_map().get_layer_collection();
-    SDL_Rect bounds = get_boundary();
+    SDL_Rect bounds = m_transform.to_bounding_box();
     bool moved = false;
     if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
         for(MapLayer* map : layer_collection.get_map_layers()) {
@@ -735,8 +735,9 @@ bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SD
 
 bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
     if(&actor == this) {return false;}
-    float old_x = get_x();
-    float old_y = get_y();
+    auto old_pos = m_transform.get_relative(0.0,1.0);
+    float old_x = old_pos.first;
+    float old_y = old_pos.second;
 
     // Combine both separation vectors
     float combined_x = x1 - x2;
@@ -745,8 +746,9 @@ bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& a
     // Separate this actor from other by combined vector
     if(separate_along_path(combined_x,combined_y,actor,my_hitboxes,other_hitboxes,false)) {
         // Get the actual separation vector
-        float delta_x = get_x() - old_x;
-        float delta_y = get_y() - old_y;
+        auto new_pos = m_transform.get_relative(0.0,1.0);
+        float delta_x = new_pos.first - old_x;
+        float delta_y = new_pos.second - old_y;
         move_absolute(old_x,old_y);
 
         // Get factor from nonzero combined vector component

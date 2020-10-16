@@ -206,7 +206,7 @@ std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
 
     std::vector<Actor*> actor_list;
     for(Actor& actor : m_obj_grid) {
-        SDL_Rect bounds = actor.get_boundary();
+        SDL_Rect bounds = actor.get_transform().to_bounding_box();
         if(SDL_HasIntersection(&bounds,&rect)) {actor_list.push_back(&actor);}
     }
     return actor_list;
@@ -217,7 +217,7 @@ std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
 
     std::vector<const Actor*> actor_list;
     for(const Actor& actor : m_obj_grid) {
-        SDL_Rect bounds = actor.get_boundary();
+        SDL_Rect bounds = actor.get_transform().to_bounding_box();
         if(SDL_HasIntersection(&bounds,&rect)) {actor_list.push_back(&actor);}
     }
     return actor_list;
