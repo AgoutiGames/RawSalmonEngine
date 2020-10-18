@@ -20,6 +20,7 @@
 
 #include <string>
 #include <iostream>
+#include <cmath>
 
 #include "actor/actor.hpp"
 #include "graphics/texture.hpp"

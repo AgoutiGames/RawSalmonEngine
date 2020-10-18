@@ -59,7 +59,6 @@ set(LIB_SOURCES
     src/include_impl/map_ref.cpp
     src/include_impl/text_ref.cpp
     src/include_impl/tile_instance.cpp
-    src/include_impl/transform.cpp
     )
 
 set(ACTOR_SOURCES
@@ -69,6 +68,7 @@ set(ACTOR_SOURCES
     src/actor/primitive.cpp
     src/actor/primitive_rectangle.cpp
     src/actor/primitive_text.cpp
+    src/actor/transform.cpp
     )
 
 set(AUDIO_SOURCES
