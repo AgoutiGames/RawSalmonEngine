@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -27,6 +27,8 @@
 #include "util/game_types.hpp"
 #include "util/attribute_parser.hpp"
 #include "util/logger.hpp"
+
+using namespace salmon::internal;
 
 PrimitiveText::PrimitiveText(float x_pos, float y_pos, std::string text, Attributes atr, MapData& mapdata, std::string name)
 : Primitive(x_pos, y_pos, mapdata, name), m_mapdata{&mapdata}, m_text{text}, m_attributes{atr} {

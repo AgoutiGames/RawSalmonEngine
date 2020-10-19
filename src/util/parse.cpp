@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -23,6 +23,8 @@
 
 #include "graphics/texture.hpp"
 #include "util/logger.hpp"
+
+using namespace salmon::internal;
 
  /**
  * @brief Converts the xmlelement to a proper SDL_Rect with checking
@@ -102,7 +104,7 @@ tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::s
         float temp;
         std::string name;
         const char* p_name = source->Attribute("name");
-        if(p_name == nullptr) {name = salmon::DEFAULT_HITBOX;}
+        if(p_name == nullptr) {name = DEFAULT_HITBOX;}
         else{name = p_name;}
 
         eResult = source->QueryFloatAttribute("x", &temp);

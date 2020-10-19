@@ -20,27 +20,27 @@
 
 #include "audio/sound_effect.hpp"
 
-using salmon::SoundRef;
+using namespace salmon;
 
-SoundRef::SoundRef() : m_impl{SoundEffect::get_null_sound()} {}
-SoundRef::SoundRef(SoundEffect& impl) : m_impl{new SoundEffect(impl)} {}
+SoundRef::SoundRef() : m_impl{internal::SoundEffect::get_null_sound()} {}
+SoundRef::SoundRef(internal::SoundEffect& impl) : m_impl{new internal::SoundEffect(impl)} {}
 
 SoundRef::SoundRef(const SoundRef& sound) : SoundRef(*sound.m_impl) {}
 SoundRef::SoundRef(SoundRef&& sound) : m_impl{sound.m_impl} {
-    sound.m_impl = SoundEffect::get_null_sound();
+    sound.m_impl = internal::SoundEffect::get_null_sound();
 }
 SoundRef& SoundRef::operator=(const SoundRef& sound) {
-    if(m_impl != SoundEffect::get_null_sound()) {delete m_impl;}
-    m_impl = new SoundEffect(*sound.m_impl);
+    if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}
+    m_impl = new internal::SoundEffect(*sound.m_impl);
     return *this;
 }
 SoundRef& SoundRef::operator=(SoundRef&& sound) {
-    if(m_impl != SoundEffect::get_null_sound()) {delete m_impl;}
+    if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}
     m_impl = sound.m_impl;
-    sound.m_impl = SoundEffect::get_null_sound();
+    sound.m_impl = internal::SoundEffect::get_null_sound();
     return *this;
 }
-SoundRef::~SoundRef() {if(m_impl != SoundEffect::get_null_sound()) {delete m_impl;}}
+SoundRef::~SoundRef() {if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}}
 
 bool SoundRef::good() const {return m_impl->good();}
 void SoundRef::play(int loops, int length_ms) {m_impl->play(loops,length_ms);}

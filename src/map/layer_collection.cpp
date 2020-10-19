@@ -29,6 +29,8 @@
 #include "core/gameinfo.hpp"
 #include "util/logger.hpp"
 
+using namespace salmon::internal;
+
 /**
  * @brief Parses each layer and stores in vector member
  * @param source The @c XMLElement which stores the layer info
@@ -253,7 +255,7 @@ Layer* LayerCollection::get_layer(std::string name) {
 void LayerCollection::mouse_collision() {
     SDL_Rect cam = m_base_map->get_camera().get_rect();
     // Transform cursor from camera space to global space
-    salmon::MouseState mouse = m_base_map->get_game().get_input_cache().get_mouse_state();
+    MouseState mouse = m_base_map->get_game().get_input_cache().get_mouse_state();
     SDL_Point click{mouse.x_pos + cam.x, mouse.y_pos+cam.y};
 
     // Fetch all currently visible actors
@@ -283,9 +285,9 @@ void LayerCollection::mouse_collision() {
  * @param other_hitboxes A vector of hitbox names to check against collision
  * @return true if there is any collision and false if there is none
  */
-bool LayerCollection::check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes) {
+bool LayerCollection::check_collision(SDL_Rect rect, Collidees target, const std::vector<std::string>& other_hitboxes) {
     bool collided = false;
-    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::tile || target == Collidees::tile_and_actor) {
         for(MapLayer* map : get_map_layers()) {
             for(TileInstance& tile : map->get_clip(rect)) {
                 for(std::string hitbox_name : other_hitboxes) {
@@ -295,7 +297,7 @@ bool LayerCollection::check_collision(SDL_Rect rect, salmon::Collidees target, c
             }
         }
     }
-    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::actor || target == Collidees::tile_and_actor) {
         for(ObjectLayer* obj : get_object_layers()) {
             for(Actor* actor : obj->get_clip(rect)) {
                 for(std::string hitbox_name : other_hitboxes) {

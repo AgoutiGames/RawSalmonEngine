@@ -24,10 +24,11 @@
 
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 class Actor;
 class TileInstance;
 class Tile;
-
 /**
  * @brief Store information of an actor collision
  *
@@ -83,6 +84,6 @@ class Collision{
         unsigned actor_id = 0;
 
 };
-
+}} // namespace salmon::internal
 
 #endif // COLLISION_HPP_INCLUDED

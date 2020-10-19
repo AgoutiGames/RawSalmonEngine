@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -19,6 +19,8 @@
 #include "core/gamepad.hpp"
 
 #include "util/logger.hpp"
+
+using namespace salmon::internal;
 
 Gamepad::Gamepad(SDL_GameController* controller) : m_controller{controller},
 m_id{SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(m_controller))},
@@ -45,7 +47,7 @@ const char* Gamepad::get_name() const {
 }
 
 void Gamepad::set(SDL_GameControllerButton button, bool down) {
-    salmon::ButtonState* dest = nullptr;
+    ButtonState* dest = nullptr;
     switch(button) {
         case SDL_CONTROLLER_BUTTON_A : {
             dest = &m_state.button.a;

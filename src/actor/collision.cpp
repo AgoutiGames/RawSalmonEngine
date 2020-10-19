@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,10 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
- #include "actor/collision.hpp"
+#include "actor/collision.hpp"
 
- #include "actor/actor.hpp"
- #include "map/tile.hpp"
+#include "actor/actor.hpp"
+#include "map/tile.hpp"
+
+using namespace salmon::internal;
 
  // Default constructor
 Collision::Collision() :

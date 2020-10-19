@@ -26,6 +26,8 @@
 
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 class Actor;
 class Camera;
 class Layer;
@@ -53,7 +55,7 @@ class LayerCollection {
         bool erase_actor(std::string name);
         bool erase_actor(Actor* pointer);
 
-        bool check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes);
+        bool check_collision(SDL_Rect rect, Collidees target, const std::vector<std::string>& other_hitboxes);
 
         std::vector<MapLayer*> get_map_layers();
         std::vector<ImageLayer*> get_image_layers();
@@ -77,6 +79,6 @@ class LayerCollection {
         MapData* m_base_map;
         std::vector<std::unique_ptr<Layer>> m_layers;
 };
-
+}} // namespace salmon::internal
 
 #endif // LAYER_COLLECTION_HPP_INCLUDED

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -26,6 +26,8 @@
 #include "actor/primitive_polygon.hpp"
 #include "actor/primitive_text.hpp"
 #include "actor/primitive_tile.hpp"
+
+using namespace salmon::internal;
 
 Primitive::Primitive(float x_pos, float y_pos, MapData& mapdata, std::string name)
                     : m_x_pos{x_pos}, m_y_pos{y_pos}, m_renderer{mapdata.get_renderer()}, m_name{name} {}

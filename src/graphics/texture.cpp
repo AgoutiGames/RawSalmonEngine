@@ -24,6 +24,8 @@
 
 #include "util/logger.hpp"
 
+using namespace salmon::internal;
+
 Texture::Texture()
 {
 	//Initialize

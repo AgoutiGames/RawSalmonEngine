@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -20,6 +20,8 @@
 #define CAMERA_HPP_INCLUDED
 
 #include <SDL.h>
+
+namespace salmon { namespace internal {
 
 class Actor;
 class MapData;
@@ -68,5 +70,6 @@ class Camera{
         bool m_map_bound = false;
         bool m_actor_bound = false;
 };
+}} // namespace salmon::internal
 
 #endif // CAMERA_HPP_INCLUDED

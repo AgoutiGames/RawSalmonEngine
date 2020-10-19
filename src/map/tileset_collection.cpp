@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -28,6 +28,8 @@
 #include "map/mapdata.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
+
+using namespace salmon::internal;
 
 /**
  * @brief Initialize a TilesetCollection from XML info
@@ -95,18 +97,18 @@ tinyxml2::XMLError TilesetCollection::init(tinyxml2::XMLElement* source, MapData
 }
 
 /// Returns tile overhang values for the specified direction (up, down, left, right)
-unsigned TilesetCollection::get_overhang(salmon::Direction dir) const{
+unsigned TilesetCollection::get_overhang(Direction dir) const{
     switch(dir) {
-        case salmon::Direction::up:
+        case Direction::up:
             return m_up_overhang;
             break;
-        case salmon::Direction::down:
+        case Direction::down:
             return m_down_overhang;
             break;
-        case salmon::Direction::left:
+        case Direction::left:
             return m_left_overhang;
             break;
-        case salmon::Direction::right:
+        case Direction::right:
             return m_right_overhang;
             break;
         default:
@@ -192,22 +194,22 @@ void TilesetCollection::push_all_anim() {
 
 /// Checks for minimum of overhang values for each tileset and saves the corresponding maximum
 void TilesetCollection::write_overhang() {
-    std::map<salmon::Direction, unsigned> oh;
+    std::map<Direction, unsigned> oh;
     // Check each tileset for maximum overhang values for each direction
     for(Tileset& ts : m_tilesets) {
-        std::map<salmon::Direction, unsigned> temp;
+        std::map<Direction, unsigned> temp;
         temp = ts.determine_overhang(m_tile_w, m_tile_h);
         // Check and write possible new maximum
-        if(temp[salmon::Direction::up] > oh[salmon::Direction::up]) {oh[salmon::Direction::up] = temp[salmon::Direction::up];}
-        if(temp[salmon::Direction::down] > oh[salmon::Direction::down]) {oh[salmon::Direction::down] = temp[salmon::Direction::down];}
-        if(temp[salmon::Direction::left] > oh[salmon::Direction::left]) {oh[salmon::Direction::left] = temp[salmon::Direction::left];}
-        if(temp[salmon::Direction::right] > oh[salmon::Direction::right]) {oh[salmon::Direction::right] = temp[salmon::Direction::right];}
+        if(temp[Direction::up] > oh[Direction::up]) {oh[Direction::up] = temp[Direction::up];}
+        if(temp[Direction::down] > oh[Direction::down]) {oh[Direction::down] = temp[Direction::down];}
+        if(temp[Direction::left] > oh[Direction::left]) {oh[Direction::left] = temp[Direction::left];}
+        if(temp[Direction::right] > oh[Direction::right]) {oh[Direction::right] = temp[Direction::right];}
     }
     // Write the final maximums to the members
-    m_up_overhang = oh[salmon::Direction::up];
-    m_down_overhang = oh[salmon::Direction::down];
-    m_left_overhang = oh[salmon::Direction::left];
-    m_right_overhang = oh[salmon::Direction::right];
+    m_up_overhang = oh[Direction::up];
+    m_down_overhang = oh[Direction::down];
+    m_left_overhang = oh[Direction::left];
+    m_right_overhang = oh[Direction::right];
 }
 
 /**

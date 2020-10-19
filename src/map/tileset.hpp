@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -28,6 +28,8 @@
 #include "graphics/texture.hpp"
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 class Tile; // forward declaration
 class TilesetCollection;
 class MapData;
@@ -55,7 +57,7 @@ class Tileset{
 
         bool render(Uint32 local_tile_id, int x, int y) const;
 
-        std::map<salmon::Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h) const;
+        std::map<Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h) const;
 
         unsigned get_first_gid() {return m_first_gid;}
 
@@ -81,7 +83,6 @@ class Tileset{
         // Here are the actual tiles corresponding to the tileset stored
         std::vector<Tile> m_tiles;
 };
-
-
+}} // namespace salmon::internal
 
 #endif // TILESET_HPP_INCLUDED

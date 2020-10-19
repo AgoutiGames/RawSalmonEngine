@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -28,6 +28,8 @@
 
 #include "map/layer.hpp"
 #include "map/tile.hpp"
+
+namespace salmon { namespace internal {
 
 class TilesetCollection;
 
@@ -69,6 +71,6 @@ class MapLayer : public Layer{
 
         std::vector<std::vector<Uint32> > m_map_grid; ///< The actual map layer information
 };
-
+}} // namespace salmon::internal
 
 #endif // MAP_LAYER_HPP_INCLUDED

@@ -26,6 +26,8 @@
 
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 class Tileset; // forward declaration
 
 /**
@@ -42,7 +44,7 @@ public:
     void render(SDL_Rect& dest) const; // Resizable render
     void render_extra(SDL_Rect& dest, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
 
-    SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
+    SDL_Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
     std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, bool skip_properties = false);
@@ -52,7 +54,7 @@ public:
     void init_anim(Uint32 time = SDL_GetTicks());
 
     bool push_anim(float speed = 1.0f, Uint32 time = SDL_GetTicks());
-    salmon::AnimSignal push_anim_trigger(float speed = 1.0f, Uint32 time = SDL_GetTicks());
+    AnimSignal push_anim_trigger(float speed = 1.0f, Uint32 time = SDL_GetTicks());
     bool set_frame(int anim_frame, Uint32 time = SDL_GetTicks());
     int get_frame_count() const {return m_anim_ids.size();}
     int get_current_frame() const {return m_current_id;}
@@ -65,7 +67,7 @@ public:
     int get_h() const {return get_clip().h;}
 
 private:
-    SDL_Rect get_hitbox_self(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
+    SDL_Rect get_hitbox_self(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
     const std::map<std::string, SDL_Rect> get_hitboxes_self(bool aligned = false) const;
 
     const SDL_Rect& get_clip_self() const {return m_clip;}
@@ -90,7 +92,7 @@ class TileInstance {
     public:
         TileInstance(Tile* tile, int x, int y) : m_tile{tile}, m_x{x}, m_y{y} {}
 
-        SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const {
+        SDL_Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const {
             SDL_Rect temp = m_tile->get_hitbox(name,aligned);
             temp.x += m_x;
             temp.y += m_y;
@@ -112,7 +114,6 @@ class TileInstance {
         int m_x = 0;
         int m_y = 0;
 };
-
-
+}} // namespace salmon::internal
 
 #endif // TILE_HPP_INCLUDED

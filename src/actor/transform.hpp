@@ -22,6 +22,8 @@
 #include "SDL.h"
 #include <utility> // For std::pair
 
+namespace salmon { namespace internal {
+
 // Rectangular area easy to transform
 class Transform{
     public:
@@ -110,5 +112,6 @@ class Transform{
         static const float MIN_SCALE;
         static const float MIN_ROTATION;
 };
+}} // namespace salmon::internal
 
 #endif // TRANSFORM_HPP_INCLUDED

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,6 +21,8 @@
 
 #include "actor/primitive.hpp"
 
+namespace salmon { namespace internal {
+
 class PrimitiveEllipse : public Primitive {
     public:
         bool render(int x_cam, int y_cam) const override;
@@ -33,5 +35,6 @@ class PrimitiveEllipse : public Primitive {
     private:
 
 };
+}} // namespace salmon::internal
 
 #endif // PRIMITIVE_CIRCLE_HPP_INCLUDED

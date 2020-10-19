@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 #include <SDL.h>
+
+namespace salmon { namespace internal {
 
 class GameInfo;
 
@@ -46,6 +48,6 @@ class Preloader {
         std::vector<std::string> m_files;
         GameInfo* m_game;
 };
-
+}} // namespace salmon::internal
 
 #endif // PRELOADER_HPP_INCLUDED

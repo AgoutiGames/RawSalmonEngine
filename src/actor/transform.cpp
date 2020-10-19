@@ -27,6 +27,8 @@
 
 #include "util/logger.hpp"
 
+using namespace salmon::internal;
+
 const float Transform::MIN_SCALE = 0.001;
 const float Transform::MIN_ROTATION = 0.01;
 

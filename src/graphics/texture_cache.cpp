@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,6 +21,8 @@
 #include <iostream>
 
 #include "util/game_types.hpp"
+
+using namespace salmon::internal;
 
 Texture TextureCache::get(std::string full_path) {
     make_path_absolute(full_path);

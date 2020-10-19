@@ -20,16 +20,16 @@
 
 #include "actor/primitive_text.hpp"
 
-using salmon::TextRef;
+using namespace salmon;
 
-TextRef::TextRef(PrimitiveText& impl) : m_impl{&impl} {}
-TextRef::TextRef(PrimitiveText* impl) : m_impl{impl} {}
+TextRef::TextRef(internal::PrimitiveText& impl) : m_impl{&impl} {}
+TextRef::TextRef(internal::PrimitiveText* impl) : m_impl{impl} {}
 
 bool TextRef::good() const {return (m_impl == nullptr) ? false : true ;}
 
 std::string TextRef::get_text() {return m_impl->get_text();}
 TextRef::Attributes TextRef::get_attributes() {
-    PrimitiveText::Attributes a = m_impl->get_attributes();
+    internal::PrimitiveText::Attributes a = m_impl->get_attributes();
     return {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
 }
 int TextRef::get_w() {return m_impl->get_w();}
@@ -37,7 +37,7 @@ int TextRef::get_h() {return m_impl->get_h();}
 
 void TextRef::set_text(std::string text) {m_impl->set_text(text);}
 void TextRef::set_attributes(Attributes a) {
-    PrimitiveText::Attributes temp = {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
+    internal::PrimitiveText::Attributes temp = {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
     m_impl->set_attributes(temp);
 }
 

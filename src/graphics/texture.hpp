@@ -24,10 +24,11 @@
 #include <SDL_ttf.h>
 #include <string>
 
+namespace salmon { namespace internal {
+
 /**
  * @brief Stores and manages an SDL Texture
  */
-
 class Texture
 {
 	public:
@@ -82,5 +83,6 @@ class Texture
 		int mWidth;
 		int mHeight;
 };
+}} // namespace salmon::internal
 
 #endif // TEXTURE_HPP_INCLUDED

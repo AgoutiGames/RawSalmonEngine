@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -23,6 +23,8 @@
 #include <SDL.h>
 
 #include "tinyxml2.h"
+
+namespace salmon { namespace internal {
 
 class MapData;
 
@@ -70,5 +72,6 @@ class Primitive {
         bool m_static_mode = false;
         bool m_hidden = false;
 };
+}} // namespace salmon::internal
 
 #endif // PRIMITIVE_HPP_INCLUDED

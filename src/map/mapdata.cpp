@@ -31,6 +31,8 @@
 #include "util/attribute_parser.hpp"
 #include "util/logger.hpp"
 
+using namespace salmon::internal;
+
 /// Plain constructor
 MapData::MapData(GameInfo* game) : m_game{game},
 m_camera{0, 0, 0, 0, this} {}
@@ -355,7 +357,7 @@ unsigned MapData::get_h() const {
  * @param dir The @c Direction of the tile
  * @param tile A pointer to the corresponding animation tile
  */
-void MapData::add_actor_animation(std::string name, std::string anim, salmon::Direction dir, Tile* tile) {
+void MapData::add_actor_animation(std::string name, std::string anim, Direction dir, Tile* tile) {
     // If actor template doesn't exist, construct it!
     if(m_actor_templates.find(name) == m_actor_templates.end()) {m_actor_templates.insert(std::make_pair(name, Actor(this)));}
 

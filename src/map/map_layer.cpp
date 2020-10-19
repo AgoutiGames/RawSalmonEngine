@@ -32,6 +32,8 @@
 #include "util/game_types.hpp"
 #include "util/logger.hpp"
 
+using namespace salmon::internal;
+
 /// Factory function which retrieves a pointer owning the map layer
 MapLayer* MapLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
     return new MapLayer(source, name, layer_collection, eresult);
@@ -438,10 +440,10 @@ void MapLayer::calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_fro
     int y_tile_offset = rect.y % tile_h;
 
     // Calculate tile offset by pixel basis
-    float left_oh = m_ts_collection->get_overhang(salmon::Direction::left);
-    float right_oh = m_ts_collection->get_overhang(salmon::Direction::right);
-    float up_oh = m_ts_collection->get_overhang(salmon::Direction::up);
-    float down_oh = m_ts_collection->get_overhang(salmon::Direction::down);
+    float left_oh = m_ts_collection->get_overhang(Direction::left);
+    float right_oh = m_ts_collection->get_overhang(Direction::right);
+    float up_oh = m_ts_collection->get_overhang(Direction::up);
+    float down_oh = m_ts_collection->get_overhang(Direction::down);
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     if(layout.orientation != "orthogonal") {

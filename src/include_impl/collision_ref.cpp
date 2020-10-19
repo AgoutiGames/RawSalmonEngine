@@ -21,9 +21,9 @@
 #include "actor/collision.hpp"
 #include "map/tile.hpp"
 
-using salmon::CollisionRef;
+using namespace salmon;
 
-CollisionRef::CollisionRef(Collision& impl) : m_impl(&impl) {}
+CollisionRef::CollisionRef(internal::Collision& impl) : m_impl(&impl) {}
 
 bool CollisionRef::tile() const {return m_impl->tile();}
 bool CollisionRef::actor() const {return m_impl->actor();}
@@ -33,7 +33,7 @@ bool CollisionRef::none() const {return m_impl->none();}
 std::string CollisionRef::my_hitbox() const {return m_impl->my_hitbox();}
 std::string CollisionRef::other_hitbox() const {return m_impl->other_hitbox();}
 unsigned CollisionRef::get_actor_id() const {return m_impl->get_actor_id();}
-salmon::TileInstance CollisionRef::get_tile() const {return m_impl->get_tile_instance();}
+TileInstance CollisionRef::get_tile() const {return m_impl->get_tile_instance();}
 
 int CollisionRef::get_x() const {return m_impl->get_x();}
 int CollisionRef::get_y() const {return m_impl->get_y();}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -28,6 +28,8 @@
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
 #include "util/smart.hpp"
+
+namespace salmon { namespace internal {
 
 class Primitive;
 
@@ -83,6 +85,6 @@ class ObjectLayer : public Layer{
 
         static unsigned next_object_id;
 };
-
+}} // namespace salmon::internal
 
 #endif // OBJECT_LAYER_HPP_INCLUDED

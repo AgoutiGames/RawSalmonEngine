@@ -22,6 +22,8 @@
 #include "actor/primitive.hpp"
 #include "graphics/texture.hpp"
 
+namespace salmon { namespace internal {
+
 class MapData;
 
 class PrimitiveText : public Primitive {
@@ -61,5 +63,6 @@ class PrimitiveText : public Primitive {
         std::string m_text;
         Attributes m_attributes;
 };
+}} // namespace salmon::internal
 
 #endif // PRIMITIVE_TEXT_HPP_INCLUDED

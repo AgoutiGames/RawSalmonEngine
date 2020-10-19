@@ -24,6 +24,8 @@
 
 namespace fs = std::experimental::filesystem;
 
+using namespace salmon::internal;
+
 #ifdef __EMSCRIPTEN__
     const std::vector<std::string> Preloader::m_image_formats = {".png",".PNG"};
     const std::vector<std::string> Preloader::m_music_formats = {"_M.ogg", "_M.OGG"};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -32,6 +32,8 @@
 #include "map/tile.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
+
+using namespace salmon::internal;
 
 /**
  * @brief Differentiates possible layers by name and calls proper parsing function

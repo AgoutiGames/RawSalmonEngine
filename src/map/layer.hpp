@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -25,6 +25,8 @@
 #include <string>
 #include <tinyxml2.h>
 
+namespace salmon { namespace internal {
+
 class Actor;
 class Camera;
 class LayerCollection;
@@ -35,7 +37,6 @@ class MapData;
  *
  * Can store all possible layer types
  */
-
 class Layer {
     public:
         enum LayerType{
@@ -73,5 +74,6 @@ class Layer {
         float m_offset_y = 0;
         bool m_hidden = false;
 };
+}} // namespace salmon::internal
 
 #endif // LAYER_HPP_INCLUDED

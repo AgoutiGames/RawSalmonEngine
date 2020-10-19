@@ -20,9 +20,9 @@
 
 #include "actor/data_block.hpp"
 
-using salmon::DataBlockRef;
+using namespace salmon;
 
-DataBlockRef::DataBlockRef(DataBlock& impl) : m_impl{&impl} {}
+DataBlockRef::DataBlockRef(internal::DataBlock& impl) : m_impl{&impl} {}
 
 void DataBlockRef::set_val(std::string name, bool val) {m_impl->set_val(name,val);}
 void DataBlockRef::set_val(std::string name, int val) {m_impl->set_val(name,val);}

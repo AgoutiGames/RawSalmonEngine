@@ -20,32 +20,32 @@
 
 #include "actor/actor.hpp"
 
-using salmon::ActorRef;
+using namespace salmon;
 
-ActorRef::ActorRef(Actor& impl) : m_impl{&impl} {}
-ActorRef::ActorRef(Actor* impl) : m_impl{impl} {}
+ActorRef::ActorRef(internal::Actor& impl) : m_impl{&impl} {}
+ActorRef::ActorRef(internal::Actor* impl) : m_impl{impl} {}
 
 bool ActorRef::good() const {return (m_impl == nullptr) ? false : true ;}
 
-bool ActorRef::animate(std::string anim, salmon::Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
-bool ActorRef::set_animation(std::string anim, salmon::Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
-salmon::AnimSignal ActorRef::animate_trigger(std::string anim, salmon::Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}
+bool ActorRef::animate(std::string anim, Direction dir, float speed) {return m_impl->animate(anim,dir,speed);}
+bool ActorRef::set_animation(std::string anim, Direction dir, int frame) {return m_impl->set_animation(anim,dir,frame);}
+AnimSignal ActorRef::animate_trigger(std::string anim, Direction dir, float speed) {return m_impl->animate_trigger(anim,dir,speed);}
 std::string ActorRef::get_animation() const {return m_impl->get_animation();}
-salmon::Direction ActorRef::get_direction() const {return m_impl->get_direction();}
+Direction ActorRef::get_direction() const {return m_impl->get_direction();}
 std::string ActorRef::get_name() const {return m_impl->get_name();}
 std::string ActorRef::get_template_name() const {return m_impl->get_type();}
 unsigned ActorRef::get_id() const {return m_impl->get_id();}
-bool ActorRef::valid_anim_state(std::string anim, salmon::Direction dir) const {return m_impl->valid_anim_state(anim,dir);}
+bool ActorRef::valid_anim_state(std::string anim, Direction dir) const {return m_impl->valid_anim_state(anim,dir);}
 
-bool ActorRef::move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {return m_impl->move_relative(x,y,target,my_hitboxes,other_hitboxes,notify);}
-bool ActorRef::move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {return m_impl->move_absolute(x,y,target,my_hitboxes,other_hitboxes,notify);}
+bool ActorRef::move_relative(float x, float y, Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {return m_impl->move_relative(x,y,target,my_hitboxes,other_hitboxes,notify);}
+bool ActorRef::move_absolute(float x, float y, Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {return m_impl->move_absolute(x,y,target,my_hitboxes,other_hitboxes,notify);}
 void ActorRef::move_relative(float x, float y) {m_impl->move_relative(x,y);}
 void ActorRef::move_absolute(float x, float y) {m_impl->move_absolute(x,y);}
 
-bool ActorRef::unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+bool ActorRef::unstuck(Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     return m_impl->unstuck(target,my_hitboxes,other_hitboxes,notify);
 }
-bool ActorRef::unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+bool ActorRef::unstuck_along_path(float x, float y,Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     return m_impl->unstuck_along_path(x,y,target,my_hitboxes,other_hitboxes,notify);
 }
 
@@ -63,14 +63,14 @@ bool ActorRef::separate(float x1, float y1, float x2, float y2, ActorRef actor, 
     return m_impl->separate_along_path(x1,y1,x2,y2,*actor.m_impl,my_hitboxes,other_hitboxes);
 }
 
-bool ActorRef::on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir, int tolerance) const {return m_impl->on_ground(target,my_hitbox,other_hitboxes,dir,tolerance);}
+bool ActorRef::on_ground(Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, Direction dir, int tolerance) const {return m_impl->on_ground(target,my_hitbox,other_hitboxes,dir,tolerance);}
 
 void ActorRef::set_resize_hitbox(bool mode) {m_impl->set_resize_hitbox(mode);}
 bool ActorRef::get_resize_hitbox() const {return m_impl->get_resize_hitbox();}
 
-std::vector<salmon::CollisionRef> ActorRef::get_collisions() {
-    std::vector<Collision>& temp = m_impl->get_collisions();
-    std::vector<salmon::CollisionRef> out;
+std::vector<CollisionRef> ActorRef::get_collisions() {
+    std::vector<internal::Collision>& temp = m_impl->get_collisions();
+    std::vector<CollisionRef> out;
     for(auto& c : temp) {
         out.emplace_back(c);
     }
@@ -93,6 +93,6 @@ int ActorRef::get_anim_frame_count() const {
 
 float ActorRef::get_x() const {return m_impl->get_x();}
 float ActorRef::get_y() const {return m_impl->get_y();}
-salmon::Rect ActorRef::get_hitbox(std::string name) const {return make_rect(m_impl->get_hitbox(name));}
+Rect ActorRef::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
 
-salmon::DataBlockRef ActorRef::get_data() {return m_impl->get_data();}
+DataBlockRef ActorRef::get_data() {return m_impl->get_data();}

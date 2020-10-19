@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,8 +21,7 @@
 #include "util/logger.hpp"
 #include "core/gameinfo.hpp"
 
-using salmon::MouseState;
-using salmon::ButtonState;
+using namespace salmon::internal;
 
 InputCache::InputCache(GameInfo* game) : m_game{game} {}
 
@@ -47,7 +46,7 @@ void InputCache::poll() {
 void InputCache::clear() {
      m_pressed.clear();
      m_released.clear();
-     //m_mouse = salmon::MouseState();
+     //m_mouse = MouseState();
      // Preserve x_pos, y_pos and down values
      m_mouse.x_delta = 0;
      m_mouse.y_delta = 0;

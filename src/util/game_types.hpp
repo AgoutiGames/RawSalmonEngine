@@ -24,6 +24,7 @@
 #include <SDL.h>
 #include "../../include/types.hpp"
 
+namespace salmon { namespace internal {
 
 /**
  * @brief A collection of various enums and handy functions for conversion and parsing
@@ -64,8 +65,8 @@ enum class Priority{
     invalid = -1,
 };
 
-// salmon::AnimationType str_to_anim_type(const std::string& name);
-salmon::Direction str_to_direction(const std::string& name);
+// AnimationType str_to_anim_type(const std::string& name);
+Direction str_to_direction(const std::string& name);
 Priority str_to_priority(const std::string& name);
 EventSignal str_to_event_signal(const std::string& name);
 Response str_to_response(const std::string& name);
@@ -73,10 +74,12 @@ SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
 SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second);
-salmon::Rect make_rect(const SDL_Rect& rect);
-SDL_Rect make_rect(const salmon::Rect& rect);
+Rect make_rect(const SDL_Rect& rect);
+SDL_Rect make_rect(const Rect& rect);
 
-std::vector<float> dir_to_mov(const salmon::Direction dir);
+std::vector<float> dir_to_mov(const Direction dir);
 void normalize(float& x, float& y);
+
+}} // namespace salmon::internal
 
 #endif // GAME_TYPES_HPP_INCLUDED

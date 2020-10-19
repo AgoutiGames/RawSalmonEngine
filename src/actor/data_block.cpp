@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+using namespace salmon::internal;
+
 void DataBlock::set_val(std::string name, bool val) {m_data_bool[name] = val;}
 void DataBlock::set_val(std::string name, int val) {m_data_int[name] = val;}
 void DataBlock::set_val(std::string name, float val) {m_data_float[name] = val;}

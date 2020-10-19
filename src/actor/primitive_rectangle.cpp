@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -19,6 +19,8 @@
 #include "actor/primitive_rectangle.hpp"
 
 #include <SDL.h>
+
+using namespace salmon::internal;
 
 bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
     if(m_hidden) {return true;}

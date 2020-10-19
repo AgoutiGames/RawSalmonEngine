@@ -25,6 +25,8 @@
 #include "util/logger.hpp"
 #include "core/gameinfo.hpp"
 
+using namespace salmon::internal;
+
 /// Factory function which retrieves a pointer owning the image layer
 ImageLayer* ImageLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
     return new ImageLayer(source, name, layer_collection, eresult);

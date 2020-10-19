@@ -24,68 +24,68 @@
 #include "music_ref.hpp"
 #include "sound_ref.hpp"
 
-class AudioManager;
-
 namespace salmon {
-    class AudioManagerRef {
-        public:
-            AudioManagerRef(AudioManager& impl);
 
-            /**
-             * @brief Load music file from supplied path
-             * @param path The path to the music file
-             * @param absolute If false the path is relative to data folder, otherwise it's absolute
-             * @return True if file could be found and is a supported file
-             * @note Supported filetypes are .ogg .flac .mp3 and .wav
-             */
-            bool load_music(std::string path, bool absolute = false);
-            /**
-             * @brief Load sound file from supplied path
-             * @param path The path to the sound file
-             * @param absolute If false the path is relative to data folder, otherwise it's absolute
-             * @return True if file could be found and is a supported file
-             * @note Supported filetypes are .ogg .flac .mp3 and .wav
-             */
-            bool load_sound(std::string path, bool absolute = false);
+namespace internal{class AudioManager;}
 
-            /**
-             * @brief Returns music file from supplied path
-             * @param path The path to the music file
-             * @param absolute If false the path is relative to data folder, otherwise it's absolute
-             * @return Reference to the music object
-             * @note Supported filetypes are .ogg .flac .mp3 and .wav
-             * @note Only loads the file from disk if it wasn't loaded before
-             *
-             * @warning Always test if music could load by checking if good() returns true
-             */
-            MusicRef get_music(std::string path, bool absolute = false);
-            /**
-             * @brief Returns sound file from supplied path
-             * @param path The path to the sound file
-             * @param absolute If false the path is relative to data folder, otherwise it's absolute
-             * @return Reference to the sound object
-             * @note Supported filetypes are .ogg .flac .mp3 and .wav
-             * @note Only loads the file from disk if it wasn't loaded before
-             *
-             * @warning Always test if sound could load by checking if good() returns true
-             */
-            SoundRef get_sound(std::string path, bool absolute = false);
+class AudioManagerRef {
+    public:
+        AudioManagerRef(internal::AudioManager& impl);
 
-            /// Set the global volume of sound effects to a value between 0.0 and 1.0. Doesn't apply to music!
-            void set_master_sound_volume(float factor);
-            /// Get the global sound volume which is between 0.0 and 1.0
-            float get_master_sound_volume();
+        /**
+         * @brief Load music file from supplied path
+         * @param path The path to the music file
+         * @param absolute If false the path is relative to data folder, otherwise it's absolute
+         * @return True if file could be found and is a supported file
+         * @note Supported filetypes are .ogg .flac .mp3 and .wav
+         */
+        bool load_music(std::string path, bool absolute = false);
+        /**
+         * @brief Load sound file from supplied path
+         * @param path The path to the sound file
+         * @param absolute If false the path is relative to data folder, otherwise it's absolute
+         * @return True if file could be found and is a supported file
+         * @note Supported filetypes are .ogg .flac .mp3 and .wav
+         */
+        bool load_sound(std::string path, bool absolute = false);
 
-            /// Clear all priorily loaded music from RAM
-            void clear_music();
-            /// Clear all priorily loaded sound effects from RAM
-            void clear_sounds();
-            /// Clear both music and sound effects
-            void clear();
-        private:
-            AudioManager* m_impl;
-    };
+        /**
+         * @brief Returns music file from supplied path
+         * @param path The path to the music file
+         * @param absolute If false the path is relative to data folder, otherwise it's absolute
+         * @return Reference to the music object
+         * @note Supported filetypes are .ogg .flac .mp3 and .wav
+         * @note Only loads the file from disk if it wasn't loaded before
+         *
+         * @warning Always test if music could load by checking if good() returns true
+         */
+        MusicRef get_music(std::string path, bool absolute = false);
+        /**
+         * @brief Returns sound file from supplied path
+         * @param path The path to the sound file
+         * @param absolute If false the path is relative to data folder, otherwise it's absolute
+         * @return Reference to the sound object
+         * @note Supported filetypes are .ogg .flac .mp3 and .wav
+         * @note Only loads the file from disk if it wasn't loaded before
+         *
+         * @warning Always test if sound could load by checking if good() returns true
+         */
+        SoundRef get_sound(std::string path, bool absolute = false);
+
+        /// Set the global volume of sound effects to a value between 0.0 and 1.0. Doesn't apply to music!
+        void set_master_sound_volume(float factor);
+        /// Get the global sound volume which is between 0.0 and 1.0
+        float get_master_sound_volume();
+
+        /// Clear all priorily loaded music from RAM
+        void clear_music();
+        /// Clear all priorily loaded sound effects from RAM
+        void clear_sounds();
+        /// Clear both music and sound effects
+        void clear();
+    private:
+        internal::AudioManager* m_impl;
+};
 }
-
 
 #endif // AUDIO_MANAGER_REF_HPP_INCLUDED

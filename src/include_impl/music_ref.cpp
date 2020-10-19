@@ -20,10 +20,10 @@
 
 #include "audio/music.hpp"
 
-using salmon::MusicRef;
+using namespace salmon;
 
-MusicRef::MusicRef() : m_impl{Music::get_null_music()} {}
-MusicRef::MusicRef(Music& impl) : m_impl{&impl} {}
+MusicRef::MusicRef() : m_impl{internal::Music::get_null_music()} {}
+MusicRef::MusicRef(internal::Music& impl) : m_impl{&impl} {}
 
 bool MusicRef::good() const {return m_impl->good();}
 void MusicRef::play(int loops) {m_impl->play(loops);}

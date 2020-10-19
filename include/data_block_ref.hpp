@@ -21,45 +21,46 @@
 
 #include <string>
 
-class DataBlock;
-
 namespace salmon {
-    class DataBlockRef {
-        public:
-            DataBlockRef(DataBlock& impl);
 
-            /// Set named bool property to supplied value
-            void set_val(std::string name, bool val);
-            /// Set named integer property to supplied value
-            void set_val(std::string name, int val);
-            /// Set named float property to supplied value
-            void set_val(std::string name, float val);
-            /// Set named string property to supplied value
-            void set_val(std::string name, std::string val);
+namespace internal{class DataBlock;}
 
-            /// Returns true if bool property with supplied name exists
-            bool check_val_bool(std::string name) const;
-            /// Returns true if integer property with supplied name exists
-            bool check_val_int(std::string name) const;
-            /// Returns true if float property with supplied name exists
-            bool check_val_float(std::string name) const;
-            /// Returns true if string property with supplied name exists
-            bool check_val_string(std::string name) const;
+class DataBlockRef {
+    public:
+        DataBlockRef(internal::DataBlock& impl);
 
-            /// Return bool value by name
-            bool get_val_bool(std::string name) const;
-            /// Return integer value by name
-            int get_val_int(std::string name) const;
-            /// Return float value by name
-            float get_val_float(std::string name) const;
-            /// Return string value by name
-            std::string get_val_string(std::string name) const;
+        /// Set named bool property to supplied value
+        void set_val(std::string name, bool val);
+        /// Set named integer property to supplied value
+        void set_val(std::string name, int val);
+        /// Set named float property to supplied value
+        void set_val(std::string name, float val);
+        /// Set named string property to supplied value
+        void set_val(std::string name, std::string val);
 
-            /// Clear DataBlock of all of its entries
-            void clear();
-        private:
-            DataBlock* m_impl;
-    };
+        /// Returns true if bool property with supplied name exists
+        bool check_val_bool(std::string name) const;
+        /// Returns true if integer property with supplied name exists
+        bool check_val_int(std::string name) const;
+        /// Returns true if float property with supplied name exists
+        bool check_val_float(std::string name) const;
+        /// Returns true if string property with supplied name exists
+        bool check_val_string(std::string name) const;
+
+        /// Return bool value by name
+        bool get_val_bool(std::string name) const;
+        /// Return integer value by name
+        int get_val_int(std::string name) const;
+        /// Return float value by name
+        float get_val_float(std::string name) const;
+        /// Return string value by name
+        std::string get_val_string(std::string name) const;
+
+        /// Clear DataBlock of all of its entries
+        void clear();
+    private:
+        internal::DataBlock* m_impl;
+};
 }
 
 #endif // DATA_BLOCK_REF_HPP_INCLUDED

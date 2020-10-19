@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -22,6 +22,8 @@
 #include <string>
 #include <map>
 #include <SDL_ttf.h>
+
+namespace salmon { namespace internal {
 
 /**
  * @brief A container which loads and stores typefonts with fallback option
@@ -47,6 +49,6 @@ class FontManager {
         std::string m_base_path = "../data/fonts/";
         std::map<std::string, std::map<int, TTF_Font*>> m_fonts;
 };
-
+}} // namespace salmon::internal
 
 #endif // FONT_MANAGER_HPP_INCLUDED

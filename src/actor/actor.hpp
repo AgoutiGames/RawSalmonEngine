@@ -30,6 +30,8 @@
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 class MapData;
 
 /**
@@ -45,9 +47,9 @@ class Actor{
         tinyxml2::XMLError parse_base(tinyxml2::XMLElement* source);
         tinyxml2::XMLError parse_properties(tinyxml2::XMLElement* source);
 
-        bool animate(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
-        bool set_animation(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, int frame = 0);
-        salmon::AnimSignal animate_trigger(std::string anim = salmon::AnimationType::current, salmon::Direction dir = salmon::Direction::current, float speed = 1.0);
+        bool animate(std::string anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
+        bool set_animation(std::string anim = AnimationType::current, Direction dir = Direction::current, int frame = 0);
+        AnimSignal animate_trigger(std::string anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
 
         void render(int x_cam, int y_cam) const;
 
@@ -55,15 +57,15 @@ class Actor{
         bool move(float x_factor, float y_factor, bool absolute = false);
 
         // Move with collision
-        bool move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
-        bool move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool move_relative(float x, float y, Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool move_absolute(float x, float y, Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         // Move without collision
         void move_relative(float x, float y);
         void move_absolute(float x, float y);
 
-        bool unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool unstuck(Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
 
-        bool unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool unstuck_along_path(float x, float y,Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
 
         bool check_collision(Actor& other, bool notify);
         bool check_collision(Actor& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
@@ -72,8 +74,8 @@ class Actor{
         bool check_collision(TileInstance& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
 
         // DEPRECATED! Use more granular overload instead
-        bool on_ground(salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const {return on_ground(salmon::Collidees::tile, salmon::DEFAULT_HITBOX, {salmon::DEFAULT_HITBOX},dir,tolerance);}
-        bool on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir = salmon::Direction::down, int tolerance = 0) const;
+        bool on_ground(Direction dir = Direction::down, int tolerance = 0) const {return on_ground(Collidees::tile, DEFAULT_HITBOX, {DEFAULT_HITBOX},dir,tolerance);}
+        bool on_ground(Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, Direction dir = Direction::down, int tolerance = 0) const;
 
         // Seperate hitboxes after collision
         bool separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
@@ -112,8 +114,8 @@ class Actor{
         // Trivial Getters
         std::string get_animation() const {return m_anim_state;}
         Tile& get_animation_tile() {return m_animations.at(m_anim_state).at(m_direction);}
-        std::map<std::string, std::map<salmon::Direction, Tile>>& get_animation_container() {return m_animations;}
-        salmon::Direction get_direction() const {return m_direction;}
+        std::map<std::string, std::map<Direction, Tile>>& get_animation_container() {return m_animations;}
+        Direction get_direction() const {return m_direction;}
         std::string get_name() const {return m_name;}
         std::string get_type() const {return m_type;}
         MapData& get_map() {return *m_map;}
@@ -123,7 +125,7 @@ class Actor{
 
         void set_tile(Tile tile) {m_base_tile = tile;}
 
-        bool valid_anim_state(std::string anim, salmon::Direction dir) const;
+        bool valid_anim_state(std::string anim, Direction dir) const;
         bool valid_anim_state() const {return valid_anim_state(m_anim_state, m_direction);}
 
         bool is_valid() const {return m_base_tile.is_valid();}
@@ -140,7 +142,7 @@ class Actor{
         bool get_resize_hitbox() const {return m_resize_hitbox;}
         void set_resize_hitbox(bool mode) {m_resize_hitbox = mode;}
 
-        SDL_Rect get_hitbox(std::string type = salmon::DEFAULT_HITBOX) const;
+        SDL_Rect get_hitbox(std::string type = DEFAULT_HITBOX) const;
         const std::map<std::string, SDL_Rect> get_hitboxes() const;
 
         void add_collision(Collision c) {if(m_register_collisions) {m_collisions.push_back(c);}}
@@ -159,9 +161,9 @@ class Actor{
         std::string m_type;
         std::string m_layer_name;
 
-        std::string m_anim_state = salmon::AnimationType::none; ///< Currently active animation
-        salmon::Direction m_direction = salmon::Direction::none; ///< Current direction facing
-        std::map<std::string, std::map<salmon::Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
+        std::string m_anim_state = AnimationType::none; ///< Currently active animation
+        Direction m_direction = Direction::none; ///< Current direction facing
+        std::map<std::string, std::map<Direction, Tile>> m_animations; ///< 2D Map which stores all animation tiles
         Tile m_base_tile;
 
         DataBlock m_data; ///< This holds custom user values by string
@@ -191,5 +193,8 @@ inline bool operator< (const Actor& lhs, const Actor& rhs) {
         return lp.first < rp.first;
     }
 }
+
+}} // namespace salmon::internal
+
 
 #endif // ACTOR_HPP_INCLUDED

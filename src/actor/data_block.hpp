@@ -22,6 +22,8 @@
 #include <string>
 #include <map>
 
+namespace salmon { namespace internal {
+
 /**
  * @brief A class for holding user values by string
  */
@@ -54,6 +56,6 @@ class DataBlock{
         std::map<std::string, float> m_data_float;
         std::map<std::string, std::string> m_data_string;
 };
-
+}} // namespace salmon::internal
 
 #endif // DATA_BLOCK_HPP_INCLUDED

@@ -21,75 +21,76 @@
 
 #include <string>
 
-class PrimitiveText;
-
 namespace salmon {
-    class TextRef {
-        friend class MapRef;
-        public:
-            TextRef(PrimitiveText& impl);
-            TextRef(PrimitiveText* impl);
 
-            /// Returns true if TextRef exists and is valid
-            bool good() const;
+namespace internal{class PrimitiveText;}
 
-            /// Describes visual features of text
-            struct Attributes {
-                std::string font_family = "sans-serif";
-                struct {
-                    // RGB values range from 0 to 255
-                    unsigned char r = 0;
-                    unsigned char g = 0;
-                    unsigned char b = 0;
-                    unsigned char a = 255;
-                } color;
-                unsigned pixel_size = 12;
-                bool wrap = false, bold = false, italic = false, underline = false, strikeout = false, kerning = true;
-            };
+class TextRef {
+    friend class MapRef;
+    public:
+        TextRef(internal::PrimitiveText& impl);
+        TextRef(internal::PrimitiveText* impl);
 
-            /// Returns the name which identifies this text object
-            std::string get_name();
+        /// Returns true if TextRef exists and is valid
+        bool good() const;
 
-            /// Returns the x position of this text object
-            float get_x();
-            /// Returns the y position of this text object
-            float get_y();
+        /// Describes visual features of text
+        struct Attributes {
+            std::string font_family = "sans-serif";
+            struct {
+                // RGB values range from 0 to 255
+                unsigned char r = 0;
+                unsigned char g = 0;
+                unsigned char b = 0;
+                unsigned char a = 255;
+            } color;
+            unsigned pixel_size = 12;
+            bool wrap = false, bold = false, italic = false, underline = false, strikeout = false, kerning = true;
+        };
 
-            /// Sets the x position to the supplied value
-            void set_x(float x);
-            /// Sets the y position to the supplied value
-            void set_y(float y);
+        /// Returns the name which identifies this text object
+        std::string get_name();
 
-            /// Returns true if position is relative to camera and not world
-            bool get_static_mode() const;
-            /// Set render coords relative to camera when mode is true, otherwise it's relative to world
-            void set_static_mode(bool mode);
+        /// Returns the x position of this text object
+        float get_x();
+        /// Returns the y position of this text object
+        float get_y();
 
-            /// Returns true if text is currently hidden
-            bool get_hidden() const;
-            /// If mode is true the text won't be rendered, when false is shows up again
-            void set_hidden(bool mode);
+        /// Sets the x position to the supplied value
+        void set_x(float x);
+        /// Sets the y position to the supplied value
+        void set_y(float y);
 
-            /// Returns the text which gets displayed as a string
-            std::string get_text();
-            /// Returns the attribute object describing the visual appearance of the text
-            Attributes get_attributes();
-            /// Returns the pixel width of the text object
-            int get_w();
-            /// Returns the pixel height of the text object
-            int get_h();
+        /// Returns true if position is relative to camera and not world
+        bool get_static_mode() const;
+        /// Set render coords relative to camera when mode is true, otherwise it's relative to world
+        void set_static_mode(bool mode);
 
-            /// Sets the displayed text to supplied string
-            void set_text(std::string text);
-            /// Sets the visual appearance according to supplied attribute object
-            void set_attributes(Attributes a);
+        /// Returns true if text is currently hidden
+        bool get_hidden() const;
+        /// If mode is true the text won't be rendered, when false is shows up again
+        void set_hidden(bool mode);
 
-            /// Applies the changes to the TextRef object after changing text or attributes
-            bool apply();
+        /// Returns the text which gets displayed as a string
+        std::string get_text();
+        /// Returns the attribute object describing the visual appearance of the text
+        Attributes get_attributes();
+        /// Returns the pixel width of the text object
+        int get_w();
+        /// Returns the pixel height of the text object
+        int get_h();
 
-        private:
-            PrimitiveText* m_impl;
-    };
+        /// Sets the displayed text to supplied string
+        void set_text(std::string text);
+        /// Sets the visual appearance according to supplied attribute object
+        void set_attributes(Attributes a);
+
+        /// Applies the changes to the TextRef object after changing text or attributes
+        bool apply();
+
+    private:
+        internal::PrimitiveText* m_impl;
+};
 }
 
 

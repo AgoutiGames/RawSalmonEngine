@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -20,6 +20,8 @@
 #include "util/logger.hpp"
 
 #include <iostream>
+
+using namespace salmon::internal;
 
 /**
  * @brief Delete all currently loaded fonts

@@ -21,39 +21,40 @@
 
 #include "./actor_ref.hpp"
 
-class Camera;
-
 namespace salmon {
-    class CameraRef {
-        public:
-            CameraRef(Camera& impl);
 
-            /// Return x coordinate of upper left corner of camera in world space
-            int get_x() const;
-            /// Return y coordinate of upper left corner of camera in world space
-            int get_y() const;
+namespace internal{class Camera;}
 
-            /// Set x coordinate of upper left corner of camera in world space
-            void set_x(int x);
-            /// Set y coordinate of upper left corner of camera in world space
-            void set_y(int y);
+class CameraRef {
+    public:
+        CameraRef(internal::Camera& impl);
 
-            /// Make camera always center on supplied actor
-            void bind_actor(ActorRef actor);
-            /// Stop camera from centering on actor
-            void unbind_actor();
+        /// Return x coordinate of upper left corner of camera in world space
+        int get_x() const;
+        /// Return y coordinate of upper left corner of camera in world space
+        int get_y() const;
 
-            /// Bind camera to map borders. It may not scroll over the world edges
-            void bind_map();
-            /// Ubind camera from map borders
-            void unbind_map();
+        /// Set x coordinate of upper left corner of camera in world space
+        void set_x(int x);
+        /// Set y coordinate of upper left corner of camera in world space
+        void set_y(int y);
 
-            /// Apply possible actor or map limitations
-            void update();
+        /// Make camera always center on supplied actor
+        void bind_actor(ActorRef actor);
+        /// Stop camera from centering on actor
+        void unbind_actor();
 
-        private:
-            Camera* m_impl;
-    };
+        /// Bind camera to map borders. It may not scroll over the world edges
+        void bind_map();
+        /// Ubind camera from map borders
+        void unbind_map();
+
+        /// Apply possible actor or map limitations
+        void update();
+
+    private:
+        internal::Camera* m_impl;
+};
 }
 
 #endif // CAMERA_REF_HPP_INCLUDED

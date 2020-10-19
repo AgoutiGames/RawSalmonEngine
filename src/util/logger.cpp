@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -23,6 +23,8 @@
 #include <chrono>
 #include <ctime>
 #include <SDL.h>
+
+using namespace salmon::internal;
 
 #ifndef __EMSCRIPTEN__
     // Define static vars

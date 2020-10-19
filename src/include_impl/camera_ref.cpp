@@ -20,9 +20,9 @@
 
 #include "map/camera.hpp"
 
-using salmon::CameraRef;
+using namespace salmon;
 
-CameraRef::CameraRef(Camera& impl) : m_impl{&impl} {}
+CameraRef::CameraRef(internal::Camera& impl) : m_impl{&impl} {}
 
 int CameraRef::get_x() const {return m_impl->x();}
 int CameraRef::get_y() const {return m_impl->y();}

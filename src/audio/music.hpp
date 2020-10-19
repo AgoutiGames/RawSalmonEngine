@@ -24,6 +24,8 @@
 #include <memory>
 #include <SDL_mixer.h>
 
+namespace salmon { namespace internal {
+
 /**
  * @brief Load and play sounds
  */
@@ -59,5 +61,6 @@ class Music {
     private:
         std::shared_ptr<Mix_Music> m_sound;
 };
+}} // namespace salmon::internal
 
 #endif // MUSIC_HPP_INCLUDED

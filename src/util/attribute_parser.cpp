@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,6 +21,8 @@
 #include <iostream>
 
 #include "util/logger.hpp"
+
+using namespace salmon::internal;
 
 tinyxml2::XMLError AttributeParser::parse(tinyxml2::XMLElement* source, bool ignore_missing) {
     using namespace tinyxml2;

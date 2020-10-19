@@ -21,19 +21,21 @@
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 
-salmon::TileInstance::TileInstance(::TileInstance tile) : m_impl{std::make_unique<::TileInstance>(tile)} {}
+using namespace salmon;
 
-bool salmon::TileInstance::valid() const {return m_impl->valid();}
+TileInstance::TileInstance(internal::TileInstance tile) : m_impl{std::make_unique<internal::TileInstance>(tile)} {}
 
-int salmon::TileInstance::get_x() const {return m_impl->get_x();}
-int salmon::TileInstance::get_y() const {return m_impl->get_y();}
+bool TileInstance::valid() const {return m_impl->valid();}
 
-int salmon::TileInstance::get_x_center() const {return get_x() + get_w() / 2;}
-int salmon::TileInstance::get_y_center() const {return get_y() + get_h() / 2;}
+int TileInstance::get_x() const {return m_impl->get_x();}
+int TileInstance::get_y() const {return m_impl->get_y();}
 
-unsigned salmon::TileInstance::get_w() const {return m_impl->get_tile()->get_w();}
-unsigned salmon::TileInstance::get_h() const {return m_impl->get_tile()->get_h();}
+int TileInstance::get_x_center() const {return get_x() + get_w() / 2;}
+int TileInstance::get_y_center() const {return get_y() + get_h() / 2;}
 
-salmon::Rect salmon::TileInstance::get_hitbox(std::string name) const {return make_rect(m_impl->get_hitbox(name));}
+unsigned TileInstance::get_w() const {return m_impl->get_tile()->get_w();}
+unsigned TileInstance::get_h() const {return m_impl->get_tile()->get_h();}
 
-std::string salmon::TileInstance::get_type() const {return m_impl->get_tile()->get_type();}
+Rect TileInstance::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
+
+std::string TileInstance::get_type() const {return m_impl->get_tile()->get_type();}

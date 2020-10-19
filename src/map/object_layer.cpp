@@ -28,6 +28,8 @@
 #include "map/camera.hpp"
 #include "util/logger.hpp"
 
+using namespace salmon::internal;
+
 unsigned ObjectLayer::next_object_id = 1;
 
 /// Factory function which retrieves a pointer owning the object layer

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -20,6 +20,8 @@
 
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
+
+using namespace salmon::internal;
 
 Camera::Camera(int x, int y, int w, int h, MapData* map) :
     m_rect{x,y,w,h}, m_map{map} {}

@@ -23,6 +23,8 @@
 
 #include "actor/primitive.hpp"
 
+namespace salmon { namespace internal {
+
 class PrimitiveRectangle : public Primitive {
     public:
         PrimitiveRectangle(float x_pos, float y_pos, int width, int height, MapData& mapdata, std::string name = "")
@@ -39,6 +41,6 @@ class PrimitiveRectangle : public Primitive {
         int m_width;
         int m_height;
 };
-
+}} // namespace salmon::internal
 
 #endif // PRIMITIVE_RECTANGLE_HPP_INCLUDED
