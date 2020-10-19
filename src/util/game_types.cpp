@@ -41,36 +41,6 @@ Direction str_to_direction(const std::string& name) {
     else return Direction::invalid;
 }
 
-/// Converts a @c string to an @c enum of @c Priority
-Priority str_to_priority(const std::string& name) {
-    if(name == "LOW") return Priority::low;
-    if(name == "MEDIUM") return Priority::medium;
-    if(name == "HIGH") return Priority::high;
-    else return Priority::invalid;
-}
-
-/// Converts a @c string to an @c enum of @c EventSignal
-EventSignal str_to_event_signal(const std::string& name) {
-    if(name == "NEXT") return EventSignal::next;
-    if(name == "STOP") return EventSignal::stop;
-    if(name == "END") return EventSignal::end;
-    if(name == "ABORT") return EventSignal::abort;
-    else return EventSignal::invalid;
-}
-
-/// Converts a @c string to an @c enum of @c Response
-Response str_to_response(const std::string& name) {
-    if(name == "ON_HIT") return Response::on_hit;
-    if(name == "ON_COLLISION") return Response::on_collision;
-    if(name == "ON_ACTIVATION") return Response::on_activation;
-    if(name == "ON_DEATH") return Response::on_death;
-    if(name == "ON_IDLE") return Response::on_idle;
-    if(name == "ON_ALWAYS") return Response::on_always;
-    if(name == "ON_SPAWN") return Response::on_spawn;
-    if(name == "ON_MOUSE") return Response::on_mouse;
-    else return Response::invalid;
-}
-
 /// Converts a @c Direction to x and y factors
 std::vector<float> dir_to_mov(const Direction dir) {
     if(dir == Direction::up)    return std::vector<float>{0,-1};

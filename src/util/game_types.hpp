@@ -30,46 +30,8 @@ namespace salmon { namespace internal {
  * @brief A collection of various enums and handy functions for conversion and parsing
  */
 
-enum class Response{
-    on_hit,
-    on_collision,
-    on_activation,
-    on_death,
-    on_idle,
-    on_always,
-    on_spawn,
-    on_mouse,
-    invalid,
-};
-
-enum class PropertyType{
-    Boolean,
-    Integer,
-    Float,
-    String,
-};
-
-enum class EventSignal{
-    next, ///< Process next event in pipeline
-    stop, ///< Stop processing events here
-    end,  ///< The event succesfully finished, needs to be deleted
-    abort,///< The event preemtively finished, needs to be deleted
-//    erase,///< Erase the actor who processed this event
-    invalid, ///< EventSignal did not properly parse
-};
-
-enum class Priority{
-    low = 25,
-    medium = 50,
-    high = 75,
-    invalid = -1,
-};
-
 // AnimationType str_to_anim_type(const std::string& name);
 Direction str_to_direction(const std::string& name);
-Priority str_to_priority(const std::string& name);
-EventSignal str_to_event_signal(const std::string& name);
-Response str_to_response(const std::string& name);
 SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
