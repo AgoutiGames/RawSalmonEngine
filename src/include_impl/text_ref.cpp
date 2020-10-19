@@ -22,37 +22,37 @@
 
 using namespace salmon;
 
-TextRef::TextRef(internal::PrimitiveText& impl) : m_impl{&impl} {}
-TextRef::TextRef(internal::PrimitiveText* impl) : m_impl{impl} {}
+Text::Text(internal::PrimitiveText& impl) : m_impl{&impl} {}
+Text::Text(internal::PrimitiveText* impl) : m_impl{impl} {}
 
-bool TextRef::good() const {return (m_impl == nullptr) ? false : true ;}
+bool Text::good() const {return (m_impl == nullptr) ? false : true ;}
 
-std::string TextRef::get_text() {return m_impl->get_text();}
-TextRef::Attributes TextRef::get_attributes() {
+std::string Text::get_text() {return m_impl->get_text();}
+Text::Attributes Text::get_attributes() {
     internal::PrimitiveText::Attributes a = m_impl->get_attributes();
     return {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
 }
-int TextRef::get_w() {return m_impl->get_w();}
-int TextRef::get_h() {return m_impl->get_h();}
+int Text::get_w() {return m_impl->get_w();}
+int Text::get_h() {return m_impl->get_h();}
 
-void TextRef::set_text(std::string text) {m_impl->set_text(text);}
-void TextRef::set_attributes(Attributes a) {
+void Text::set_text(std::string text) {m_impl->set_text(text);}
+void Text::set_attributes(Attributes a) {
     internal::PrimitiveText::Attributes temp = {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
     m_impl->set_attributes(temp);
 }
 
-bool TextRef::apply() {return m_impl->generate_texture();}
+bool Text::apply() {return m_impl->generate_texture();}
 
-bool TextRef::get_static_mode() const {return m_impl->get_static_mode();}
-void TextRef::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
+bool Text::get_static_mode() const {return m_impl->get_static_mode();}
+void Text::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
 
-bool TextRef::get_hidden() const {return m_impl->get_hidden();}
-void TextRef::set_hidden(bool mode) {m_impl->set_hidden(mode);}
+bool Text::get_hidden() const {return m_impl->get_hidden();}
+void Text::set_hidden(bool mode) {m_impl->set_hidden(mode);}
 
-std::string TextRef::get_name() {return m_impl->get_name();}
+std::string Text::get_name() {return m_impl->get_name();}
 
-float TextRef::get_x() {return m_impl->get_x();}
-float TextRef::get_y() {return m_impl->get_y();}
+float Text::get_x() {return m_impl->get_x();}
+float Text::get_y() {return m_impl->get_y();}
 
-void TextRef::set_x(float x) {m_impl->set_x(x);}
-void TextRef::set_y(float y) {m_impl->set_y(y);}
+void Text::set_x(float x) {m_impl->set_x(x);}
+void Text::set_y(float y) {m_impl->set_y(y);}

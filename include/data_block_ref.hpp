@@ -25,9 +25,9 @@ namespace salmon {
 
 namespace internal{class DataBlock;}
 
-class DataBlockRef {
+class DataBlock {
     public:
-        DataBlockRef(internal::DataBlock& impl);
+        DataBlock(internal::DataBlock& impl);
 
         /// Set named bool property to supplied value
         void set_val(std::string name, bool val);

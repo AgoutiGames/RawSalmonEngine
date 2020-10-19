@@ -31,11 +31,11 @@ namespace salmon {
 
 namespace internal{class MapData;}
 
-class MapRef {
+class MapData {
     public:
-        MapRef(internal::MapData& impl);
-        MapRef(internal::MapData* impl);
-        virtual ~MapRef() = default;
+        MapData(internal::MapData& impl);
+        MapData(internal::MapData* impl);
+        virtual ~MapData() = default;
 
         /// Renders this map to screen
         bool render() const;
@@ -43,9 +43,9 @@ class MapRef {
         void update();
 
         /// Returns a vector of references to all actors on all map layers
-        std::vector<ActorRef> get_actors();
+        std::vector<Actor> get_actors();
         /// Returns reference to the camera controlling rendering frame
-        CameraRef get_camera();
+        Camera get_camera();
 
         /**
          * @brief Generate a new actor from a template
@@ -55,7 +55,7 @@ class MapRef {
          * @return ActorRef object which may be invalid if actor_template or layer doesn't exist
          * @warning Always check if returned ActorRef returns true on good() method
          */
-        ActorRef add_actor(std::string actor_template_name, std::string layer_name, std::string actor_name = "GENERATED");
+        Actor add_actor(std::string actor_template_name, std::string layer_name, std::string actor_name = "GENERATED");
 
         /**
          * @brief Generate a new actor from existing actor
@@ -65,10 +65,10 @@ class MapRef {
          * @return ActorRef object which may be invalid if actor is invalid or layer doesn't exist
          * @warning Always check if returned ActorRef returns true on good() method
          */
-        ActorRef add_actor(ActorRef actor, std::string layer_name, std::string actor_name = "GENERATED");
+        Actor add_actor(Actor actor, std::string layer_name, std::string actor_name = "GENERATED");
 
         /// Removes actor from this map. Returns true if removal worked
-        bool remove_actor(ActorRef actor);
+        bool remove_actor(Actor actor);
 
         /**
          * @brief Retrieve text object by name
@@ -76,7 +76,7 @@ class MapRef {
          * @return TextRef object which may be invalid if no text object with the supplied name exists
          * @warning Always check if returned TextRef returns true on good() method
          */
-        TextRef get_text(std::string name);
+        Text get_text(std::string name);
 
         /**
          * @brief Add text object by to map
@@ -88,10 +88,10 @@ class MapRef {
          * @return TextRef object which may be invalid if layer doesn't exist
          * @warning Always check if returned TextRef returns true on good() method
          */
-        TextRef add_text(std::string text_name, std::string layer_name, float x_pos, float y_pos, std::string text, TextRef::Attributes a);
+        Text add_text(std::string text_name, std::string layer_name, float x_pos, float y_pos, std::string text, Text::Attributes a);
 
         /// Removes text object from this map. Returns true if removal worked
-        bool remove_text(TextRef text);
+        bool remove_text(Text text);
 
         /**
          * @brief Supress rendering of a layer
@@ -115,7 +115,7 @@ class MapRef {
         /// Returns the full path to the directory of this .tmx map file
         std::string get_path() const;
         /// Returns reference to DataBlock of this map which holds all property values supplied via tiled
-        DataBlockRef get_data();
+        DataBlock get_data();
     private:
         internal::MapData* m_impl;
 };

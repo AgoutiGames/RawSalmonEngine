@@ -22,38 +22,38 @@
 
 using namespace salmon;
 
-SoundRef::SoundRef() : m_impl{internal::SoundEffect::get_null_sound()} {}
-SoundRef::SoundRef(internal::SoundEffect& impl) : m_impl{new internal::SoundEffect(impl)} {}
+Sound::Sound() : m_impl{internal::SoundEffect::get_null_sound()} {}
+Sound::Sound(internal::SoundEffect& impl) : m_impl{new internal::SoundEffect(impl)} {}
 
-SoundRef::SoundRef(const SoundRef& sound) : SoundRef(*sound.m_impl) {}
-SoundRef::SoundRef(SoundRef&& sound) : m_impl{sound.m_impl} {
+Sound::Sound(const Sound& sound) : Sound(*sound.m_impl) {}
+Sound::Sound(Sound&& sound) : m_impl{sound.m_impl} {
     sound.m_impl = internal::SoundEffect::get_null_sound();
 }
-SoundRef& SoundRef::operator=(const SoundRef& sound) {
+Sound& Sound::operator=(const Sound& sound) {
     if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}
     m_impl = new internal::SoundEffect(*sound.m_impl);
     return *this;
 }
-SoundRef& SoundRef::operator=(SoundRef&& sound) {
+Sound& Sound::operator=(Sound&& sound) {
     if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}
     m_impl = sound.m_impl;
     sound.m_impl = internal::SoundEffect::get_null_sound();
     return *this;
 }
-SoundRef::~SoundRef() {if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}}
+Sound::~Sound() {if(m_impl != internal::SoundEffect::get_null_sound()) {delete m_impl;}}
 
-bool SoundRef::good() const {return m_impl->good();}
-void SoundRef::play(int loops, int length_ms) {m_impl->play(loops,length_ms);}
-void SoundRef::play_fadein(int fadein_ms, int loops, int length_ms) {m_impl->play_fadein(fadein_ms,loops,length_ms);}
-void SoundRef::pause() {m_impl->pause();}
-void SoundRef::resume() {m_impl->resume();}
-void SoundRef::halt() {m_impl->halt();}
-void SoundRef::halt_fadeout(int fadeout_ms) {m_impl->halt_fadeout(fadeout_ms);}
+bool Sound::good() const {return m_impl->good();}
+void Sound::play(int loops, int length_ms) {m_impl->play(loops,length_ms);}
+void Sound::play_fadein(int fadein_ms, int loops, int length_ms) {m_impl->play_fadein(fadein_ms,loops,length_ms);}
+void Sound::pause() {m_impl->pause();}
+void Sound::resume() {m_impl->resume();}
+void Sound::halt() {m_impl->halt();}
+void Sound::halt_fadeout(int fadeout_ms) {m_impl->halt_fadeout(fadeout_ms);}
 
-void SoundRef::set_position(int angle, float distance) {m_impl->set_position(angle,distance);}
-void SoundRef::reset_position() {m_impl->reset_position();}
+void Sound::set_position(int angle, float distance) {m_impl->set_position(angle,distance);}
+void Sound::reset_position() {m_impl->reset_position();}
 
-float SoundRef::get_volume() {return m_impl->get_volume();}
-void SoundRef::set_volume(float factor) {m_impl->set_volume(factor);}
-bool SoundRef::playing() {return m_impl->playing();}
-bool SoundRef::paused() {return m_impl->paused();}
+float Sound::get_volume() {return m_impl->get_volume();}
+void Sound::set_volume(float factor) {m_impl->set_volume(factor);}
+bool Sound::playing() {return m_impl->playing();}
+bool Sound::paused() {return m_impl->paused();}

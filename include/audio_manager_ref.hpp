@@ -28,9 +28,9 @@ namespace salmon {
 
 namespace internal{class AudioManager;}
 
-class AudioManagerRef {
+class AudioManager {
     public:
-        AudioManagerRef(internal::AudioManager& impl);
+        AudioManager(internal::AudioManager& impl);
 
         /**
          * @brief Load music file from supplied path
@@ -59,7 +59,7 @@ class AudioManagerRef {
          *
          * @warning Always test if music could load by checking if good() returns true
          */
-        MusicRef get_music(std::string path, bool absolute = false);
+        Music get_music(std::string path, bool absolute = false);
         /**
          * @brief Returns sound file from supplied path
          * @param path The path to the sound file
@@ -70,7 +70,7 @@ class AudioManagerRef {
          *
          * @warning Always test if sound could load by checking if good() returns true
          */
-        SoundRef get_sound(std::string path, bool absolute = false);
+        Sound get_sound(std::string path, bool absolute = false);
 
         /// Set the global volume of sound effects to a value between 0.0 and 1.0. Doesn't apply to music!
         void set_master_sound_volume(float factor);

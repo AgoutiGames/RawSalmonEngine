@@ -23,16 +23,16 @@ namespace salmon {
 
 namespace internal{class SoundEffect;}
 
-class SoundRef {
+class Sound {
     public:
-        SoundRef();
-        SoundRef(internal::SoundEffect& impl);
+        Sound();
+        Sound(internal::SoundEffect& impl);
 
-        SoundRef(const SoundRef& sound);
-        SoundRef(SoundRef&& sound);
-        SoundRef& operator=(const SoundRef& sound);
-        SoundRef& operator=(SoundRef&& sound);
-        ~SoundRef();
+        Sound(const Sound& sound);
+        Sound(Sound&& sound);
+        Sound& operator=(const Sound& sound);
+        Sound& operator=(Sound&& sound);
+        ~Sound();
 
         /// Returns true if the sound exists and could be loaded
         bool good() const;

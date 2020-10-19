@@ -30,13 +30,13 @@ namespace salmon {
 
 namespace internal{class Actor;}
 
-class ActorRef {
-    friend class CameraRef;
-    friend class MapRef;
+class Actor {
+    friend class Camera;
+    friend class MapData;
     public:
-        ActorRef(internal::Actor& impl);
-        ActorRef(internal::Actor* impl);
-        virtual ~ActorRef() = default;
+        Actor(internal::Actor& impl);
+        Actor(internal::Actor* impl);
+        virtual ~Actor() = default;
 
         /// Returns true if the actor exists / could be found
         bool good() const;
@@ -153,7 +153,7 @@ class ActorRef {
          * @param notify If true a collision object will be added to both actors taking part in a collision
          * @return True if a collision occured, false otherwise
          */
-        bool check_collision(ActorRef other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
+        bool check_collision(Actor other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
 
         /**
          * @brief Separate this actor from another actor
@@ -161,20 +161,20 @@ class ActorRef {
          * @param other_hitboxes A vector of hitbox names to check against for the collidee
          * @return True if at least one collision happened/got resolved, false if there wasn't any collision
          */
-        bool separate(ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
+        bool separate(Actor actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
         /**
          * @brief Separate this actor from another actor by moving along supplied direction vector
          * @param x, y The vector indicating the direction used for resolving collisions
          * @note see basic function for more information
          */
-        bool separate(float x, float y, ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
+        bool separate(float x, float y, Actor actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
         /**
          * @brief Separate two actors from each other by moving along two distinct vectors
          * @param x1, y1 The direction supplied for this actor
          * @param x2, y2 The direction supplied for the other actor
          * @note see basic function for more information
          */
-        bool separate(float x1, float y1, float x2, float y2, ActorRef actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
+        bool separate(float x1, float y1, float x2, float y2, Actor actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
 
         /**
          * @brief Returns true if hitbox is touching other hitboxes of tiles or actors in a specific direction
@@ -222,7 +222,7 @@ class ActorRef {
         int get_anim_frame_count() const;
 
         /// Returns vector containing all collisions since last clear_collisions() call
-        std::vector<CollisionRef> get_collisions();
+        std::vector<Collision> get_collisions();
         /// Clears actor of its detected collisions
         void clear_collisions();
 
@@ -253,7 +253,7 @@ class ActorRef {
         Rect get_hitbox(std::string name) const;
 
         /// Returns reference to DataBlock of this actor which holds all property values supplied via tiled
-        DataBlockRef get_data();
+        DataBlock get_data();
 
     private:
         internal::Actor* m_impl;

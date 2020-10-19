@@ -25,9 +25,9 @@ namespace salmon {
 
 namespace internal{class Camera;}
 
-class CameraRef {
+class Camera {
     public:
-        CameraRef(internal::Camera& impl);
+        Camera(internal::Camera& impl);
 
         /// Return x coordinate of upper left corner of camera in world space
         int get_x() const;
@@ -40,7 +40,7 @@ class CameraRef {
         void set_y(int y);
 
         /// Make camera always center on supplied actor
-        void bind_actor(ActorRef actor);
+        void bind_actor(Actor actor);
         /// Stop camera from centering on actor
         void unbind_actor();
 

@@ -25,11 +25,11 @@ namespace salmon {
 
 namespace internal{class PrimitiveText;}
 
-class TextRef {
-    friend class MapRef;
+class Text {
+    friend class MapData;
     public:
-        TextRef(internal::PrimitiveText& impl);
-        TextRef(internal::PrimitiveText* impl);
+        Text(internal::PrimitiveText& impl);
+        Text(internal::PrimitiveText* impl);
 
         /// Returns true if TextRef exists and is valid
         bool good() const;

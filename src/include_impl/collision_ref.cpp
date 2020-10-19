@@ -23,17 +23,17 @@
 
 using namespace salmon;
 
-CollisionRef::CollisionRef(internal::Collision& impl) : m_impl(&impl) {}
+Collision::Collision(internal::Collision& impl) : m_impl(&impl) {}
 
-bool CollisionRef::tile() const {return m_impl->tile();}
-bool CollisionRef::actor() const {return m_impl->actor();}
-bool CollisionRef::mouse() const {return m_impl->mouse();}
-bool CollisionRef::none() const {return m_impl->none();}
+bool Collision::tile() const {return m_impl->tile();}
+bool Collision::actor() const {return m_impl->actor();}
+bool Collision::mouse() const {return m_impl->mouse();}
+bool Collision::none() const {return m_impl->none();}
 
-std::string CollisionRef::my_hitbox() const {return m_impl->my_hitbox();}
-std::string CollisionRef::other_hitbox() const {return m_impl->other_hitbox();}
-unsigned CollisionRef::get_actor_id() const {return m_impl->get_actor_id();}
-TileInstance CollisionRef::get_tile() const {return m_impl->get_tile_instance();}
+std::string Collision::my_hitbox() const {return m_impl->my_hitbox();}
+std::string Collision::other_hitbox() const {return m_impl->other_hitbox();}
+unsigned Collision::get_actor_id() const {return m_impl->get_actor_id();}
+TileInstance Collision::get_tile() const {return m_impl->get_tile_instance();}
 
-int CollisionRef::get_x() const {return m_impl->get_x();}
-int CollisionRef::get_y() const {return m_impl->get_y();}
+int Collision::get_x() const {return m_impl->get_x();}
+int Collision::get_y() const {return m_impl->get_y();}

@@ -22,15 +22,15 @@
 
 using namespace salmon;
 
-InputCacheRef::InputCacheRef(internal::InputCache& impl) : m_impl{&impl} {}
+InputCache::InputCache(internal::InputCache& impl) : m_impl{&impl} {}
 
-bool InputCacheRef::is_down(std::string key) const {return m_impl->is_down(key);}
-bool InputCacheRef::just_pressed(std::string key) const {return m_impl->just_pressed(key);}
-bool InputCacheRef::just_released(std::string key) const {return m_impl->just_released(key);}
+bool InputCache::is_down(std::string key) const {return m_impl->is_down(key);}
+bool InputCache::just_pressed(std::string key) const {return m_impl->just_pressed(key);}
+bool InputCache::just_released(std::string key) const {return m_impl->just_released(key);}
 
-MouseState InputCacheRef::get_mouse_state() const {return m_impl->get_mouse_state();}
-unsigned InputCacheRef::get_gamepad_count() const {return m_impl->get_gamepad_count();}
-GamepadState InputCacheRef::get_gamepad(int index) const {return m_impl->get_gamepad(index);}
+MouseState InputCache::get_mouse_state() const {return m_impl->get_mouse_state();}
+unsigned InputCache::get_gamepad_count() const {return m_impl->get_gamepad_count();}
+GamepadState InputCache::get_gamepad(int index) const {return m_impl->get_gamepad(index);}
 
-bool InputCacheRef::rumble(int gamepad_index, float strength, unsigned length_ms) const {return m_impl->rumble(gamepad_index, strength, length_ms);}
-bool InputCacheRef::stop_rumble(int gamepad_index) const {return m_impl->stop_rumble(gamepad_index);}
+bool InputCache::rumble(int gamepad_index, float strength, unsigned length_ms) const {return m_impl->rumble(gamepad_index, strength, length_ms);}
+bool InputCache::stop_rumble(int gamepad_index) const {return m_impl->stop_rumble(gamepad_index);}

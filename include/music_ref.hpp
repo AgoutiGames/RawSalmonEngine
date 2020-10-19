@@ -23,10 +23,10 @@ namespace salmon {
 
 namespace internal{class Music;}
 
-class MusicRef {
+class Music {
     public:
-        MusicRef();
-        MusicRef(internal::Music& impl);
+        Music();
+        Music(internal::Music& impl);
 
         /// Returns true if the sound exists and could be loaded
         bool good() const;

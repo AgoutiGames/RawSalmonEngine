@@ -22,21 +22,21 @@
 
 using namespace salmon;
 
-DataBlockRef::DataBlockRef(internal::DataBlock& impl) : m_impl{&impl} {}
+DataBlock::DataBlock(internal::DataBlock& impl) : m_impl{&impl} {}
 
-void DataBlockRef::set_val(std::string name, bool val) {m_impl->set_val(name,val);}
-void DataBlockRef::set_val(std::string name, int val) {m_impl->set_val(name,val);}
-void DataBlockRef::set_val(std::string name, float val) {m_impl->set_val(name,val);}
-void DataBlockRef::set_val(std::string name, std::string val) {m_impl->set_val(name,val);}
+void DataBlock::set_val(std::string name, bool val) {m_impl->set_val(name,val);}
+void DataBlock::set_val(std::string name, int val) {m_impl->set_val(name,val);}
+void DataBlock::set_val(std::string name, float val) {m_impl->set_val(name,val);}
+void DataBlock::set_val(std::string name, std::string val) {m_impl->set_val(name,val);}
 
-bool DataBlockRef::check_val_bool(std::string name) const {return m_impl->check_val_bool(name);}
-bool DataBlockRef::check_val_int(std::string name) const {return m_impl->check_val_int(name);}
-bool DataBlockRef::check_val_float(std::string name) const {return m_impl->check_val_float(name);}
-bool DataBlockRef::check_val_string(std::string name) const {return m_impl->check_val_string(name);}
+bool DataBlock::check_val_bool(std::string name) const {return m_impl->check_val_bool(name);}
+bool DataBlock::check_val_int(std::string name) const {return m_impl->check_val_int(name);}
+bool DataBlock::check_val_float(std::string name) const {return m_impl->check_val_float(name);}
+bool DataBlock::check_val_string(std::string name) const {return m_impl->check_val_string(name);}
 
-bool DataBlockRef::get_val_bool(std::string name) const {return m_impl->get_val_bool(name);}
-int DataBlockRef::get_val_int(std::string name) const {return m_impl->get_val_int(name);}
-float DataBlockRef::get_val_float(std::string name) const {return m_impl->get_val_float(name);}
-std::string DataBlockRef::get_val_string(std::string name) const {return m_impl->get_val_string(name);}
+bool DataBlock::get_val_bool(std::string name) const {return m_impl->get_val_bool(name);}
+int DataBlock::get_val_int(std::string name) const {return m_impl->get_val_int(name);}
+float DataBlock::get_val_float(std::string name) const {return m_impl->get_val_float(name);}
+std::string DataBlock::get_val_string(std::string name) const {return m_impl->get_val_string(name);}
 
-void DataBlockRef::clear() {m_impl->clear();}
+void DataBlock::clear() {m_impl->clear();}

@@ -22,21 +22,21 @@
 
 using namespace salmon;
 
-MusicRef::MusicRef() : m_impl{internal::Music::get_null_music()} {}
-MusicRef::MusicRef(internal::Music& impl) : m_impl{&impl} {}
+Music::Music() : m_impl{internal::Music::get_null_music()} {}
+Music::Music(internal::Music& impl) : m_impl{&impl} {}
 
-bool MusicRef::good() const {return m_impl->good();}
-void MusicRef::play(int loops) {m_impl->play(loops);}
-void MusicRef::play_fadein(int fadein_ms, int loops) {m_impl->play_fadein(fadein_ms,loops);}
-void MusicRef::play_fadein_pos(double seconds, int fadein_ms, int loops) {m_impl->play_fadein_pos(seconds,fadein_ms,loops);}
-void MusicRef::pause() {m_impl->pause();}
-void MusicRef::resume() {m_impl->resume();}
-void MusicRef::halt() {m_impl->halt();}
-void MusicRef::halt_fadeout(int fadeout_ms) {m_impl->halt_fadeout(fadeout_ms);}
-void MusicRef::rewind() {m_impl->rewind();}
-void MusicRef::set_position(double seconds) {m_impl->set_position(seconds);}
+bool Music::good() const {return m_impl->good();}
+void Music::play(int loops) {m_impl->play(loops);}
+void Music::play_fadein(int fadein_ms, int loops) {m_impl->play_fadein(fadein_ms,loops);}
+void Music::play_fadein_pos(double seconds, int fadein_ms, int loops) {m_impl->play_fadein_pos(seconds,fadein_ms,loops);}
+void Music::pause() {m_impl->pause();}
+void Music::resume() {m_impl->resume();}
+void Music::halt() {m_impl->halt();}
+void Music::halt_fadeout(int fadeout_ms) {m_impl->halt_fadeout(fadeout_ms);}
+void Music::rewind() {m_impl->rewind();}
+void Music::set_position(double seconds) {m_impl->set_position(seconds);}
 
-float MusicRef::get_volume() {return m_impl->get_volume();}
-void MusicRef::set_volume(float factor) {m_impl->set_volume(factor);}
-bool MusicRef::playing() {return m_impl->playing();}
-bool MusicRef::paused() {return m_impl->paused();}
+float Music::get_volume() {return m_impl->get_volume();}
+void Music::set_volume(float factor) {m_impl->set_volume(factor);}
+bool Music::playing() {return m_impl->playing();}
+bool Music::paused() {return m_impl->paused();}

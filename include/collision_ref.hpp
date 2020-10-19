@@ -30,9 +30,9 @@ namespace internal{class Collision;}
 /**
  * @brief Reference to collision object. Identifies the collidee of an collision no matter if it's a tile, actor or mouse.
  */
-class CollisionRef {
+class Collision {
     public:
-        CollisionRef(internal::Collision& impl);
+        Collision(internal::Collision& impl);
 
         /// Return true if collidee is a tile
         bool tile() const;

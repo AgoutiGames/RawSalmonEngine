@@ -27,9 +27,9 @@ namespace salmon {
 
 namespace internal{class InputCache;}
 
-class InputCacheRef {
+class InputCache {
     public:
-        InputCacheRef(internal::InputCache& impl);
+        InputCache(internal::InputCache& impl);
 
         /**
          * @note Key names are usually the character produced by pressing the key

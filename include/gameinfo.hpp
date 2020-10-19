@@ -56,7 +56,7 @@ class GameInfo{
         /// Close the current map, making the map before the new current one
         void close_map();
         /// Return reference object to the currently active map
-        MapRef get_map();
+        MapData get_map();
 
         /// Sets the size of the window of this game to the supplied dimensions in pixels
         void set_window_size(unsigned width, unsigned height);
@@ -100,11 +100,11 @@ class GameInfo{
         bool preload(float seconds);
 
         /// Return reference to the audio manager object of the game
-        AudioManagerRef get_audio_manager();
+        AudioManager get_audio_manager();
         /// Returns reference to DataBlock of this game which may hold property values added during execution
-        DataBlockRef get_data();
+        DataBlock get_data();
         /// Returns reference to input cache, holding information about keypresses, mouse state and gamepad state
-        InputCacheRef get_input_cache();
+        InputCache get_input_cache();
 
     private:
         std::unique_ptr<internal::GameInfo> m_impl;

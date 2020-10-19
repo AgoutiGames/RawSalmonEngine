@@ -30,7 +30,7 @@ bool GameInfo::update() {return m_impl->update();}
 
 bool GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load_map(mapfile, absolute);}
 void GameInfo::close_map() {m_impl->close_map();}
-MapRef GameInfo::get_map() {return m_impl->get_map();}
+MapData GameInfo::get_map() {return m_impl->get_map();}
 
 void GameInfo::set_window_size(unsigned width, unsigned height) {m_impl->set_window_size(width,height);}
 bool GameInfo::set_fullscreen(bool mode) {return m_impl->set_fullscreen(mode);}
@@ -57,6 +57,6 @@ bool GameInfo::preload(float seconds) {
     return m_impl->get_preloader().load_recursive(static_cast<Uint32>(seconds * 1000));
 }
 
-AudioManagerRef GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
-DataBlockRef GameInfo::get_data() {return m_impl->get_data();}
-InputCacheRef GameInfo::get_input_cache() {return m_impl->get_input_cache();}
+AudioManager GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
+DataBlock GameInfo::get_data() {return m_impl->get_data();}
+InputCache GameInfo::get_input_cache() {return m_impl->get_input_cache();}
