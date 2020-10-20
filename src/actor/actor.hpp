@@ -95,8 +95,8 @@ class Actor{
 
             // SOON TO BE REPLACED BY TRANSFORM
             // Return lower left corner coords
-            float get_x() const {return m_transform.get_relative(0.0,1.0).first;}
-            float get_y() const {return m_transform.get_relative(0.0,1.0).second;}
+            float get_x() const {return m_transform.get_relative(0.0,1.0).x;}
+            float get_y() const {return m_transform.get_relative(0.0,1.0).y;}
             //float get_bottom() const {return m_transform.get_relative(0.0,1.0).second;}
             //unsigned get_w() const {return m_transform.get_base_dimensions().first;}
             //unsigned get_h() const {return m_transform.get_base_dimensions().second;}
@@ -186,11 +186,11 @@ inline bool operator< (const Actor& lhs, const Actor& rhs) {
     auto lp = lhs.get_transform().get_sort_point();
     auto rp = rhs.get_transform().get_sort_point();
 
-    if(lp.second != rp.second) {
-        return lp.second < rp.second;
+    if(lp.y != rp.y) {
+        return lp.y < rp.y;
     }
     else {
-        return lp.first < rp.first;
+        return lp.x < rp.x;
     }
 }
 

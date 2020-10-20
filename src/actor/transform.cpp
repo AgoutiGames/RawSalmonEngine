@@ -27,6 +27,7 @@
 
 #include "util/logger.hpp"
 
+using namespace salmon;
 using namespace salmon::internal;
 
 const float Transform::MIN_SCALE = 0.001;
@@ -37,13 +38,13 @@ Transform::Transform(float x_pos, float y_pos, float width, float height, float 
 
 void Transform::set_origin(float x, float y) {
     auto location = get_relative(x,y);
-    m_x_pos = location.first;
-    m_y_pos = location.second;
+    m_x_pos = location.x;
+    m_y_pos = location.y;
     m_x_origin = x;
     m_y_origin = y;
 }
 
-std::pair<float, float> Transform::get_relative(float x, float y) const {
+Point Transform::get_relative(float x, float y) const {
     float x_pos = m_x_pos;
     float y_pos = m_y_pos;
     // relative difference of origin to point
@@ -54,27 +55,27 @@ std::pair<float, float> Transform::get_relative(float x, float y) const {
     return {x_pos,y_pos};
 }
 
-std::pair<float, float> Transform::get_relative_rotated(float x, float y) const {
+Point Transform::get_relative_rotated(float x, float y) const {
     auto p1 = get_relative(m_x_rotate,m_y_rotate);
     auto p2 = get_relative(x,y);
     // Rotate p2 around p1
     double angle = m_angle * (M_PI / 180); // Angle in Radians
     float s = std::sin(angle);
     float c = std::cos(angle);
-    p2.first -= p1.first;
-    p2.second -= p1.second;
-    float xnew = p2.first * c - p2.second * s;
-    float ynew = p2.first * s + p2.second * c;
-    p2.first = xnew + p1.first;
-    p2.second = ynew + p1.second;
+    p2.x -= p1.x;
+    p2.y -= p1.y;
+    float xnew = p2.x * c - p2.y * s;
+    float ynew = p2.x * s + p2.y * c;
+    p2.x = xnew + p1.x;
+    p2.y = ynew + p1.y;
     return p2;
 }
 
 SDL_Rect Transform::to_rect() const {
     int x,y,w,h;
     auto loc = get_relative(0,0);
-    x = std::round(loc.first);
-    y = std::round(loc.second);
+    x = std::round(loc.x);
+    y = std::round(loc.y);
     w = std::round(m_width * m_x_scale);
     h = std::round(m_height * m_y_scale);
     return SDL_Rect{x,y,w,h};
@@ -85,8 +86,8 @@ void Transform::transform_hitbox(SDL_Rect& hitbox) const {
     rel_x = hitbox.x / m_width;
     rel_y = hitbox.y / m_height;
     auto pos = get_relative(rel_x,rel_y);
-    hitbox.x = std::round(pos.first);
-    hitbox.y = std::round(pos.second);
+    hitbox.x = std::round(pos.x);
+    hitbox.y = std::round(pos.y);
     hitbox.w = std::round(hitbox.w * m_x_scale);
     hitbox.h = std::round(hitbox.h * m_y_scale);
 }
@@ -94,32 +95,32 @@ void Transform::transform_hitbox(SDL_Rect& hitbox) const {
 void Transform::set_rotation_center(float x, float y) {
     auto p1 = get_relative(m_x_rotate,m_y_rotate);
     auto p2 = get_relative(x,y);
-    std::pair<float,float> p3;
+    Point p3;
     // Rotate new center p2 around old center p1
     double angle = m_angle * (M_PI / 180); // Angle in Radians
     float s = std::sin(angle);
     float c = std::cos(angle);
-    p2.first -= p1.first;
-    p2.second -= p1.second;
-    float xnew = p2.first * c - p2.second * s;
-    float ynew = p2.first * s + p2.second * c;
-    p2.first = xnew + p1.first;
-    p2.second = ynew + p1.second;
+    p2.x -= p1.x;
+    p2.y -= p1.y;
+    float xnew = p2.x * c - p2.y * s;
+    float ynew = p2.x * s + p2.y * c;
+    p2.x = xnew + p1.x;
+    p2.y = ynew + p1.y;
 
     // Now rotate p1 around the new point, forming p3
     angle = -m_angle * (M_PI / 180); // Angle in Radians
     s = std::sin(angle);
     c = std::cos(angle);
     p3 = p1;
-    p3.first -= p2.first;
-    p3.second -= p2.second;
-    xnew = p3.first * c - p3.second * s;
-    ynew = p3.first * s + p3.second * c;
-    p3.first = xnew + p2.first;
-    p3.second = ynew + p2.second;
+    p3.x -= p2.x;
+    p3.y -= p2.y;
+    xnew = p3.x * c - p3.y * s;
+    ynew = p3.x * s + p3.y * c;
+    p3.x = xnew + p2.x;
+    p3.y = ynew + p2.y;
 
     // Calculate the translation vector, flip y-translation
-    move_pos(p3.first - p1.first, p3.second - p1.second);
+    move_pos(p3.x - p1.x, p3.y - p1.y);
 
     // Formally set new rotation point
     m_x_rotate = x;
@@ -153,8 +154,8 @@ SDL_Rect Transform::to_bounding_box() const {
         auto p2 = get_relative_rotated(0,1);
         auto p3 = get_relative_rotated(1,0);
         auto p4 = get_relative_rotated(1,1);
-        std::vector<float> x = {p1.first,p2.first,p3.first,p4.first};
-        std::vector<float> y = {p1.second,p2.second,p3.second,p4.second};
+        std::vector<float> x = {p1.x,p2.x,p3.x,p4.x};
+        std::vector<float> y = {p1.y,p2.y,p3.y,p4.y};
         float minx = *std::min_element(x.begin(),x.end());
         float maxx = *std::max_element(x.begin(),x.end());
         float miny = *std::min_element(y.begin(),y.end());
@@ -166,12 +167,12 @@ SDL_Rect Transform::to_bounding_box() const {
     }
 }
 
-std::pair<float, float> Transform::get_relative_bounding_box(float x, float y) const {
+Point Transform::get_relative_bounding_box(float x, float y) const {
     SDL_Rect bb = to_bounding_box();
     return {bb.x + x * bb.w, bb.y + y * bb.h};
 }
 
-std::pair<float, float> Transform::get_sort_point() const {
+Point Transform::get_sort_point() const {
     if(m_sort_mode == SortMode::base || !is_rotated()) {
         return get_relative(m_x_sort,m_y_sort);
     }

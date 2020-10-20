@@ -36,6 +36,6 @@ int TileInstance::get_y_center() const {return get_y() + get_h() / 2;}
 unsigned TileInstance::get_w() const {return m_impl->get_tile()->get_w();}
 unsigned TileInstance::get_h() const {return m_impl->get_tile()->get_h();}
 
-Rect TileInstance::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
+PixelRect TileInstance::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
 
 std::string TileInstance::get_type() const {return m_impl->get_tile()->get_type();}

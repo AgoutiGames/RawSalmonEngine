@@ -89,11 +89,11 @@ SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second) 
     return {second_center.x - first_center.x, second_center.y - first_center.y};
 }
 
-Rect make_rect(const SDL_Rect& rect) {
-    return Rect{rect.x,rect.y,rect.w,rect.h};
+PixelRect make_rect(const SDL_Rect& rect) {
+    return PixelRect{rect.x,rect.y,rect.w,rect.h};
 }
 
-SDL_Rect make_rect(const Rect& rect) {
+SDL_Rect make_rect(const PixelRect& rect) {
     return SDL_Rect{rect.x,rect.y,rect.w,rect.h};
 }
 

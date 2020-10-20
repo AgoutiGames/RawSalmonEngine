@@ -36,8 +36,8 @@ SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
 SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second);
-Rect make_rect(const SDL_Rect& rect);
-SDL_Rect make_rect(const Rect& rect);
+PixelRect make_rect(const SDL_Rect& rect);
+SDL_Rect make_rect(const PixelRect& rect);
 
 std::vector<float> dir_to_mov(const Direction dir);
 void normalize(float& x, float& y);

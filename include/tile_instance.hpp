@@ -51,7 +51,7 @@ class TileInstance {
         unsigned get_h() const;
 
         /// Returns the hitbox matching the supplied name. If there is none, w or h is zero.
-        Rect get_hitbox(std::string name) const;
+        PixelRect get_hitbox(std::string name) const;
 
         /// Returns the type string of the tile
         std::string get_type() const;

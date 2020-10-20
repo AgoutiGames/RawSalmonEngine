@@ -63,8 +63,8 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
 
     // If a custom scale is supplied, scale accordingly and adjust position to match
     auto base_dimensions = m_transform.get_base_dimensions();
-    if(individual_width != base_dimensions.first || individual_height != base_dimensions.second) {
-        m_transform.set_scale(individual_width / base_dimensions.first, individual_height / base_dimensions.second);
+    if(individual_width != base_dimensions.w || individual_height != base_dimensions.h) {
+        m_transform.set_scale(individual_width / base_dimensions.w, individual_height / base_dimensions.h);
     }
 
     // Parse the (unique) name of the actor
@@ -234,7 +234,7 @@ void Actor::render(int x_cam, int y_cam) const {
     double rotation = m_transform.get_rotation();
     if(m_transform.is_rotated()) {
         auto rot = m_transform.get_rotation_center();
-        current_tile->render_extra(dest, rotation, false, false, rot.first, rot.second);
+        current_tile->render_extra(dest, rotation, false, false, rot.x, rot.y);
     }
     else {
         current_tile->render(dest);
@@ -738,8 +738,8 @@ bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SD
 bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
     if(&actor == this) {return false;}
     auto old_pos = m_transform.get_relative(0.0,1.0);
-    float old_x = old_pos.first;
-    float old_y = old_pos.second;
+    float old_x = old_pos.x;
+    float old_y = old_pos.x;
 
     // Combine both separation vectors
     float combined_x = x1 - x2;
@@ -749,8 +749,8 @@ bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& a
     if(separate_along_path(combined_x,combined_y,actor,my_hitboxes,other_hitboxes,false)) {
         // Get the actual separation vector
         auto new_pos = m_transform.get_relative(0.0,1.0);
-        float delta_x = new_pos.first - old_x;
-        float delta_y = new_pos.second - old_y;
+        float delta_x = new_pos.x - old_x;
+        float delta_y = new_pos.y - old_y;
         move_absolute(old_x,old_y);
 
         // Get factor from nonzero combined vector component

@@ -19,9 +19,55 @@
 #ifndef SALMON_TYPES_HPP_INCLUDED
 #define SALMON_TYPES_HPP_INCLUDED
 
+#include <string>
+
 namespace salmon {
-/// A rectangle with its origin in the upper left corner
+
+struct Point {
+    Point move(Point p);
+    float x, y;
+};
+
+struct PixelPoint {
+    PixelPoint(int ix, int iy) : x{ix}, y{iy} {}
+    // You can downcast from real float coords to pixel coords but not back again
+    PixelPoint(Point p);
+    int x, y;
+};
+
+struct Scale {
+    float w, h;
+};
+
+struct Dimensions {
+    Dimensions scale(Scale s);
+    float w, h;
+};
+
+struct PixelDimensions {
+    PixelDimensions(int iw, int ih) : w{iw}, h{ih} {}
+    // You can downcast from real float coords to pixel coords but not back again
+    PixelDimensions(Dimensions d);
+    int w, h;
+};
+
 struct Rect {
+    Rect(float ix, float iy, float iw, float ih) : x{ix}, y{iy}, w{iw}, h{ih} {}
+    Rect(Point p, Dimensions d) : x{p.x}, y{p.y}, w{d.w}, h{d.h} {}
+    Rect scale(Scale s);
+    Rect move(Point r);
+    bool empty() const {return (w <= 0 || h <= 0) ? true : false ;}
+
+    float x, y;
+    float w, h;
+};
+
+/// A rectangle with its origin in the upper left corner rounded to integer pixel coordinates
+struct PixelRect {
+    PixelRect(int ix, int iy, int iw, int ih) : x{ix}, y{iy}, w{iw}, h{ih} {}
+    // You can downcast from real float coords to pixel coords but not back again
+    PixelRect(Rect r);
+    PixelRect(PixelPoint p, PixelDimensions d) : x{p.x}, y{p.y}, w{d.w}, h{d.h} {}
     bool empty() const {return (w <= 0 || h <= 0) ? true : false ;}
 
     int x, y;

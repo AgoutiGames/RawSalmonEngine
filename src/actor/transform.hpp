@@ -22,6 +22,8 @@
 #include "SDL.h"
 #include <utility> // For std::pair
 
+#include "./types.hpp"
+
 namespace salmon { namespace internal {
 
 // Rectangular area easy to transform
@@ -45,20 +47,20 @@ class Transform{
         void rotate(double angle) {m_angle += angle;}
         double get_rotation() const {return m_angle;}
         void set_rotation_center(float x, float y);
-        std::pair<float, float> get_rotation_center() const {return{m_x_rotate,m_y_rotate};}
+        Point get_rotation_center() const {return{m_x_rotate,m_y_rotate};}
 
         bool is_rotated() const;
         bool is_scaled() const;
 
         // Get position at normalized coordinates x and y relative to upper left corner of transform
         // Example: 0.0,0.0 Upper left corner; 0.5,0.5 middle point; 1.0,1.0 lower right corner
-        std::pair<float, float> get_relative(float x, float y) const;
-        std::pair<float, float> get_relative_rotated(float x, float y) const;
-        std::pair<float, float> get_relative_bounding_box(float x, float y) const;
+        Point get_relative(float x, float y) const;
+        Point get_relative_rotated(float x, float y) const;
+        Point get_relative_bounding_box(float x, float y) const;
 
-        std::pair<float, float> get_base_dimensions() const {return {m_width, m_height};}
-        std::pair<float, float> get_dimensions() const {return{m_width * m_x_scale, m_height * m_y_scale};}
-        std::pair<float, float> get_scale() const {return{m_x_scale,m_y_scale};}
+        Dimensions get_base_dimensions() const {return {m_width, m_height};}
+        Dimensions get_dimensions() const {return{m_width * m_x_scale, m_height * m_y_scale};}
+        Scale get_scale() const {return{m_x_scale,m_y_scale};}
 
         // Generate rect with position relative to upper left corner and casted to int
         SDL_Rect to_rect() const;
@@ -83,7 +85,7 @@ class Transform{
         SortMode get_sort_mode() const {return m_sort_mode;}
 
         void set_sort_point(float x, float y) {m_x_sort = x;m_y_sort = y;}
-        std::pair<float, float> get_sort_point() const;
+        Point get_sort_point() const;
 
     private:
         float m_x_pos;
