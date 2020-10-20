@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "input_cache_ref.hpp"
+#include "input_cache.hpp"
 
 #include "core/input_cache.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 InputCache::InputCache(internal::InputCache& impl) : m_impl{&impl} {}
 
@@ -34,3 +34,5 @@ GamepadState InputCache::get_gamepad(int index) const {return m_impl->get_gamepa
 
 bool InputCache::rumble(int gamepad_index, float strength, unsigned length_ms) const {return m_impl->rumble(gamepad_index, strength, length_ms);}
 bool InputCache::stop_rumble(int gamepad_index) const {return m_impl->stop_rumble(gamepad_index);}
+
+} // namespace salmon

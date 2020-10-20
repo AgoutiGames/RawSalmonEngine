@@ -20,6 +20,8 @@
 
 #include "actor/transform.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Transform::Transform(internal::Transform& t) : m_impl{&t} {}
+
+} // namespace salmon

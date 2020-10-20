@@ -27,8 +27,7 @@
 #include "util/parse.hpp"
 #include "types.hpp"
 
-using namespace salmon;
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 Actor::Actor(MapData* map) : m_map{map} {}
 
@@ -856,3 +855,6 @@ bool Actor::check_collision(TileInstance& other, const std::vector<std::string>&
     }
     return collided;
 }
+
+}} // namespace salmon::internal
+

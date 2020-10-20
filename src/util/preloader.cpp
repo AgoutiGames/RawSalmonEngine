@@ -24,7 +24,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 #ifdef __EMSCRIPTEN__
     const std::vector<std::string> Preloader::m_image_formats = {".png",".PNG"};
@@ -93,3 +93,5 @@ void Preloader::clear() {
     m_files.clear();
     m_directories.clear();
 }
+
+}} // namespace salmon::internal

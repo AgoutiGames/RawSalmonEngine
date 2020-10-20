@@ -28,8 +28,7 @@
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
-using namespace salmon;
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /**
  * @brief Initialize a tileset from XML info
@@ -317,3 +316,5 @@ tinyxml2::XMLError Tileset::parse_tile_info(tinyxml2::XMLElement* source) {
     }
     return XML_SUCCESS;
 }
+
+}} // namespace salmon::internal

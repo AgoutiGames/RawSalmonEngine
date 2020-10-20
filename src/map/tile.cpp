@@ -29,8 +29,7 @@
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
-using namespace salmon;
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /**
  * @brief Construct and registers a fully functional tile
@@ -558,3 +557,4 @@ const std::map<std::string, SDL_Rect> Tile::get_hitboxes_self(bool aligned) cons
     }
 }
 
+}} // namespace salmon::internal

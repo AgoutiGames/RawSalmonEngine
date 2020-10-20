@@ -22,10 +22,10 @@
 #include <string>
 #include <memory>
 
-#include "./audio_manager_ref.hpp"
-#include "./data_block_ref.hpp"
-#include "./input_cache_ref.hpp"
-#include "./map_ref.hpp"
+#include "./audio_manager.hpp"
+#include "./data_block.hpp"
+#include "./input_cache.hpp"
+#include "./mapdata.hpp"
 
 namespace salmon {
 

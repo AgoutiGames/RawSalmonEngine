@@ -24,7 +24,7 @@
 #include <ctime>
 #include <SDL.h>
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 #ifndef __EMSCRIPTEN__
     // Define static vars
@@ -157,3 +157,5 @@ std::string Logger::log_level() {
         default : {return "[WHAT?]";}
     }
 }
+
+}} // namespace salmon::internal

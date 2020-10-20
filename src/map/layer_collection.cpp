@@ -29,7 +29,7 @@
 #include "core/gameinfo.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /**
  * @brief Parses each layer and stores in vector member
@@ -309,3 +309,5 @@ bool LayerCollection::check_collision(SDL_Rect rect, Collidees target, const std
     }
     return collided;
 }
+
+}} // namespace salmon::internal

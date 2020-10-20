@@ -22,10 +22,10 @@
 #include <string>
 #include <vector>
 
-#include "./actor_ref.hpp"
-#include "./text_ref.hpp"
-#include "./data_block_ref.hpp"
-#include "./camera_ref.hpp"
+#include "./actor.hpp"
+#include "./text.hpp"
+#include "./data_block.hpp"
+#include "./camera.hpp"
 
 namespace salmon {
 

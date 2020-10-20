@@ -20,7 +20,7 @@
 
 #include "core/gameinfo.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 GameInfo::GameInfo() : m_impl{std::make_unique<internal::GameInfo>()} {}
 GameInfo::~GameInfo() {}
@@ -60,3 +60,5 @@ bool GameInfo::preload(float seconds) {
 AudioManager GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
 DataBlock GameInfo::get_data() {return m_impl->get_data();}
 InputCache GameInfo::get_input_cache() {return m_impl->get_input_cache();}
+
+} // namespace salmon

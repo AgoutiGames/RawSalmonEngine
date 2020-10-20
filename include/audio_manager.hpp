@@ -21,8 +21,8 @@
 
 #include <string>
 
-#include "music_ref.hpp"
-#include "sound_ref.hpp"
+#include "music.hpp"
+#include "sound.hpp"
 
 namespace salmon {
 

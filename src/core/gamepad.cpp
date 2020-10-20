@@ -20,7 +20,7 @@
 
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 Gamepad::Gamepad(SDL_GameController* controller) : m_controller{controller},
 m_id{SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(m_controller))},
@@ -210,3 +210,5 @@ bool Gamepad::stop_rumble() const {
     }
     return true;
 }
+
+}} // namespace salmon::internal

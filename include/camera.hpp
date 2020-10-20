@@ -19,7 +19,7 @@
 #ifndef CAMERA_REF_HPP_INCLUDED
 #define CAMERA_REF_HPP_INCLUDED
 
-#include "./actor_ref.hpp"
+#include "./actor.hpp"
 
 namespace salmon {
 

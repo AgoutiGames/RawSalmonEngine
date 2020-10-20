@@ -32,7 +32,7 @@
 #include "util/game_types.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /// Factory function which retrieves a pointer owning the map layer
 MapLayer* MapLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -468,3 +468,5 @@ void MapLayer::calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_fro
     y_start = -y_tile_offset - (up_oh * tile_h);
 
 }
+
+}} // namespace salmon::internal

@@ -29,7 +29,7 @@
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /**
  * @brief Initialize a TilesetCollection from XML info
@@ -290,3 +290,4 @@ bool TilesetCollection::render(Uint32 tile_id, SDL_Rect& dest) const{
     return success;
 }
 
+}} // namespace salmon::internal

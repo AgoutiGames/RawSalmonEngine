@@ -25,7 +25,7 @@
 #include "util/logger.hpp"
 #include "core/gameinfo.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /// Factory function which retrieves a pointer owning the image layer
 ImageLayer* ImageLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -207,3 +207,4 @@ bool ImageLayer::render(const Camera& camera) const {
     return true;
 }
 
+}} // namespace salmon::internal

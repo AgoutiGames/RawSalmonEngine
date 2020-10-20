@@ -27,8 +27,7 @@
 
 #include "util/logger.hpp"
 
-using namespace salmon;
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 const float Transform::MIN_SCALE = 0.001;
 const float Transform::MIN_ROTATION = 0.01;
@@ -188,3 +187,4 @@ Point Transform::get_sort_point() const {
     }
 }
 
+}} // namespace salmon::internal

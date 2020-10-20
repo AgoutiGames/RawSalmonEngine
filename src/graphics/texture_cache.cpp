@@ -22,7 +22,7 @@
 
 #include "util/game_types.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 Texture TextureCache::get(std::string full_path) {
     make_path_absolute(full_path);
@@ -63,3 +63,5 @@ bool TextureCache::load(std::string full_path, SDL_Color color_key) {
 bool TextureCache::has(std::string full_path) {
     return (m_textures.find(full_path) != m_textures.end());
 }
+
+}} // namespace salmon::internal

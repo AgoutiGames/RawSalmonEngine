@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "music_ref.hpp"
+#include "music.hpp"
 
 #include "audio/music.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Music::Music() : m_impl{internal::Music::get_null_music()} {}
 Music::Music(internal::Music& impl) : m_impl{&impl} {}
@@ -40,3 +40,5 @@ float Music::get_volume() {return m_impl->get_volume();}
 void Music::set_volume(float factor) {m_impl->set_volume(factor);}
 bool Music::playing() {return m_impl->playing();}
 bool Music::paused() {return m_impl->paused();}
+
+} // namespace salmon

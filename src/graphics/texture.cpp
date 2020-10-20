@@ -24,7 +24,7 @@
 
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 Texture::Texture()
 {
@@ -283,3 +283,5 @@ int Texture::getHeight() const
 {
 	return mHeight;
 }
+
+}} // namespace salmon::internal

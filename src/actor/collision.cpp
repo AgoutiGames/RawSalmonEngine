@@ -21,7 +21,7 @@
 #include "actor/actor.hpp"
 #include "map/tile.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
  // Default constructor
 Collision::Collision() :
@@ -68,3 +68,5 @@ unsigned Collision::get_actor_id() const {return actor_id;}
 TileInstance Collision::get_tile_instance() const {
     return {get_tile(),get_x(),get_y()};
 }
+
+}} // namespace salmon::internal

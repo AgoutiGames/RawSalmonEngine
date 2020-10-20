@@ -21,7 +21,7 @@
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 Camera::Camera(int x, int y, int w, int h, MapData* map) :
     m_rect{x,y,w,h}, m_map{map} {}
@@ -110,3 +110,5 @@ void Camera::set_crop(int l, int r, int u, int d) {
     m_crop_up = u;
     m_crop_down = d;
 }
+
+}} // namespace salmon::internal

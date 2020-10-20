@@ -19,7 +19,7 @@
 #include "audio/audio_manager.hpp"
 #include "util/game_types.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 bool AudioManager::load_music(std::string path, bool absolute) {
     if(!absolute) {path = m_music_base_path + path;}
@@ -69,3 +69,5 @@ SoundEffect& AudioManager::get_sound(std::string path, bool absolute) {
         return m_dummy_sound;
     }
 }
+
+}} // namespace salmon::internal

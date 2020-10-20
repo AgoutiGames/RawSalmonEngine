@@ -24,7 +24,7 @@
 #include "graphics/texture.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
  /**
  * @brief Converts the xmlelement to a proper SDL_Rect with checking
@@ -180,3 +180,5 @@ tinyxml2::XMLError parse::bg_color(tinyxml2::XMLElement* source, SDL_Color& colo
         return XML_SUCCESS;
     }
 }
+
+}} // namespace salmon::internal

@@ -21,7 +21,7 @@
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 TileInstance::TileInstance(internal::TileInstance tile) : m_impl{std::make_unique<internal::TileInstance>(tile)} {}
 
@@ -39,3 +39,5 @@ unsigned TileInstance::get_h() const {return m_impl->get_tile()->get_h();}
 PixelRect TileInstance::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
 
 std::string TileInstance::get_type() const {return m_impl->get_tile()->get_type();}
+
+} // namespace salmon

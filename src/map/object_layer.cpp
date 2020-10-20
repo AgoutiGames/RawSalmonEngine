@@ -28,7 +28,7 @@
 #include "map/camera.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 unsigned ObjectLayer::next_object_id = 1;
 
@@ -312,3 +312,5 @@ bool ObjectLayer::erase_primitive(Primitive* p) {
     }
     return false;
 }
+
+}} // namespace salmon::internal

@@ -28,7 +28,7 @@
 #include "util/attribute_parser.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 PrimitiveText::PrimitiveText(float x_pos, float y_pos, std::string text, Attributes atr, MapData& mapdata, std::string name)
 : Primitive(x_pos, y_pos, mapdata, name), m_mapdata{&mapdata}, m_text{text}, m_attributes{atr} {
@@ -111,3 +111,5 @@ bool PrimitiveText::generate_texture() {
     m_height = m_texture.getHeight();
     return true;
 }
+
+}} // namespace salmon::internal

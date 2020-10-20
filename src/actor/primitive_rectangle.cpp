@@ -20,7 +20,7 @@
 
 #include <SDL.h>
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
     if(m_hidden) {return true;}
@@ -29,3 +29,5 @@ bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
 
     return SDL_RenderDrawRect(m_renderer, &rect) == 0;
 }
+
+}} // namespace salmon::internal

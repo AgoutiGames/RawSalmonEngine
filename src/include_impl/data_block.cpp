@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "data_block_ref.hpp"
+#include "data_block.hpp"
 
 #include "actor/data_block.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 DataBlock::DataBlock(internal::DataBlock& impl) : m_impl{&impl} {}
 
@@ -40,3 +40,5 @@ float DataBlock::get_val_float(std::string name) const {return m_impl->get_val_f
 std::string DataBlock::get_val_string(std::string name) const {return m_impl->get_val_string(name);}
 
 void DataBlock::clear() {m_impl->clear();}
+
+} // namespace salmon

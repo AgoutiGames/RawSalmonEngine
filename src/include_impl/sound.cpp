@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "sound_ref.hpp"
+#include "sound.hpp"
 
 #include "audio/sound_effect.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Sound::Sound() : m_impl{internal::SoundEffect::get_null_sound()} {}
 Sound::Sound(internal::SoundEffect& impl) : m_impl{new internal::SoundEffect(impl)} {}
@@ -57,3 +57,5 @@ float Sound::get_volume() {return m_impl->get_volume();}
 void Sound::set_volume(float factor) {m_impl->set_volume(factor);}
 bool Sound::playing() {return m_impl->playing();}
 bool Sound::paused() {return m_impl->paused();}
+
+} // namespace salmon

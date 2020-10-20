@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "audio_manager_ref.hpp"
+#include "audio_manager.hpp"
 
 #include "audio/audio_manager.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 AudioManager::AudioManager(internal::AudioManager& impl) : m_impl{&impl} {}
 
@@ -36,3 +36,5 @@ float AudioManager::get_master_sound_volume() {return m_impl->get_master_sound_v
 void AudioManager::clear_music() {m_impl->clear_music();}
 void AudioManager::clear_sounds() {m_impl->clear_sounds();}
 void AudioManager::clear() {m_impl->clear();}
+
+} // namespace salmon

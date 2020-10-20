@@ -19,7 +19,7 @@
 #include "audio/sound_effect.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 SoundEffect::SoundEffect(std::string path) :
 m_sound(Mix_LoadWAV(path.c_str()), SoundEffect::Deleter())
@@ -116,3 +116,4 @@ void SoundEffect::set_position(int angle, float distance) {
     if(active()) {set_position();}
 }
 
+}} // namespace salmon::internal

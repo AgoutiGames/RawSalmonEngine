@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 void DataBlock::set_val(std::string name, bool val) {m_data_bool[name] = val;}
 void DataBlock::set_val(std::string name, int val) {m_data_int[name] = val;}
@@ -79,3 +79,5 @@ void DataBlock::clear() {
     m_data_int.clear();
     m_data_string.clear();
 }
+
+}} // namespace salmon::internal

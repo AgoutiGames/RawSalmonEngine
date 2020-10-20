@@ -22,7 +22,7 @@
 
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 tinyxml2::XMLError AttributeParser::parse(tinyxml2::XMLElement* source, bool ignore_missing) {
     using namespace tinyxml2;
@@ -67,3 +67,5 @@ tinyxml2::XMLError AttributeParser::parse(tinyxml2::XMLElement* source, bool ign
     }
     return XML_SUCCESS;
 }
+
+}} // namespace salmon::internal

@@ -21,7 +21,7 @@
 #include "util/logger.hpp"
 #include "core/gameinfo.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 InputCache::InputCache(GameInfo* game) : m_game{game} {}
 
@@ -269,3 +269,5 @@ SDL_Keycode InputCache::convert_key(std::string key) {
 bool InputCache::is_down(std::string key) const {return is_down(convert_key(key));}
 bool InputCache::just_pressed(std::string key) const {return just_pressed(convert_key(key));}
 bool InputCache::just_released(std::string key) const {return just_released(convert_key(key));}
+
+}} // namespace salmon::internal

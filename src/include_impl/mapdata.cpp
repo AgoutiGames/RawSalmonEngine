@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "map_ref.hpp"
+#include "mapdata.hpp"
 
 #include <iostream>
 
@@ -27,7 +27,7 @@
 #include "map/layer_collection.hpp"
 #include "map/object_layer.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 MapData::MapData(internal::MapData& impl) : m_impl{&impl} {}
 MapData::MapData(internal::MapData* impl) : m_impl{impl} {}
@@ -145,3 +145,5 @@ unsigned MapData::get_h() const {return m_impl->get_h();}
 float MapData::get_delta_time() const {return m_impl->get_delta_time();}
 std::string MapData::get_path() const {return m_impl->get_full_path();}
 DataBlock MapData::get_data() {return m_impl->get_data();}
+
+} // namespace salmon

@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "collision_ref.hpp"
+#include "collision.hpp"
 
 #include "actor/collision.hpp"
 #include "map/tile.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Collision::Collision(internal::Collision& impl) : m_impl(&impl) {}
 
@@ -37,3 +37,5 @@ TileInstance Collision::get_tile() const {return m_impl->get_tile_instance();}
 
 int Collision::get_x() const {return m_impl->get_x();}
 int Collision::get_y() const {return m_impl->get_y();}
+
+} // namespace salmon

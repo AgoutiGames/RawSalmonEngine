@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "actor_ref.hpp"
+#include "actor.hpp"
 
 #include "actor/actor.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Actor::Actor(internal::Actor& impl) : m_impl{&impl} {}
 Actor::Actor(internal::Actor* impl) : m_impl{impl} {}
@@ -96,3 +96,5 @@ float Actor::get_y() const {return m_impl->get_y();}
 PixelRect Actor::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
 
 DataBlock Actor::get_data() {return m_impl->get_data();}
+
+} // namespace salmon

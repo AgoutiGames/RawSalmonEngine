@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /**
  * @brief Delete all currently loaded fonts
@@ -98,3 +98,5 @@ TTF_Font* FontManager::get_fallback(int pt_size) {
 
     return m_fonts[m_default_font][pt_size];
 }
+
+}} // namespace salmon::internal

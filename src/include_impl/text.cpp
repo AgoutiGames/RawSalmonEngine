@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "text_ref.hpp"
+#include "text.hpp"
 
 #include "actor/primitive_text.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Text::Text(internal::PrimitiveText& impl) : m_impl{&impl} {}
 Text::Text(internal::PrimitiveText* impl) : m_impl{impl} {}
@@ -56,3 +56,5 @@ float Text::get_y() {return m_impl->get_y();}
 
 void Text::set_x(float x) {m_impl->set_x(x);}
 void Text::set_y(float y) {m_impl->set_y(y);}
+
+} // namespace salmon

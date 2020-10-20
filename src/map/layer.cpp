@@ -33,7 +33,7 @@
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /**
  * @brief Differentiates possible layers by name and calls proper parsing function
@@ -92,3 +92,4 @@ Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collect
 
 }
 
+}} // namespace salmon::internal

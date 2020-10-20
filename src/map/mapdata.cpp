@@ -31,7 +31,7 @@
 #include "util/attribute_parser.hpp"
 #include "util/logger.hpp"
 
-using namespace salmon::internal;
+namespace salmon { namespace internal {
 
 /// Plain constructor
 MapData::MapData(GameInfo* game) : m_game{game},
@@ -462,3 +462,5 @@ Actor MapData::get_actor(Uint32 gid) const {
 Actor MapData::get_actor(std::string name) const {
     return m_actor_templates.at(name);
 }
+
+}} // namespace salmon::internal

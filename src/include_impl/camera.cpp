@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "camera_ref.hpp"
+#include "camera.hpp"
 
 #include "map/camera.hpp"
 
-using namespace salmon;
+namespace salmon {
 
 Camera::Camera(internal::Camera& impl) : m_impl{&impl} {}
 
@@ -37,3 +37,5 @@ void Camera::bind_map() {m_impl->bind_map();}
 void Camera::unbind_map() {m_impl->unbind_map();}
 
 void Camera::update() {m_impl->update();}
+
+} // namespace salmon

@@ -23,8 +23,8 @@
 #include <vector>
 
 #include "./types.hpp"
-#include "./collision_ref.hpp"
-#include "./data_block_ref.hpp"
+#include "./collision.hpp"
+#include "./data_block.hpp"
 
 namespace salmon {
 
