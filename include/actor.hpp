@@ -250,7 +250,7 @@ class Actor {
         /// Returns the y coordinate of the actor from its center
         //int get_y_center() const;
         /// Returns the hitbox matching the supplied name. If there is none, w or h is zero.
-        PixelRect get_hitbox(std::string name) const;
+        Rect get_hitbox(std::string name) const;
 
         /// Returns reference to DataBlock of this actor which holds all property values supplied via tiled
         DataBlock get_data();

@@ -55,7 +55,7 @@ class Tileset{
         int get_x_offset() const {return m_x_offset;}
         int get_y_offset() const {return m_y_offset;}
 
-        bool render(Uint32 local_tile_id, int x, int y) const;
+        bool render(Uint32 local_tile_id, float x, float y) const;
 
         std::map<Direction, unsigned> determine_overhang(unsigned tile_w, unsigned tile_h) const;
 

@@ -27,13 +27,13 @@
 namespace salmon { namespace internal {
 
  /**
- * @brief Converts the xmlelement to a proper SDL_Rect with checking
+ * @brief Converts the xmlelement to a proper Rect with checking
  * @param source The @c XMLElement which holds the information
  * @param rect The rect which gets produced
  * @return @c XMLError Indicating success or failure
  * @note Only the first hitbox gets parsed, multiple hitboxes lead to an error
  */
-tinyxml2::XMLError parse::hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
+tinyxml2::XMLError parse::hitbox(tinyxml2::XMLElement* source, Rect& rect) {
     using namespace tinyxml2;
     XMLError eResult;
 
@@ -53,36 +53,36 @@ tinyxml2::XMLError parse::hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect) {
         Logger(Logger::error) << "Multiple hitboxes are not supported!";
         return XML_WRONG_ATTRIBUTE_TYPE;
     }
-    SDL_Rect temp_rec;
+    Rect temp_rec;
     float temp;
 
     eResult = source->QueryFloatAttribute("x", &temp);
     if(eResult != XML_SUCCESS) return eResult;
-    temp_rec.x = static_cast<int>(temp);
+    temp_rec.x = temp;
 
     eResult = source->QueryFloatAttribute("y", &temp);
     if(eResult != XML_SUCCESS) return eResult;
-    temp_rec.y = static_cast<int>(temp);
+    temp_rec.y = temp;
 
     eResult = source->QueryFloatAttribute("width", &temp);
     if(eResult != XML_SUCCESS) return eResult;
-    temp_rec.w = static_cast<int>(temp);
+    temp_rec.w = temp;
 
     eResult = source->QueryFloatAttribute("height", &temp);
     if(eResult != XML_SUCCESS) return eResult;
-    temp_rec.h = static_cast<int>(temp);
+    temp_rec.h = temp;
 
     rect = temp_rec;
     return XML_SUCCESS;
 }
 
 /**
- * @brief Converts the xmlelement to multiple proper SDL_Rects with checking
+ * @brief Converts the xmlelement to multiple proper Rects with checking
  * @param source The @c XMLElement which holds the information
  * @param rects The rects which get produced
  * @return @c XMLError Indicating success or failure
  */
-tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects) {
+tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::string, Rect>& rects) {
     using namespace tinyxml2;
     XMLError eResult;
 
@@ -100,7 +100,7 @@ tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::s
             return XML_WRONG_ATTRIBUTE_TYPE;
         }
 
-        SDL_Rect temp_rec;
+        Rect temp_rec;
         float temp;
         std::string name;
         const char* p_name = source->Attribute("name");
@@ -109,19 +109,19 @@ tinyxml2::XMLError parse::hitboxes(tinyxml2::XMLElement* source, std::map<std::s
 
         eResult = source->QueryFloatAttribute("x", &temp);
         if(eResult != XML_SUCCESS) return eResult;
-        temp_rec.x = static_cast<int>(temp);
+        temp_rec.x = temp;
 
         eResult = source->QueryFloatAttribute("y", &temp);
         if(eResult != XML_SUCCESS) return eResult;
-        temp_rec.y = static_cast<int>(temp);
+        temp_rec.y = temp;
 
         eResult = source->QueryFloatAttribute("width", &temp);
         if(eResult != XML_SUCCESS) return eResult;
-        temp_rec.w = static_cast<int>(temp);
+        temp_rec.w = temp;
 
         eResult = source->QueryFloatAttribute("height", &temp);
         if(eResult != XML_SUCCESS) return eResult;
-        temp_rec.h = static_cast<int>(temp);
+        temp_rec.h = temp;
 
         if(rects.find(name) != rects.end()) {
             Logger(Logger::error) << "Possible multiple definition of hitbox: " << name << " !";

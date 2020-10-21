@@ -23,7 +23,6 @@
 #include <map>
 #include <string>
 #include <memory>
-#include <SDL.h>
 
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
@@ -62,8 +61,8 @@ class ObjectLayer : public Layer{
         void suspend() {m_suspended = true;}
         void unsuspend() {m_suspended = false;}
 
-        std::vector<Actor*> get_clip(const SDL_Rect& rect);
-        std::vector<const Actor*> get_clip(const SDL_Rect& rect) const;
+        std::vector<Actor*> get_clip(const Rect& rect);
+        std::vector<const Actor*> get_clip(const Rect& rect) const;
 
         static ObjectLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 

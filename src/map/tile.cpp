@@ -413,26 +413,26 @@ AnimSignal Tile::push_anim_trigger(float speed, Uint32 time) {
  *       this means that smaller or bigger tiles get shifted up or down
  *       to be aligned to the bottom left corner of the BASE tile
  */
-void Tile::render(int x, int y) const {
+void Tile::render(float x, float y) const {
     const TilesetCollection& tsc = mp_tileset->get_ts_collection();
     x += mp_tileset->get_x_offset();
     y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
     const Texture* image = mp_tileset->get_image_pointer();
 
-    image->render(x, y, &get_clip());
+    image->render(round(x), round(y), &get_clip());
     return;
 }
 
 /// @todo Add documentation
-void Tile::render_extra(int x, int y, double angle, bool x_flip, bool y_flip, float x_center, float y_center) const {
+void Tile::render_extra(float x, float y, double angle, bool x_flip, bool y_flip, float x_center, float y_center) const {
     const TilesetCollection& tsc = mp_tileset->get_ts_collection();
     x += mp_tileset->get_x_offset();
     y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
     const Texture* image = mp_tileset->get_image_pointer();
 
     const SDL_Rect& clip = get_clip();
-    SDL_Point center{static_cast<int>(std::round(x_center * clip.w)), static_cast<int>(std::round(y_center * clip.h))};
-    image->render_extra(x, y, &clip, angle, x_flip, y_flip, &center);
+    SDL_Point center{round(x_center * clip.w), round(y_center * clip.h)};
+    image->render_extra(round(x), round(y), &clip, angle, x_flip, y_flip, &center);
 
     return;
 }
@@ -444,12 +444,14 @@ void Tile::render_extra(int x, int y, double angle, bool x_flip, bool y_flip, fl
  *
  * @note This function can resize the tile image
  */
-void Tile::render(SDL_Rect& dest) const {
+void Tile::render(Rect& dest) const {
     dest.x += mp_tileset->get_x_offset();
     dest.y += mp_tileset->get_y_offset();
     const Texture* image = mp_tileset->get_image_pointer();
+    PixelRect r = dest;
+    SDL_Rect s{r.x,r.y,r.w,r.h};
 
-    image->render_resize(&get_clip(), &dest);
+    image->render_resize(&get_clip(), &s);
     return;
 }
 
@@ -460,13 +462,16 @@ void Tile::render(SDL_Rect& dest) const {
  *
  * @note This function can resize the tile image
  */
-void Tile::render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip, float x_center, float y_center) const {
+void Tile::render_extra(Rect& dest, double angle, bool x_flip, bool y_flip, float x_center, float y_center) const {
     dest.x += mp_tileset->get_x_offset();
     dest.y += mp_tileset->get_y_offset();
     const Texture* image = mp_tileset->get_image_pointer();
 
-    SDL_Point center{static_cast<int>(std::round(x_center * dest.w)), static_cast<int>(std::round(y_center * dest.h))};
-    image->render_extra_resize(&get_clip(), &dest, angle, x_flip, y_flip, &center);
+    SDL_Point center{round(x_center * dest.w), round(y_center * dest.h)};
+    PixelRect r = dest;
+    SDL_Rect s{r.x,r.y,r.w,r.h};
+
+    image->render_extra_resize(&get_clip(), &s, angle, x_flip, y_flip, &center);
 
     return;
 }
@@ -480,13 +485,13 @@ void Tile::render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip, 
  * but if the tile is animated it first checks if the currently active frame has the
  * hitbox of the given name and returns it instead
  */
-SDL_Rect Tile::get_hitbox(std::string name, bool aligned) const {
+Rect Tile::get_hitbox(std::string name, bool aligned) const {
     if(m_animated) {
         const TilesetCollection& tsc = mp_tileset->get_ts_collection();
         // Animation frame which is an animation itself doesn't make sense!
         // Explicitly request own hitbox
-        SDL_Rect hitbox = tsc.get_tile(m_anim_ids[m_current_id])->get_hitbox_self(name, aligned);
-        if(!SDL_RectEmpty(&hitbox)) {
+        Rect hitbox = tsc.get_tile(m_anim_ids[m_current_id])->get_hitbox_self(name, aligned);
+        if(!hitbox.empty()) {
             return hitbox;
         }
     }
@@ -498,14 +503,14 @@ SDL_Rect Tile::get_hitbox(std::string name, bool aligned) const {
  * @param name The name/type of the hitbox
  * @param aligned Sets the origin of hitbox relative to tile grid
  */
-SDL_Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
+Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
     if(m_hitboxes.find(name) == m_hitboxes.end()) {
         // std::cerr << "Could not find hitbox " << type << " for actor " << m_name << "\n";
-        return SDL_Rect{0,0,0,0};
+        return Rect{0,0,0,0};
     }
     else{
         if(aligned) {
-            SDL_Rect hitbox = m_hitboxes.at(name);
+            Rect hitbox = m_hitboxes.at(name);
             const TilesetCollection& tsc = mp_tileset->get_ts_collection();
             hitbox.x += mp_tileset->get_x_offset();
             hitbox.y += mp_tileset->get_y_offset() - (mp_tileset->get_tile_height() - tsc.get_tile_h());
@@ -525,9 +530,9 @@ SDL_Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
  * but if the tile is animated the hitboxes of the active frame get added and
  * may override the hitboxes of the base tile
  */
-std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
+std::map<std::string, Rect> Tile::get_hitboxes(bool aligned) const {
     if(m_animated) {
-        std::map<std::string, SDL_Rect> hitboxes = get_hitboxes_self(aligned);
+        std::map<std::string, Rect> hitboxes = get_hitboxes_self(aligned);
 
         const TilesetCollection& tsc = mp_tileset->get_ts_collection();
         // Animation frame which is an animation itself doesn't make sense!
@@ -544,9 +549,9 @@ std::map<std::string, SDL_Rect> Tile::get_hitboxes(bool aligned) const {
  * @brief Return the hitboxes of this tile
  * @param aligned Sets the origin of hitboxes relative to tile grid
  */
-const std::map<std::string, SDL_Rect> Tile::get_hitboxes_self(bool aligned) const {
+const std::map<std::string, Rect> Tile::get_hitboxes_self(bool aligned) const {
     if(aligned) {
-        std::map<std::string, SDL_Rect> hitboxes;
+        std::map<std::string, Rect> hitboxes;
         for(auto& hb : m_hitboxes) {
             hitboxes[hb.first] = get_hitbox_self(hb.first, true);
         }

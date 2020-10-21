@@ -35,12 +35,31 @@ Direction str_to_direction(const std::string& name);
 SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
-SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second);
+Point rect_center_difference(const Rect& first, const Rect& second);
 PixelRect make_rect(const SDL_Rect& rect);
 SDL_Rect make_rect(const PixelRect& rect);
 
 std::vector<float> dir_to_mov(const Direction dir);
 void normalize(float& x, float& y);
+
+// Return true if line1 and line2 overlap
+template<class Type>
+static bool intersect(Type min1, Type max1, Type min2, Type max2) {
+    // Determine greates minimum and smalles maximum
+    if(min1 < min2) {min1 = min2;}
+    if(max1 > max2) {max1 = max2;}
+    if(min1 >= max1) {return false;}
+    else {return true;}
+}
+// Create new line from line1 and line2 overlap
+template<class Type>
+static void intersect(Type min1, Type max1, Type min2, Type max2, Type& dst, Type& dst_offset) {
+    // Determine greates minimum and smalles maximum
+    if(min1 < min2) {min1 = min2;}
+    if(max1 > max2) {max1 = max2;}
+    dst = min1;
+    dst_offset = max1 - min1;
+}
 
 }} // namespace salmon::internal
 

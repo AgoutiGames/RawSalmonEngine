@@ -23,15 +23,18 @@
 
 namespace salmon {
 
+int round(float number);
+
 struct Point {
-    Point move(Point p);
+    Point move(const Point& p);
     float x, y;
 };
 
 struct PixelPoint {
+    PixelPoint() : x{0},y{0} {}
     PixelPoint(int ix, int iy) : x{ix}, y{iy} {}
     // You can downcast from real float coords to pixel coords but not back again
-    PixelPoint(Point p);
+    PixelPoint(const Point& p);
     int x, y;
 };
 
@@ -40,23 +43,28 @@ struct Scale {
 };
 
 struct Dimensions {
-    Dimensions scale(Scale s);
+    Dimensions scale(const Scale& s);
     float w, h;
 };
 
 struct PixelDimensions {
+    PixelDimensions() : w{0},h{0} {}
     PixelDimensions(int iw, int ih) : w{iw}, h{ih} {}
     // You can downcast from real float coords to pixel coords but not back again
-    PixelDimensions(Dimensions d);
+    PixelDimensions(const Dimensions& d);
     int w, h;
 };
 
 struct Rect {
+    Rect() : x{0.0f},y{0.0f},w{0.0f},h{0.0f} {}
     Rect(float ix, float iy, float iw, float ih) : x{ix}, y{iy}, w{iw}, h{ih} {}
-    Rect(Point p, Dimensions d) : x{p.x}, y{p.y}, w{d.w}, h{d.h} {}
-    Rect scale(Scale s);
-    Rect move(Point r);
+    Rect(const Point& p, const Dimensions& d) : x{p.x}, y{p.y}, w{d.w}, h{d.h} {}
+    Rect scale(const Scale& s);
+    Rect move(const Point& r);
     bool empty() const {return (w <= 0 || h <= 0) ? true : false ;}
+    bool has_intersection(const Rect& r) const;
+    bool has_intersection(const Point& p) const;
+    Rect get_intersection(const Rect& r) const;
 
     float x, y;
     float w, h;
@@ -64,11 +72,17 @@ struct Rect {
 
 /// A rectangle with its origin in the upper left corner rounded to integer pixel coordinates
 struct PixelRect {
+    PixelRect() : x{0},y{0},w{0},h{0} {}
     PixelRect(int ix, int iy, int iw, int ih) : x{ix}, y{iy}, w{iw}, h{ih} {}
     // You can downcast from real float coords to pixel coords but not back again
-    PixelRect(Rect r);
-    PixelRect(PixelPoint p, PixelDimensions d) : x{p.x}, y{p.y}, w{d.w}, h{d.h} {}
+    PixelRect(const Rect& r);
+    PixelRect(const PixelPoint& p, const PixelDimensions& d) : x{p.x}, y{p.y}, w{d.w}, h{d.h} {}
+    PixelRect scale(const Scale& s);
+    PixelRect move(const PixelPoint& r);
     bool empty() const {return (w <= 0 || h <= 0) ? true : false ;}
+    bool has_intersection(const PixelRect& r) const;
+    bool has_intersection(const PixelPoint& p) const;
+    PixelRect get_intersection(const PixelRect& r) const;
 
     int x, y;
     int w, h;

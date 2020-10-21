@@ -20,41 +20,99 @@
 
 #include <cmath>
 
+#include "util/game_types.hpp"
+
 namespace salmon {
-PixelRect::PixelRect(Rect r) : x{static_cast<int>(std::round(r.x))},
+
+int round(float number) {
+    return static_cast<int>(std::round(number));
+}
+
+PixelRect::PixelRect(const Rect& r) : x{static_cast<int>(std::round(r.x))},
                                y{static_cast<int>(std::round(r.y))},
                                w{static_cast<int>(std::round(r.w))},
                                h{static_cast<int>(std::round(r.h))} {}
 
-PixelPoint::PixelPoint(Point p) : x{static_cast<int>(std::round(p.x))},
+PixelPoint::PixelPoint(const Point& p) : x{static_cast<int>(std::round(p.x))},
                                   y{static_cast<int>(std::round(p.y))} {}
 
-PixelDimensions::PixelDimensions(Dimensions d) :
+PixelDimensions::PixelDimensions(const Dimensions& d) :
     w{static_cast<int>(std::round(d.w))},
     h{static_cast<int>(std::round(d.h))} {}
 
-Point Point::move(Point p) {
+Point Point::move(const Point& p) {
     x += p.x;
     y += p.y;
     return *this;
 }
 
-Dimensions Dimensions::scale(Scale s) {
+Dimensions Dimensions::scale(const Scale& s) {
     w *= s.w;
     h *= s.h;
     return *this;
 }
 
-Rect Rect::scale(Scale s) {
+Rect Rect::scale(const Scale& s) {
     w *= s.w;
     h *= s.h;
     return *this;
 }
 
-Rect Rect::move(Point p) {
+Rect Rect::move(const Point& p) {
     x += p.x;
     y += p.y;
     return *this;
 }
 
+bool Rect::has_intersection(const Rect& r) const {
+    if(empty() || r.empty()
+       || !internal::intersect(x, x+w, r.x, r.x+r.w)
+       || !internal::intersect(y, y+h, r.y, r.y+r.h)) {return false;}
+    else {return true;}
 }
+
+bool Rect::has_intersection(const Point& p) const {
+    if(!empty() && p.x >= x && p.x <= x+w && p.y >= y && p.y <= y+h) {return true;}
+    else {return false;}
+}
+
+Rect Rect::get_intersection(const Rect& r) const  {
+    Rect temp{0,0,0,0};
+    internal::intersect(x, x+w, r.x, r.x+r.w,temp.x,temp.w);
+    internal::intersect(y, y+h, r.y, r.y+r.h,temp.y,temp.h);
+    return temp;
+}
+
+PixelRect PixelRect::scale(const Scale& s) {
+    w = static_cast<int>(std::round(s.w * w));
+    h = static_cast<int>(std::round(s.h * h));
+    return *this;
+}
+
+PixelRect PixelRect::move(const PixelPoint& p) {
+    x += p.x;
+    y += p.y;
+    return *this;
+}
+
+bool PixelRect::has_intersection(const PixelRect& r) const {
+    if(empty() || r.empty()
+       || !internal::intersect(x, x+w, r.x, r.x+r.w)
+       || !internal::intersect(y, y+h, r.y, r.y+r.h)) {return false;}
+    else {return true;}
+}
+
+bool PixelRect::has_intersection(const PixelPoint& p) const {
+    if(!empty() && p.x >= x && p.x <= x+w && p.y >= y && p.y <= y+h) {return true;}
+    else {return false;}
+}
+
+PixelRect PixelRect::get_intersection(const PixelRect& r) const  {
+    PixelRect temp{0,0,0,0};
+    internal::intersect(x, x+w, r.x, r.x+r.w,temp.x,temp.w);
+    internal::intersect(y, y+h, r.y, r.y+r.h,temp.y,temp.h);
+    return temp;
+}
+
+} // namespace salmon
+

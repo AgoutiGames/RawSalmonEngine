@@ -83,9 +83,9 @@ void make_path_absolute(std::string& path) {
     #endif
 }
 
-SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second) {
-    SDL_Point first_center = {first.x + (first.w / 2), first.y + (first.h / 2)};
-    SDL_Point second_center = {second.x + (second.w / 2), second.y + (second.h / 2)};
+Point rect_center_difference(const Rect& first, const Rect& second) {
+    Point first_center = {first.x + (first.w / 2), first.y + (first.h / 2)};
+    Point second_center = {second.x + (second.w / 2), second.y + (second.h / 2)};
     return {second_center.x - first_center.x, second_center.y - first_center.y};
 }
 

@@ -70,25 +70,25 @@ Point Transform::get_relative_rotated(float x, float y) const {
     return p2;
 }
 
-SDL_Rect Transform::to_rect() const {
-    int x,y,w,h;
+Rect Transform::to_rect() const {
+    Rect r{0,0,0,0};
     auto loc = get_relative(0,0);
-    x = std::round(loc.x);
-    y = std::round(loc.y);
-    w = std::round(m_width * m_x_scale);
-    h = std::round(m_height * m_y_scale);
-    return SDL_Rect{x,y,w,h};
+    r.x = loc.x;
+    r.y = loc.y;
+    r.w = m_width * m_x_scale;
+    r.h = m_height * m_y_scale;
+    return r;
 }
 
-void Transform::transform_hitbox(SDL_Rect& hitbox) const {
+void Transform::transform_hitbox(Rect& hitbox) const {
     float rel_x, rel_y;
     rel_x = hitbox.x / m_width;
     rel_y = hitbox.y / m_height;
     auto pos = get_relative(rel_x,rel_y);
-    hitbox.x = std::round(pos.x);
-    hitbox.y = std::round(pos.y);
-    hitbox.w = std::round(hitbox.w * m_x_scale);
-    hitbox.h = std::round(hitbox.h * m_y_scale);
+    hitbox.x = pos.x;
+    hitbox.y = pos.y;
+    hitbox.w = hitbox.w * m_x_scale;
+    hitbox.h = hitbox.h * m_y_scale;
 }
 
 void Transform::set_rotation_center(float x, float y) {
@@ -144,7 +144,7 @@ bool Transform::is_rotated() const {
     }
 }
 
-SDL_Rect Transform::to_bounding_box() const {
+Rect Transform::to_bounding_box() const {
     if(!is_rotated()) {
         return to_rect();
     }
@@ -159,15 +159,12 @@ SDL_Rect Transform::to_bounding_box() const {
         float maxx = *std::max_element(x.begin(),x.end());
         float miny = *std::min_element(y.begin(),y.end());
         float maxy = *std::max_element(y.begin(),y.end());
-        return SDL_Rect{static_cast<int>(std::round(minx)),
-                        static_cast<int>(std::round(miny)),
-                        static_cast<int>(std::round(maxx-minx)),
-                        static_cast<int>(std::round(maxy-miny))};
+        return Rect{minx,miny,(maxx-minx),(maxy-miny)};
     }
 }
 
 Point Transform::get_relative_bounding_box(float x, float y) const {
-    SDL_Rect bb = to_bounding_box();
+    Rect bb = to_bounding_box();
     return {bb.x + x * bb.w, bb.y + y * bb.h};
 }
 

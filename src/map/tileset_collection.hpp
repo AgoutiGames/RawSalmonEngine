@@ -20,7 +20,6 @@
 #define TILESET_COLLECTION_HPP_INCLUDED
 
 #include <vector>
-#include <SDL.h>
 #include <tinyxml2.h>
 
 #include "util/game_types.hpp"
@@ -71,7 +70,7 @@ class TilesetCollection{
         void push_all_anim();
 
         bool render(Uint32 tile_id, int x, int y) const;
-        bool render(Uint32 tile_id, SDL_Rect& dest) const;
+        bool render(Uint32 tile_id, Rect& dest) const;
 
         MapData& get_mapdata() {return *mp_base_map;}
 

@@ -93,7 +93,7 @@ int Actor::get_anim_frame_count() const {
 
 float Actor::get_x() const {return m_impl->get_x();}
 float Actor::get_y() const {return m_impl->get_y();}
-PixelRect Actor::get_hitbox(std::string name) const {return internal::make_rect(m_impl->get_hitbox(name));}
+Rect Actor::get_hitbox(std::string name) const {return m_impl->get_hitbox(name);}
 
 DataBlock Actor::get_data() {return m_impl->get_data();}
 

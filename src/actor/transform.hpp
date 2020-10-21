@@ -19,7 +19,6 @@
 #ifndef TRANSFORM_HPP_INCLUDED
 #define TRANSFORM_HPP_INCLUDED
 
-#include "SDL.h"
 #include <utility> // For std::pair
 
 #include "./types.hpp"
@@ -63,12 +62,12 @@ class Transform{
         Scale get_scale() const {return{m_x_scale,m_y_scale};}
 
         // Generate rect with position relative to upper left corner and casted to int
-        SDL_Rect to_rect() const;
+        Rect to_rect() const;
         // In case of rotation compute bounding box
-        SDL_Rect to_bounding_box() const;
+        Rect to_bounding_box() const;
 
         // Apply transformation to scaled world coordinates
-        void transform_hitbox(SDL_Rect& hitbox) const;
+        void transform_hitbox(Rect& hitbox) const;
 
         // Determine to what the sorting point is relative
         // Only makes a difference if rotation is applied!

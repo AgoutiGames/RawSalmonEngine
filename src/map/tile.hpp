@@ -39,13 +39,13 @@ public:
     Tile() = default;
     Tile(Tileset* ts, const SDL_Rect& clp); // The initializing constructor
 
-    void render(int x, int y) const;
-    void render_extra(int x, int y, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
-    void render(SDL_Rect& dest) const; // Resizable render
-    void render_extra(SDL_Rect& dest, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
+    void render(float x, float y) const;
+    void render_extra(float x, float y, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
+    void render(Rect& dest) const; // Resizable render
+    void render_extra(Rect& dest, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
 
-    SDL_Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
-    std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
+    Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
+    std::map<std::string, Rect> get_hitboxes(bool aligned = false) const;
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, bool skip_properties = false);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
@@ -67,15 +67,15 @@ public:
     int get_h() const {return get_clip().h;}
 
 private:
-    SDL_Rect get_hitbox_self(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
-    const std::map<std::string, SDL_Rect> get_hitboxes_self(bool aligned = false) const;
+    Rect get_hitbox_self(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
+    const std::map<std::string, Rect> get_hitboxes_self(bool aligned = false) const;
 
     const SDL_Rect& get_clip_self() const {return m_clip;}
     const SDL_Rect& get_clip() const;
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
-    std::map<std::string, SDL_Rect> m_hitboxes; // Origin at upper left corner of tile
+    std::map<std::string, Rect> m_hitboxes; // Origin at upper left corner of tile
     std::string m_type = "";
     bool m_animated = false;
 
@@ -92,14 +92,14 @@ class TileInstance {
     public:
         TileInstance(Tile* tile, int x, int y) : m_tile{tile}, m_x{x}, m_y{y} {}
 
-        SDL_Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const {
-            SDL_Rect temp = m_tile->get_hitbox(name,aligned);
+        Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const {
+            Rect temp = m_tile->get_hitbox(name,aligned);
             temp.x += m_x;
             temp.y += m_y;
             return temp;
         }
-        std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const {
-            std::map<std::string, SDL_Rect> hitboxes = m_tile->get_hitboxes(aligned);
+        std::map<std::string, Rect> get_hitboxes(bool aligned = false) const {
+            std::map<std::string, Rect> hitboxes = m_tile->get_hitboxes(aligned);
             for(auto& hb : hitboxes) {hb.second.x += m_x; hb.second.y += m_y;}
             return hitboxes;
         }

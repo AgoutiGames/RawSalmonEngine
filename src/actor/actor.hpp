@@ -51,7 +51,7 @@ class Actor{
         bool set_animation(std::string anim = AnimationType::current, Direction dir = Direction::current, int frame = 0);
         AnimSignal animate_trigger(std::string anim = AnimationType::current, Direction dir = Direction::current, float speed = 1.0);
 
-        void render(int x_cam, int y_cam) const;
+        void render(float x_cam, float y_cam) const;
 
         // DEPRECATED! Use move_relative and move_absolute instead!
         bool move(float x_factor, float y_factor, bool absolute = false);
@@ -80,12 +80,12 @@ class Actor{
         // Seperate hitboxes after collision
         bool separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         bool separate(Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
-        bool separate(const SDL_Rect& first, const SDL_Rect& second);
+        bool separate(const Rect& first, const Rect& second);
 
         // Separate hitboxes after collision restricted to one direction given in x y values
         bool separate_along_path(float x, float y,TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
         bool separate_along_path(float x, float y,Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify);
-        bool separate_along_path(float x, float y,const SDL_Rect& first, const SDL_Rect& second);
+        bool separate_along_path(float x, float y,const Rect& first, const Rect& second);
 
         // Separate this and another actor by supplied vectors each
         bool separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes);
@@ -142,8 +142,8 @@ class Actor{
         bool get_resize_hitbox() const {return m_resize_hitbox;}
         void set_resize_hitbox(bool mode) {m_resize_hitbox = mode;}
 
-        SDL_Rect get_hitbox(std::string type = DEFAULT_HITBOX) const;
-        const std::map<std::string, SDL_Rect> get_hitboxes() const;
+        Rect get_hitbox(std::string type = DEFAULT_HITBOX) const;
+        const std::map<std::string, Rect> get_hitboxes() const;
 
         void add_collision(Collision c) {if(m_register_collisions) {m_collisions.push_back(c);}}
         std::vector<Collision>& get_collisions() {return m_collisions;}
@@ -151,7 +151,7 @@ class Actor{
         void register_collisions(bool r) {if(!r) {clear_collisions();} m_register_collisions = r;}
 
     private:
-        void transform_hitbox(SDL_Rect& hitbox) const;
+        void transform_hitbox(Rect& hitbox) const;
 
         MapData* m_map;
 

@@ -23,7 +23,7 @@
 
 namespace salmon { namespace internal {
 
-Camera::Camera(int x, int y, int w, int h, MapData* map) :
+Camera::Camera(float x, float y, float w, float h, MapData* map) :
     m_rect{x,y,w,h}, m_map{map} {}
 
 /**
@@ -39,31 +39,31 @@ void Camera::update() {
     }
     if(m_map_bound) {
         // Check if map is less wide than the effective camera frame
-        if( static_cast<int>(m_map_width) - m_crop_left - m_crop_right < m_rect.w ) {
+        if( static_cast<float>(m_map_width) - m_crop_left - m_crop_right < m_rect.w ) {
             // Center the camera horizontally relative to map
-            m_rect.x = ((static_cast<int>(m_map_width) - m_crop_left - m_crop_right) - m_rect.w) / 2;
+            m_rect.x = ((static_cast<float>(m_map_width) - m_crop_left - m_crop_right) - m_rect.w) / 2;
         }
         else {
             // Check horizontal borders
             if(m_rect.x < m_crop_left) {
                 m_rect.x = m_crop_left;
             }
-            else if(m_rect.x > static_cast<int>(m_map_width) - m_rect.w - m_crop_right) {
+            else if(m_rect.x > static_cast<float>(m_map_width) - m_rect.w - m_crop_right) {
                 m_rect.x = m_map_width - m_rect.w - m_crop_right;
             }
         }
 
         // Check if map is less high than the effective camera frame
-        if( static_cast<int>(m_map_height) - m_crop_up - m_crop_down < m_rect.h ) {
+        if( static_cast<float>(m_map_height) - m_crop_up - m_crop_down < m_rect.h ) {
             // Center the camera vertically relative to map
-            m_rect.y = ((static_cast<int>(m_map_height) - m_crop_up - m_crop_down) - m_rect.h) / 2;
+            m_rect.y = ((static_cast<float>(m_map_height) - m_crop_up - m_crop_down) - m_rect.h) / 2;
         }
         else {
             // Check vertical borders
             if(m_rect.y < m_crop_up) {
                 m_rect.y = m_crop_up;
             }
-            else if(m_rect.y > static_cast<int>(m_map_height) - m_rect.h - m_crop_down) {
+            else if(m_rect.y > static_cast<float>(m_map_height) - m_rect.h - m_crop_down) {
                 m_rect.y = m_map_height - m_rect.h - m_crop_down;
             }
         }
@@ -75,7 +75,7 @@ void Camera::update() {
  *
  * @note If the camera is player bound, the player position has precedence over the supplied coordinates
  */
-void Camera::update(int x, int y) {
+void Camera::update(float x, float y) {
     m_rect.x = x;
     m_rect.y = y;
     update();

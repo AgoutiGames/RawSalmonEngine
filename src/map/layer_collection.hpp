@@ -21,7 +21,6 @@
 
 #include <vector>
 #include <memory>
-#include <SDL.h>
 #include <tinyxml2.h>
 
 #include "util/game_types.hpp"
@@ -55,7 +54,7 @@ class LayerCollection {
         bool erase_actor(std::string name);
         bool erase_actor(Actor* pointer);
 
-        bool check_collision(SDL_Rect rect, Collidees target, const std::vector<std::string>& other_hitboxes);
+        bool check_collision(Rect rect, Collidees target, const std::vector<std::string>& other_hitboxes);
 
         std::vector<MapLayer*> get_map_layers();
         std::vector<ImageLayer*> get_image_layers();

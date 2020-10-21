@@ -22,6 +22,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <SDL.h>
 
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
@@ -278,7 +279,7 @@ bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
  * This function can resize the tile image
  * @note Doesn't work with tile ids with set flip_flags
  */
-bool TilesetCollection::render(Uint32 tile_id, SDL_Rect& dest) const{
+bool TilesetCollection::render(Uint32 tile_id, Rect& dest) const{
     bool success = true;
     if(tile_id >= mp_tiles.size()) {
         Logger(Logger::error) << "Tile id " << tile_id << " is out of bounds";
