@@ -206,9 +206,9 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(Rect rect) const {
 std::vector<TileInstance> MapLayer::get_clip(Rect rect) const {
     std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
     std::vector<TileInstance> tiles;
-    // Get missing decimals eliminated due to rounding when clipping
-    float x_decimals = (rect.x - m_offset_x) - round(rect.x - m_offset_x);
-    float y_decimals = (rect.y - m_offset_y) - round(rect.y - m_offset_y);
+    // Get missing decimals back which were eliminated due to rounding when clipping
+    float x_decimals = round(rect.x - m_offset_x) - (rect.x - m_offset_x);
+    float y_decimals = round(rect.y - m_offset_y) - (rect.y - m_offset_y);
 
     const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
     const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
