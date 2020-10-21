@@ -54,11 +54,7 @@ class Collision {
         /// Returns the instance of the tile collided with
         TileInstance get_tile() const;
 
-        /// Return x-pos of actor or tile relative to world origin
-        int get_x() const;
-        /// Return y-pos of actor or tile relative to world origin
-        /// @note Origin of a tile is its upper left corner, origin of an actor is its lower left corner
-        int get_y() const;
+        const Transform& get_transform() const;
 
     private:
         internal::Collision* m_impl;

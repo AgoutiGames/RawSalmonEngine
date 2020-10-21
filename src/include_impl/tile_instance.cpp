@@ -18,6 +18,7 @@
  */
 #include "tile_instance.hpp"
 
+#include "transform.hpp"
 #include "map/tile.hpp"
 #include "util/game_types.hpp"
 
@@ -27,14 +28,7 @@ TileInstance::TileInstance(internal::TileInstance tile) : m_impl{std::make_uniqu
 
 bool TileInstance::valid() const {return m_impl->valid();}
 
-int TileInstance::get_x() const {return m_impl->get_x();}
-int TileInstance::get_y() const {return m_impl->get_y();}
-
-int TileInstance::get_x_center() const {return get_x() + get_w() / 2;}
-int TileInstance::get_y_center() const {return get_y() + get_h() / 2;}
-
-unsigned TileInstance::get_w() const {return m_impl->get_tile()->get_w();}
-unsigned TileInstance::get_h() const {return m_impl->get_tile()->get_h();}
+const Transform& TileInstance::get_transform() const {return m_impl->get_transform();}
 
 Rect TileInstance::get_hitbox(std::string name) const {return m_impl->get_hitbox(name);}
 

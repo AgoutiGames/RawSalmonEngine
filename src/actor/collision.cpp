@@ -32,28 +32,22 @@ Collision::Collision() :
 
 // Constructor for tile
 Collision::Collision(TileInstance tile, std::string my_hitbox, std::string other_hitbox) :
- type{CollisionType::tile}
+ type{CollisionType::tile}, transform{tile.get_transform()}
 {
     data.tile = tile.get_tile();
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
 
-    x = tile.get_x();
-    y = tile.get_y();
 }
 
 // Constructor for actor
 Collision::Collision(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
- type{CollisionType::actor}
+ type{CollisionType::actor}, transform{actor->get_transform()}
 {
     data.actor = actor;
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
     actor_id = actor->get_id();
-
-    auto pos = actor->get_transform().get_relative(0.0,1.0);
-    x = pos.x;
-    y = pos.y;
 }
 
 // Constructor for mouse
@@ -66,7 +60,7 @@ Collision::Collision(std::string my_hitbox) :
 unsigned Collision::get_actor_id() const {return actor_id;}
 
 TileInstance Collision::get_tile_instance() const {
-    return {get_tile(),get_x(),get_y()};
+    return {get_tile(),transform};
 }
 
 }} // namespace salmon::internal

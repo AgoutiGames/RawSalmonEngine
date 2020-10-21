@@ -24,6 +24,7 @@
 #include <map>
 #include <tinyxml2.h>
 
+#include "transform.hpp"
 #include "util/game_types.hpp"
 
 namespace salmon { namespace internal {
@@ -90,29 +91,26 @@ private:
 
 class TileInstance {
     public:
-        TileInstance(Tile* tile, int x, int y) : m_tile{tile}, m_x{x}, m_y{y} {}
+        TileInstance(Tile* tile, Transform t) : m_tile{tile}, m_transform{t} {}
 
         Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const {
             Rect temp = m_tile->get_hitbox(name,aligned);
-            temp.x += m_x;
-            temp.y += m_y;
+            m_transform.transform_hitbox(temp);
             return temp;
         }
         std::map<std::string, Rect> get_hitboxes(bool aligned = false) const {
             std::map<std::string, Rect> hitboxes = m_tile->get_hitboxes(aligned);
-            for(auto& hb : hitboxes) {hb.second.x += m_x; hb.second.y += m_y;}
+            for(auto& hb : hitboxes) {m_transform.transform_hitbox(hb.second);;}
             return hitboxes;
         }
         Tile* get_tile() const {return m_tile;}
-        int get_x() const {return m_x;}
-        int get_y() const {return m_y;}
+        const Transform& get_transform() const {return m_transform;}
 
         bool valid() const {return (m_tile == nullptr) ? false : true ;}
 
     private:
         Tile* m_tile = nullptr;
-        int m_x = 0;
-        int m_y = 0;
+        Transform m_transform;
 };
 }} // namespace salmon::internal
 

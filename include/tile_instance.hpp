@@ -26,6 +26,7 @@
 
 namespace salmon {
 
+class Transform;
 namespace internal{class TileInstance;}
 
 class TileInstance {
@@ -35,20 +36,8 @@ class TileInstance {
         /// Returns true if the tile exists
         bool valid() const;
 
-        /// Returns the x coordinate of the upper left corner
-        int get_x() const;
-        /// Returns the y coordinate of the upper left corner
-        int get_y() const;
-
-        /// Returns the x coordinate of the tile center
-        int get_x_center() const;
-        /// Returns the y coordinate of the tile center
-        int get_y_center() const;
-
-        /// Returns the width of the tile
-        unsigned get_w() const;
-        /// Returns the height of the tile
-        unsigned get_h() const;
+        /// Returns the transform of the TileInstance
+        const Transform& get_transform() const;
 
         /// Returns the hitbox matching the supplied name. If there is none, w or h is zero.
         Rect get_hitbox(std::string name) const;

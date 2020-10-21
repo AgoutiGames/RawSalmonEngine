@@ -35,7 +35,6 @@ std::string Collision::other_hitbox() const {return m_impl->other_hitbox();}
 unsigned Collision::get_actor_id() const {return m_impl->get_actor_id();}
 TileInstance Collision::get_tile() const {return m_impl->get_tile_instance();}
 
-int Collision::get_x() const {return m_impl->get_x();}
-int Collision::get_y() const {return m_impl->get_y();}
+const Transform& Collision::get_transform() const {return m_impl->get_transform();}
 
 } // namespace salmon

@@ -25,6 +25,7 @@
 #include <zlib.h>
 #include <b64/decode.h>
 
+#include "transform.hpp"
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tile.hpp"
@@ -205,10 +206,45 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(Rect rect) const {
 std::vector<TileInstance> MapLayer::get_clip(Rect rect) const {
     std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
     std::vector<TileInstance> tiles;
+    // Get missing decimals eliminated due to rounding when clipping
+    float x_decimals = (rect.x - m_offset_x) - round(rect.x - m_offset_x);
+    float y_decimals = (rect.y - m_offset_y) - round(rect.y - m_offset_y);
+
+    const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+    const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+    const Uint32 FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+
     for(std::tuple<Uint32, int, int> tile : old) {
-        tiles.push_back({m_ts_collection->get_tile(std::get<0>(tile)),
-                         round(std::get<1>(tile)+rect.x),
-                         round(std::get<2>(tile)+rect.y)});
+        Uint32 tile_id = std::get<0>(tile);
+        Tile* tile_p = m_ts_collection->get_tile(tile_id);
+
+        Transform trans = {x_decimals + std::get<1>(tile)+rect.x,
+                           y_decimals + std::get<2>(tile)+rect.y,
+                           static_cast<float>(tile_p->get_w()),
+                           static_cast<float>(tile_p->get_h()),
+                           0,0};
+        trans.set_rotation_center(0.5,0.5);
+        if(tile_id >= FLIPPED_DIAGONALLY_FLAG) {
+            // Read out flags
+            bool flipped_horizontally = (tile_id & FLIPPED_HORIZONTALLY_FLAG);
+            bool flipped_vertically = (tile_id & FLIPPED_VERTICALLY_FLAG);
+            bool flipped_diagonally = (tile_id & FLIPPED_DIAGONALLY_FLAG);
+            double angle = 0;
+            // This snippet was determined via trial and error
+            // I have no idea why this even works, but it does
+            if(flipped_diagonally) {
+                angle = 270;
+                if(flipped_horizontally == flipped_vertically) {
+                    angle = 90;
+                }
+                flipped_vertically = !flipped_vertically;
+            }
+            trans.set_h_flip(flipped_horizontally);
+            trans.set_v_flip(flipped_vertically);
+            trans.set_rotation(angle);
+        }
+
+        tiles.push_back({tile_p,trans});
     }
     return tiles;
 }

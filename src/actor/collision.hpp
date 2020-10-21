@@ -21,6 +21,7 @@
 
 #include <string>
 
+#include "transform.hpp"
 #include "util/game_types.hpp"
 
 namespace salmon { namespace internal {
@@ -63,8 +64,7 @@ class Collision{
         Tile* get_tile() const {return type == CollisionType::tile ? data.tile : nullptr;}
         TileInstance get_tile_instance() const;
 
-        int get_x() const {return x;}
-        int get_y() const {return y;}
+        const Transform& get_transform() const {return transform;}
 
     private:
         CollisionType type;
@@ -74,8 +74,7 @@ class Collision{
             Tile* tile;
         } data;
 
-        int x = 0;
-        int y = 0;
+        Transform transform;
 
         std::string my_hitbox_name = "";
         std::string other_hitbox_name = "";
