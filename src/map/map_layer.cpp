@@ -179,7 +179,7 @@ bool MapLayer::render(const Camera& camera) const {
  * @param A rect which is usually a camera or the bounding box of a collider
  * @return A vector of 3-tuples consisting of the tile id and xy-coords relative to the rect origin!
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(PixelRect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(Rect rect) const {
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     std::vector< std::tuple<Uint32, int, int> > tiles;
     if(layout.orientation == "orthogonal") {
@@ -202,11 +202,13 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(PixelRect rect) const
  * @param A rect which is usually the bounding box of a collider
  * @return A vector of TileInstance objects holding a pointer to the tile and xy-coords relative to the world origin!
  */
-std::vector<TileInstance> MapLayer::get_clip(PixelRect rect) const {
+std::vector<TileInstance> MapLayer::get_clip(Rect rect) const {
     std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
     std::vector<TileInstance> tiles;
     for(std::tuple<Uint32, int, int> tile : old) {
-        tiles.push_back({m_ts_collection->get_tile(std::get<0>(tile)),std::get<1>(tile)+rect.x,std::get<2>(tile)+rect.y});
+        tiles.push_back({m_ts_collection->get_tile(std::get<0>(tile)),
+                         round(std::get<1>(tile)+rect.x),
+                         round(std::get<2>(tile)+rect.y)});
     }
     return tiles;
 }
@@ -216,7 +218,7 @@ std::vector<TileInstance> MapLayer::get_clip(PixelRect rect) const {
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(PixelRect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(Rect rect) const {
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -274,7 +276,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(PixelRect rect)
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to rect origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(PixelRect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(Rect rect) const {
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -340,7 +342,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(PixelRect r
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(PixelRect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(Rect rect) const {
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -419,11 +421,13 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(PixelRect r
 }
 
 /// Calculate the range of tiles bounding with rect
-void MapLayer::calc_tile_range(PixelRect rect, int tile_w, int tile_h, int& x_from, int& x_to, int& y_from, int& y_to, int& x_start, int& y_start) const {
+void MapLayer::calc_tile_range(Rect src_rect, int tile_w, int tile_h, int& x_from, int& x_to, int& y_from, int& y_to, int& x_start, int& y_start) const {
 
     // Apply the layer offset
-    rect.x -= m_offset_x;
-    rect.y -= m_offset_y;
+    src_rect.x -= m_offset_x;
+    src_rect.y -= m_offset_y;
+
+    PixelRect rect = src_rect;
 
     // Horizontal range of tiles to render
     x_from = rect.x / tile_w;
