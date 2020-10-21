@@ -25,6 +25,7 @@
 #include "./types.hpp"
 #include "./collision.hpp"
 #include "./data_block.hpp"
+#include "./transform.hpp"
 
 namespace salmon {
 
@@ -83,6 +84,9 @@ class Actor {
         Direction get_direction() const;
         /// Returns true if there is a valid animation tile representing animation type and direction
         bool valid_anim_state(std::string anim, Direction dir) const;
+
+        /// Return reference to current transform of actor
+        Transform& get_transform();
 
         /// Returns the name of the actor
         std::string get_name() const;
@@ -187,34 +191,10 @@ class Actor {
          */
         bool on_ground(Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, Direction dir = Direction::down, int tolerance = 0) const;
 
-        /**
-         * @brief Scales actors width and height
-         * @param x The width scale which must be greater than 0.0
-         * @param y The height scale which must be greater than 0.0
-         * @return false if a scale less or equal zero is entered, true otherwise
-         *
-         * @note The scaling doesn't affect width, height or x-,y-position retrieved by getters. Scale is applied internally.
-         *
-         * @warning When scaling greater than 1.0, pop in artifacts will occur due to offscreen tile culling
-         *          If you want your object to scale dynamically during execution, import at max size and scale it down
-         */
-        //bool scale(float x, float y);
-        /// Scales actor proportionally. See overload for details
-        //bool scale(float s);
-        /// Return current x scale value
-        //float get_x_scale() const;
-        /// Return current y scale value
-        //float get_y_scale() const;
-
         /// When set to true, hitboxes scale proportionally when the actor itself is scaled
         void set_resize_hitbox(bool mode);
         /// Returns if hitboxes scale with actor. True by default.
         bool get_resize_hitbox() const;
-
-        /// Returns the angle at which this actor is displayed. Zero by default
-        //double get_angle() const;
-        /// Sets the displaying angle in degrees rotating from the actors center
-        //void set_angle(double angle);
 
         /// Returns the number of the currently active animation frame
         int get_current_anim_frame() const;
@@ -237,18 +217,6 @@ class Actor {
         /// Returns the name of the layer in which the actor resides
         std::string get_layer() const;
 
-        /// Returns the x coordinate of the actor from its lower left corner
-        float get_x() const;
-        /// Returns the x coordinate of the actor from its lower left corner
-        float get_y() const;
-        /// Returns the base width of the actor in pixels regardless of x_scale
-        //unsigned get_w() const;
-        /// Returns the base height of the actor in pixels regardless of y_scale
-        //unsigned get_h() const;
-        /// Returns the x coordinate of the actor from its center
-        //int get_x_center() const;
-        /// Returns the y coordinate of the actor from its center
-        //int get_y_center() const;
         /// Returns the hitbox matching the supplied name. If there is none, w or h is zero.
         Rect get_hitbox(std::string name) const;
 

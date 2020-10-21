@@ -65,9 +65,6 @@ bool Actor::separate(float x1, float y1, float x2, float y2, Actor actor, const 
 
 bool Actor::on_ground(Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, Direction dir, int tolerance) const {return m_impl->on_ground(target,my_hitbox,other_hitboxes,dir,tolerance);}
 
-void Actor::set_resize_hitbox(bool mode) {m_impl->set_resize_hitbox(mode);}
-bool Actor::get_resize_hitbox() const {return m_impl->get_resize_hitbox();}
-
 std::vector<Collision> Actor::get_collisions() {
     std::vector<internal::Collision>& temp = m_impl->get_collisions();
     std::vector<Collision> out;
@@ -91,10 +88,10 @@ int Actor::get_anim_frame_count() const {
     return m_impl->get_animation_tile().get_frame_count();
 }
 
-float Actor::get_x() const {return m_impl->get_x();}
-float Actor::get_y() const {return m_impl->get_y();}
 Rect Actor::get_hitbox(std::string name) const {return m_impl->get_hitbox(name);}
 
 DataBlock Actor::get_data() {return m_impl->get_data();}
+
+Transform& Actor::get_transform() {return m_impl->get_transform();}
 
 } // namespace salmon

@@ -70,7 +70,6 @@ set(ACTOR_SOURCES
     src/actor/primitive.cpp
     src/actor/primitive_rectangle.cpp
     src/actor/primitive_text.cpp
-    src/actor/transform.cpp
     )
 
 set(AUDIO_SOURCES

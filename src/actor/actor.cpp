@@ -230,10 +230,10 @@ void Actor::render(float x_cam, float y_cam) const {
     dest.x -= x_cam;
     dest.y -= y_cam;
 
-    if(m_transform.is_rotated()) {
+    if(m_transform.is_rotated() || m_transform.is_flipped()) {
         double rotation = m_transform.get_rotation();
         auto rot = m_transform.get_rotation_center();
-        current_tile->render_extra(dest, rotation, false, false, rot.x, rot.y);
+        current_tile->render_extra(dest, rotation, m_transform.get_h_flip(), m_transform.get_v_flip(), rot.x, rot.y);
     }
     else {
         current_tile->render(dest);

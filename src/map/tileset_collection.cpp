@@ -229,7 +229,7 @@ bool TilesetCollection::render(Uint32 tile_id, int x, int y) const{
     const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
     const Uint32 FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
 
-    if(tile_id > FLIPPED_DIAGONALLY_FLAG) {
+    if(tile_id >= FLIPPED_DIAGONALLY_FLAG) {
         // Read out flags
         bool flipped_horizontally = (tile_id & FLIPPED_HORIZONTALLY_FLAG);
         bool flipped_vertically = (tile_id & FLIPPED_VERTICALLY_FLAG);

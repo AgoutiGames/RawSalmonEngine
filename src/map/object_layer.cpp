@@ -87,8 +87,22 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     // Parse individual objects/actors
     XMLElement* p_object = source->FirstChildElement("object");
     while(p_object != nullptr) {
-        unsigned gid;
+        unsigned gid = 0;
         eResult = p_object->QueryUnsignedAttribute("gid", &gid);
+
+        const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+        const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+        bool flipped_horizontally = false;
+        bool flipped_vertically = false;
+
+        // Parse flip values
+        if(gid >= FLIPPED_VERTICALLY_FLAG) {
+            // Read out flags
+            flipped_horizontally = (gid & FLIPPED_HORIZONTALLY_FLAG);
+            flipped_vertically = (gid & FLIPPED_VERTICALLY_FLAG);
+
+            gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG);
+        }
 
         if(eResult == XML_SUCCESS && mapdata.is_actor(gid)) {
 
@@ -97,19 +111,24 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             // m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
 
             // Initialize actor from the XMLElement*
-            eResult = m_obj_grid.back().parse_base(p_object);
+            auto& actor = m_obj_grid.back();
+            eResult = actor.parse_base(p_object);
             if(eResult != XML_SUCCESS) {
                 Logger(Logger::error) << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
-            eResult = m_obj_grid.back().parse_properties(p_object);
+            eResult = actor.parse_properties(p_object);
             if(eResult != XML_SUCCESS) {
                 Logger(Logger::error) << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
 
             // Apply layer offset
-            m_obj_grid.back().move_relative(m_offset_x,m_offset_y);
+            actor.move_relative(m_offset_x,m_offset_y);
+
+            auto& transform = actor.get_transform();
+            transform.set_h_flip(flipped_horizontally);
+            transform.set_v_flip(flipped_vertically);
         }
         else {
 

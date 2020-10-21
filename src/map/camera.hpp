@@ -27,7 +27,7 @@ class Actor;
 class MapData;
 
 /**
- * @brief An interface for a smart sdl_rect used for camera purposes
+ * @brief An interface for a smart rect used for camera purposes
  */
 
 class Camera{

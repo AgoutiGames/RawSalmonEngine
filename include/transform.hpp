@@ -16,22 +16,113 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef TRANSFORM_LIB_HPP_INCLUDED
-#define TRANSFORM_LIB_HPP_INCLUDED
+#ifndef TRANSFORM_HPP_INCLUDED
+#define TRANSFORM_HPP_INCLUDED
+
+#include <utility> // For std::pair
 
 #include "./types.hpp"
 
 namespace salmon {
 
-namespace internal{class Transform;}
-
-class Transform {
+// Rectangular area easy to transform
+class Transform{
     public:
-        Transform(internal::Transform& t);
+        // Generate transform with origin located at the lower left corner
+        Transform(float x_pos = 0.0f, float y_pos = 0.0f, float width = 0.0f, float height = 0.0f, float x_origin = 0.0f, float y_origin = 1.0);
+
+        void set_pos(float x, float y) {m_x_pos = x; m_y_pos = y;}
+        void move_pos(float x, float y) {m_x_pos += x; m_y_pos += y;}
+        void set_dimensions(float w, float h) {m_width=w;m_height=h;}
+        // Set origin using relative coordinates wit origin in upper left corner
+        void set_origin(float x, float y);
+
+        // Set scale to absolute values
+        void set_scale(float x, float y) {m_x_scale = x; m_y_scale = y;};
+        // Scale relative to current scale
+        void scale(float x, float y) {set_scale(m_x_scale * x, m_y_scale * y);}
+
+        void set_rotation(double angle) {m_angle = angle;}
+        void rotate(double angle) {m_angle += angle;}
+        double get_rotation() const {return m_angle;}
+        void set_rotation_center(float x, float y);
+        Point get_rotation_center() const {return{m_x_rotate,m_y_rotate};}
+
+        bool is_rotated() const;
+        bool is_scaled() const;
+        bool is_flipped() const {return m_vertical_flip || m_horizontal_flip;}
+
+        // Get position at normalized coordinates x and y relative to upper left corner of transform
+        // Example: 0.0,0.0 Upper left corner; 0.5,0.5 middle point; 1.0,1.0 lower right corner
+        Point get_relative(float x, float y) const;
+        Point get_relative_rotated(float x, float y) const;
+        Point get_relative_bounding_box(float x, float y) const;
+
+        Dimensions get_base_dimensions() const {return {m_width, m_height};}
+        Dimensions get_dimensions() const {return{m_width * m_x_scale, m_height * m_y_scale};}
+        Scale get_scale() const {return{m_x_scale,m_y_scale};}
+
+        // Generate rect with position relative to upper left corner and casted to int
+        Rect to_rect() const;
+        // In case of rotation compute bounding box
+        Rect to_bounding_box() const;
+
+        // Apply transformation to scaled world coordinates
+        void transform_hitbox(Rect& hitbox) const;
+
+        // Determine to what the sorting point is relative
+        // Only makes a difference if rotation is applied!
+        enum SortMode {
+            // Based on unrotated rectangle
+            base,
+            // Sort point moves with rotation
+            rotated,
+            // Based on relative coords of bounding box
+            bounding_box
+        };
+
+        void set_sort_mode(SortMode s) {m_sort_mode = s;}
+        SortMode get_sort_mode() const {return m_sort_mode;}
+
+        void set_sort_point(float x, float y) {m_x_sort = x;m_y_sort = y;}
+        Point get_sort_point() const;
+
+        void set_h_flip(bool val) {m_horizontal_flip = val;}
+        bool get_h_flip() const {return m_horizontal_flip;}
+
+        void set_v_flip(bool val) {m_vertical_flip = val;}
+        bool get_v_flip() const {return m_vertical_flip;}
 
     private:
-        internal::Transform* m_impl;
-};
-}
+        float m_x_pos;
+        float m_y_pos;
+        float m_width;
+        float m_height;
+        float m_x_scale = 1.0f;
+        float m_y_scale = 1.0f;
 
-#endif // TRANSFORM_LIB_HPP_INCLUDED
+        double m_angle = 0.0;
+        // Origin from which is rotated
+        float m_x_rotate = 0.0f;
+        float m_y_rotate = 1.0f;
+
+        // Origin from which is scaled
+        float m_x_origin = 0.0f;
+        float m_y_origin = 1.0f;
+
+        // Relative coordinate used for render sorting
+        float m_x_sort = 0.0f;
+        float m_y_sort = 1.0f;
+
+        // Default for matching tiled preview independent of rotation point
+        SortMode m_sort_mode = SortMode::rotated;
+
+        bool m_horizontal_flip = false;
+        bool m_vertical_flip = false;
+
+        static const float MIN_SCALE;
+        static const float MIN_ROTATION;
+};
+} // namespace salmon
+
+#endif // TRANSFORM_HPP_INCLUDED

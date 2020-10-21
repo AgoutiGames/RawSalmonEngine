@@ -93,22 +93,6 @@ class Actor{
         Transform& get_transform() {return m_transform;}
         const Transform& get_transform() const {return m_transform;}
 
-            // SOON TO BE REPLACED BY TRANSFORM
-            // Return lower left corner coords
-            float get_x() const {return m_transform.get_relative(0.0,1.0).x;}
-            float get_y() const {return m_transform.get_relative(0.0,1.0).y;}
-            //float get_bottom() const {return m_transform.get_relative(0.0,1.0).second;}
-            //unsigned get_w() const {return m_transform.get_base_dimensions().first;}
-            //unsigned get_h() const {return m_transform.get_base_dimensions().second;}
-            //int get_x_center() const {return static_cast<int>(m_transform.get_relative(0.5,0.5).first);}
-            //int get_y_center() const {return static_cast<int>(m_transform.get_relative(0.5,0.5).second);}
-            //double get_angle() const {return m_transform.get_rotation();}
-            //void set_angle(double angle) {m_transform.set_rotation(angle);}
-            //bool scale(float x, float y) {m_transform.set_scale(x,y);return true;}
-            //bool scale(float s) {return scale(s,s);}
-            //float get_x_scale() const {return m_transform.get_scale().first;}
-            //float get_y_scale() const {return m_transform.get_scale().second;}
-
         void set_name(std::string name) {m_name = name;}
 
         // Trivial Getters
