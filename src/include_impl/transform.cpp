@@ -83,7 +83,57 @@ Rect Transform::to_rect() const {
 void Transform::transform_hitbox(Rect& hitbox) const {
     float rel_x, rel_y;
     rel_x = hitbox.x / m_width;
+    if(m_horizontal_flip) {rel_x = (1.0f-rel_x) - (hitbox.w / m_width);}
     rel_y = hitbox.y / m_height;
+    if(m_vertical_flip) {rel_y = (1.0f-rel_y) - (hitbox.h / m_height);}
+    if(is_rotated() && std::abs(std::fmod(m_angle, 90)) < MIN_ROTATION) {
+        int i_angle = static_cast<int>(std::round(m_angle));
+        if(i_angle < 0) {i_angle = -i_angle;}
+        i_angle = (i_angle / 90) % 4;
+        Point corner;
+        switch(i_angle) {
+            // 90 deg rotation
+            case 1 : {
+                // Get coords of lower left corner rotated
+                corner = get_relative_rotated(rel_x, rel_y + (hitbox.h / m_height));
+                hitbox.w = hitbox.w * m_x_scale;
+                hitbox.h = hitbox.h * m_y_scale;
+                // Swap dimensions
+                float temp = hitbox.w;
+                hitbox.w = hitbox.h;
+                hitbox.h = temp;
+                break;
+            }
+            // 180 deg rotation
+            case 2 : {
+                // Get coords of lower right corner rotated
+                corner = get_relative_rotated(rel_x + (hitbox.w / m_width), rel_y + (hitbox.h / m_height));
+                hitbox.w = hitbox.w * m_x_scale;
+                hitbox.h = hitbox.h * m_y_scale;
+                break;
+            }
+            // 270 deg rotation
+            case 3 : {
+                // Get coords of upper right corner rotated
+                corner = get_relative_rotated(rel_x + (hitbox.w / m_width), rel_y);
+                hitbox.w = hitbox.w * m_x_scale;
+                hitbox.h = hitbox.h * m_y_scale;
+                // Swap dimensions
+                float temp = hitbox.w;
+                hitbox.w = hitbox.h;
+                hitbox.h = temp;
+                break;
+            }
+            default : {
+                internal::Logger(internal::Logger::error) << "Rotation inside Transform::transform_hitbox failed! Check this!!";
+                return;
+                break;
+            }
+        }
+        hitbox.x = corner.x;
+        hitbox.y = corner.y;
+        return;
+    }
     auto pos = get_relative(rel_x,rel_y);
     hitbox.x = pos.x;
     hitbox.y = pos.y;
@@ -136,7 +186,7 @@ bool Transform::is_scaled() const {
 }
 
 bool Transform::is_rotated() const {
-    if(std::abs(m_angle) > MIN_ROTATION) {
+    if(std::abs(std::fmod(m_angle,360)) > MIN_ROTATION) {
         return true;
     }
     else {
