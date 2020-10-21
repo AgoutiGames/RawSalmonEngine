@@ -151,8 +151,6 @@ class Actor{
         void register_collisions(bool r) {if(!r) {clear_collisions();} m_register_collisions = r;}
 
     private:
-        void transform_hitbox(Rect& hitbox) const;
-
         MapData* m_map;
 
         Transform m_transform;

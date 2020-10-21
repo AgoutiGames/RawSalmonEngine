@@ -20,7 +20,6 @@
 #define COLLISION_HPP_INCLUDED
 
 #include <string>
-#include <SDL.h>
 
 #include "util/game_types.hpp"
 

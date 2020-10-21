@@ -22,7 +22,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <SDL.h>
 
 #include "map/layer.hpp"
 #include "graphics/texture.hpp"

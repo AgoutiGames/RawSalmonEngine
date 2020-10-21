@@ -449,7 +449,7 @@ Rect Actor::get_hitbox(std::string type) const {
     if(current_hitbox.empty()) {return current_hitbox;}
 
     // Otherwise adjust hitbox position and return
-    transform_hitbox(current_hitbox);
+    m_transform.transform_hitbox(current_hitbox);
 
     return current_hitbox;
 }
@@ -471,16 +471,10 @@ const std::map<std::string, Rect> Actor::get_hitboxes() const {
     }
     // Adjust each hitbox position and return
     for(auto& hitbox_pair : hitboxes) {
-        transform_hitbox(hitbox_pair.second);
+        m_transform.transform_hitbox(hitbox_pair.second);
     }
     return hitboxes;
 }
-
-/// Translate supplied hitbox from local actor coordinates to world coordinates with scale applied
-void Actor::transform_hitbox(Rect& hitbox) const {
-    m_transform.transform_hitbox(hitbox);
-}
-
 
 /**
  * @brief Checks if the actor is standing on ground
