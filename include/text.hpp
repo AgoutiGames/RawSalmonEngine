@@ -56,11 +56,6 @@ class Text {
         /// Returns reference to current transform
         Transform& get_transform();
 
-        /// Returns true if position is relative to camera and not world
-        bool get_static_mode() const;
-        /// Set render coords relative to camera when mode is true, otherwise it's relative to world
-        void set_static_mode(bool mode);
-
         /// Returns true if text is currently hidden
         bool get_hidden() const;
         /// If mode is true the text won't be rendered, when false is shows up again

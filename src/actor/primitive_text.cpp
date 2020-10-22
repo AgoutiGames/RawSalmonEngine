@@ -46,7 +46,7 @@ bool PrimitiveText::render(float x_cam, float y_cam) const {
     r.x -= x_cam;
     r.y -= y_cam;
     SDL_Rect dest = make_rect(r);
-    m_texture.render_resize(&dest, &rect);
+    m_texture.render_resize(&rect, &dest);
     return true;
 }
 
