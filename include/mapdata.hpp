@@ -82,13 +82,13 @@ class MapData {
          * @brief Add text object by to map
          * @param text_name The name of the text object
          * @param layer_name The name of the layer to add the text to
-         * @param x_pos, y_pos The position of the text object in world coords relative to upper left corner of text
+         * @param r The position and dimensions of the text object in world coords relative to upper left corner of text
          * @param text The text to be displayed on screen
          * @param a The attribute object describing the appearance of the text
          * @return TextRef object which may be invalid if layer doesn't exist
          * @warning Always check if returned TextRef returns true on good() method
          */
-        Text add_text(std::string text_name, std::string layer_name, float x_pos, float y_pos, std::string text, Text::Attributes a);
+        Text add_text(std::string text_name, std::string layer_name, Rect r, std::string text, Text::Attributes a);
 
         /// Removes text object from this map. Returns true if removal worked
         bool remove_text(Text text);

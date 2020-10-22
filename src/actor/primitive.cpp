@@ -29,8 +29,8 @@
 
 namespace salmon { namespace internal {
 
-Primitive::Primitive(float x_pos, float y_pos, MapData& mapdata, std::string name)
-                    : m_x_pos{x_pos}, m_y_pos{y_pos}, m_renderer{mapdata.get_renderer()}, m_name{name} {}
+Primitive::Primitive(MapData& mapdata, std::string name)
+                    : m_renderer{mapdata.get_renderer()}, m_name{name} {}
 
 Primitive* Primitive::parse(tinyxml2::XMLElement* source, MapData& base_map) {
     if(source->FirstChildElement("text") != nullptr) {

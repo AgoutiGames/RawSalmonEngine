@@ -19,6 +19,7 @@
 #ifndef PRIMITIVE_TEXT_HPP_INCLUDED
 #define PRIMITIVE_TEXT_HPP_INCLUDED
 
+#include "./types.hpp"
 #include "actor/primitive.hpp"
 #include "graphics/texture.hpp"
 
@@ -35,9 +36,9 @@ class PrimitiveText : public Primitive {
             bool wrap = false, bold = false, italic = false, underline = false, strikeout = false, kerning = true;
         };
 
-        PrimitiveText(float x_pos, float y_pos, std::string text, Attributes atr, MapData& mapdata, std::string name = "");
+        PrimitiveText(Rect r, std::string text, Attributes atr, MapData& mapdata, std::string name = "");
 
-        bool render(int x_cam, int y_cam) const override;
+        bool render(float x_cam, float y_cam) const override;
         PrimitiveType get_type() const override {return PrimitiveType::text;}
 
         // Covariant return type!
@@ -45,8 +46,6 @@ class PrimitiveText : public Primitive {
 
         std::string get_text() {return m_text;}
         Attributes get_attributes() {return m_attributes;}
-        int get_w() {return m_width;}
-        int get_h() {return m_height;}
 
         void set_text(std::string text) {m_text = text;}
         void set_attributes(Attributes attributes) {m_attributes = attributes;}
@@ -58,8 +57,6 @@ class PrimitiveText : public Primitive {
         MapData* m_mapdata;
         Texture m_texture;
 
-        int m_width = 0;
-        int m_height = 0;
         std::string m_text;
         Attributes m_attributes;
 };

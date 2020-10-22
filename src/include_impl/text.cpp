@@ -32,8 +32,6 @@ Text::Attributes Text::get_attributes() {
     internal::PrimitiveText::Attributes a = m_impl->get_attributes();
     return {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
 }
-int Text::get_w() {return m_impl->get_w();}
-int Text::get_h() {return m_impl->get_h();}
 
 void Text::set_text(std::string text) {m_impl->set_text(text);}
 void Text::set_attributes(Attributes a) {
@@ -41,20 +39,13 @@ void Text::set_attributes(Attributes a) {
     m_impl->set_attributes(temp);
 }
 
-bool Text::apply() {return m_impl->generate_texture();}
+Transform& Text::get_transform() {return m_impl->get_transform();}
 
-bool Text::get_static_mode() const {return m_impl->get_static_mode();}
-void Text::set_static_mode(bool mode) {m_impl->set_static_mode(mode);}
+bool Text::apply() {return m_impl->generate_texture();}
 
 bool Text::get_hidden() const {return m_impl->get_hidden();}
 void Text::set_hidden(bool mode) {m_impl->set_hidden(mode);}
 
 std::string Text::get_name() {return m_impl->get_name();}
-
-float Text::get_x() {return m_impl->get_x();}
-float Text::get_y() {return m_impl->get_y();}
-
-void Text::set_x(float x) {m_impl->set_x(x);}
-void Text::set_y(float y) {m_impl->set_y(y);}
 
 } // namespace salmon

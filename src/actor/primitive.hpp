@@ -24,6 +24,8 @@
 
 #include "tinyxml2.h"
 
+#include "transform.hpp"
+
 namespace salmon { namespace internal {
 
 class MapData;
@@ -40,36 +42,25 @@ class Primitive {
             text,
             undefined,
         };
-        Primitive(float x_pos, float y_pos, MapData& mapdata, std::string name = "");
+        Primitive(MapData& mapdata, std::string name = "");
         virtual ~Primitive() = default;
 
-        virtual bool render(int x_cam, int y_cam) const = 0;
+        virtual bool render(float x_cam, float y_cam) const = 0;
         virtual PrimitiveType get_type() const {return PrimitiveType::undefined;}
 
         virtual Primitive* clone() const = 0;
 
-        float get_x() {return m_x_pos;}
-        float get_y() {return m_y_pos;}
+        Transform& get_transform() {return m_transform;}
         std::string get_name() {return m_name;}
-
-        void set_x(float x) {m_x_pos = x;}
-        void set_y(float y) {m_y_pos = y;}
-
-        bool get_static_mode() const {return m_static_mode;}
-        void set_static_mode(bool mode) {m_static_mode = mode;}
 
         bool get_hidden() const {return m_hidden;}
         void set_hidden(bool mode) {m_hidden = mode;}
 
-        void move(float x, float y) {m_x_pos += x; m_y_pos += y;}
-
         static Primitive* parse(tinyxml2::XMLElement* source, MapData& base_map);
     protected:
-        float m_x_pos;
-        float m_y_pos;
+        Transform m_transform;
         SDL_Renderer* m_renderer;
         std::string m_name;
-        bool m_static_mode = false;
         bool m_hidden = false;
 };
 }} // namespace salmon::internal

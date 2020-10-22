@@ -21,6 +21,8 @@
 
 #include <string>
 
+#include "./transform.hpp"
+
 namespace salmon {
 
 namespace internal{class PrimitiveText;}
@@ -51,15 +53,8 @@ class Text {
         /// Returns the name which identifies this text object
         std::string get_name();
 
-        /// Returns the x position of this text object
-        float get_x();
-        /// Returns the y position of this text object
-        float get_y();
-
-        /// Sets the x position to the supplied value
-        void set_x(float x);
-        /// Sets the y position to the supplied value
-        void set_y(float y);
+        /// Returns reference to current transform
+        Transform& get_transform();
 
         /// Returns true if position is relative to camera and not world
         bool get_static_mode() const;
@@ -75,10 +70,6 @@ class Text {
         std::string get_text();
         /// Returns the attribute object describing the visual appearance of the text
         Attributes get_attributes();
-        /// Returns the pixel width of the text object
-        int get_w();
-        /// Returns the pixel height of the text object
-        int get_h();
 
         /// Sets the displayed text to supplied string
         void set_text(std::string text);

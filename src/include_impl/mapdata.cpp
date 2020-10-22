@@ -91,7 +91,7 @@ Text MapData::get_text(std::string name) {
     }
     return nullptr;
 }
-Text MapData::add_text(std::string text_name, std::string layer_name, float x_pos, float y_pos, std::string text, Text::Attributes a) {
+Text MapData::add_text(std::string text_name, std::string layer_name, Rect r, std::string text, Text::Attributes a) {
     internal::Layer* dest_layer = m_impl->get_layer_collection().get_layer(layer_name);
     if(dest_layer == nullptr) {
         std::cerr << "There is no layer called: \"" << layer_name << "\"\n";
@@ -104,7 +104,7 @@ Text MapData::add_text(std::string text_name, std::string layer_name, float x_po
     else {
         internal::ObjectLayer* layer = static_cast<internal::ObjectLayer*>(dest_layer);
         internal::PrimitiveText::Attributes temp = {a.font_family, {a.color.r,a.color.g,a.color.b,a.color.a}, a.pixel_size, a.wrap, a.bold, a.italic, a.underline, a.strikeout, a.kerning};
-        internal::PrimitiveText* t_obj = new internal::PrimitiveText(x_pos,y_pos,text,temp, *m_impl,text_name);
+        internal::PrimitiveText* t_obj = new internal::PrimitiveText(r,text,temp, *m_impl,text_name);
         layer->add_primitive(t_obj);
         return Text(*t_obj);
     }

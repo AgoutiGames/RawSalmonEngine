@@ -25,7 +25,7 @@ namespace salmon { namespace internal {
 
 class PrimitiveEllipse : public Primitive {
     public:
-        bool render(int x_cam, int y_cam) const override;
+        bool render(float x_cam, float y_cam) const override;
         PrimitiveType get_type() const override {return PrimitiveType::ellipse;}
 
         // Covariant return type!

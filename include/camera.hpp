@@ -30,14 +30,14 @@ class Camera {
         Camera(internal::Camera& impl);
 
         /// Return x coordinate of upper left corner of camera in world space
-        int get_x() const;
+        float get_x() const;
         /// Return y coordinate of upper left corner of camera in world space
-        int get_y() const;
+        float get_y() const;
 
         /// Set x coordinate of upper left corner of camera in world space
-        void set_x(int x);
+        void set_x(float x);
         /// Set y coordinate of upper left corner of camera in world space
-        void set_y(int y);
+        void set_y(float y);
 
         /// Make camera always center on supplied actor
         void bind_actor(Actor actor);
