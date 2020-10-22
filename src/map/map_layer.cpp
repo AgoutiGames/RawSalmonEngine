@@ -65,9 +65,11 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     // Parse layer offset
     int offsetx, offsety;
     eResult = source->QueryIntAttribute("offsetx", &offsetx);
-    if(eResult == XML_SUCCESS) m_offset_x = offsetx;
+    if(eResult != XML_SUCCESS) offsetx = 0;
     eResult = source->QueryIntAttribute("offsety", &offsety);
-    if(eResult == XML_SUCCESS) m_offset_y = offsety;
+    if(eResult != XML_SUCCESS) offsety = 0;
+
+    m_transform = salmon::Transform(offsetx,offsety, m_width * m_ts_collection->get_tile_w(), m_height * m_ts_collection->get_tile_h(),0,0);
 
     // Parse actual map data
     XMLElement* p_data = source->FirstChildElement("data");
@@ -207,8 +209,9 @@ std::vector<TileInstance> MapLayer::get_clip(Rect rect) const {
     std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
     std::vector<TileInstance> tiles;
     // Get missing decimals back which were eliminated due to rounding when clipping
-    float x_decimals = round(rect.x - m_offset_x) - (rect.x - m_offset_x);
-    float y_decimals = round(rect.y - m_offset_y) - (rect.y - m_offset_y);
+    Point p = m_transform.get_relative(0,0);
+    float x_decimals = round(rect.x - p.x) - (rect.x - p.x);
+    float y_decimals = round(rect.y - p.y) - (rect.y - p.y);
 
     const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
     const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
@@ -460,8 +463,9 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(Rect rect) 
 void MapLayer::calc_tile_range(Rect src_rect, int tile_w, int tile_h, int& x_from, int& x_to, int& y_from, int& y_to, int& x_start, int& y_start) const {
 
     // Apply the layer offset
-    src_rect.x -= m_offset_x;
-    src_rect.y -= m_offset_y;
+    Point p = m_transform.get_relative(0,0);
+    src_rect.x -= p.x;
+    src_rect.y -= p.y;
 
     PixelRect rect = src_rect;
 

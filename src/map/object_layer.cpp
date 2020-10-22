@@ -55,9 +55,11 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     // Parse layer offset
     float offsetx, offsety;
     eResult = source->QueryFloatAttribute("offsetx", &offsetx);
-    if(eResult == XML_SUCCESS) m_offset_x = offsetx;
+    if(eResult != XML_SUCCESS) offsetx = 0;
     eResult = source->QueryFloatAttribute("offsety", &offsety);
-    if(eResult == XML_SUCCESS) m_offset_y = offsety;
+    if(eResult != XML_SUCCESS) offsety = 0;
+
+    m_transform = salmon::Transform(offsetx,offsety,0,0,0,0);
 
     // Parse user specified properties of the object_layer (only suspended right now)
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
@@ -124,7 +126,8 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             }
 
             // Apply layer offset
-            actor.move_relative(m_offset_x,m_offset_y);
+            salmon::Point p = m_transform.get_relative(0,0);
+            actor.move_relative(p.x,p.y);
 
             auto& transform = actor.get_transform();
             transform.set_h_flip(flipped_horizontally);

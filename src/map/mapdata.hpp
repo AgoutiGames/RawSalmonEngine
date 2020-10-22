@@ -30,7 +30,9 @@
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
 
-namespace salmon { namespace internal {
+namespace salmon {
+class Transform;
+namespace internal {
 
 class Actor;
 class GameInfo;
@@ -102,6 +104,8 @@ class MapData {
         void add_actor_animation(std::string name, std::string anim, Direction dir, Tile* tile);
 
         Actor* fetch_actor(std::string name);
+
+        Transform* get_layer_transform(std::string layer_name);
 
     private:
 

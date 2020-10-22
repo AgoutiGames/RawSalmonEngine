@@ -106,6 +106,12 @@ class MapData {
          */
         bool unhide_layer(std::string layer_name);
 
+        /**
+         * @brief Returns pointer to transform of layer
+         * If layer couldn't be found, returns nullptr
+         */
+        salmon::Transform* get_layer_transform(std::string layer_name);
+
         /// Returns map width in pixels (not taking layer offset into account)
         unsigned get_w() const;
         /// Returns map height in pixels (not taking layer offset into account)

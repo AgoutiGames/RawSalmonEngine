@@ -145,5 +145,6 @@ unsigned MapData::get_h() const {return m_impl->get_h();}
 float MapData::get_delta_time() const {return m_impl->get_delta_time();}
 std::string MapData::get_path() const {return m_impl->get_full_path();}
 DataBlock MapData::get_data() {return m_impl->get_data();}
+salmon::Transform* MapData::get_layer_transform(std::string layer_name) {return m_impl->get_layer_transform(layer_name);}
 
 } // namespace salmon

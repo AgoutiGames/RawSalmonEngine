@@ -54,13 +54,7 @@ class ImageLayer : public Layer{
 
         std::string m_img_src;
         Texture m_img;
-        unsigned m_width;   // Measured in tiles for "map" and pixels for "image"
-        unsigned m_height;
         float m_opacity = 1.0f; ///< @warning value only works with image layers!
-        bool m_parallax = false;
-        bool m_static = false;
-        bool m_stretch = false;
-        bool m_keep_size = false;
 };
 }} // namespace salmon::internal
 

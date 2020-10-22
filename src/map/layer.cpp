@@ -24,12 +24,9 @@
 #include <iostream>
 #include <tinyxml2.h>
 
-#include "actor/actor.hpp"
-#include "map/mapdata.hpp"
 #include "map/map_layer.hpp"
 #include "map/image_layer.hpp"
 #include "map/object_layer.hpp"
-#include "map/tile.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 

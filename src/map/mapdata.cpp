@@ -23,6 +23,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "transform.hpp"
 #include "actor/actor.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
@@ -461,6 +462,12 @@ Actor MapData::get_actor(Uint32 gid) const {
 /// Return Actor template by name
 Actor MapData::get_actor(std::string name) const {
     return m_actor_templates.at(name);
+}
+
+Transform* MapData::get_layer_transform(std::string layer_name) {
+    Layer* l = m_layer_collection.get_layer(layer_name);
+    if(l == nullptr) {return nullptr;}
+    else {return &l->get_transform();}
 }
 
 }} // namespace salmon::internal
