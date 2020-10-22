@@ -24,58 +24,43 @@
 #include <SDL.h>
 #include "../../include/types.hpp"
 
+namespace salmon { namespace internal {
 
 /**
  * @brief A collection of various enums and handy functions for conversion and parsing
  */
 
-enum class Response{
-    on_hit,
-    on_collision,
-    on_activation,
-    on_death,
-    on_idle,
-    on_always,
-    on_spawn,
-    on_mouse,
-    invalid,
-};
-
-enum class PropertyType{
-    Boolean,
-    Integer,
-    Float,
-    String,
-};
-
-enum class EventSignal{
-    next, ///< Process next event in pipeline
-    stop, ///< Stop processing events here
-    end,  ///< The event succesfully finished, needs to be deleted
-    abort,///< The event preemtively finished, needs to be deleted
-//    erase,///< Erase the actor who processed this event
-    invalid, ///< EventSignal did not properly parse
-};
-
-enum class Priority{
-    low = 25,
-    medium = 50,
-    high = 75,
-    invalid = -1,
-};
-
-// salmon::AnimationType str_to_anim_type(const std::string& name);
-salmon::Direction str_to_direction(const std::string& name);
-Priority str_to_priority(const std::string& name);
-EventSignal str_to_event_signal(const std::string& name);
-Response str_to_response(const std::string& name);
+// AnimationType str_to_anim_type(const std::string& name);
+Direction str_to_direction(const std::string& name);
 SDL_Color str_to_color(const std::string& name);
 void make_path_absolute(std::string& path);
 
-SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second);
-salmon::Rect make_rect(const SDL_Rect& rect);
+Point rect_center_difference(const Rect& first, const Rect& second);
+PixelRect make_rect(const SDL_Rect& rect);
+SDL_Rect make_rect(const PixelRect& rect);
 
-std::vector<float> dir_to_mov(const salmon::Direction dir);
+std::vector<float> dir_to_mov(const Direction dir);
 void normalize(float& x, float& y);
+
+// Return true if line1 and line2 overlap
+template<class Type>
+static bool intersect(Type min1, Type max1, Type min2, Type max2) {
+    // Determine greates minimum and smalles maximum
+    if(min1 < min2) {min1 = min2;}
+    if(max1 > max2) {max1 = max2;}
+    if(min1 >= max1) {return false;}
+    else {return true;}
+}
+// Create new line from line1 and line2 overlap
+template<class Type>
+static void intersect(Type min1, Type max1, Type min2, Type max2, Type& dst, Type& dst_offset) {
+    // Determine greates minimum and smalles maximum
+    if(min1 < min2) {min1 = min2;}
+    if(max1 > max2) {max1 = max2;}
+    dst = min1;
+    dst_offset = max1 - min1;
+}
+
+}} // namespace salmon::internal
 
 #endif // GAME_TYPES_HPP_INCLUDED

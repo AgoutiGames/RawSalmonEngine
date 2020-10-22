@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -24,14 +24,13 @@
 #include <iostream>
 #include <tinyxml2.h>
 
-#include "actor/actor.hpp"
-#include "map/mapdata.hpp"
 #include "map/map_layer.hpp"
 #include "map/image_layer.hpp"
 #include "map/object_layer.hpp"
-#include "map/tile.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
+
+namespace salmon { namespace internal {
 
 /**
  * @brief Differentiates possible layers by name and calls proper parsing function
@@ -90,3 +89,4 @@ Layer* Layer::parse(tinyxml2::XMLElement* source, LayerCollection* layer_collect
 
 }
 
+}} // namespace salmon::internal

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -19,28 +19,30 @@
 #ifndef CAMERA_HPP_INCLUDED
 #define CAMERA_HPP_INCLUDED
 
-#include <SDL.h>
+#include "types.hpp"
+
+namespace salmon { namespace internal {
 
 class Actor;
 class MapData;
 
 /**
- * @brief An interface for a smart sdl_rect used for camera purposes
+ * @brief An interface for a smart rect used for camera purposes
  */
 
 class Camera{
     public:
-        Camera(int x, int y, int w, int h, MapData* map);
+        Camera(float x, float y, float w, float h, MapData* map);
 
-        int x() const {return m_rect.x;}
-        int y() const {return m_rect.y;}
-        int w() const {return m_rect.w;}
-        int h() const {return m_rect.h;}
-        const SDL_Rect& get_rect() const {return m_rect;}
+        float x() const {return m_rect.x;}
+        float y() const {return m_rect.y;}
+        float w() const {return m_rect.w;}
+        float h() const {return m_rect.h;}
+        const Rect& get_rect() const {return m_rect;}
 
-        void set_size(unsigned w, unsigned h) {m_rect.w = w; m_rect.h = h;}
-        void set_x(int x) {m_rect.x = x;}
-        void set_y(int y) {m_rect.y = y;}
+        void set_size(float w, float h) {m_rect.w = w; m_rect.h = h;}
+        void set_x(float x) {m_rect.x = x;}
+        void set_y(float y) {m_rect.y = y;}
         void set_crop(int l, int r, int u, int d);
         void bind_actor(Actor* actor);
         void unbind_actor() {m_actor_bound = false;}
@@ -49,10 +51,10 @@ class Camera{
         void unbind_map() {m_map_bound = false;}
 
         void update();
-        void update(int x, int y);
+        void update(float x, float y);
 
     private:
-        SDL_Rect m_rect = {0,0,0,0};
+        Rect m_rect = {0,0,0,0};
 
         unsigned m_map_width = 0;
         unsigned m_map_height = 0;
@@ -68,5 +70,6 @@ class Camera{
         bool m_map_bound = false;
         bool m_actor_bound = false;
 };
+}} // namespace salmon::internal
 
 #endif // CAMERA_HPP_INCLUDED

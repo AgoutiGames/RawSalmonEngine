@@ -16,24 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "camera_ref.hpp"
+#include "camera.hpp"
 
 #include "map/camera.hpp"
 
-using salmon::CameraRef;
+namespace salmon {
 
-CameraRef::CameraRef(Camera& impl) : m_impl{&impl} {}
+Camera::Camera(internal::Camera& impl) : m_impl{&impl} {}
 
-int CameraRef::get_x() const {return m_impl->x();}
-int CameraRef::get_y() const {return m_impl->y();}
+float Camera::get_x() const {return m_impl->x();}
+float Camera::get_y() const {return m_impl->y();}
 
-void CameraRef::set_x(int x) {m_impl->set_x(x);}
-void CameraRef::set_y(int y) {m_impl->set_y(y);}
+void Camera::set_x(float x) {m_impl->set_x(x);}
+void Camera::set_y(float y) {m_impl->set_y(y);}
 
-void CameraRef::bind_actor(ActorRef actor) {m_impl->bind_actor(actor.m_impl);}
-void CameraRef::unbind_actor() {m_impl->unbind_actor();}
+void Camera::bind_actor(Actor actor) {m_impl->bind_actor(actor.m_impl);}
+void Camera::unbind_actor() {m_impl->unbind_actor();}
 
-void CameraRef::bind_map() {m_impl->bind_map();}
-void CameraRef::unbind_map() {m_impl->unbind_map();}
+void Camera::bind_map() {m_impl->bind_map();}
+void Camera::unbind_map() {m_impl->unbind_map();}
 
-void CameraRef::update() {m_impl->update();}
+void Camera::update() {m_impl->update();}
+
+} // namespace salmon

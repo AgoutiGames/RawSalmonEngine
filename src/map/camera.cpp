@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,7 +21,9 @@
 #include "actor/actor.hpp"
 #include "map/mapdata.hpp"
 
-Camera::Camera(int x, int y, int w, int h, MapData* map) :
+namespace salmon { namespace internal {
+
+Camera::Camera(float x, float y, float w, float h, MapData* map) :
     m_rect{x,y,w,h}, m_map{map} {}
 
 /**
@@ -31,36 +33,37 @@ Camera::Camera(int x, int y, int w, int h, MapData* map) :
  */
 void Camera::update() {
     if(m_actor_bound) {
-        m_rect.x = m_player->get_x_center() - (m_rect.w / 2);
-        m_rect.y = m_player->get_y_center() - (m_rect.h / 2);
+        auto center = m_player->get_transform().get_relative(0.5,0.5);
+        m_rect.x = center.x - (m_rect.w / 2);
+        m_rect.y = center.y - (m_rect.h / 2);
     }
     if(m_map_bound) {
         // Check if map is less wide than the effective camera frame
-        if( static_cast<int>(m_map_width) - m_crop_left - m_crop_right < m_rect.w ) {
+        if( static_cast<float>(m_map_width) - m_crop_left - m_crop_right < m_rect.w ) {
             // Center the camera horizontally relative to map
-            m_rect.x = ((static_cast<int>(m_map_width) - m_crop_left - m_crop_right) - m_rect.w) / 2;
+            m_rect.x = ((static_cast<float>(m_map_width) - m_crop_left - m_crop_right) - m_rect.w) / 2;
         }
         else {
             // Check horizontal borders
             if(m_rect.x < m_crop_left) {
                 m_rect.x = m_crop_left;
             }
-            else if(m_rect.x > static_cast<int>(m_map_width) - m_rect.w - m_crop_right) {
+            else if(m_rect.x > static_cast<float>(m_map_width) - m_rect.w - m_crop_right) {
                 m_rect.x = m_map_width - m_rect.w - m_crop_right;
             }
         }
 
         // Check if map is less high than the effective camera frame
-        if( static_cast<int>(m_map_height) - m_crop_up - m_crop_down < m_rect.h ) {
+        if( static_cast<float>(m_map_height) - m_crop_up - m_crop_down < m_rect.h ) {
             // Center the camera vertically relative to map
-            m_rect.y = ((static_cast<int>(m_map_height) - m_crop_up - m_crop_down) - m_rect.h) / 2;
+            m_rect.y = ((static_cast<float>(m_map_height) - m_crop_up - m_crop_down) - m_rect.h) / 2;
         }
         else {
             // Check vertical borders
             if(m_rect.y < m_crop_up) {
                 m_rect.y = m_crop_up;
             }
-            else if(m_rect.y > static_cast<int>(m_map_height) - m_rect.h - m_crop_down) {
+            else if(m_rect.y > static_cast<float>(m_map_height) - m_rect.h - m_crop_down) {
                 m_rect.y = m_map_height - m_rect.h - m_crop_down;
             }
         }
@@ -72,7 +75,7 @@ void Camera::update() {
  *
  * @note If the camera is player bound, the player position has precedence over the supplied coordinates
  */
-void Camera::update(int x, int y) {
+void Camera::update(float x, float y) {
     m_rect.x = x;
     m_rect.y = y;
     update();
@@ -107,3 +110,5 @@ void Camera::set_crop(int l, int r, int u, int d) {
     m_crop_up = u;
     m_crop_down = d;
 }
+
+}} // namespace salmon::internal

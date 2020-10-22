@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -23,11 +23,12 @@
 #include <map>
 #include <string>
 #include <memory>
-#include <SDL.h>
 
 #include "map/layer.hpp"
 #include "util/game_types.hpp"
 #include "util/smart.hpp"
+
+namespace salmon { namespace internal {
 
 class Primitive;
 
@@ -60,8 +61,8 @@ class ObjectLayer : public Layer{
         void suspend() {m_suspended = true;}
         void unsuspend() {m_suspended = false;}
 
-        std::vector<Actor*> get_clip(const SDL_Rect& rect);
-        std::vector<const Actor*> get_clip(const SDL_Rect& rect) const;
+        std::vector<Actor*> get_clip(const Rect& rect);
+        std::vector<const Actor*> get_clip(const Rect& rect) const;
 
         static ObjectLayer* parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult);
 
@@ -83,6 +84,6 @@ class ObjectLayer : public Layer{
 
         static unsigned next_object_id;
 };
-
+}} // namespace salmon::internal
 
 #endif // OBJECT_LAYER_HPP_INCLUDED

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -26,6 +26,8 @@
 
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 /**
  * @brief A helper class which parses XML_Element Attributes
  */
@@ -45,5 +47,6 @@ class AttributeParser{
         std::map<std::string, float*> m_float;
         std::map<std::string, std::string*> m_string;
 };
+}} // namespace salmon::internal
 
 #endif // ATTRIBUTE_PARSER_HPP_INCLUDED

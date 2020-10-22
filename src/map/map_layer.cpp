@@ -25,12 +25,15 @@
 #include <zlib.h>
 #include <b64/decode.h>
 
+#include "transform.hpp"
 #include "map/mapdata.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tile.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
 #include "util/logger.hpp"
+
+namespace salmon { namespace internal {
 
 /// Factory function which retrieves a pointer owning the map layer
 MapLayer* MapLayer::parse(tinyxml2::XMLElement* source, std::string name, LayerCollection* layer_collection, tinyxml2::XMLError& eresult) {
@@ -62,9 +65,11 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     // Parse layer offset
     int offsetx, offsety;
     eResult = source->QueryIntAttribute("offsetx", &offsetx);
-    if(eResult == XML_SUCCESS) m_offset_x = offsetx;
+    if(eResult != XML_SUCCESS) offsetx = 0;
     eResult = source->QueryIntAttribute("offsety", &offsety);
-    if(eResult == XML_SUCCESS) m_offset_y = offsety;
+    if(eResult != XML_SUCCESS) offsety = 0;
+
+    m_transform = salmon::Transform(offsetx,offsety, m_width * m_ts_collection->get_tile_w(), m_height * m_ts_collection->get_tile_h(),0,0);
 
     // Parse actual map data
     XMLElement* p_data = source->FirstChildElement("data");
@@ -177,7 +182,7 @@ bool MapLayer::render(const Camera& camera) const {
  * @param A rect which is usually a camera or the bounding box of a collider
  * @return A vector of 3-tuples consisting of the tile id and xy-coords relative to the rect origin!
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(Rect rect) const {
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     std::vector< std::tuple<Uint32, int, int> > tiles;
     if(layout.orientation == "orthogonal") {
@@ -200,11 +205,49 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip(SDL_Rect rect) const 
  * @param A rect which is usually the bounding box of a collider
  * @return A vector of TileInstance objects holding a pointer to the tile and xy-coords relative to the world origin!
  */
-std::vector<TileInstance> MapLayer::get_clip(SDL_Rect rect) const {
+std::vector<TileInstance> MapLayer::get_clip(Rect rect) const {
     std::vector< std::tuple<Uint32, int, int> > old = clip(rect);
     std::vector<TileInstance> tiles;
+    // Get missing decimals back which were eliminated due to rounding when clipping
+    Point p = m_transform.get_relative(0,0);
+    float x_decimals = round(rect.x - p.x) - (rect.x - p.x);
+    float y_decimals = round(rect.y - p.y) - (rect.y - p.y);
+
+    const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+    const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+    const Uint32 FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+
     for(std::tuple<Uint32, int, int> tile : old) {
-        tiles.push_back({m_ts_collection->get_tile(std::get<0>(tile)),std::get<1>(tile)+rect.x,std::get<2>(tile)+rect.y});
+        Uint32 tile_id = std::get<0>(tile);
+        Tile* tile_p = m_ts_collection->get_tile(tile_id);
+
+        Transform trans = {x_decimals + std::get<1>(tile)+rect.x,
+                           y_decimals + std::get<2>(tile)+rect.y,
+                           static_cast<float>(tile_p->get_w()),
+                           static_cast<float>(tile_p->get_h()),
+                           0,0};
+        trans.set_rotation_center(0.5,0.5);
+        if(tile_id >= FLIPPED_DIAGONALLY_FLAG) {
+            // Read out flags
+            bool flipped_horizontally = (tile_id & FLIPPED_HORIZONTALLY_FLAG);
+            bool flipped_vertically = (tile_id & FLIPPED_VERTICALLY_FLAG);
+            bool flipped_diagonally = (tile_id & FLIPPED_DIAGONALLY_FLAG);
+            double angle = 0;
+            // This snippet was determined via trial and error
+            // I have no idea why this even works, but it does
+            if(flipped_diagonally) {
+                angle = 270;
+                if(flipped_horizontally == flipped_vertically) {
+                    angle = 90;
+                }
+                flipped_vertically = !flipped_vertically;
+            }
+            trans.set_h_flip(flipped_horizontally);
+            trans.set_v_flip(flipped_vertically);
+            trans.set_rotation(angle);
+        }
+
+        tiles.push_back({tile_p,trans});
     }
     return tiles;
 }
@@ -214,7 +257,7 @@ std::vector<TileInstance> MapLayer::get_clip(SDL_Rect rect) const {
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(Rect rect) const {
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -272,7 +315,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_ortho(SDL_Rect rect) 
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to rect origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(Rect rect) const {
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -338,7 +381,7 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_y_stagger(SDL_Rect re
  * @param rect The rectangular space which the tiles are bounding with
  * @return A vector of TileId, x-coord(relative to recto origin), y-coord(relative to rect origin), tuples
  */
-std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(SDL_Rect rect) const {
+std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(Rect rect) const {
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
 
@@ -417,11 +460,14 @@ std::vector< std::tuple<Uint32, int, int> > MapLayer::clip_x_stagger(SDL_Rect re
 }
 
 /// Calculate the range of tiles bounding with rect
-void MapLayer::calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_from, int& x_to, int& y_from, int& y_to, int& x_start, int& y_start) const {
+void MapLayer::calc_tile_range(Rect src_rect, int tile_w, int tile_h, int& x_from, int& x_to, int& y_from, int& y_to, int& x_start, int& y_start) const {
 
     // Apply the layer offset
-    rect.x -= m_offset_x;
-    rect.y -= m_offset_y;
+    Point p = m_transform.get_relative(0,0);
+    src_rect.x -= p.x;
+    src_rect.y -= p.y;
+
+    PixelRect rect = src_rect;
 
     // Horizontal range of tiles to render
     x_from = rect.x / tile_w;
@@ -438,10 +484,10 @@ void MapLayer::calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_fro
     int y_tile_offset = rect.y % tile_h;
 
     // Calculate tile offset by pixel basis
-    float left_oh = m_ts_collection->get_overhang(salmon::Direction::left);
-    float right_oh = m_ts_collection->get_overhang(salmon::Direction::right);
-    float up_oh = m_ts_collection->get_overhang(salmon::Direction::up);
-    float down_oh = m_ts_collection->get_overhang(salmon::Direction::down);
+    float left_oh = m_ts_collection->get_overhang(Direction::left);
+    float right_oh = m_ts_collection->get_overhang(Direction::right);
+    float up_oh = m_ts_collection->get_overhang(Direction::up);
+    float down_oh = m_ts_collection->get_overhang(Direction::down);
 
     const MapData::TileLayout layout = m_layer_collection->get_base_map().get_tile_layout();
     if(layout.orientation != "orthogonal") {
@@ -466,3 +512,5 @@ void MapLayer::calc_tile_range(SDL_Rect rect, int tile_w, int tile_h, int& x_fro
     y_start = -y_tile_offset - (up_oh * tile_h);
 
 }
+
+}} // namespace salmon::internal

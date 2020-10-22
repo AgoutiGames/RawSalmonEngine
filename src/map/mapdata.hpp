@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -30,10 +30,13 @@
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
 
+namespace salmon {
+class Transform;
+namespace internal {
+
 class Actor;
 class GameInfo;
 class Tile;
-class Layer;
 
 /**
  * @brief Container for the layers, tilesets, additional data, key/event matrix and camera of the map.
@@ -98,9 +101,11 @@ class MapData {
         Actor get_actor(std::string name) const;
 
         tinyxml2::XMLError add_actor_template(tinyxml2::XMLElement* source, Tile* tile);
-        void add_actor_animation(std::string name, std::string anim, salmon::Direction dir, Tile* tile);
+        void add_actor_animation(std::string name, std::string anim, Direction dir, Tile* tile);
 
         Actor* fetch_actor(std::string name);
+
+        Transform* get_layer_transform(std::string layer_name);
 
     private:
 
@@ -131,5 +136,6 @@ class MapData {
 
         SDL_Renderer** mpp_renderer = nullptr;
 };
+}} // namespace salmon::internal
 
 #endif // MAPDATA_HPP_INCLUDED

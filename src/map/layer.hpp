@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -19,11 +19,14 @@
 #ifndef LAYER_HPP_INCLUDED
 #define LAYER_HPP_INCLUDED
 
-#include <SDL.h>
 #include <vector>
 #include <list>
 #include <string>
 #include <tinyxml2.h>
+
+#include "transform.hpp"
+
+namespace salmon { namespace internal {
 
 class Actor;
 class Camera;
@@ -35,7 +38,6 @@ class MapData;
  *
  * Can store all possible layer types
  */
-
 class Layer {
     public:
         enum LayerType{
@@ -64,14 +66,16 @@ class Layer {
         void hide() {m_hidden = true;}
         void unhide() {m_hidden = false;}
 
+        Transform& get_transform() {return m_transform;}
+
         static Layer* parse(tinyxml2::XMLElement* source, LayerCollection* layer_collection, tinyxml2::XMLError& eResult);
 
     protected:
         LayerCollection* m_layer_collection;
         std::string m_name;
-        float m_offset_x = 0;
-        float m_offset_y = 0;
+        Transform m_transform{0,0,0,0,0,0};
         bool m_hidden = false;
 };
+}} // namespace salmon::internal
 
 #endif // LAYER_HPP_INCLUDED

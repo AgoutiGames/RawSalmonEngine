@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -28,6 +28,8 @@
 #include "map/camera.hpp"
 #include "util/logger.hpp"
 
+namespace salmon { namespace internal {
+
 unsigned ObjectLayer::next_object_id = 1;
 
 /// Factory function which retrieves a pointer owning the object layer
@@ -53,9 +55,11 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     // Parse layer offset
     float offsetx, offsety;
     eResult = source->QueryFloatAttribute("offsetx", &offsetx);
-    if(eResult == XML_SUCCESS) m_offset_x = offsetx;
+    if(eResult != XML_SUCCESS) offsetx = 0;
     eResult = source->QueryFloatAttribute("offsety", &offsety);
-    if(eResult == XML_SUCCESS) m_offset_y = offsety;
+    if(eResult != XML_SUCCESS) offsety = 0;
+
+    m_transform = salmon::Transform(offsetx,offsety,0,0,0,0);
 
     // Parse user specified properties of the object_layer (only suspended right now)
     XMLElement* p_tile_properties = source->FirstChildElement("properties");
@@ -85,8 +89,22 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     // Parse individual objects/actors
     XMLElement* p_object = source->FirstChildElement("object");
     while(p_object != nullptr) {
-        unsigned gid;
+        unsigned gid = 0;
         eResult = p_object->QueryUnsignedAttribute("gid", &gid);
+
+        const Uint32 FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+        const Uint32 FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+        bool flipped_horizontally = false;
+        bool flipped_vertically = false;
+
+        // Parse flip values
+        if(gid >= FLIPPED_VERTICALLY_FLAG) {
+            // Read out flags
+            flipped_horizontally = (gid & FLIPPED_HORIZONTALLY_FLAG);
+            flipped_vertically = (gid & FLIPPED_VERTICALLY_FLAG);
+
+            gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG);
+        }
 
         if(eResult == XML_SUCCESS && mapdata.is_actor(gid)) {
 
@@ -95,19 +113,25 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
             // m_obj_grid.push_back(Actor(mapdata.get_actor(gid)));
 
             // Initialize actor from the XMLElement*
-            eResult = m_obj_grid.back().parse_base(p_object);
+            auto& actor = m_obj_grid.back();
+            eResult = actor.parse_base(p_object);
             if(eResult != XML_SUCCESS) {
                 Logger(Logger::error) << "Failed at loading dimensions and name of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
-            eResult = m_obj_grid.back().parse_properties(p_object);
+            eResult = actor.parse_properties(p_object);
             if(eResult != XML_SUCCESS) {
                 Logger(Logger::error) << "Failed at loading properties of object in layer: " << m_name << " with gid: " << gid;
                 return eResult;
             }
 
             // Apply layer offset
-            m_obj_grid.back().move_relative(m_offset_x,m_offset_y);
+            salmon::Point p = m_transform.get_relative(0,0);
+            actor.move_relative(p.x,p.y);
+
+            auto& transform = actor.get_transform();
+            transform.set_h_flip(flipped_horizontally);
+            transform.set_v_flip(flipped_vertically);
         }
         else {
 
@@ -202,48 +226,23 @@ Actor* ObjectLayer::get_actor(std::string name) {
 /**
  * @brief Returns a vector of pointers to actor which contains all actors which are within or intersect with the given rect
  */
-std::vector<Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) {
-
-    TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
-    SDL_Rect window = rect;
-    window.w += tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left) + tsc.get_overhang(salmon::Direction::right);
-    window.h += tsc.get_tile_h() + tsc.get_overhang(salmon::Direction::up) + tsc.get_overhang(salmon::Direction::down);
-    window.x -= tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left);
-    // Because origin of actor isn't upper left, but lower left, we don't need this
-    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up) * tsc.get_tile_h();
+std::vector<Actor*> ObjectLayer::get_clip(const Rect& rect) {
 
     std::vector<Actor*> actor_list;
     for(Actor& actor : m_obj_grid) {
-        // This could possibly refactored for performance gain
-        if(actor.get_x() > window.x &&
-           actor.get_x() < window.x + window.w &&
-           actor.get_y() > window.y &&
-           actor.get_y() < window.y + window.h)
-           {
-            actor_list.push_back(&actor);
-           }
+        Rect bounds = actor.get_transform().to_bounding_box();
+        if(bounds.has_intersection(rect)) {actor_list.push_back(&actor);}
     }
     return actor_list;
 }
 
 /// Const variant of get_clip(), needed for constant render() function
-std::vector<const Actor*> ObjectLayer::get_clip(const SDL_Rect& rect) const {
-    TilesetCollection& tsc = m_layer_collection->get_base_map().get_ts_collection();
-    SDL_Rect window = rect;
-    window.w += tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left) + tsc.get_overhang(salmon::Direction::right);
-    window.h += tsc.get_tile_h() + tsc.get_overhang(salmon::Direction::up) + tsc.get_overhang(salmon::Direction::down);
-    window.x -= tsc.get_tile_w() + tsc.get_overhang(salmon::Direction::left);
-    // Because origin of actor isn't upper left, but lower left, we don't need this
-    //window.y -= tsc.get_tile_h() + tsc.get_overhang(Direction::up);
+std::vector<const Actor*> ObjectLayer::get_clip(const Rect& rect) const {
 
     std::vector<const Actor*> actor_list;
     for(const Actor& actor : m_obj_grid) {
-        if(actor.get_x() > window.x &&
-           actor.get_x() < window.x + window.w &&
-           actor.get_y() > window.y &&
-           actor.get_y() < window.y + window.h) {
-            actor_list.push_back(&actor);
-        }
+        Rect bounds = actor.get_transform().to_bounding_box();
+        if(bounds.has_intersection(rect)) {actor_list.push_back(&actor);}
     }
     return actor_list;
 }
@@ -335,3 +334,5 @@ bool ObjectLayer::erase_primitive(Primitive* p) {
     }
     return false;
 }
+
+}} // namespace salmon::internal

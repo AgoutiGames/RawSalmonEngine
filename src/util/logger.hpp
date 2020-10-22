@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -23,6 +23,8 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+
+namespace salmon { namespace internal {
 
 /**
  * @brief A simple logger which annotates log messages and writes log additionally to file
@@ -79,6 +81,6 @@ private:
         static const char* s_log_filename;
     #endif
 };
-
+}} // namespace salmon::internal
 
 #endif // LOGGER_HPP_INCLUDED

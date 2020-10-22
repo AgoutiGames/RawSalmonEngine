@@ -20,10 +20,11 @@
 #define TILESET_COLLECTION_HPP_INCLUDED
 
 #include <vector>
-#include <SDL.h>
 #include <tinyxml2.h>
 
 #include "util/game_types.hpp"
+
+namespace salmon { namespace internal {
 
 class Tileset; // forward declaration
 class Tile;
@@ -40,7 +41,6 @@ class MapData;
  * @warning This class SHOULD NOT be copy constructable or assignable, only MOVABLE since moving m_tilesets with their internal
  * Tile objects keeps their memory adresses stable and therefore mp_tiles will still be in a valid state. This is NOT the case when copying.
  */
-
 class TilesetCollection{
     public:
 
@@ -57,7 +57,7 @@ class TilesetCollection{
         unsigned get_tile_h() const {return m_tile_h;} ///< Return base tile height
         unsigned get_tile_w() const {return m_tile_w;} ///< Return base tile width
 
-        unsigned get_overhang(salmon::Direction dir) const;
+        unsigned get_overhang(Direction dir) const;
 
         Uint32 get_gid(Tile* tile)  const;
         Tile* get_tile(Uint32 tile_id) const;
@@ -70,7 +70,7 @@ class TilesetCollection{
         void push_all_anim();
 
         bool render(Uint32 tile_id, int x, int y) const;
-        bool render(Uint32 tile_id, SDL_Rect& dest) const;
+        bool render(Uint32 tile_id, Rect& dest) const;
 
         MapData& get_mapdata() {return *mp_base_map;}
 
@@ -91,6 +91,6 @@ class TilesetCollection{
         std::vector<Tile*> mp_tiles;      ///< List of pointers to all tiles in order
         std::vector<Uint32> m_anim_tiles; ///< List of ids of all animated tiles
 };
-
+}} // namespace salmon::internal
 
 #endif // TILESET_COLLECTION_HPP_INCLUDED

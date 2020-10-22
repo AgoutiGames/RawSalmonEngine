@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -20,41 +20,45 @@
 
 #include "core/gameinfo.hpp"
 
-salmon::GameInfo::GameInfo() : m_impl{std::make_unique<::GameInfo>()} {}
-salmon::GameInfo::~GameInfo() {}
+namespace salmon {
 
-void salmon::GameInfo::render() {m_impl->render();}
-bool salmon::GameInfo::update() {return m_impl->update();}
+GameInfo::GameInfo() : m_impl{std::make_unique<internal::GameInfo>()} {}
+GameInfo::~GameInfo() {}
 
-bool salmon::GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load_map(mapfile, absolute);}
-void salmon::GameInfo::close_map() {m_impl->close_map();}
-salmon::MapRef salmon::GameInfo::get_map() {return m_impl->get_map();}
+void GameInfo::render() {m_impl->render();}
+bool GameInfo::update() {return m_impl->update();}
 
-void salmon::GameInfo::set_window_size(unsigned width, unsigned height) {m_impl->set_window_size(width,height);}
-bool salmon::GameInfo::set_fullscreen(bool mode) {return m_impl->set_fullscreen(mode);}
-bool salmon::GameInfo::set_game_resolution(unsigned width, unsigned height) {return m_impl->set_game_resolution(width,height);}
-bool salmon::GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
-void salmon::GameInfo::set_window_resizable(bool mode) {m_impl->set_window_resizable(mode);}
+bool GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load_map(mapfile, absolute);}
+void GameInfo::close_map() {m_impl->close_map();}
+MapData GameInfo::get_map() {return m_impl->get_map();}
 
-unsigned salmon::GameInfo::get_game_x_resolution() const {return m_impl->get_game_x_resolution();}
-unsigned salmon::GameInfo::get_game_y_resolution() const {return m_impl->get_game_y_resolution();}
+void GameInfo::set_window_size(unsigned width, unsigned height) {m_impl->set_window_size(width,height);}
+bool GameInfo::set_fullscreen(bool mode) {return m_impl->set_fullscreen(mode);}
+bool GameInfo::set_game_resolution(unsigned width, unsigned height) {return m_impl->set_game_resolution(width,height);}
+bool GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
+void GameInfo::set_window_resizable(bool mode) {m_impl->set_window_resizable(mode);}
 
-unsigned salmon::GameInfo::get_window_x_resolution() const {return m_impl->get_window_x_resolution();}
-unsigned salmon::GameInfo::get_window_y_resolution() const {return m_impl->get_window_y_resolution();}
+unsigned GameInfo::get_game_x_resolution() const {return m_impl->get_game_x_resolution();}
+unsigned GameInfo::get_game_y_resolution() const {return m_impl->get_game_y_resolution();}
 
-unsigned salmon::GameInfo::get_screen_x_resolution() const {return m_impl->get_screen_x_resolution();}
-unsigned salmon::GameInfo::get_screen_y_resolution() const {return m_impl->get_screen_y_resolution();}
+unsigned GameInfo::get_window_x_resolution() const {return m_impl->get_window_x_resolution();}
+unsigned GameInfo::get_window_y_resolution() const {return m_impl->get_window_y_resolution();}
 
-bool salmon::GameInfo::window_minimized() const {return m_impl->window_minimized();}
-bool salmon::GameInfo::window_active() const {return m_impl->window_active();}
+unsigned GameInfo::get_screen_x_resolution() const {return m_impl->get_screen_x_resolution();}
+unsigned GameInfo::get_screen_y_resolution() const {return m_impl->get_screen_y_resolution();}
 
-void salmon::GameInfo::add_preload_directory(std::string dir) {
+bool GameInfo::window_minimized() const {return m_impl->window_minimized();}
+bool GameInfo::window_active() const {return m_impl->window_active();}
+
+void GameInfo::add_preload_directory(std::string dir) {
     m_impl->get_preloader().add_directory(m_impl->get_resource_path() + dir);
 }
-bool salmon::GameInfo::preload(float seconds) {
+bool GameInfo::preload(float seconds) {
     return m_impl->get_preloader().load_recursive(static_cast<Uint32>(seconds * 1000));
 }
 
-salmon::AudioManagerRef salmon::GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
-salmon::DataBlockRef salmon::GameInfo::get_data() {return m_impl->get_data();}
-salmon::InputCacheRef salmon::GameInfo::get_input_cache() {return m_impl->get_input_cache();}
+AudioManager GameInfo::get_audio_manager() {return m_impl->get_audio_manager();}
+DataBlock GameInfo::get_data() {return m_impl->get_data();}
+InputCache GameInfo::get_input_cache() {return m_impl->get_input_cache();}
+
+} // namespace salmon

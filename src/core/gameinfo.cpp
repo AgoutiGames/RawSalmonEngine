@@ -34,6 +34,8 @@
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 
+namespace salmon { namespace internal {
+
 /// Constructs a @c GameInfo Object
 GameInfo::GameInfo() : m_preloader{this}, m_input_cache{this} {
     //Start up SDL and create window
@@ -469,3 +471,5 @@ void GameInfo::close() {
 GameInfo::~GameInfo() {
     close();
 }
+
+}} // namespace salmon::internal

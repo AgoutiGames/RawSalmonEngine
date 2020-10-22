@@ -30,6 +30,8 @@
 #include "graphics/texture_cache.hpp"
 #include "util/preloader.hpp"
 
+namespace salmon { namespace internal {
+
 class MapData;
 
 /**
@@ -121,5 +123,6 @@ private:
 
     std::vector<MapData> m_maps; ///< Stores the currently active game map
 };
+}} // namespace salmon::internal
 
 #endif // GAMEINFO_HPP_INCLUDED

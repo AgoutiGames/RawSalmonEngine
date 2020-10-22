@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -18,6 +18,8 @@
  */
 #include "audio/audio_manager.hpp"
 #include "util/game_types.hpp"
+
+namespace salmon { namespace internal {
 
 bool AudioManager::load_music(std::string path, bool absolute) {
     if(!absolute) {path = m_music_base_path + path;}
@@ -67,3 +69,5 @@ SoundEffect& AudioManager::get_sound(std::string path, bool absolute) {
         return m_dummy_sound;
     }
 }
+
+}} // namespace salmon::internal

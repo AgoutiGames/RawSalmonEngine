@@ -24,6 +24,8 @@
 #include <memory>
 #include <SDL_mixer.h>
 
+namespace salmon { namespace internal {
+
 /**
  * @brief Load and play sounds
  */
@@ -73,6 +75,6 @@ class SoundEffect {
         Uint8 m_distance = 0;
         Sint16 m_angle = 0;
 };
-
+}} // namespace salmon::internal
 
 #endif // SOUND_EFFECT_HPP_INCLUDED

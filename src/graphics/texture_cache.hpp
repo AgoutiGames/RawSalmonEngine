@@ -24,6 +24,8 @@
 
 #include "graphics/texture.hpp"
 
+namespace salmon { namespace internal {
+
 class TextureCache {
     public:
 
@@ -46,6 +48,6 @@ class TextureCache {
         Texture m_empty_texture;
         std::map<std::string, Texture> m_textures;
 };
-
+}} // namespace salmon::internal
 
 #endif // TEXTURE_CACHE_HPP_INCLUDED

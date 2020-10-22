@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -27,20 +27,17 @@
 
 #include "util/game_types.hpp"
 
-class Texture;
-class Actor;
-class MapData;
-class GameInfo;
+namespace salmon { namespace internal {
 
-template <class EventType>
-class PropertyListener;
+class Texture;
 
 namespace parse{
-    tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, SDL_Rect& rect);
-    tinyxml2::XMLError hitboxes(tinyxml2::XMLElement* source, std::map<std::string, SDL_Rect>& rects);
+    tinyxml2::XMLError hitbox(tinyxml2::XMLElement* source, Rect& rect);
+    tinyxml2::XMLError hitboxes(tinyxml2::XMLElement* source, std::map<std::string, Rect>& rects);
     tinyxml2::XMLError blendmode(tinyxml2::XMLElement* source, Texture& img);
 
     tinyxml2::XMLError bg_color(tinyxml2::XMLElement* source, SDL_Color& color);
 }
+}} // namespace salmon::internal
 
 #endif // PARSE_HPP_INCLUDED

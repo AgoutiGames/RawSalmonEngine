@@ -24,57 +24,29 @@
 
 namespace fs = std::experimental::filesystem;
 
+namespace salmon { namespace internal {
+
 /// Converts a @c string to an @c enum of @c Direction
-salmon::Direction str_to_direction(const std::string& name) {
-    if(name == "UP") return salmon::Direction::up;
-    if(name == "UP_RIGHT") return salmon::Direction::up_right;
-    if(name == "RIGHT") return salmon::Direction::right;
-    if(name == "DOWN_RIGHT") return salmon::Direction::down_right;
-    if(name == "DOWN") return salmon::Direction::down;
-    if(name == "DOWN_LEFT") return salmon::Direction::down_left;
-    if(name == "LEFT") return salmon::Direction::left;
-    if(name == "UP_LEFT") return salmon::Direction::up_left;
-    if(name == "CURRENT") return salmon::Direction::current;
-    if(name == "NONE") return salmon::Direction::none;
-    else return salmon::Direction::invalid;
-}
-
-/// Converts a @c string to an @c enum of @c Priority
-Priority str_to_priority(const std::string& name) {
-    if(name == "LOW") return Priority::low;
-    if(name == "MEDIUM") return Priority::medium;
-    if(name == "HIGH") return Priority::high;
-    else return Priority::invalid;
-}
-
-/// Converts a @c string to an @c enum of @c EventSignal
-EventSignal str_to_event_signal(const std::string& name) {
-    if(name == "NEXT") return EventSignal::next;
-    if(name == "STOP") return EventSignal::stop;
-    if(name == "END") return EventSignal::end;
-    if(name == "ABORT") return EventSignal::abort;
-    else return EventSignal::invalid;
-}
-
-/// Converts a @c string to an @c enum of @c Response
-Response str_to_response(const std::string& name) {
-    if(name == "ON_HIT") return Response::on_hit;
-    if(name == "ON_COLLISION") return Response::on_collision;
-    if(name == "ON_ACTIVATION") return Response::on_activation;
-    if(name == "ON_DEATH") return Response::on_death;
-    if(name == "ON_IDLE") return Response::on_idle;
-    if(name == "ON_ALWAYS") return Response::on_always;
-    if(name == "ON_SPAWN") return Response::on_spawn;
-    if(name == "ON_MOUSE") return Response::on_mouse;
-    else return Response::invalid;
+Direction str_to_direction(const std::string& name) {
+    if(name == "UP") return Direction::up;
+    if(name == "UP_RIGHT") return Direction::up_right;
+    if(name == "RIGHT") return Direction::right;
+    if(name == "DOWN_RIGHT") return Direction::down_right;
+    if(name == "DOWN") return Direction::down;
+    if(name == "DOWN_LEFT") return Direction::down_left;
+    if(name == "LEFT") return Direction::left;
+    if(name == "UP_LEFT") return Direction::up_left;
+    if(name == "CURRENT") return Direction::current;
+    if(name == "NONE") return Direction::none;
+    else return Direction::invalid;
 }
 
 /// Converts a @c Direction to x and y factors
-std::vector<float> dir_to_mov(const salmon::Direction dir) {
-    if(dir == salmon::Direction::up)    return std::vector<float>{0,-1};
-    if(dir == salmon::Direction::right) return std::vector<float>{1,0};
-    if(dir == salmon::Direction::down)  return std::vector<float>{0,1};
-    if(dir == salmon::Direction::left)  return std::vector<float>{-1,0};
+std::vector<float> dir_to_mov(const Direction dir) {
+    if(dir == Direction::up)    return std::vector<float>{0,-1};
+    if(dir == Direction::right) return std::vector<float>{1,0};
+    if(dir == Direction::down)  return std::vector<float>{0,1};
+    if(dir == Direction::left)  return std::vector<float>{-1,0};
     else return std::vector<float>{0,0};
 }
 
@@ -111,14 +83,18 @@ void make_path_absolute(std::string& path) {
     #endif
 }
 
-SDL_Point rect_center_difference(const SDL_Rect& first, const SDL_Rect& second) {
-    SDL_Point first_center = {first.x + (first.w / 2), first.y + (first.h / 2)};
-    SDL_Point second_center = {second.x + (second.w / 2), second.y + (second.h / 2)};
+Point rect_center_difference(const Rect& first, const Rect& second) {
+    Point first_center = {first.x + (first.w / 2), first.y + (first.h / 2)};
+    Point second_center = {second.x + (second.w / 2), second.y + (second.h / 2)};
     return {second_center.x - first_center.x, second_center.y - first_center.y};
 }
 
-salmon::Rect make_rect(const SDL_Rect& rect) {
-    return salmon::Rect{rect.x,rect.y,rect.w,rect.h};
+PixelRect make_rect(const SDL_Rect& rect) {
+    return PixelRect{rect.x,rect.y,rect.w,rect.h};
+}
+
+SDL_Rect make_rect(const PixelRect& rect) {
+    return SDL_Rect{rect.x,rect.y,rect.w,rect.h};
 }
 
 void normalize(float& x, float& y) {
@@ -126,3 +102,5 @@ void normalize(float& x, float& y) {
     x /= len;
     y /= len;
 }
+
+}} // namespace salmon::internal

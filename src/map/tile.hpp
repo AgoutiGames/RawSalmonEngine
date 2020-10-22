@@ -24,7 +24,10 @@
 #include <map>
 #include <tinyxml2.h>
 
+#include "transform.hpp"
 #include "util/game_types.hpp"
+
+namespace salmon { namespace internal {
 
 class Tileset; // forward declaration
 
@@ -37,13 +40,13 @@ public:
     Tile() = default;
     Tile(Tileset* ts, const SDL_Rect& clp); // The initializing constructor
 
-    void render(int x, int y) const;
-    void render_extra(int x, int y, double angle, bool x_flip, bool y_flip) const;
-    void render(SDL_Rect& dest) const; // Resizable render
-    void render_extra(SDL_Rect& dest, double angle, bool x_flip, bool y_flip) const;
+    void render(float x, float y) const;
+    void render_extra(float x, float y, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
+    void render(Rect& dest) const; // Resizable render
+    void render_extra(Rect& dest, double angle, bool x_flip = false, bool y_flip = false, float x_center = 0.5, float y_center = 0.5) const;
 
-    SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
-    std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const;
+    Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
+    std::map<std::string, Rect> get_hitboxes(bool aligned = false) const;
 
     tinyxml2::XMLError parse_tile(tinyxml2::XMLElement* source, bool skip_properties = false);
     tinyxml2::XMLError parse_actor_anim(tinyxml2::XMLElement* source);
@@ -52,7 +55,7 @@ public:
     void init_anim(Uint32 time = SDL_GetTicks());
 
     bool push_anim(float speed = 1.0f, Uint32 time = SDL_GetTicks());
-    salmon::AnimSignal push_anim_trigger(float speed = 1.0f, Uint32 time = SDL_GetTicks());
+    AnimSignal push_anim_trigger(float speed = 1.0f, Uint32 time = SDL_GetTicks());
     bool set_frame(int anim_frame, Uint32 time = SDL_GetTicks());
     int get_frame_count() const {return m_anim_ids.size();}
     int get_current_frame() const {return m_current_id;}
@@ -65,15 +68,15 @@ public:
     int get_h() const {return get_clip().h;}
 
 private:
-    SDL_Rect get_hitbox_self(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const;
-    const std::map<std::string, SDL_Rect> get_hitboxes_self(bool aligned = false) const;
+    Rect get_hitbox_self(std::string name = DEFAULT_HITBOX, bool aligned = false) const;
+    const std::map<std::string, Rect> get_hitboxes_self(bool aligned = false) const;
 
     const SDL_Rect& get_clip_self() const {return m_clip;}
     const SDL_Rect& get_clip() const;
 
     Tileset* mp_tileset = nullptr;
     SDL_Rect m_clip;
-    std::map<std::string, SDL_Rect> m_hitboxes; // Origin at upper left corner of tile
+    std::map<std::string, Rect> m_hitboxes; // Origin at upper left corner of tile
     std::string m_type = "";
     bool m_animated = false;
 
@@ -88,31 +91,27 @@ private:
 
 class TileInstance {
     public:
-        TileInstance(Tile* tile, int x, int y) : m_tile{tile}, m_x{x}, m_y{y} {}
+        TileInstance(Tile* tile, Transform t) : m_tile{tile}, m_transform{t} {}
 
-        SDL_Rect get_hitbox(std::string name = salmon::DEFAULT_HITBOX, bool aligned = false) const {
-            SDL_Rect temp = m_tile->get_hitbox(name,aligned);
-            temp.x += m_x;
-            temp.y += m_y;
+        Rect get_hitbox(std::string name = DEFAULT_HITBOX, bool aligned = false) const {
+            Rect temp = m_tile->get_hitbox(name,aligned);
+            m_transform.transform_hitbox(temp);
             return temp;
         }
-        std::map<std::string, SDL_Rect> get_hitboxes(bool aligned = false) const {
-            std::map<std::string, SDL_Rect> hitboxes = m_tile->get_hitboxes(aligned);
-            for(auto& hb : hitboxes) {hb.second.x += m_x; hb.second.y += m_y;}
+        std::map<std::string, Rect> get_hitboxes(bool aligned = false) const {
+            std::map<std::string, Rect> hitboxes = m_tile->get_hitboxes(aligned);
+            for(auto& hb : hitboxes) {m_transform.transform_hitbox(hb.second);;}
             return hitboxes;
         }
         Tile* get_tile() const {return m_tile;}
-        int get_x() const {return m_x;}
-        int get_y() const {return m_y;}
+        const Transform& get_transform() const {return m_transform;}
 
         bool valid() const {return (m_tile == nullptr) ? false : true ;}
 
     private:
         Tile* m_tile = nullptr;
-        int m_x = 0;
-        int m_y = 0;
+        Transform m_transform;
 };
-
-
+}} // namespace salmon::internal
 
 #endif // TILE_HPP_INCLUDED

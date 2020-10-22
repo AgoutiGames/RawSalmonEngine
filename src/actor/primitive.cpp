@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -27,8 +27,10 @@
 #include "actor/primitive_text.hpp"
 #include "actor/primitive_tile.hpp"
 
-Primitive::Primitive(float x_pos, float y_pos, MapData& mapdata, std::string name)
-                    : m_x_pos{x_pos}, m_y_pos{y_pos}, m_renderer{mapdata.get_renderer()}, m_name{name} {}
+namespace salmon { namespace internal {
+
+Primitive::Primitive(MapData& mapdata, std::string name)
+                    : m_renderer{mapdata.get_renderer()}, m_name{name} {}
 
 Primitive* Primitive::parse(tinyxml2::XMLElement* source, MapData& base_map) {
     if(source->FirstChildElement("text") != nullptr) {
@@ -38,3 +40,5 @@ Primitive* Primitive::parse(tinyxml2::XMLElement* source, MapData& base_map) {
         return nullptr;
     }
 }
+
+}} // namespace salmon::internal

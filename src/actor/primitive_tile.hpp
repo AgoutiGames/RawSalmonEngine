@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -21,9 +21,11 @@
 
 #include "actor/primitive.hpp"
 
+namespace salmon { namespace internal {
+
 class PrimitiveTile : public Primitive {
     public:
-        bool render(int x_cam, int y_cam) const override;
+        bool render(float x_cam, float y_cam) const override;
         PrimitiveType get_type() const override {return PrimitiveType::tile;}
 
         // Covariant return type!
@@ -33,5 +35,6 @@ class PrimitiveTile : public Primitive {
     private:
 
 };
+}} // namespace salmon::internal
 
 #endif // PRIMITIVE_TILE_HPP_INCLUDED

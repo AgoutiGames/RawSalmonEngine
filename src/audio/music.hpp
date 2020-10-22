@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -23,6 +23,8 @@
 #include <string>
 #include <memory>
 #include <SDL_mixer.h>
+
+namespace salmon { namespace internal {
 
 /**
  * @brief Load and play sounds
@@ -59,5 +61,6 @@ class Music {
     private:
         std::shared_ptr<Mix_Music> m_sound;
 };
+}} // namespace salmon::internal
 
 #endif // MUSIC_HPP_INCLUDED

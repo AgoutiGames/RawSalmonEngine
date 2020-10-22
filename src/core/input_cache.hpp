@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -25,6 +25,8 @@
 
 #include "core/gamepad.hpp"
 #include "util/game_types.hpp"
+
+namespace salmon { namespace internal {
 
 class GameInfo;
 
@@ -56,11 +58,11 @@ class InputCache {
         void clear();
 
         unsigned get_gamepad_count() const {return m_controllers.size();}
-        salmon::GamepadState get_gamepad(int index) const {return m_controllers.at(index).get_state();}
+        GamepadState get_gamepad(int index) const {return m_controllers.at(index).get_state();}
         bool rumble(int gamepad_index, float strength, unsigned length_ms) const;
         bool stop_rumble(int gamepad_index) const;
 
-        salmon::MouseState get_mouse_state() const {return m_mouse;}
+        MouseState get_mouse_state() const {return m_mouse;}
 
         static SDL_Keycode convert_key(std::string key);
     private:
@@ -69,7 +71,7 @@ class InputCache {
         std::unordered_set<SDL_Keycode> m_pressed;
         std::unordered_set<SDL_Keycode> m_released;
         const Uint8 * m_keys;
-        salmon::MouseState m_mouse;
+        MouseState m_mouse;
 
         // Only track the first finger with a down event as mouse
         // Mixing touch and mouse should get really weird results!
@@ -82,6 +84,6 @@ class InputCache {
 
         std::vector<Gamepad> m_controllers;
 };
-
+}} // namespace salmon::internal
 
 #endif // INPUT_CACHE_HPP_INCLUDED

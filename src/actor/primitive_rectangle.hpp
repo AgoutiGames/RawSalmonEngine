@@ -23,12 +23,14 @@
 
 #include "actor/primitive.hpp"
 
+namespace salmon { namespace internal {
+
 class PrimitiveRectangle : public Primitive {
     public:
-        PrimitiveRectangle(float x_pos, float y_pos, int width, int height, MapData& mapdata, std::string name = "")
-                          : Primitive(x_pos,y_pos,mapdata,name), m_width{width}, m_height{height} {}
+        PrimitiveRectangle(float x_pos, float y_pos, float width, float height, MapData& mapdata, std::string name = "")
+                          : Primitive(mapdata,name) {get_transform() = Transform(x_pos,y_pos,width,height);}
 
-        bool render(int x_cam, int y_cam) const override;
+        bool render(float x_cam, float y_cam) const override;
         PrimitiveType get_type() const override {return PrimitiveType::rectangle;}
 
         // Covariant return type!
@@ -36,9 +38,7 @@ class PrimitiveRectangle : public Primitive {
 
         static PrimitiveRectangle* parse(tinyxml2::XMLElement* source, MapData& base_map);
     private:
-        int m_width;
-        int m_height;
 };
-
+}} // namespace salmon::internal
 
 #endif // PRIMITIVE_RECTANGLE_HPP_INCLUDED

@@ -29,6 +29,8 @@
 #include "core/gameinfo.hpp"
 #include "util/logger.hpp"
 
+namespace salmon { namespace internal {
+
 /**
  * @brief Parses each layer and stores in vector member
  * @param source The @c XMLElement which stores the layer info
@@ -200,7 +202,7 @@ void LayerCollection::collision_check() {
     }
 
     for(Actor* actor : actors) {
-        SDL_Rect bounds = actor->get_boundary();
+        Rect bounds = actor->get_transform().to_bounding_box();
         for(MapLayer* layer : get_map_layers()) {
             for(auto tile : layer->get_clip(bounds)) {
                 actor->check_collision(tile,true);
@@ -251,10 +253,10 @@ Layer* LayerCollection::get_layer(std::string name) {
  * @brief Tests if any actors hitbox intersects with the mouse pointer location. If yes, adds a collision to the actor.
  */
 void LayerCollection::mouse_collision() {
-    SDL_Rect cam = m_base_map->get_camera().get_rect();
+    Rect cam = m_base_map->get_camera().get_rect();
     // Transform cursor from camera space to global space
-    salmon::MouseState mouse = m_base_map->get_game().get_input_cache().get_mouse_state();
-    SDL_Point click{mouse.x_pos + cam.x, mouse.y_pos+cam.y};
+    MouseState mouse = m_base_map->get_game().get_input_cache().get_mouse_state();
+    PixelPoint click{round(mouse.x_pos + cam.x), round(mouse.y_pos + cam.y)};
 
     // Fetch all currently visible actors
     std::vector<Actor*> actors;
@@ -266,8 +268,9 @@ void LayerCollection::mouse_collision() {
 
     // Check all hitboxes of each actor if they intersect with the mouse cursor
     for(Actor* a : actors) {
-        for(std::pair<std::string, SDL_Rect> hitbox : a->get_hitboxes()) {
-            if(SDL_PointInRect(&click,&hitbox.second)) {
+        for(std::pair<std::string, Rect> hitbox : a->get_hitboxes()) {
+            PixelRect rect = hitbox.second;
+            if(rect.has_intersection(click)) {
                 // Trigger the OnMouse response
                 // a->respond(Response::on_mouse, Collision(hitbox.first));
                 a->add_collision(Collision(hitbox.first));
@@ -283,27 +286,29 @@ void LayerCollection::mouse_collision() {
  * @param other_hitboxes A vector of hitbox names to check against collision
  * @return true if there is any collision and false if there is none
  */
-bool LayerCollection::check_collision(SDL_Rect rect, salmon::Collidees target, const std::vector<std::string>& other_hitboxes) {
+bool LayerCollection::check_collision(Rect rect, Collidees target, const std::vector<std::string>& other_hitboxes) {
     bool collided = false;
-    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::tile || target == Collidees::tile_and_actor) {
         for(MapLayer* map : get_map_layers()) {
             for(TileInstance& tile : map->get_clip(rect)) {
                 for(std::string hitbox_name : other_hitboxes) {
-                    SDL_Rect other_rect = tile.get_hitbox(hitbox_name);
-                    if(SDL_HasIntersection(&rect,&other_rect)) {collided = true;}
+                    Rect other_rect = tile.get_hitbox(hitbox_name);
+                    if(rect.has_intersection(other_rect)) {collided = true;}
                 }
             }
         }
     }
-    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::actor || target == Collidees::tile_and_actor) {
         for(ObjectLayer* obj : get_object_layers()) {
             for(Actor* actor : obj->get_clip(rect)) {
                 for(std::string hitbox_name : other_hitboxes) {
-                    SDL_Rect other_rect = actor->get_hitbox(hitbox_name);
-                    if(SDL_HasIntersection(&rect,&other_rect)) {collided = true;}
+                    Rect other_rect = actor->get_hitbox(hitbox_name);
+                    if(rect.has_intersection(other_rect)) {collided = true;}
                 }
             }
         }
     }
     return collided;
 }
+
+}} // namespace salmon::internal

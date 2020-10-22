@@ -22,93 +22,93 @@
 #include <string>
 #include <memory>
 
-#include "./audio_manager_ref.hpp"
-#include "./data_block_ref.hpp"
-#include "./input_cache_ref.hpp"
-#include "./map_ref.hpp"
-
-class GameInfo;
+#include "./audio_manager.hpp"
+#include "./data_block.hpp"
+#include "./input_cache.hpp"
+#include "./mapdata.hpp"
 
 namespace salmon {
-    class GameInfo{
-        public:
-            GameInfo();
-            ~GameInfo();
 
-            /// Render the game to screen
-            void render();
-            /**
-             * @brief Update the game state, usually done once before each render call
-             * @return False if a critical error occured and game has to shut down
-             * @note updates trigger polling of gamepads, keypresses, static animation and render order sorting
-             */
-            bool update();
+namespace internal{class GameInfo;}
 
-            /**
-             * @brief Load next map preserving the current map
-             * @param mapfile The path to the map to be loaded
-             * @param absolute If false the path is relative to the directory of the current map, otherwise it's absolute
-             * @return True if loading succeeded, false if it failed
-             */
-            bool load_map(std::string mapfile, bool absolute = false);
+class GameInfo{
+    public:
+        GameInfo();
+        ~GameInfo();
 
-            /// Close the current map, making the map before the new current one
-            void close_map();
-            /// Return reference object to the currently active map
-            salmon::MapRef get_map();
+        /// Render the game to screen
+        void render();
+        /**
+         * @brief Update the game state, usually done once before each render call
+         * @return False if a critical error occured and game has to shut down
+         * @note updates trigger polling of gamepads, keypresses, static animation and render order sorting
+         */
+        bool update();
 
-            /// Sets the size of the window of this game to the supplied dimensions in pixels
-            void set_window_size(unsigned width, unsigned height);
-            /// Sets game when mode is true to borderless fullscreen or else to windowed mode
-            bool set_fullscreen(bool mode);
-            /// Set the internal resolution of the game in pixels, independent of window resolution
-            bool set_game_resolution(unsigned width, unsigned height);
-            /// Set on linear filtering for smooth upscaled textures or off for proper sharp pixel art
-            bool set_linear_filtering(bool mode);
-            /// Locks or unlocks the windows ability to get resized by user (Doesn't work reliably on all platforms)
-            void set_window_resizable(bool mode);
+        /**
+         * @brief Load next map preserving the current map
+         * @param mapfile The path to the map to be loaded
+         * @param absolute If false the path is relative to the directory of the current map, otherwise it's absolute
+         * @return True if loading succeeded, false if it failed
+         */
+        bool load_map(std::string mapfile, bool absolute = false);
 
-            /// Return true if the game is currently minimized
-            bool window_minimized() const;
-            /// Return true if the game is the currently active windows for the OS
-            bool window_active() const;
+        /// Close the current map, making the map before the new current one
+        void close_map();
+        /// Return reference object to the currently active map
+        MapData get_map();
 
-            /// Return the current internal x resolution of the game in pixels
-            unsigned get_game_x_resolution() const;
-            /// Return the current internal y resolution of the game in pixels
-            unsigned get_game_y_resolution() const;
+        /// Sets the size of the window of this game to the supplied dimensions in pixels
+        void set_window_size(unsigned width, unsigned height);
+        /// Sets game when mode is true to borderless fullscreen or else to windowed mode
+        bool set_fullscreen(bool mode);
+        /// Set the internal resolution of the game in pixels, independent of window resolution
+        bool set_game_resolution(unsigned width, unsigned height);
+        /// Set on linear filtering for smooth upscaled textures or off for proper sharp pixel art
+        bool set_linear_filtering(bool mode);
+        /// Locks or unlocks the windows ability to get resized by user (Doesn't work reliably on all platforms)
+        void set_window_resizable(bool mode);
 
-            /// Return the current width of the games window in pixels
-            unsigned get_window_x_resolution() const;
-            /// Return the current width of the games window in pixels
-            unsigned get_window_y_resolution() const;
+        /// Return true if the game is currently minimized
+        bool window_minimized() const;
+        /// Return true if the game is the currently active windows for the OS
+        bool window_active() const;
 
-            /// Return the horizontal resolution in pixels at which your screen is currently working
-            unsigned get_screen_x_resolution() const;
-            /// Return the vertical resolution in pixels at which your screen is currently working
-            unsigned get_screen_y_resolution() const;
+        /// Return the current internal x resolution of the game in pixels
+        unsigned get_game_x_resolution() const;
+        /// Return the current internal y resolution of the game in pixels
+        unsigned get_game_y_resolution() const;
 
-            /// Adds directory for preloading. Path is relative to the data folder
-            void add_preload_directory(std::string dir);
-            /**
-             * @brief Preloads assets from preload directories
-             * @param The maxmimum amount of time after preloading returns
-             * @return True if preloading is complete or false if some assets still arent loaded
-             * @note successive calls to this method start where they previously left off loading
-             */
-            bool preload(float seconds);
+        /// Return the current width of the games window in pixels
+        unsigned get_window_x_resolution() const;
+        /// Return the current width of the games window in pixels
+        unsigned get_window_y_resolution() const;
 
-            /// Return reference to the audio manager object of the game
-            AudioManagerRef get_audio_manager();
-            /// Returns reference to DataBlock of this game which may hold property values added during execution
-            DataBlockRef get_data();
-            /// Returns reference to input cache, holding information about keypresses, mouse state and gamepad state
-            InputCacheRef get_input_cache();
+        /// Return the horizontal resolution in pixels at which your screen is currently working
+        unsigned get_screen_x_resolution() const;
+        /// Return the vertical resolution in pixels at which your screen is currently working
+        unsigned get_screen_y_resolution() const;
 
-        private:
-            std::unique_ptr<::GameInfo> m_impl;
-    };
+        /// Adds directory for preloading. Path is relative to the data folder
+        void add_preload_directory(std::string dir);
+        /**
+         * @brief Preloads assets from preload directories
+         * @param The maxmimum amount of time after preloading returns
+         * @return True if preloading is complete or false if some assets still arent loaded
+         * @note successive calls to this method start where they previously left off loading
+         */
+        bool preload(float seconds);
+
+        /// Return reference to the audio manager object of the game
+        AudioManager get_audio_manager();
+        /// Returns reference to DataBlock of this game which may hold property values added during execution
+        DataBlock get_data();
+        /// Returns reference to input cache, holding information about keypresses, mouse state and gamepad state
+        InputCache get_input_cache();
+
+    private:
+        std::unique_ptr<internal::GameInfo> m_impl;
+};
 }
-
 
 #endif // GAMEINFO_LIB_HPP_INCLUDED

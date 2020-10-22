@@ -25,8 +25,9 @@
 #include "map/object_layer.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
+#include "types.hpp"
 
-using namespace salmon;
+namespace salmon { namespace internal {
 
 Actor::Actor(MapData* map) : m_map{map} {}
 
@@ -40,32 +41,36 @@ tinyxml2::XMLError Actor::parse_base(tinyxml2::XMLElement* source) {
     XMLError eResult;
 
     // Parse position and size of actor
-    eResult = source->QueryFloatAttribute("x", &m_x);
+    float x_pos, y_pos;
+    eResult = source->QueryFloatAttribute("x", &x_pos);
     if(eResult != XML_SUCCESS) return eResult;
-    eResult = source->QueryFloatAttribute("y", &m_y);
+    eResult = source->QueryFloatAttribute("y", &y_pos);
     if(eResult != XML_SUCCESS) return eResult;
-    unsigned individual_width, individual_height;
-    eResult = source->QueryUnsignedAttribute("width", &individual_width);
+    float individual_width, individual_height;
+    eResult = source->QueryFloatAttribute("width", &individual_width);
     if(eResult != XML_SUCCESS) return eResult;
-    eResult = source->QueryUnsignedAttribute("height", &individual_height);
+    eResult = source->QueryFloatAttribute("height", &individual_height);
     if(eResult != XML_SUCCESS) return eResult;
 
+    m_transform.set_pos(x_pos,y_pos);
+
+    double rotation = 0.0;
+    eResult = source->QueryDoubleAttribute("rotation", &rotation);
+    if(rotation != 0.0) {
+        m_transform.set_rotation(rotation);
+    }
+
     // If a custom scale is supplied, scale accordingly and adjust position to match
-    if(individual_width != m_width) {
-        m_x_scale = static_cast<float>(individual_width) / m_width;
-        m_x += (m_x_scale - 1.0f) * m_width * 0.5f;
-        m_scaled = true;
+    auto base_dimensions = m_transform.get_base_dimensions();
+    if(individual_width != base_dimensions.w || individual_height != base_dimensions.h) {
+        m_transform.set_scale(individual_width / base_dimensions.w, individual_height / base_dimensions.h);
     }
-    if(individual_height != m_height) {
-        m_y_scale = static_cast<float>(individual_height) / m_height;
-        m_y += (m_y_scale - 1.0f) * m_height * 0.5f;
-        m_scaled = true;
-    }
+
     // Parse the (unique) name of the actor
     const char* p_actor_name;
     p_actor_name = source->Attribute("name");
     if(p_actor_name == nullptr) {
-        Logger(Logger::error) << "Actor at x: " << m_x << " y: " << m_y << " is missing a custom name!";
+        Logger(Logger::error) << "Actor at x: " << x_pos << " y: " << y_pos << " is missing a custom name!";
         return XML_NO_ATTRIBUTE;
     }
     m_name = p_actor_name;
@@ -110,13 +115,13 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
         else if(name == "DIRECTION") {
             const char* p_direction = p_property->Attribute("value");
             if(p_direction != nullptr) {
-                salmon::Direction dir = str_to_direction(std::string(p_direction));
-                if(dir == salmon::Direction::invalid) {
+                Direction dir = str_to_direction(std::string(p_direction));
+                if(dir == Direction::invalid) {
                     Logger(Logger::error) << "Invalid direction type \"" << p_direction << "\"specified";
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
 
-                if(dir == salmon::Direction::current) {
+                if(dir == Direction::current) {
                     Logger(Logger::error) << "There is no current direction upon actor initialization";
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
@@ -134,7 +139,7 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
             const char* p_anim_type = p_property->Attribute("value");
             if(p_anim_type != nullptr) {
                 std::string anim = p_anim_type;
-                if(anim == salmon::AnimationType::current) {
+                if(anim == AnimationType::current) {
                     Logger(Logger::error) << "You can't define a specific animation type as the current one";
                     return XML_WRONG_ATTRIBUTE_TYPE;
                 }
@@ -211,65 +216,27 @@ tinyxml2::XMLError Actor::parse_properties(tinyxml2::XMLElement* source) {
     return XML_SUCCESS;
 }
 
-bool Actor::scale(float x, float y) {
-    bool success = true;
-    if(x > 0.0f) {m_x_scale = x;}
-    else {success = false;}
-    if(y > 0.0f) {m_y_scale = y;}
-    else {success = false;}
-
-    constexpr float tolerance = 0.001f;
-    if(m_x_scale > 1.0f + tolerance || m_x_scale < 1.0f - tolerance || m_y_scale > 1.0f + tolerance || m_y_scale < 1.0f - tolerance) {
-        m_scaled = true;
-    }
-    else {
-        m_scaled = false;
-    }
-    return success;
-}
-
 /**
  * @brief Render the actor at it's position relative to the camera position
  * @param x_cam, y_cam The coordinates of the upper left corner of the camera rect
  */
-void Actor::render(int x_cam, int y_cam) const {
+void Actor::render(float x_cam, float y_cam) const {
     if(m_hidden) {return;}
     const Tile* current_tile = nullptr;
-    if(m_anim_state != salmon::AnimationType::none && valid_anim_state()) {current_tile = &m_animations.at(m_anim_state).at(m_direction);}
+    if(m_anim_state != AnimationType::none && valid_anim_state()) {current_tile = &m_animations.at(m_anim_state).at(m_direction);}
     else {current_tile = &m_base_tile;}
 
-    if(m_scaled) {
-        float current_x = m_x - (m_x_scale - 1.0f) * m_width * 0.5f;
-        float current_y = m_y - (m_y_scale - 1.0f) * m_height * 0.5f;
-        unsigned current_h = m_height * m_y_scale;
-        unsigned current_w = m_width * m_x_scale;
-        if(m_angle > 0.1 || m_angle < -0.1) {
-            SDL_Rect dest {static_cast<int>(current_x - x_cam), static_cast<int>(current_y - current_h - y_cam), static_cast<int>(current_w), static_cast<int>(current_h)};
-            current_tile->render_extra(dest, m_angle, false, false);
-        }
-        else {
-            SDL_Rect dest {static_cast<int>(current_x - x_cam), static_cast<int>(current_y - current_h - y_cam), static_cast<int>(current_w), static_cast<int>(current_h)};
-            current_tile->render(dest);
-        }
-    }
-    else {
-        if(m_angle > 0.1 || m_angle < -0.1) {
-            SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-            current_tile->render_extra(dest, m_angle, false, false);
-        }
-        else {
-            SDL_Rect dest {static_cast<int>(m_x - x_cam), static_cast<int>(m_y - m_height - y_cam), static_cast<int>(m_width), static_cast<int>(m_height)};
-            current_tile->render(dest);
-        }
-    }
-}
+    Rect dest = m_transform.to_rect();
+    dest.x -= x_cam;
+    dest.y -= y_cam;
 
-float Actor::get_bottom() const {
-    if(m_scaled) {
-        return get_y() - (m_y_scale - 1.0f) * m_height * 0.5f;
+    if(m_transform.is_rotated() || m_transform.is_flipped()) {
+        double rotation = m_transform.get_rotation();
+        auto rot = m_transform.get_rotation_center();
+        current_tile->render_extra(dest, rotation, m_transform.get_h_flip(), m_transform.get_v_flip(), rot.x, rot.y);
     }
     else {
-        return get_y();
+        current_tile->render(dest);
     }
 }
 
@@ -284,38 +251,36 @@ float Actor::get_bottom() const {
  */
 bool Actor::move(float x_factor, float y_factor, bool absolute) {
 
-    unstuck(salmon::Collidees::tile,{salmon::DEFAULT_HITBOX},{salmon::DEFAULT_HITBOX},true);
+    unstuck(Collidees::tile,{DEFAULT_HITBOX},{DEFAULT_HITBOX},true);
     if(absolute) {
-        return move_absolute(x_factor,y_factor,salmon::Collidees::tile,{salmon::DEFAULT_HITBOX},{salmon::DEFAULT_HITBOX},true);
+        return move_absolute(x_factor,y_factor,Collidees::tile,{DEFAULT_HITBOX},{DEFAULT_HITBOX},true);
     }
     else {
-        return move_relative(x_factor,y_factor,salmon::Collidees::tile,{salmon::DEFAULT_HITBOX},{salmon::DEFAULT_HITBOX},true);
+        return move_relative(x_factor,y_factor,Collidees::tile,{DEFAULT_HITBOX},{DEFAULT_HITBOX},true);
     }
 }
 
-bool Actor::move_relative(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+bool Actor::move_relative(float x, float y, Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     move_relative(x,y);
     return !unstuck_along_path(-x,-y,target,my_hitboxes,other_hitboxes,notify);
 }
-bool Actor::move_absolute(float x, float y, salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+bool Actor::move_absolute(float x, float y, Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     move_absolute(x,y);
     return !unstuck(target,my_hitboxes,other_hitboxes,notify);
 }
 
 void Actor::move_relative(float x, float y) {
-    m_x += x;
-    m_y += y;
+    m_transform.move_pos(x,y);
 }
 void Actor::move_absolute(float x, float y) {
-    m_x = x;
-    m_y = y;
+    m_transform.set_pos(x,y);
 }
 
-bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+bool Actor::unstuck(Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     LayerCollection& layer_collection = get_map().get_layer_collection();
-    SDL_Rect bounds = get_boundary();
+    Rect bounds = m_transform.to_bounding_box();
     bool moved = false;
-    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::tile || target == Collidees::tile_and_actor) {
         for(MapLayer* map : layer_collection.get_map_layers()) {
             for(TileInstance& tile : map->get_clip(bounds)) {
                 if(separate(tile,my_hitboxes,other_hitboxes,notify)) {
@@ -324,7 +289,7 @@ bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my
             }
         }
     }
-    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::actor || target == Collidees::tile_and_actor) {
         for(ObjectLayer* obj : layer_collection.get_object_layers()) {
             for(Actor* actor : obj->get_clip(bounds)) {
                 if(separate(*actor,my_hitboxes,other_hitboxes, notify)) {
@@ -336,11 +301,11 @@ bool Actor::unstuck(salmon::Collidees target, const std::vector<std::string>& my
     return moved;
 }
 
-bool Actor::unstuck_along_path(float x, float y,salmon::Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
+bool Actor::unstuck_along_path(float x, float y,Collidees target, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     LayerCollection& layer_collection = get_map().get_layer_collection();
-    SDL_Rect bounds = get_boundary();
+    Rect bounds = m_transform.to_bounding_box();
     bool moved = false;
-    if(target == salmon::Collidees::tile || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::tile || target == Collidees::tile_and_actor) {
         for(MapLayer* map : layer_collection.get_map_layers()) {
             for(TileInstance& tile : map->get_clip(bounds)) {
                 if(separate_along_path(x,y,tile,my_hitboxes,other_hitboxes,notify)) {
@@ -349,7 +314,7 @@ bool Actor::unstuck_along_path(float x, float y,salmon::Collidees target, const 
             }
         }
     }
-    if(target == salmon::Collidees::actor || target == salmon::Collidees::tile_and_actor) {
+    if(target == Collidees::actor || target == Collidees::tile_and_actor) {
         std::vector<Actor*> actors;
         for(ObjectLayer* obj : layer_collection.get_object_layers()) {
             std::vector<Actor*> new_actors = obj->get_clip(bounds);
@@ -372,18 +337,20 @@ bool Actor::unstuck_along_path(float x, float y,salmon::Collidees target, const 
  * @param dir The direction of the animation
  * @return @c bool which indicates if the animation finished a cycle/wrapped around
  */
-bool Actor::animate(std::string anim, salmon::Direction dir, float speed) {
-    if(anim == salmon::AnimationType::current) {anim = m_anim_state;}
-    if(dir == salmon::Direction::current) {dir = m_direction;}
+bool Actor::animate(std::string anim, Direction dir, float speed) {
+    if(anim == AnimationType::current) {anim = m_anim_state;}
+    if(dir == Direction::current) {dir = m_direction;}
 
     Tile* current_tile = nullptr;
-    if(anim == salmon::AnimationType::none) {current_tile = &m_base_tile;}
+    if(anim == AnimationType::none) {current_tile = &m_base_tile;}
     else if(valid_anim_state(anim,dir)) {
         current_tile = &m_animations[anim][dir];
     }
     else {return false;}
 
     if(m_anim_state != anim || m_direction != dir) {
+        // Set rendering dimensions to current tile
+        m_transform.set_dimensions(current_tile->get_w(), current_tile->get_h());
         m_anim_state = anim;
         m_direction = dir;
         current_tile->init_anim();
@@ -395,18 +362,20 @@ bool Actor::animate(std::string anim, salmon::Direction dir, float speed) {
 /**
  * @brief Set animation tile to specific frame
  */
-bool Actor::set_animation(std::string anim, salmon::Direction dir, int frame) {
-    if(anim == salmon::AnimationType::current) {anim = m_anim_state;}
-    if(dir == salmon::Direction::current) {dir = m_direction;}
+bool Actor::set_animation(std::string anim, Direction dir, int frame) {
+    if(anim == AnimationType::current) {anim = m_anim_state;}
+    if(dir == Direction::current) {dir = m_direction;}
 
     Tile* current_tile = nullptr;
-    if(anim == salmon::AnimationType::none) {current_tile = &m_base_tile;}
+    if(anim == AnimationType::none) {current_tile = &m_base_tile;}
     else if(valid_anim_state(anim,dir)) {
         current_tile = &m_animations[anim][dir];
     }
     else {return false;}
 
     if(m_anim_state != anim || m_direction != dir) {
+        // Set rendering dimensions to current tile
+        m_transform.set_dimensions(current_tile->get_w(), current_tile->get_h());
         m_anim_state = anim;
         m_direction = dir;
         current_tile->init_anim();
@@ -421,18 +390,20 @@ bool Actor::set_animation(std::string anim, salmon::Direction dir, int frame) {
  * @param dir The direction of the animation
  * @return @c AnimSignal which indicates if the animation finished a cycle or hit its trigger frame
  */
-AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float speed) {
-    if(anim == salmon::AnimationType::current) {anim = m_anim_state;}
-    if(dir == salmon::Direction::current) {dir = m_direction;}
+AnimSignal Actor::animate_trigger(std::string anim, Direction dir, float speed) {
+    if(anim == AnimationType::current) {anim = m_anim_state;}
+    if(dir == Direction::current) {dir = m_direction;}
 
     Tile* current_tile = nullptr;
-    if(anim == salmon::AnimationType::none) {current_tile = &m_base_tile;}
+    if(anim == AnimationType::none) {current_tile = &m_base_tile;}
     else if(valid_anim_state(anim,dir)) {
         current_tile = &m_animations[anim][dir];
     }
     else {return AnimSignal::missing;}
 
     if(m_anim_state != anim || m_direction != dir) {
+        // Set rendering dimensions to current tile
+        m_transform.set_dimensions(current_tile->get_w(), current_tile->get_h());
         m_anim_state = anim;
         m_direction = dir;
         current_tile->init_anim();
@@ -441,8 +412,8 @@ AnimSignal Actor::animate_trigger(std::string anim, salmon::Direction dir, float
     return current_tile->push_anim_trigger(speed);
 }
 
-/// Checks if the currently set animation state and direction are existin
-bool Actor::valid_anim_state(std::string anim, salmon::Direction dir) const {
+/// Checks if the currently set animation state and direction are existing
+bool Actor::valid_anim_state(std::string anim, Direction dir) const {
     //if(m_anim_state == AnimationType::none) {return true;}
     if(m_animations.find(anim) == m_animations.end()) {
         Logger(Logger::error) << "Animation state " << anim << " for actor " << m_name << " is not defined!";
@@ -458,27 +429,27 @@ bool Actor::valid_anim_state(std::string anim, salmon::Direction dir) const {
 /**
  * @brief Returns the active hitbox of the supplied type
  * @param type The supplied type
- * @return @c SDL_Rect The hitbox
+ * @return @c Rect The hitbox
  * @note If there is no valid hitbox an empty one gets returned
  *
  * First the actor checks if the active animation has the hitbox with the name
  * and returns it instead.
  */
-SDL_Rect Actor::get_hitbox(std::string type) const {
+Rect Actor::get_hitbox(std::string type) const {
 
 
-    SDL_Rect current_hitbox = {0,0,0,0};
+    Rect current_hitbox = {0,0,0,0};
     // Try extracting hitbox from currenty active animated tile
-    if(m_anim_state != salmon::AnimationType::none && valid_anim_state()) {
+    if(m_anim_state != AnimationType::none && valid_anim_state()) {
         current_hitbox = m_animations.at(m_anim_state).at(m_direction).get_hitbox(type);
     }
     // If that failed, extract hitbox from base actor tile
-    if(SDL_RectEmpty((&current_hitbox))) {current_hitbox = m_base_tile.get_hitbox(type);}
+    if(current_hitbox.empty()) {current_hitbox = m_base_tile.get_hitbox(type);}
     // If that also failed just return the empty hitbox
-    if(SDL_RectEmpty((&current_hitbox))) {return current_hitbox;}
+    if(current_hitbox.empty()) {return current_hitbox;}
 
     // Otherwise adjust hitbox position and return
-    transform_hitbox(current_hitbox);
+    m_transform.transform_hitbox(current_hitbox);
 
     return current_hitbox;
 }
@@ -489,72 +460,50 @@ SDL_Rect Actor::get_hitbox(std::string type) const {
  * To the hitboxes of the actor tile, possible hitboxes of the active
  * animation and its animation frame are added. Specific ones may override general ones.
  */
-const std::map<std::string, SDL_Rect> Actor::get_hitboxes() const {
+const std::map<std::string, Rect> Actor::get_hitboxes() const {
     // Get all hitboxes from base tile
-    std::map<std::string, SDL_Rect> hitboxes = m_base_tile.get_hitboxes();
+    std::map<std::string, Rect> hitboxes = m_base_tile.get_hitboxes();
     // If there is a valid animation tile, load those "ontop" of the other hitboxes
-    if(m_anim_state != salmon::AnimationType::none && valid_anim_state()) {
+    if(m_anim_state != AnimationType::none && valid_anim_state()) {
         for(const auto& hitbox_pair: m_animations.at(m_anim_state).at(m_direction).get_hitboxes()) {
             hitboxes[hitbox_pair.first] = hitbox_pair.second;
         }
     }
     // Adjust each hitbox position and return
     for(auto& hitbox_pair : hitboxes) {
-        transform_hitbox(hitbox_pair.second);
+        m_transform.transform_hitbox(hitbox_pair.second);
     }
     return hitboxes;
 }
-
-/// Translate supplied hitbox from local actor coordinates to world coordinates with scale applied
-void Actor::transform_hitbox(SDL_Rect& hitbox) const {
-    if(m_resize_hitbox && m_scaled) {
-
-        hitbox.y -= static_cast<int>(get_h());
-        hitbox.y *= m_y_scale;
-        hitbox.h *= m_y_scale;
-        hitbox.y -= (m_y_scale - 1.0f) * get_h() / 2;
-        hitbox.y += get_y();
-
-        hitbox.x *= m_x_scale;
-        hitbox.w *= m_x_scale;
-        hitbox.x -= (m_x_scale - 1.0f) * get_w() / 2;
-        hitbox.x += get_x();
-    }
-    else {
-        hitbox.x += get_x();
-        hitbox.y += get_y() - static_cast<int>(get_h());
-    }
-}
-
 
 /**
  * @brief Checks if the actor is standing on ground
  * @param dir The direction of gravity
  * @return @c bool which is True if the actor is on ground
  */
-bool Actor::on_ground(salmon::Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, salmon::Direction dir, int tolerance) const {
-    SDL_Rect pos = get_hitbox(my_hitbox);
-    if(SDL_RectEmpty(&pos)) {return false;}
-    SDL_Rect temp;
-    if(dir == salmon::Direction::up) {
+bool Actor::on_ground(Collidees target, std::string my_hitbox, const std::vector<std::string>& other_hitboxes, Direction dir, int tolerance) const {
+    Rect pos = get_hitbox(my_hitbox);
+    if(pos.empty()) {return false;}
+    Rect temp;
+    if(dir == Direction::up) {
         temp.x = pos.x;
         temp.y =pos.y - 1 - tolerance;
         temp.w = pos.w;
         temp.h = 1 + tolerance;
     }
-    else if(dir == salmon::Direction::down) {
+    else if(dir == Direction::down) {
         temp.x = pos.x;
         temp.y =pos.y + pos.h;
         temp.w = pos.w;
         temp.h = 1 + tolerance;
     }
-    else if(dir == salmon::Direction::left) {
+    else if(dir == Direction::left) {
         temp.x = pos.x - 1 - tolerance;
         temp.y =pos.y;
         temp.w = 1 + tolerance;
         temp.h = pos.h;
     }
-    else if(dir == salmon::Direction::right) {
+    else if(dir == Direction::right) {
         temp.x = pos.x + pos.w;
         temp.y =pos.y;
         temp.w = 1 + tolerance;
@@ -569,11 +518,11 @@ bool Actor::on_ground(salmon::Collidees target, std::string my_hitbox, const std
 bool Actor::separate(TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     bool moved = false;
     for(std::string first_hitbox_name : my_hitboxes) {
-        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
-        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(first_hitbox.empty()) {continue;}
         for(std::string second_hitbox_name : other_hitboxes) {
-            SDL_Rect second_hitbox = tile.get_hitbox(second_hitbox_name);
-            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            Rect second_hitbox = tile.get_hitbox(second_hitbox_name);
+            if(second_hitbox.empty()) {continue;}
             if(separate(first_hitbox, second_hitbox)) {
                 moved = true;
                 if(notify) {
@@ -589,11 +538,11 @@ bool Actor::separate(Actor& actor, const std::vector<std::string>& my_hitboxes, 
     if(&actor == this) {return false;}
     bool moved = false;
     for(std::string first_hitbox_name : my_hitboxes) {
-        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
-        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(first_hitbox.empty()) {continue;}
         for(std::string second_hitbox_name : other_hitboxes) {
-            SDL_Rect second_hitbox = actor.get_hitbox(second_hitbox_name);
-            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            Rect second_hitbox = actor.get_hitbox(second_hitbox_name);
+            if(second_hitbox.empty()) {continue;}
             if(separate(first_hitbox, second_hitbox)) {
                 moved = true;
                 if(notify) {
@@ -606,10 +555,10 @@ bool Actor::separate(Actor& actor, const std::vector<std::string>& my_hitboxes, 
     return moved;
 }
 
-bool Actor::separate(const SDL_Rect& first, const SDL_Rect& second) {
-    SDL_Rect intersect;
-    if(!SDL_IntersectRect(&first, &second, &intersect)) {return false;}
-    SDL_Point delta = rect_center_difference(first,second);
+bool Actor::separate(const Rect& first, const Rect& second) {
+    Rect intersect = first.get_intersection(second);
+    if(intersect.empty()) {return false;}
+    Point delta = rect_center_difference(first,second);
 
     // Move in y direction
     if(intersect.w > intersect.h) {
@@ -640,11 +589,11 @@ bool Actor::separate(const SDL_Rect& first, const SDL_Rect& second) {
 bool Actor::separate_along_path(float x, float y,TileInstance& tile, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     bool moved = false;
     for(std::string first_hitbox_name : my_hitboxes) {
-        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
-        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(first_hitbox.empty()) {continue;}
         for(std::string second_hitbox_name : other_hitboxes) {
-            SDL_Rect second_hitbox = tile.get_hitbox(second_hitbox_name);
-            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            Rect second_hitbox = tile.get_hitbox(second_hitbox_name);
+            if(second_hitbox.empty()) {continue;}
             if(separate_along_path(x, y,first_hitbox, second_hitbox)) {
                 moved = true;
                 if(notify) {
@@ -660,11 +609,11 @@ bool Actor::separate_along_path(float x, float y,Actor& actor, const std::vector
     if(&actor == this) {return false;}
     bool moved = false;
     for(std::string first_hitbox_name : my_hitboxes) {
-        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
-        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(first_hitbox.empty()) {continue;}
         for(std::string second_hitbox_name : other_hitboxes) {
-            SDL_Rect second_hitbox = actor.get_hitbox(second_hitbox_name);
-            if(SDL_RectEmpty(&second_hitbox)) {continue;}
+            Rect second_hitbox = actor.get_hitbox(second_hitbox_name);
+            if(second_hitbox.empty()) {continue;}
             if(separate_along_path(x, y,first_hitbox, second_hitbox)) {
                 moved = true;
                 if(notify) {
@@ -678,8 +627,8 @@ bool Actor::separate_along_path(float x, float y,Actor& actor, const std::vector
 }
 
 
-bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SDL_Rect& second) {
-    if(!SDL_HasIntersection(&first, &second)) {return false;}
+bool Actor::separate_along_path(float x, float y,const Rect& first, const Rect& second) {
+    if(!first.has_intersection(second)) {return false;}
     if(x == 0.0) {
         // No direction value means separate via shortest distance
         if(y == 0.0) {return separate(first,second);}
@@ -710,68 +659,68 @@ bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SD
         if(x > 0.0) {
             // Move Right Down
             if(y > 0.0) {
-                SDL_Point upper_left_corner = {first.x,first.y};
-                int right_dist = second.x + second.w - upper_left_corner.x;
-                int down_dist = second.y + second.h - upper_left_corner.y;
+                Point upper_left_corner = {first.x,first.y};
+                float right_dist = second.x + second.w - upper_left_corner.x;
+                float down_dist = second.y + second.h - upper_left_corner.y;
 
                 float x_steps = right_dist / std::abs(x);
                 float y_steps = down_dist / std::abs(y);
 
                 if(x_steps < y_steps) {
-                    move_relative(right_dist,static_cast<int>(x_steps * y));
+                    move_relative(right_dist,x_steps * y);
                 }
                 else {
-                    move_relative(static_cast<int>(y_steps * x),down_dist);
+                    move_relative(y_steps * x,down_dist);
                 }
             }
             // Move Right Up
             else {
-                SDL_Point lower_left_corner = {first.x,first.y + first.h};
-                int right_dist = second.x + second.w - lower_left_corner.x;
-                int up_dist = lower_left_corner.y - second.y;
+                Point lower_left_corner = {first.x,first.y + first.h};
+                float right_dist = second.x + second.w - lower_left_corner.x;
+                float up_dist = lower_left_corner.y - second.y;
 
                 float x_steps = right_dist / std::abs(x);
                 float y_steps = up_dist / std::abs(y);
 
                 if(x_steps < y_steps) {
-                    move_relative(right_dist, static_cast<int>(x_steps * y));
+                    move_relative(right_dist, x_steps * y);
                 }
                 else {
-                    move_relative(static_cast<int>(y_steps * x),-up_dist);
+                    move_relative(y_steps * x,-up_dist);
                 }
             }
         }
         else {
             // Move Left Down
             if(y > 0.0) {
-                SDL_Point upper_right_corner = {first.x+first.w,first.y};
-                int left_dist = upper_right_corner.x - second.x;
-                int down_dist = second.y + second.h - upper_right_corner.y;
+                Point upper_right_corner = {first.x+first.w,first.y};
+                float left_dist = upper_right_corner.x - second.x;
+                float down_dist = second.y + second.h - upper_right_corner.y;
 
                 float x_steps = left_dist / std::abs(x);
                 float y_steps = down_dist / std::abs(y);
 
                 if(x_steps < y_steps) {
-                    move_relative(-left_dist, static_cast<int>(x_steps * y));
+                    move_relative(-left_dist, x_steps * y);
                 }
                 else {
-                    move_relative(static_cast<int>(y_steps * x),down_dist);
+                    move_relative(y_steps * x,down_dist);
                 }
             }
             // Move Left Up
             else {
-                SDL_Point lower_right_corner = {first.x+first.w,first.y+first.h};
-                int left_dist = lower_right_corner.x - second.x;
-                int up_dist = lower_right_corner.y - second.y;
+                Point lower_right_corner = {first.x+first.w,first.y+first.h};
+                float left_dist = lower_right_corner.x - second.x;
+                float up_dist = lower_right_corner.y - second.y;
 
                 float x_steps = left_dist / std::abs(x);
                 float y_steps = up_dist / std::abs(y);
 
                 if(x_steps < y_steps) {
-                    move_relative(-left_dist, static_cast<int>(x_steps * y));
+                    move_relative(-left_dist, x_steps * y);
                 }
                 else {
-                    move_relative(static_cast<int>(y_steps * x),-up_dist);
+                    move_relative(y_steps * x,-up_dist);
                 }
             }
         }
@@ -781,8 +730,9 @@ bool Actor::separate_along_path(float x, float y,const SDL_Rect& first, const SD
 
 bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& actor, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes) {
     if(&actor == this) {return false;}
-    float old_x = get_x();
-    float old_y = get_y();
+    auto old_pos = m_transform.get_relative(0.0,1.0);
+    float old_x = old_pos.x;
+    float old_y = old_pos.x;
 
     // Combine both separation vectors
     float combined_x = x1 - x2;
@@ -791,8 +741,9 @@ bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& a
     // Separate this actor from other by combined vector
     if(separate_along_path(combined_x,combined_y,actor,my_hitboxes,other_hitboxes,false)) {
         // Get the actual separation vector
-        float delta_x = get_x() - old_x;
-        float delta_y = get_y() - old_y;
+        auto new_pos = m_transform.get_relative(0.0,1.0);
+        float delta_x = new_pos.x - old_x;
+        float delta_y = new_pos.y - old_y;
         move_absolute(old_x,old_y);
 
         // Get factor from nonzero combined vector component
@@ -826,12 +777,12 @@ bool Actor::separate_along_path(float x1, float y1, float x2, float y2, Actor& a
 bool Actor::check_collision(Actor& other, bool notify) {
     bool collided = false;
     for(auto first_hitbox : get_hitboxes()) {
-        SDL_Rect& first = first_hitbox.second;
-        if(SDL_RectEmpty(&first)) {continue;}
+        Rect& first = first_hitbox.second;
+        if(first.empty()) {continue;}
         for(auto second_hitbox : other.get_hitboxes()) {
-            SDL_Rect& second = second_hitbox.second;
-            if(SDL_RectEmpty(&second)) {continue;}
-            if(SDL_HasIntersection(&first,&second)) {
+            Rect& second = second_hitbox.second;
+            if(second.empty()) {continue;}
+            if(first.has_intersection(second)) {
                 collided = true;
                 if(notify) {
                     add_collision({&other,first_hitbox.first,second_hitbox.first});
@@ -845,12 +796,12 @@ bool Actor::check_collision(Actor& other, bool notify) {
 bool Actor::check_collision(Actor& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     bool collided = false;
     for(std::string first_hitbox_name : my_hitboxes) {
-        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
-        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(first_hitbox.empty()) {continue;}
         for(std::string second_hitbox_name : other_hitboxes) {
-            SDL_Rect second_hitbox = other.get_hitbox(second_hitbox_name);
-            if(SDL_RectEmpty(&second_hitbox)) {continue;}
-            if(SDL_HasIntersection(&first_hitbox,&second_hitbox)) {
+            Rect second_hitbox = other.get_hitbox(second_hitbox_name);
+            if(second_hitbox.empty()) {continue;}
+            if(first_hitbox.has_intersection(second_hitbox)) {
                 collided = true;
                 if(notify) {
                     add_collision({&other,first_hitbox_name,second_hitbox_name});
@@ -865,12 +816,12 @@ bool Actor::check_collision(Actor& other, const std::vector<std::string>& my_hit
 bool Actor::check_collision(TileInstance& other, bool notify) {
     bool collided = false;
     for(auto first_hitbox : get_hitboxes()) {
-        SDL_Rect& first = first_hitbox.second;
-        if(SDL_RectEmpty(&first)) {continue;}
+        Rect& first = first_hitbox.second;
+        if(first.empty()) {continue;}
         for(auto second_hitbox : other.get_hitboxes()) {
-            SDL_Rect& second = second_hitbox.second;
-            if(SDL_RectEmpty(&second)) {continue;}
-            if(SDL_HasIntersection(&first,&second)) {
+            Rect& second = second_hitbox.second;
+            if(second.empty()) {continue;}
+            if(first.has_intersection(second)) {
                 collided = true;
                 if(notify) {
                     add_collision({other,first_hitbox.first,second_hitbox.first});
@@ -883,12 +834,12 @@ bool Actor::check_collision(TileInstance& other, bool notify) {
 bool Actor::check_collision(TileInstance& other, const std::vector<std::string>& my_hitboxes, const std::vector<std::string>& other_hitboxes, bool notify) {
     bool collided = false;
     for(std::string first_hitbox_name : my_hitboxes) {
-        SDL_Rect first_hitbox = get_hitbox(first_hitbox_name);
-        if(SDL_RectEmpty(&first_hitbox)) {continue;}
+        Rect first_hitbox = get_hitbox(first_hitbox_name);
+        if(first_hitbox.empty()) {continue;}
         for(std::string second_hitbox_name : other_hitboxes) {
-            SDL_Rect second_hitbox = other.get_hitbox(second_hitbox_name);
-            if(SDL_RectEmpty(&second_hitbox)) {continue;}
-            if(SDL_HasIntersection(&first_hitbox,&second_hitbox)) {
+            Rect second_hitbox = other.get_hitbox(second_hitbox_name);
+            if(second_hitbox.empty()) {continue;}
+            if(first_hitbox.has_intersection(second_hitbox)) {
                 collided = true;
                 if(notify) {
                     add_collision({other,first_hitbox_name,second_hitbox_name});
@@ -898,3 +849,6 @@ bool Actor::check_collision(TileInstance& other, const std::vector<std::string>&
     }
     return collided;
 }
+
+}} // namespace salmon::internal
+

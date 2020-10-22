@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -22,6 +22,8 @@
 #include <SDL.h>
 #include "util/game_types.hpp"
 
+namespace salmon { namespace internal {
+
 class Gamepad {
     public:
         Gamepad(SDL_GameController* controller);
@@ -34,17 +36,17 @@ class Gamepad {
 
         SDL_JoystickID get_id() const {return m_id;}
         const char* get_name() const;
-        salmon::GamepadState get_state() const {return m_state;}
+        GamepadState get_state() const {return m_state;}
 
         void close(); // close gamepad device
         void clear(); // Clear old input
     private:
         SDL_GameController* m_controller;
         SDL_JoystickID m_id;
-        salmon::GamepadState m_state;
+        GamepadState m_state;
 
         SDL_Haptic* m_haptic = nullptr;
 };
-
+}} // namespace salmon::internal
 
 #endif // GAMEPAD_HPP_INCLUDED

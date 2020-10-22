@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -19,11 +19,19 @@
 #include "actor/primitive_rectangle.hpp"
 
 #include <SDL.h>
+#include "util/game_types.hpp"
 
-bool PrimitiveRectangle::render(int x_cam, int y_cam) const {
+namespace salmon { namespace internal {
+
+bool PrimitiveRectangle::render(float x_cam, float y_cam) const {
     if(m_hidden) {return true;}
-    if(m_static_mode) {x_cam = 0; y_cam = 0;}
-    SDL_Rect rect{static_cast<int>(m_x_pos-x_cam), static_cast<int>(m_y_pos-y_cam),m_width,m_height};
+    Rect r = m_transform.to_rect();
+    r.x -= x_cam;
+    r.y -= y_cam;
+    PixelRect p = r;
+    SDL_Rect sdl_rect = make_rect(p);
 
-    return SDL_RenderDrawRect(m_renderer, &rect) == 0;
+    return SDL_RenderDrawRect(m_renderer, &sdl_rect) == 0;
 }
+
+}} // namespace salmon::internal

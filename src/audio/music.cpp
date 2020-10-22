@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -18,6 +18,8 @@
  */
 #include "audio/music.hpp"
 #include "util/logger.hpp"
+
+namespace salmon { namespace internal {
 
 Music::Music(std::string path) :
 m_sound(Mix_LoadMUS(path.c_str()), Music::Deleter())
@@ -77,3 +79,4 @@ bool Music::paused() {
     return Mix_PausedMusic();
 }
 
+}} // namespace salmon::internal

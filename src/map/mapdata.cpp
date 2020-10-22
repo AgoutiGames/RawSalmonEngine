@@ -23,6 +23,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "transform.hpp"
 #include "actor/actor.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
@@ -30,6 +31,8 @@
 #include "util/parse.hpp"
 #include "util/attribute_parser.hpp"
 #include "util/logger.hpp"
+
+namespace salmon { namespace internal {
 
 /// Plain constructor
 MapData::MapData(GameInfo* game) : m_game{game},
@@ -355,7 +358,7 @@ unsigned MapData::get_h() const {
  * @param dir The @c Direction of the tile
  * @param tile A pointer to the corresponding animation tile
  */
-void MapData::add_actor_animation(std::string name, std::string anim, salmon::Direction dir, Tile* tile) {
+void MapData::add_actor_animation(std::string name, std::string anim, Direction dir, Tile* tile) {
     // If actor template doesn't exist, construct it!
     if(m_actor_templates.find(name) == m_actor_templates.end()) {m_actor_templates.insert(std::make_pair(name, Actor(this)));}
 
@@ -405,8 +408,10 @@ tinyxml2::XMLError MapData::add_actor_template(tinyxml2::XMLElement* source, Til
         return XML_NO_ATTRIBUTE;
     }
 
-    current_actor.set_w(tile->get_tileset().get_tile_width());
-    current_actor.set_h(tile->get_tileset().get_tile_height());
+    unsigned tw, th;
+    tw = tile->get_tileset().get_tile_width();
+    th = tile->get_tileset().get_tile_height();
+    current_actor.get_transform().set_dimensions(tw,th);
     current_actor.set_tile(*tile);
 
     // If type of tile isn't ACTOR_TEMPLATE use it as type property
@@ -458,3 +463,11 @@ Actor MapData::get_actor(Uint32 gid) const {
 Actor MapData::get_actor(std::string name) const {
     return m_actor_templates.at(name);
 }
+
+Transform* MapData::get_layer_transform(std::string layer_name) {
+    Layer* l = m_layer_collection.get_layer(layer_name);
+    if(l == nullptr) {return nullptr;}
+    else {return &l->get_transform();}
+}
+
+}} // namespace salmon::internal

@@ -47,18 +47,20 @@ if (NOT MSVC)
 endif()
 
 set(LIB_SOURCES
-    src/include_impl/audio_manager_ref.cpp
-    src/include_impl/collision_ref.cpp
-    src/include_impl/sound_ref.cpp
-    src/include_impl/music_ref.cpp
+    src/include_impl/audio_manager.cpp
+    src/include_impl/collision.cpp
+    src/include_impl/sound.cpp
+    src/include_impl/music.cpp
     src/include_impl/gameinfo.cpp
-    src/include_impl/data_block_ref.cpp
-    src/include_impl/input_cache_ref.cpp
-    src/include_impl/camera_ref.cpp
-    src/include_impl/actor_ref.cpp
-    src/include_impl/map_ref.cpp
-    src/include_impl/text_ref.cpp
+    src/include_impl/data_block.cpp
+    src/include_impl/input_cache.cpp
+    src/include_impl/camera.cpp
+    src/include_impl/actor.cpp
+    src/include_impl/mapdata.cpp
+    src/include_impl/text.cpp
     src/include_impl/tile_instance.cpp
+    src/include_impl/transform.cpp
+    src/include_impl/types.cpp
     )
 
 set(ACTOR_SOURCES

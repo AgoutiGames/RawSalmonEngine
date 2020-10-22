@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -16,10 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
- #include "actor/collision.hpp"
+#include "actor/collision.hpp"
 
- #include "actor/actor.hpp"
- #include "map/tile.hpp"
+#include "actor/actor.hpp"
+#include "map/tile.hpp"
+
+namespace salmon { namespace internal {
 
  // Default constructor
 Collision::Collision() :
@@ -30,27 +32,22 @@ Collision::Collision() :
 
 // Constructor for tile
 Collision::Collision(TileInstance tile, std::string my_hitbox, std::string other_hitbox) :
- type{CollisionType::tile}
+ type{CollisionType::tile}, transform{tile.get_transform()}
 {
     data.tile = tile.get_tile();
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
 
-    x = tile.get_x();
-    y = tile.get_y();
 }
 
 // Constructor for actor
 Collision::Collision(Actor* actor, std::string my_hitbox, std::string other_hitbox) :
- type{CollisionType::actor}
+ type{CollisionType::actor}, transform{actor->get_transform()}
 {
     data.actor = actor;
     my_hitbox_name = my_hitbox;
     other_hitbox_name = other_hitbox;
     actor_id = actor->get_id();
-
-    x = actor->get_x();
-    y = actor->get_y();
 }
 
 // Constructor for mouse
@@ -63,5 +60,7 @@ Collision::Collision(std::string my_hitbox) :
 unsigned Collision::get_actor_id() const {return actor_id;}
 
 TileInstance Collision::get_tile_instance() const {
-    return {get_tile(),get_x(),get_y()};
+    return {get_tile(),transform};
 }
+
+}} // namespace salmon::internal
