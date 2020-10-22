@@ -19,8 +19,6 @@
 #ifndef TRANSFORM_HPP_INCLUDED
 #define TRANSFORM_HPP_INCLUDED
 
-#include <utility> // For std::pair
-
 #include "./types.hpp"
 
 namespace salmon {

@@ -87,8 +87,9 @@ void Transform::transform_hitbox(Rect& hitbox) const {
     rel_y = hitbox.y / m_height;
     if(m_vertical_flip) {rel_y = (1.0f-rel_y) - (hitbox.h / m_height);}
     if(is_rotated() && std::abs(std::fmod(m_angle, 90)) < MIN_ROTATION) {
-        int i_angle = static_cast<int>(std::round(m_angle));
-        if(i_angle < 0) {i_angle = -i_angle;}
+        double angle = std::fmod(m_angle,360);
+        if(angle < 0) {angle = 360 + angle;}
+        int i_angle = static_cast<int>(std::round(angle));
         i_angle = (i_angle / 90) % 4;
         Point corner;
         switch(i_angle) {
