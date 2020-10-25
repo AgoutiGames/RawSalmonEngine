@@ -517,7 +517,10 @@ Rect Tile::get_hitbox_self(std::string name, bool aligned) const {
             return hitbox;
         }
         else {
-            return m_hitboxes.at(name);
+            Rect hitbox = m_hitboxes.at(name);
+            hitbox.x += mp_tileset->get_x_offset();
+            hitbox.y += mp_tileset->get_y_offset();
+            return hitbox;
         }
     }
 }
@@ -550,16 +553,11 @@ std::map<std::string, Rect> Tile::get_hitboxes(bool aligned) const {
  * @param aligned Sets the origin of hitboxes relative to tile grid
  */
 const std::map<std::string, Rect> Tile::get_hitboxes_self(bool aligned) const {
-    if(aligned) {
-        std::map<std::string, Rect> hitboxes;
-        for(auto& hb : m_hitboxes) {
-            hitboxes[hb.first] = get_hitbox_self(hb.first, true);
-        }
-        return hitboxes;
+    std::map<std::string, Rect> hitboxes;
+    for(auto& hb : m_hitboxes) {
+        hitboxes[hb.first] = get_hitbox_self(hb.first, aligned);
     }
-    else {
-        return m_hitboxes;
-    }
+    return hitboxes;
 }
 
 }} // namespace salmon::internal
