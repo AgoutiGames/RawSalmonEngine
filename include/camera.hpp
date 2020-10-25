@@ -20,6 +20,7 @@
 #define CAMERA_REF_HPP_INCLUDED
 
 #include "./actor.hpp"
+#include "./transform.hpp"
 
 namespace salmon {
 
@@ -29,15 +30,7 @@ class Camera {
     public:
         Camera(internal::Camera& impl);
 
-        /// Return x coordinate of upper left corner of camera in world space
-        float get_x() const;
-        /// Return y coordinate of upper left corner of camera in world space
-        float get_y() const;
-
-        /// Set x coordinate of upper left corner of camera in world space
-        void set_x(float x);
-        /// Set y coordinate of upper left corner of camera in world space
-        void set_y(float y);
+        Transform& get_transform();
 
         /// Make camera always center on supplied actor
         void bind_actor(Actor actor);

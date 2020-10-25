@@ -36,7 +36,7 @@ namespace salmon { namespace internal {
 
 /// Plain constructor
 MapData::MapData(GameInfo* game) : m_game{game},
-m_camera{0, 0, 0, 0, this} {}
+m_camera{{0, 0, 0, 0}, this} {}
 
 /**
  * @brief Parses the supplied .tmx file

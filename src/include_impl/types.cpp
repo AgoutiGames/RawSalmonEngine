@@ -40,10 +40,52 @@ PixelDimensions::PixelDimensions(const Dimensions& d) :
     w{static_cast<int>(std::round(d.w))},
     h{static_cast<int>(std::round(d.h))} {}
 
-Point Point::move(const Point& p) {
+Point Point::operator+(const Point& p) const {
+    return {x+p.x,y+p.y};
+}
+
+Point& Point::operator+=(const Point& p) {
     x += p.x;
     y += p.y;
     return *this;
+}
+
+Point Point::operator-(const Point& p) const {
+    return {x-p.x,y-p.y};
+}
+
+Point& Point::operator-=(const Point& p) {
+    x -= p.x;
+    y -= p.y;
+    return *this;
+}
+
+Point Point::operator-() const {
+    return Point{-x,-y};
+}
+
+PixelPoint PixelPoint::operator+(const PixelPoint& p) const {
+    return {x+p.x,y+p.y};
+}
+
+PixelPoint& PixelPoint::operator+=(const PixelPoint& p) {
+    x += p.x;
+    y += p.y;
+    return *this;
+}
+
+PixelPoint PixelPoint::operator-(const PixelPoint& p) const {
+    return {x-p.x,y-p.y};
+}
+
+PixelPoint& PixelPoint::operator-=(const PixelPoint& p) {
+    x += p.x;
+    y += p.y;
+    return *this;
+}
+
+PixelPoint PixelPoint::operator-() const {
+    return PixelPoint{-x,-y};
 }
 
 Dimensions Dimensions::scale(const Scale& s) {

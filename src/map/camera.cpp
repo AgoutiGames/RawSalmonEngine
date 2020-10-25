@@ -23,8 +23,8 @@
 
 namespace salmon { namespace internal {
 
-Camera::Camera(float x, float y, float w, float h, MapData* map) :
-    m_rect{x,y,w,h}, m_map{map} {}
+Camera::Camera(Rect r, MapData* map) :
+    m_transform{r.x,r.y,r.w,r.h,0,0}, m_map{map} {}
 
 /**
  * @brief Move camera to a valid position in respect to player position and map border
@@ -34,51 +34,45 @@ Camera::Camera(float x, float y, float w, float h, MapData* map) :
 void Camera::update() {
     if(m_actor_bound) {
         auto center = m_player->get_transform().get_relative(0.5,0.5);
-        m_rect.x = center.x - (m_rect.w / 2);
-        m_rect.y = center.y - (m_rect.h / 2);
+        m_transform.set_pos(0.5,0.5,center.x,center.y);
     }
     if(m_map_bound) {
+        Point up_left_corner = m_transform.get_relative(0,0);
+        Point lower_right_corner = m_transform.get_relative(1,1);
         // Check if map is less wide than the effective camera frame
-        if( static_cast<float>(m_map_width) - m_crop_left - m_crop_right < m_rect.w ) {
+        if( static_cast<float>(m_map_width) - m_crop_left - m_crop_right < m_transform.get_dimensions().w ) {
             // Center the camera horizontally relative to map
-            m_rect.x = ((static_cast<float>(m_map_width) - m_crop_left - m_crop_right) - m_rect.w) / 2;
+            Point c_center = m_transform.get_relative(0.5,0.5);
+            float map_x_center = ((m_map_width - m_crop_right) / 2) + m_crop_left;
+            m_transform.move_pos(map_x_center - c_center.x,0);
         }
         else {
             // Check horizontal borders
-            if(m_rect.x < m_crop_left) {
-                m_rect.x = m_crop_left;
+            if(up_left_corner.x < m_crop_left) {
+                m_transform.move_pos(m_crop_left - up_left_corner.x,0);
             }
-            else if(m_rect.x > static_cast<float>(m_map_width) - m_rect.w - m_crop_right) {
-                m_rect.x = m_map_width - m_rect.w - m_crop_right;
+            else if(lower_right_corner.x > static_cast<float>(m_map_width)- m_crop_right) {
+                m_transform.move_pos((static_cast<float>(m_map_width)- m_crop_right) - lower_right_corner.x,0);
             }
         }
 
         // Check if map is less high than the effective camera frame
-        if( static_cast<float>(m_map_height) - m_crop_up - m_crop_down < m_rect.h ) {
+        if( static_cast<float>(m_map_height) - m_crop_up - m_crop_down < m_transform.get_dimensions().w ) {
             // Center the camera vertically relative to map
-            m_rect.y = ((static_cast<float>(m_map_height) - m_crop_up - m_crop_down) - m_rect.h) / 2;
+            Point c_center = m_transform.get_relative(0.5,0.5);
+            float map_y_center = ((m_map_height - m_crop_down) / 2) + m_crop_up;
+            m_transform.move_pos(0,map_y_center - c_center.y);
         }
         else {
             // Check vertical borders
-            if(m_rect.y < m_crop_up) {
-                m_rect.y = m_crop_up;
+            if(up_left_corner.y < m_crop_up) {
+                m_transform.move_pos(0,m_crop_up - up_left_corner.y);
             }
-            else if(m_rect.y > static_cast<float>(m_map_height) - m_rect.h - m_crop_down) {
-                m_rect.y = m_map_height - m_rect.h - m_crop_down;
+            else if(lower_right_corner.y > static_cast<float>(m_map_height) - m_crop_down) {
+                m_transform.move_pos(0,(static_cast<float>(m_map_height)- m_crop_down) - lower_right_corner.y);
             }
         }
     }
-}
-
-/**
- * @brief Move camera to the supplied position in respect to map border
- *
- * @note If the camera is player bound, the player position has precedence over the supplied coordinates
- */
-void Camera::update(float x, float y) {
-    m_rect.x = x;
-    m_rect.y = y;
-    update();
 }
 
 /**

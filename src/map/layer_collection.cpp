@@ -253,7 +253,7 @@ Layer* LayerCollection::get_layer(std::string name) {
  * @brief Tests if any actors hitbox intersects with the mouse pointer location. If yes, adds a collision to the actor.
  */
 void LayerCollection::mouse_collision() {
-    Rect cam = m_base_map->get_camera().get_rect();
+    Rect cam = m_base_map->get_camera().get_transform().to_rect();
     // Transform cursor from camera space to global space
     MouseState mouse = m_base_map->get_game().get_input_cache().get_mouse_state();
     PixelPoint click{round(mouse.x_pos + cam.x), round(mouse.y_pos + cam.y)};

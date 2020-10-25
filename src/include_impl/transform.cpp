@@ -35,6 +35,42 @@ const float Transform::MIN_ROTATION = 0.01;
 Transform::Transform(float x_pos, float y_pos, float width, float height, float x_origin, float y_origin)
     : m_x_pos{x_pos}, m_y_pos{y_pos}, m_width{width}, m_height{height}, m_x_origin{x_origin}, m_y_origin{y_origin} {}
 
+void Transform::set_pos(float x, float y) {
+    m_x_pos = x;
+    m_y_pos = y;
+    m_moved = true;
+}
+
+void Transform::set_pos(float rel_src_x, float rel_src_y, float dest_x, float dest_y) {
+    Point dest{dest_x,dest_y};
+    dest -= get_relative_rotated(rel_src_x,rel_src_y);
+    move_pos(dest.x,dest.y);
+}
+
+void Transform::move_pos(float x, float y) {
+    m_x_pos += x;
+    m_y_pos += y;
+    m_moved = true;
+}
+
+void Transform::set_dimensions(float w, float h) {
+    m_width=w;
+    m_height=h;
+    m_moved = true;
+    m_scaled = true;
+}
+
+void Transform::set_scale(float x, float y) {
+    m_x_scale = x;
+    m_y_scale = y;
+    m_moved = true;
+    m_scaled = true;
+}
+
+void Transform::scale(float x, float y) {
+    set_scale(m_x_scale * x, m_y_scale * y);
+}
+
 void Transform::set_origin(float x, float y) {
     auto location = get_relative(x,y);
     m_x_pos = location.x;
@@ -55,6 +91,7 @@ Point Transform::get_relative(float x, float y) const {
 }
 
 Point Transform::get_relative_rotated(float x, float y) const {
+    if(!is_rotated()) {return get_relative(x,y);}
     auto p1 = get_relative(m_x_rotate,m_y_rotate);
     auto p2 = get_relative(x,y);
     // Rotate p2 around p1
@@ -232,6 +269,26 @@ Point Transform::get_sort_point() const {
     else {
         internal::Logger(internal::Logger::error) << "There is no sort mode nr:" << m_sort_mode << " did you forget to add it to Transform::get_sort_point()?";
         return {0,0};
+    }
+}
+
+bool Transform::was_moved() {
+    if(m_moved) {
+        m_moved = false;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool Transform::was_scaled() {
+    if(m_scaled) {
+        m_scaled = false;
+        return true;
+    }
+    else {
+        return false;
     }
 }
 

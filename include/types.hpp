@@ -26,7 +26,15 @@ namespace salmon {
 int round(float number);
 
 struct Point {
-    Point move(const Point& p);
+    Point() : x{0.0f},y{0.0f} {}
+    Point(float ix, float iy) : x{ix}, y{iy} {}
+    Point operator+(const Point& p) const;
+    Point& operator+=(const Point& p);
+    Point operator-(const Point& p) const;
+    Point& operator-=(const Point& p);
+    Point operator-() const;
+    template<class Type>
+    Point operator*(Type t) const {return Point(x*t,y*t);}
     float x, y;
 };
 
@@ -35,6 +43,11 @@ struct PixelPoint {
     PixelPoint(int ix, int iy) : x{ix}, y{iy} {}
     // You can downcast from real float coords to pixel coords but not back again
     PixelPoint(const Point& p);
+    PixelPoint operator+(const PixelPoint& p) const;
+    PixelPoint& operator+=(const PixelPoint& p);
+    PixelPoint operator-(const PixelPoint& p) const;
+    PixelPoint& operator-=(const PixelPoint& p);
+    PixelPoint operator-() const;
     int x, y;
 };
 
@@ -43,6 +56,8 @@ struct Scale {
 };
 
 struct Dimensions {
+    Dimensions() : w{0.0f},h{0.0f} {}
+    Dimensions(float iw, float ih) : w{iw}, h{ih} {}
     Dimensions scale(const Scale& s);
     float w, h;
 };
