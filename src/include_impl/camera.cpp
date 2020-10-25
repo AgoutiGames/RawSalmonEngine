@@ -24,11 +24,7 @@ namespace salmon {
 
 Camera::Camera(internal::Camera& impl) : m_impl{&impl} {}
 
-float Camera::get_x() const {return m_impl->x();}
-float Camera::get_y() const {return m_impl->y();}
-
-void Camera::set_x(float x) {m_impl->set_x(x);}
-void Camera::set_y(float y) {m_impl->set_y(y);}
+Transform& Camera::get_transform() {return m_impl->get_transform();}
 
 void Camera::bind_actor(Actor actor) {m_impl->bind_actor(actor.m_impl);}
 void Camera::unbind_actor() {m_impl->unbind_actor();}

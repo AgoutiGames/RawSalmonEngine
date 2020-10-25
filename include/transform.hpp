@@ -30,20 +30,23 @@ class Transform{
         Transform(float x_pos = 0.0f, float y_pos = 0.0f, float width = 0.0f, float height = 0.0f, float x_origin = 0.0f, float y_origin = 1.0);
 
         /// Set the position of the transform which means the location of its origin in world coordinates
-        void set_pos(float x, float y) {m_x_pos = x; m_y_pos = y;}
+        void set_pos(float x, float y);
+        /// Moves the transform in such a way that the given relative point is at the destination world coordinates
+        /// @note Takes rotation into account!
+        void set_pos(float rel_src_x, float rel_src_y, float dest_x, float dest_y);
         /// Shift the whole transform in x and y direction
-        void move_pos(float x, float y) {m_x_pos += x; m_y_pos += y;}
+        void move_pos(float x, float y);
         /// Set the base width and height of the transform in pixels
-        void set_dimensions(float w, float h) {m_width=w;m_height=h;}
+        void set_dimensions(float w, float h);
         /// Set origin using normalized relative coordinates wit origin in upper left corner
         /// @example (0,0) Upper left corner (0.5,0.5) Center (0,1.0) Lower left corner
         /// @note origin is the center of each scale operation
         void set_origin(float x, float y);
 
         /// Set scale of transform to absolute values
-        void set_scale(float x, float y) {m_x_scale = x; m_y_scale = y;};
+        void set_scale(float x, float y);
         /// Scale relative to current scale
-        void scale(float x, float y) {set_scale(m_x_scale * x, m_y_scale * y);}
+        void scale(float x, float y);
 
         /// Set the curent rotation in degrees
         /// @note Negative values and values beyond (-)360 are valid
@@ -64,6 +67,12 @@ class Transform{
         bool is_scaled() const;
         /// Returns true if transform is flipped on any axis
         bool is_flipped() const {return m_vertical_flip || m_horizontal_flip;}
+
+        /// Returns true if the position of the transform (could have) changed since "was_moved" was called the last time
+        /// @note Is for safety reasons also always the case after being scaled
+        bool was_moved();
+        /// Returns true if the dimensions of the transform (could have) changed since "was_scaled" was called the last time
+        bool was_scaled();
 
         /// Get position at normalized coordinates x and y relative to upper left corner of transform
         /// @example 0.0,0.0 Upper left corner; 0.5,0.5 middle point; 1.0,1.0 lower right corner
@@ -148,6 +157,9 @@ class Transform{
 
         bool m_horizontal_flip = false;
         bool m_vertical_flip = false;
+
+        bool m_moved = false;
+        bool m_scaled = false;
 
         static const float MIN_SCALE;
         static const float MIN_ROTATION;

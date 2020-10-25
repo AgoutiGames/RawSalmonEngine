@@ -124,7 +124,7 @@ tinyxml2::XMLError ImageLayer::init(tinyxml2::XMLElement* source) {
  * @return @c bool which indicates sucess
  */
 bool ImageLayer::render(const Camera& camera) const {
-    if(m_hidden || !camera.get_rect().has_intersection(m_transform.to_rect())) {return true;}
+    if(m_hidden || !camera.get_transform().to_rect().has_intersection(m_transform.to_rect())) {return true;}
     else {
         SDL_Rect clip{0,0,m_img.getWidth(),m_img.getHeight()};
         SDL_Rect dest{make_rect(m_transform.to_rect())};

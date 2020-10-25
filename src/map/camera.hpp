@@ -20,6 +20,7 @@
 #define CAMERA_HPP_INCLUDED
 
 #include "types.hpp"
+#include "transform.hpp"
 
 namespace salmon { namespace internal {
 
@@ -32,17 +33,11 @@ class MapData;
 
 class Camera{
     public:
-        Camera(float x, float y, float w, float h, MapData* map);
+        Camera(Rect r, MapData* map);
 
-        float x() const {return m_rect.x;}
-        float y() const {return m_rect.y;}
-        float w() const {return m_rect.w;}
-        float h() const {return m_rect.h;}
-        const Rect& get_rect() const {return m_rect;}
+        Transform& get_transform() {return m_transform;}
+        const Transform& get_transform() const {return m_transform;}
 
-        void set_size(float w, float h) {m_rect.w = w; m_rect.h = h;}
-        void set_x(float x) {m_rect.x = x;}
-        void set_y(float y) {m_rect.y = y;}
         void set_crop(int l, int r, int u, int d);
         void bind_actor(Actor* actor);
         void unbind_actor() {m_actor_bound = false;}
@@ -51,10 +46,9 @@ class Camera{
         void unbind_map() {m_map_bound = false;}
 
         void update();
-        void update(float x, float y);
 
     private:
-        Rect m_rect = {0,0,0,0};
+        Transform m_transform;
 
         unsigned m_map_width = 0;
         unsigned m_map_height = 0;

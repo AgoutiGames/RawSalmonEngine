@@ -218,7 +218,7 @@ bool GameInfo::set_game_resolution(unsigned width, unsigned height) {
     m_x_resolution = width;
     m_y_resolution = height;
     for(MapData& map : m_maps) {
-        map.get_camera().set_size(width,height);
+        map.get_camera().get_transform().set_dimensions(width,height);
     }
     return true;
 }
@@ -260,7 +260,7 @@ void GameInfo::set_window_resizable(bool mode) {
 bool GameInfo::load_map(std::string mapfile, bool absolute) {
     m_maps.emplace_back(this);
 
-    m_maps.back().get_camera().set_size(m_x_resolution,m_y_resolution);
+    m_maps.back().get_camera().get_transform().set_dimensions(m_x_resolution,m_y_resolution);
 
     if(!absolute) {mapfile = m_current_path + mapfile;}
     Logger() << "Load map at: " << mapfile;

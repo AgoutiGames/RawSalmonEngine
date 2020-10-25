@@ -158,14 +158,15 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
  */
 bool ObjectLayer::render(const Camera& camera) const {
     if(m_hidden) {return true;}
-    for(const Actor* actor : get_clip(camera.get_rect())) {
-        actor->render(camera.x(), camera.y());
+    Point cam_origin = camera.get_transform().get_relative(0,0);
+    for(const Actor* actor : get_clip(camera.get_transform().to_rect())) {
+        actor->render(cam_origin.x,cam_origin.y);
     }
 
     // For now just always render all primitives
     // Offscreen culling has to be implemented yet
     for(auto& primitive : m_primitives) {
-        primitive->render(camera.x(), camera.y());
+        primitive->render(cam_origin.x,cam_origin.y);
     }
 
     return true;
