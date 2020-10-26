@@ -24,13 +24,23 @@
 #include <iostream>
 #include <tinyxml2.h>
 
+#include "map/layer_collection.hpp"
 #include "map/map_layer.hpp"
 #include "map/image_layer.hpp"
 #include "map/object_layer.hpp"
+#include "map/mapdata.hpp"
 #include "util/logger.hpp"
 #include "util/parse.hpp"
 
 namespace salmon { namespace internal {
+
+Layer::Layer(std::string name, LayerCollection* layer_collection) :
+    m_layer_collection{layer_collection},
+    m_name{name},
+    m_transform{0,0,static_cast<float>(layer_collection->get_base_map().get_w()),
+                    static_cast<float>(layer_collection->get_base_map().get_h()),0,0} {
+
+}
 
 /**
  * @brief Differentiates possible layers by name and calls proper parsing function

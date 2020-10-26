@@ -59,7 +59,7 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
     eResult = source->QueryFloatAttribute("offsety", &offsety);
     if(eResult != XML_SUCCESS) offsety = 0;
 
-    m_transform = salmon::Transform(offsetx,offsety,0,0,0,0);
+    m_transform.set_pos(offsetx,offsety);
 
     // Parse user specified properties of the object_layer (only suspended right now)
     XMLElement* p_tile_properties = source->FirstChildElement("properties");

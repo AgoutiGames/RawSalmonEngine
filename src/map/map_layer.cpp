@@ -69,8 +69,7 @@ tinyxml2::XMLError MapLayer::init(tinyxml2::XMLElement* source) {
     eResult = source->QueryIntAttribute("offsety", &offsety);
     if(eResult != XML_SUCCESS) offsety = 0;
 
-    m_transform = salmon::Transform(offsetx,offsety, m_width * m_ts_collection->get_tile_w(), m_height * m_ts_collection->get_tile_h(),0,0);
-
+    m_transform.set_pos(offsetx,offsety);
     // Parse actual map data
     XMLElement* p_data = source->FirstChildElement("data");
     if(p_data == nullptr) return XML_ERROR_PARSING_ELEMENT;

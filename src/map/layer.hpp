@@ -47,7 +47,7 @@ class Layer {
             undefinied
         };
 
-        Layer(std::string name, LayerCollection* layer_collection) : m_layer_collection{layer_collection}, m_name{name} {}
+        Layer(std::string name, LayerCollection* layer_collection);
 
         Layer(const Layer& other) = default;
         Layer& operator=(const Layer& other) = default;
@@ -73,7 +73,7 @@ class Layer {
     protected:
         LayerCollection* m_layer_collection;
         std::string m_name;
-        Transform m_transform{0,0,0,0,0,0};
+        Transform m_transform;
         bool m_hidden = false;
 };
 }} // namespace salmon::internal
