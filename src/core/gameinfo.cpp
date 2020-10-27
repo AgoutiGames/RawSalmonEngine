@@ -85,10 +85,11 @@ bool GameInfo::init() {
 		}
 
 		//Create window
-		int fullscreen_bits = 0;
-		if(m_fullscreen) {fullscreen_bits = SDL_WINDOW_FULLSCREEN_DESKTOP;}
-		m_window = SDL_CreateWindow( m_window_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_window_w, m_window_h, SDL_WINDOW_SHOWN | fullscreen_bits);
-		if( m_window == nullptr )
+		m_window.get_transform().set_dimensions(m_x_resolution,m_y_resolution);
+		SDL_Window* window = m_window.init();
+		m_window.set_title(m_window_title);
+
+		if( window == nullptr )
 		{
 			Logger(Logger::error) << "Window could not be created! SDL Error: "<< SDL_GetError();
 			success = false;
@@ -96,7 +97,7 @@ bool GameInfo::init() {
 		else
 		{
 			//Create vsynced renderer for window
-			m_renderer = SDL_CreateRenderer( m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+			m_renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
 			if( m_renderer == nullptr )
 			{
 				Logger(Logger::error) << "Renderer could not be created! SDL Error: " << SDL_GetError();
@@ -152,64 +153,6 @@ bool GameInfo::init() {
 	return success;
 }
 
-void GameInfo::set_window_size(unsigned width, unsigned height) {
-    SDL_SetWindowSize(m_window,width,height);
-    SDL_SetWindowPosition(m_window,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED);
-    m_window_w = width;
-    m_window_h = height;
-}
-unsigned GameInfo::get_window_x_resolution() const {
-    if(m_fullscreen) {return get_screen_x_resolution();}
-    else {return m_window_w;}
-}
-unsigned GameInfo::get_window_y_resolution() const {
-    if(m_fullscreen) {return get_screen_y_resolution();}
-    else {return m_window_h;}
-}
-unsigned GameInfo::get_screen_x_resolution() const {
-    int display_index = SDL_GetWindowDisplayIndex(m_window);
-    if(display_index < 0) {
-        Logger(Logger::error) << "Cant query current display index, SDL Error: " << SDL_GetError();
-        return 0;
-    }
-    SDL_DisplayMode mode;
-    if(SDL_GetCurrentDisplayMode(display_index,&mode) != 0) {
-        Logger(Logger::error) << "Cant query current display mode, SDL Error: " << SDL_GetError();
-        return 0;
-    }
-    return static_cast<unsigned>(mode.w);
-}
-unsigned GameInfo::get_screen_y_resolution() const {
-    int display_index = SDL_GetWindowDisplayIndex(m_window);
-    if(display_index < 0) {
-        Logger(Logger::error) << "Cant query current display index, SDL Error: " << SDL_GetError();
-        return 0;
-    }
-    SDL_DisplayMode mode;
-    if(SDL_GetCurrentDisplayMode(display_index,&mode) != 0) {
-        Logger(Logger::error) << "Cant query current display mode, SDL Error: " << SDL_GetError();
-        return 0;
-    }
-    return static_cast<unsigned>(mode.h);
-}
-bool GameInfo::set_fullscreen(bool mode) {
-    Uint32 flags;
-    // Use "fake" fullscreen because its much less error prone on linux and windows
-    if(mode) {flags = SDL_WINDOW_FULLSCREEN_DESKTOP;}
-    else {flags = 0;}
-    if(SDL_SetWindowFullscreen(m_window,flags)) {
-        if(mode) {
-            Logger(Logger::error) << "Failed to set window to fullscreen, SDL Error: " << SDL_GetError();
-        }
-        else {
-            Logger(Logger::error) << "Failed to set windowed mode, SDL Error: " << SDL_GetError();
-        }
-        return false;
-    }
-    if(mode) {m_fullscreen = true;}
-    else {m_fullscreen = false;}
-    return true;
-}
 bool GameInfo::set_game_resolution(unsigned width, unsigned height) {
     if(SDL_RenderSetLogicalSize(m_renderer,width,height)) {
         Logger(Logger::error) << "Failed to set game resolution to " << width << "x" << height <<" , SDL Error: " << SDL_GetError();
@@ -240,15 +183,6 @@ bool GameInfo::set_linear_filtering(bool mode) {
         }
     }
     return true;
-}
-void GameInfo::set_window_resizable(bool mode) {
-    if(mode) {
-        SDL_SetWindowResizable(m_window,SDL_TRUE);
-    }
-    else {
-        SDL_SetWindowResizable(m_window,SDL_FALSE);
-    }
-    Logger(Logger::info) << SDL_GetWindowFlags(m_window);
 }
 
 /**
@@ -384,28 +318,12 @@ bool GameInfo::update() {
                         // Close game by aborting update
                         return false;
                     }
-                    case SDL_WINDOWEVENT_SHOWN : {
-                        m_window_minimized = false;
-                        break;
-                    }
-                    case SDL_WINDOWEVENT_MINIMIZED : {
-                        m_window_minimized = true;
-                        break;
-                    }
                     case SDL_WINDOWEVENT_ENTER : {
                         m_input_cache.set(e.window);
                         break;
                     }
                     case SDL_WINDOWEVENT_LEAVE : {
                         m_input_cache.set(e.window);
-                        break;
-                    }
-                    case SDL_WINDOWEVENT_FOCUS_GAINED : {
-                        m_window_active = true;
-                        break;
-                    }
-                    case SDL_WINDOWEVENT_FOCUS_LOST : {
-                        m_window_active = false;
                         break;
                     }
                     default : {break;}
@@ -427,10 +345,12 @@ bool GameInfo::update() {
  * @brief Draws the current map to screen
  */
 void GameInfo::render() {
+    // Apply possible transformations to the window
+    m_window.update();
     // Establish correct rendering order!
     get_map().get_layer_collection().update(true);
 
-    if(!m_maps.empty() && !m_window_minimized) {
+    if(!m_maps.empty() && !m_window.is_hidden()) {
         m_maps.back().render();
         SDL_RenderPresent(m_renderer);
     }
@@ -453,9 +373,8 @@ void GameInfo::close() {
 
 	//Destroy window
 	SDL_DestroyRenderer( m_renderer );
-	SDL_DestroyWindow( m_window );
-	m_window = nullptr;
 	m_renderer = nullptr;
+	m_window.destroy();
 
 	// Clear all currently open fonts
 	m_font_manager.clear();

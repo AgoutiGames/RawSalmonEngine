@@ -61,6 +61,7 @@ set(LIB_SOURCES
     src/include_impl/tile_instance.cpp
     src/include_impl/transform.cpp
     src/include_impl/types.cpp
+    src/include_impl/window.cpp
     )
 
 set(ACTOR_SOURCES

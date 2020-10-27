@@ -32,23 +32,13 @@ bool GameInfo::load_map(std::string mapfile, bool absolute) {return m_impl->load
 void GameInfo::close_map() {m_impl->close_map();}
 MapData GameInfo::get_map() {return m_impl->get_map();}
 
-void GameInfo::set_window_size(unsigned width, unsigned height) {m_impl->set_window_size(width,height);}
-bool GameInfo::set_fullscreen(bool mode) {return m_impl->set_fullscreen(mode);}
+Window& GameInfo::get_window() {return m_impl->get_window();}
+
 bool GameInfo::set_game_resolution(unsigned width, unsigned height) {return m_impl->set_game_resolution(width,height);}
 bool GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
-void GameInfo::set_window_resizable(bool mode) {m_impl->set_window_resizable(mode);}
 
 unsigned GameInfo::get_game_x_resolution() const {return m_impl->get_game_x_resolution();}
 unsigned GameInfo::get_game_y_resolution() const {return m_impl->get_game_y_resolution();}
-
-unsigned GameInfo::get_window_x_resolution() const {return m_impl->get_window_x_resolution();}
-unsigned GameInfo::get_window_y_resolution() const {return m_impl->get_window_y_resolution();}
-
-unsigned GameInfo::get_screen_x_resolution() const {return m_impl->get_screen_x_resolution();}
-unsigned GameInfo::get_screen_y_resolution() const {return m_impl->get_screen_y_resolution();}
-
-bool GameInfo::window_minimized() const {return m_impl->window_minimized();}
-bool GameInfo::window_active() const {return m_impl->window_active();}
 
 void GameInfo::add_preload_directory(std::string dir) {
     m_impl->get_preloader().add_directory(m_impl->get_resource_path() + dir);

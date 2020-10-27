@@ -23,6 +23,7 @@
 #include <string>
 #include <stack>
 
+#include "window.hpp"
 #include "actor/data_block.hpp"
 #include "audio/audio_manager.hpp"
 #include "core/input_cache.hpp"
@@ -50,23 +51,13 @@ public:
     bool load_map(std::string mapfile, bool absolute = false);
     void close_map();
 
-    void set_window_size(unsigned width, unsigned height);
-    bool set_fullscreen(bool mode);
     bool set_game_resolution(unsigned width, unsigned height);
     bool set_linear_filtering(bool mode);
-    void set_window_resizable(bool mode); ///< Currently not working properly! Need to handle resize events!
+
+    Window& get_window() {return m_window;}
 
     unsigned get_game_x_resolution() const {return m_x_resolution;}
     unsigned get_game_y_resolution() const {return m_y_resolution;}
-
-    unsigned get_window_x_resolution() const;
-    unsigned get_window_y_resolution() const;
-
-    unsigned get_screen_x_resolution() const;
-    unsigned get_screen_y_resolution() const;
-
-    bool window_minimized() const {return m_window_minimized;}
-    bool window_active() const {return m_window_active;}
 
     MapData& get_map();
     std::vector<MapData>& get_maps();
@@ -88,21 +79,13 @@ private:
 
     void update_path();
 
-    SDL_Window* m_window = nullptr;
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
     // default screen resolution
     unsigned m_x_resolution = 800;
     unsigned m_y_resolution = 600;
 
-    unsigned m_window_w = 800;
-    unsigned m_window_h = 600;
-
-    bool m_fullscreen = false;
-
-    bool m_window_minimized = false;
-    bool m_window_active = true;
-
+    Window m_window;
     Preloader m_preloader;
     TextureCache m_texture_cache;
     AudioManager m_audio_manager;

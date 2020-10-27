@@ -26,6 +26,7 @@
 #include "./data_block.hpp"
 #include "./input_cache.hpp"
 #include "./mapdata.hpp"
+#include "./window.hpp"
 
 namespace salmon {
 
@@ -58,21 +59,13 @@ class GameInfo{
         /// Return reference object to the currently active map
         MapData get_map();
 
-        /// Sets the size of the window of this game to the supplied dimensions in pixels
-        void set_window_size(unsigned width, unsigned height);
-        /// Sets game when mode is true to borderless fullscreen or else to windowed mode
-        bool set_fullscreen(bool mode);
+        /// Returns reference to the current game window
+        Window& get_window();
+
         /// Set the internal resolution of the game in pixels, independent of window resolution
         bool set_game_resolution(unsigned width, unsigned height);
         /// Set on linear filtering for smooth upscaled textures or off for proper sharp pixel art
         bool set_linear_filtering(bool mode);
-        /// Locks or unlocks the windows ability to get resized by user (Doesn't work reliably on all platforms)
-        void set_window_resizable(bool mode);
-
-        /// Return true if the game is currently minimized
-        bool window_minimized() const;
-        /// Return true if the game is the currently active windows for the OS
-        bool window_active() const;
 
         /// Return the current internal x resolution of the game in pixels
         unsigned get_game_x_resolution() const;
