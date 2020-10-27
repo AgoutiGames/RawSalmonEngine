@@ -20,6 +20,7 @@
 
 #include "util/logger.hpp"
 #include "core/gameinfo.hpp"
+#include "map/mapdata.hpp"
 
 namespace salmon { namespace internal {
 
@@ -184,8 +185,9 @@ void InputCache::set(SDL_TouchFingerEvent event) {
             }
             case SDL_FINGERMOTION : {
                 if(m_current_finger == event.fingerId) {
-                    m_mouse.x_delta = static_cast<int>(event.dx * m_game->get_game_x_resolution());
-                    m_mouse.y_delta = static_cast<int>(event.dy * m_game->get_game_y_resolution());
+                    PixelDimensions d = m_game->get_map().get_camera().get_transform().get_dimensions();
+                    m_mouse.x_delta = static_cast<int>(event.dx * d.w);
+                    m_mouse.y_delta = static_cast<int>(event.dy * d.h);
                 }
                 break;
             }
@@ -195,8 +197,9 @@ void InputCache::set(SDL_TouchFingerEvent event) {
             }
         }
         if(m_current_finger == event.fingerId) {
-            m_mouse.x_pos = static_cast<int>(event.x * m_game->get_game_x_resolution());
-            m_mouse.y_pos = static_cast<int>(event.y * m_game->get_game_y_resolution());
+            PixelDimensions d = m_game->get_map().get_camera().get_transform().get_dimensions();
+            m_mouse.x_pos = static_cast<int>(event.x * d.w);
+            m_mouse.y_pos = static_cast<int>(event.y * d.h);
         }
     }
     else {

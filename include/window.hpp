@@ -113,7 +113,8 @@ private:
     /// Destroys the SDL_Window
     void destroy();
 
-    Transform m_transform;
+    /// Origin is upper left corner
+    Transform m_transform{0,0,0,0,0,0};
     SDL_Window* m_window = nullptr;
 };
 

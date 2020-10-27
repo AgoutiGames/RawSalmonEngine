@@ -51,13 +51,9 @@ public:
     bool load_map(std::string mapfile, bool absolute = false);
     void close_map();
 
-    bool set_game_resolution(unsigned width, unsigned height);
     bool set_linear_filtering(bool mode);
 
     Window& get_window() {return m_window;}
-
-    unsigned get_game_x_resolution() const {return m_x_resolution;}
-    unsigned get_game_y_resolution() const {return m_y_resolution;}
 
     MapData& get_map();
     std::vector<MapData>& get_maps();
@@ -79,11 +75,16 @@ private:
 
     void update_path();
 
+    bool poll_input_events();
+    // Checks if current resolution and camera dimensions match
+    // If not it sets the internal resolution to the camera dimensions
+    bool update_internal_resolution();
+
     std::string m_window_title = "Salmon";
     SDL_Renderer* m_renderer = nullptr;
     // default screen resolution
-    unsigned m_x_resolution = 800;
-    unsigned m_y_resolution = 600;
+    int m_x_resolution = 800;
+    int m_y_resolution = 600;
 
     Window m_window;
     Preloader m_preloader;

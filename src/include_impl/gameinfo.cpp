@@ -34,11 +34,7 @@ MapData GameInfo::get_map() {return m_impl->get_map();}
 
 Window& GameInfo::get_window() {return m_impl->get_window();}
 
-bool GameInfo::set_game_resolution(unsigned width, unsigned height) {return m_impl->set_game_resolution(width,height);}
 bool GameInfo::set_linear_filtering(bool mode) {return m_impl->set_linear_filtering(mode);}
-
-unsigned GameInfo::get_game_x_resolution() const {return m_impl->get_game_x_resolution();}
-unsigned GameInfo::get_game_y_resolution() const {return m_impl->get_game_y_resolution();}
 
 void GameInfo::add_preload_directory(std::string dir) {
     m_impl->get_preloader().add_directory(m_impl->get_resource_path() + dir);

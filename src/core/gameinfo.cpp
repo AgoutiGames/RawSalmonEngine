@@ -153,18 +153,6 @@ bool GameInfo::init() {
 	return success;
 }
 
-bool GameInfo::set_game_resolution(unsigned width, unsigned height) {
-    if(SDL_RenderSetLogicalSize(m_renderer,width,height)) {
-        Logger(Logger::error) << "Failed to set game resolution to " << width << "x" << height <<" , SDL Error: " << SDL_GetError();
-        return false;
-    }
-    m_x_resolution = width;
-    m_y_resolution = height;
-    for(MapData& map : m_maps) {
-        map.get_camera().get_transform().set_dimensions(width,height);
-    }
-    return true;
-}
 bool GameInfo::set_linear_filtering(bool mode) {
     if(mode) {
         //Set texture filtering to linear
@@ -194,6 +182,7 @@ bool GameInfo::set_linear_filtering(bool mode) {
 bool GameInfo::load_map(std::string mapfile, bool absolute) {
     m_maps.emplace_back(this);
 
+    // Set camera dimensions to current internal resolution
     m_maps.back().get_camera().get_transform().set_dimensions(m_x_resolution,m_y_resolution);
 
     if(!absolute) {mapfile = m_current_path + mapfile;}
@@ -234,6 +223,14 @@ bool GameInfo::update() {
         return false;
     }
 
+    if(!poll_input_events()) {return false;}
+
+    m_maps.back().update();
+
+    return true;
+}
+
+bool GameInfo::poll_input_events() {
     //Event handler
     SDL_Event e;
 
@@ -335,9 +332,6 @@ bool GameInfo::update() {
     }
 
     m_input_cache.poll();
-
-    m_maps.back().update();
-
     return true;
 }
 
@@ -351,9 +345,25 @@ void GameInfo::render() {
     get_map().get_layer_collection().update(true);
 
     if(!m_maps.empty() && !m_window.is_hidden()) {
+        update_internal_resolution();
+        // Render map and present image buffer
         m_maps.back().render();
         SDL_RenderPresent(m_renderer);
     }
+}
+
+bool GameInfo::update_internal_resolution() {
+    // Apply possible camera dimension change to internal resolution
+    PixelDimensions dim = m_maps.back().get_camera().get_transform().get_dimensions();
+    if(dim.w != m_x_resolution || dim.h != m_y_resolution) {
+        m_x_resolution = dim.w;
+        m_y_resolution = dim.h;
+        if(SDL_RenderSetLogicalSize(m_renderer,m_x_resolution,m_y_resolution)) {
+            Logger(Logger::error) << "Failed to set game resolution to " << dim.w << "x" << dim.h <<" , SDL Error: " << SDL_GetError();
+            return false;
+        }
+    }
+    return true;
 }
 
 void GameInfo::update_path() {

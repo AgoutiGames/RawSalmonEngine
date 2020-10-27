@@ -62,25 +62,8 @@ class GameInfo{
         /// Returns reference to the current game window
         Window& get_window();
 
-        /// Set the internal resolution of the game in pixels, independent of window resolution
-        bool set_game_resolution(unsigned width, unsigned height);
         /// Set on linear filtering for smooth upscaled textures or off for proper sharp pixel art
         bool set_linear_filtering(bool mode);
-
-        /// Return the current internal x resolution of the game in pixels
-        unsigned get_game_x_resolution() const;
-        /// Return the current internal y resolution of the game in pixels
-        unsigned get_game_y_resolution() const;
-
-        /// Return the current width of the games window in pixels
-        unsigned get_window_x_resolution() const;
-        /// Return the current width of the games window in pixels
-        unsigned get_window_y_resolution() const;
-
-        /// Return the horizontal resolution in pixels at which your screen is currently working
-        unsigned get_screen_x_resolution() const;
-        /// Return the vertical resolution in pixels at which your screen is currently working
-        unsigned get_screen_y_resolution() const;
 
         /// Adds directory for preloading. Path is relative to the data folder
         void add_preload_directory(std::string dir);

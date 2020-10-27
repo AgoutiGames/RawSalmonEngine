@@ -57,7 +57,7 @@ void Camera::update() {
         }
 
         // Check if map is less high than the effective camera frame
-        if( static_cast<float>(m_map_height) - m_crop_up - m_crop_down < m_transform.get_dimensions().w ) {
+        if( static_cast<float>(m_map_height) - m_crop_up - m_crop_down < m_transform.get_dimensions().h ) {
             // Center the camera vertically relative to map
             Point c_center = m_transform.get_relative(0.5,0.5);
             float map_y_center = ((m_map_height - m_crop_down) / 2) + m_crop_up;
