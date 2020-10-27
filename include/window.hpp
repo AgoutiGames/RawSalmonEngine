@@ -63,6 +63,11 @@ public:
     void set_borderless(bool mode);
     bool is_borderless() const;
 
+    /// Grabs input on true, releases input on false
+    /// @note Grabbing input means restricting mouse movement to inside the window
+    void grab_input(bool mode);
+    bool input_grabbed() const;
+
     /// Hide window completely from view with no means for the user to restore by themselves
     void hide();
     bool is_hidden() const;

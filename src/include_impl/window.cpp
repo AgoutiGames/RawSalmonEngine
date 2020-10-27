@@ -150,6 +150,15 @@ bool Window::is_borderless() const {
     return flags & SDL_WINDOW_BORDERLESS;
 }
 
+void Window::grab_input(bool mode) {
+    if(mode) {SDL_SetWindowGrab(m_window,SDL_TRUE);}
+    else {SDL_SetWindowGrab(m_window,SDL_FALSE);}
+}
+bool Window::input_grabbed() const {
+    Uint32 flags = SDL_GetWindowFlags(m_window);
+    return flags & SDL_WINDOW_INPUT_GRABBED;
+}
+
 void Window::show() {
     SDL_ShowWindow(m_window);
 }
