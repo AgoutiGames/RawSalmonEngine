@@ -139,9 +139,7 @@ bool MapData::unhide_layer(std::string layer_name) {
         return true;
     }
 }
-
-unsigned MapData::get_w() const {return m_impl->get_w();}
-unsigned MapData::get_h() const {return m_impl->get_h();}
+PixelDimensions MapData::get_dimensions() const {return m_impl->get_dimensions();}
 float MapData::get_delta_time() const {return m_impl->get_delta_time();}
 std::string MapData::get_path() const {return m_impl->get_full_path();}
 DataBlock MapData::get_data() {return m_impl->get_data();}

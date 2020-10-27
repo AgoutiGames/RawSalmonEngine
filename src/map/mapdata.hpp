@@ -80,8 +80,7 @@ class MapData {
         std::string get_file_path() const {return m_base_path;} ///< Return path to the .tmx map file location
         std::string get_full_path() const {return m_full_path;} ///< Return path including name of the map
 
-        unsigned get_w() const;
-        unsigned get_h() const;
+        PixelDimensions get_dimensions() const;
 
         float get_delta_time() const {return m_delta_time;}
         DataBlock& get_data() {return m_data;}
@@ -108,6 +107,8 @@ class MapData {
         Transform* get_layer_transform(std::string layer_name);
 
     private:
+        unsigned get_w() const;
+        unsigned get_h() const;
 
         GameInfo* m_game;
 

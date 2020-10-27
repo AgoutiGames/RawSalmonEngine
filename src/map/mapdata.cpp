@@ -351,6 +351,11 @@ unsigned MapData::get_h() const {
 }
 
 
+PixelDimensions MapData::get_dimensions() const {
+    return PixelDimensions(get_w(),get_h());
+}
+
+
 /**
  * @brief Adds a copy of an animation tile to an actor template
  * @param name Name of the Actor template

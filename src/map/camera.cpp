@@ -87,8 +87,8 @@ void Camera::bind_actor(Actor* actor) {
  * @brief Bind the camera to the map boundaries so that we can't look over the map borders
  */
 void Camera::bind_map() {
-    m_map_width = m_map->get_w();
-    m_map_height = m_map->get_h();
+    m_map_width = m_map->get_dimensions().w;
+    m_map_height = m_map->get_dimensions().h;
     m_map_bound = true;
 }
 

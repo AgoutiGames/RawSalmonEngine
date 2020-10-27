@@ -112,10 +112,8 @@ class MapData {
          */
         salmon::Transform* get_layer_transform(std::string layer_name);
 
-        /// Returns map width in pixels (not taking layer offset into account)
-        unsigned get_w() const;
-        /// Returns map height in pixels (not taking layer offset into account)
-        unsigned get_h() const;
+        /// Returns map width and heigth in pixels (not taking layer offset into account)
+        PixelDimensions get_dimensions() const;
         /// Returns time in seconds which has passed since last update
         float get_delta_time() const;
         /// Returns the full path to the directory of this .tmx map file

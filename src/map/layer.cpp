@@ -37,8 +37,8 @@ namespace salmon { namespace internal {
 Layer::Layer(std::string name, LayerCollection* layer_collection) :
     m_layer_collection{layer_collection},
     m_name{name},
-    m_transform{0,0,static_cast<float>(layer_collection->get_base_map().get_w()),
-                    static_cast<float>(layer_collection->get_base_map().get_h()),0,0} {
+    m_transform{0,0,static_cast<float>(layer_collection->get_base_map().get_dimensions().w),
+                    static_cast<float>(layer_collection->get_base_map().get_dimensions().h),0,0} {
 
 }
 
