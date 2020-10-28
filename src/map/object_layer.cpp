@@ -18,6 +18,7 @@
  */
 #include "map/object_layer.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 #include "actor/actor.hpp"
@@ -158,8 +159,17 @@ tinyxml2::XMLError ObjectLayer::init(tinyxml2::XMLElement* source) {
  */
 bool ObjectLayer::render(const Camera& camera) const {
     if(m_hidden) {return true;}
+    // Establish correct rendering order
+    // Not needed anymore!
+    // m_obj_grid.sort();
+
     Point cam_origin = camera.get_transform().get_relative(0,0);
-    for(const Actor* actor : get_clip(camera.get_transform().to_rect())) {
+    std::vector<const Actor*> actors = get_clip(camera.get_transform().to_rect());
+
+    // Only sort actor clip and not whole array
+    std::sort(actors.begin(),actors.end(),[](const Actor* a, const Actor* b) { return *a < *b; });
+
+    for(const Actor* actor : actors) {
         actor->render(cam_origin.x,cam_origin.y);
     }
 
@@ -170,20 +180,6 @@ bool ObjectLayer::render(const Camera& camera) const {
     }
 
     return true;
-}
-
-/**
- * @brief Updates the states of the objects in the layer
- *
- * This function currently triggers the update function of every
- * object of an object type layer. When it returns false, this is
- * a signal to delete the object.
- * @todo Remove late update parameter
- */
-void ObjectLayer::update(bool late) {
-    (void) late;
-    // Establish correct rendering order
-    m_obj_grid.sort();
 }
 
 /**

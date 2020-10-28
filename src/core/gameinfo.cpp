@@ -341,10 +341,9 @@ bool GameInfo::poll_input_events() {
 void GameInfo::render() {
     // Apply possible transformations to the window
     m_window.update();
-    // Establish correct rendering order!
-    get_map().get_layer_collection().update(true);
 
     if(!m_maps.empty() && !m_window.is_hidden()) {
+        // Set internal resolution to current camera dimensions
         update_internal_resolution();
         // Render map and present image buffer
         m_maps.back().render();

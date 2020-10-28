@@ -96,17 +96,10 @@ bool LayerCollection::render(const Camera& camera) const{
  * Then call update for each object layer (Establishes correct render order for actors)
  * @note Doesn't poll collisions on late updates
  */
-void LayerCollection::update(bool late) {
-    if(!late) {
-        // Add possible collisions to actors
-        collision_check();
-        mouse_collision();
-    }
-    for(auto layer : get_object_layers()) {
-        layer->update(late);
-    }
-
-
+void LayerCollection::update() {
+    // Add possible collisions to actors
+    collision_check();
+    mouse_collision();
 }
 
 /**

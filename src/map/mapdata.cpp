@@ -299,15 +299,12 @@ void MapData::update() {
     //m_delta_time = 1.0f / 60.0f;
     m_last_update = current_time;
 
-    // Early polling
-    m_layer_collection.update(false);
-
     update_camera();
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
 
-    // Late polling
-    m_layer_collection.update(true);
+    // Registers inter actor-tile-mouse collision
+    m_layer_collection.update();
 }
 
 /// If necessary binds camera to actor target and updates the camera position
