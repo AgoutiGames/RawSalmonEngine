@@ -36,7 +36,7 @@ namespace salmon { namespace internal {
 
 /// Plain constructor
 MapData::MapData(GameInfo* game) : m_game{game},
-m_camera{{0, 0, 0, 0}, this} {}
+m_camera{{0, 0, 0, 0}} {}
 
 /**
  * @brief Parses the supplied .tmx file
@@ -124,9 +124,6 @@ tinyxml2::XMLError MapData::init_map(std::string filename, SDL_Renderer** render
         Logger(Logger::error) << "Failed at parsing layers!";
         return eResult;
     }
-
-    // By default bind the camera to the map borders
-    m_camera.bind_map();
 
     // Initialize last_update timestamp
     m_last_update = SDL_GetTicks();
@@ -299,19 +296,11 @@ void MapData::update() {
     //m_delta_time = 1.0f / 60.0f;
     m_last_update = current_time;
 
-    update_camera();
     // Checks and changes animated tiles
     m_ts_collection.push_all_anim();
 
     // Registers inter actor-tile-mouse collision
     m_layer_collection.update();
-}
-
-/// If necessary binds camera to actor target and updates the camera position
-void MapData::update_camera() {
-    Actor* target = fetch_actor(m_camera_target);
-    if(m_bind_camera_to_actor && target != nullptr) {m_camera.bind_actor(target);}
-    m_camera.update();
 }
 
 /**

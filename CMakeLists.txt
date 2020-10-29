@@ -92,7 +92,6 @@ set(GRAPHICS_SOURCES
     )
 
 set(MAP_SOURCES
-    src/map/camera.cpp
     src/map/mapdata.cpp
     src/map/layer.cpp
     src/map/layer_collection.cpp

@@ -21,12 +21,12 @@
 #include <algorithm>
 #include <iostream>
 
+#include "camera.hpp"
 #include "actor/actor.hpp"
 #include "actor/primitive.hpp"
 #include "map/mapdata.hpp"
 #include "map/tileset_collection.hpp"
 #include "map/layer_collection.hpp"
-#include "map/camera.hpp"
 #include "util/logger.hpp"
 
 namespace salmon { namespace internal {

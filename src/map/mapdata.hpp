@@ -24,8 +24,8 @@
 #include <string>
 #include <tinyxml2.h>
 
+#include "camera.hpp"
 #include "actor/data_block.hpp"
-#include "map/camera.hpp"
 #include "map/layer_collection.hpp"
 #include "map/tileset_collection.hpp"
 #include "util/game_types.hpp"
@@ -71,7 +71,6 @@ class MapData {
 
         bool render() const;
         void update();
-        void update_camera();
         void resume();
 
         // Trivial Getters
@@ -87,11 +86,8 @@ class MapData {
         GameInfo& get_game() {return *m_game;}
         TilesetCollection& get_ts_collection() {return m_ts_collection;}
         LayerCollection& get_layer_collection() {return m_layer_collection;}
-        Camera& get_camera() {return m_camera;}
+        salmon::Camera& get_camera() {return m_camera;}
         const TileLayout get_tile_layout() {return m_tile_layout;}
-
-        // Binds or unbinds camera from player position
-        void bind_camera_to_actor(bool state) {if(!state) {m_camera.unbind_actor();} m_bind_camera_to_actor = state;}
 
         // Actor management
         bool is_actor(Uint32 gid) const;
@@ -122,9 +118,7 @@ class MapData {
         Uint32 m_last_update;
         float m_delta_time = 0.f;
 
-        Camera m_camera;
-        bool m_bind_camera_to_actor = true;
-        std::string m_camera_target = "PLAYER";
+        salmon::Camera m_camera;
 
         LayerCollection m_layer_collection;
 

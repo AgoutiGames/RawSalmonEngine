@@ -43,7 +43,7 @@ std::vector<Actor> MapData::get_actors() {
     }
     return temp;
 }
-Camera MapData::get_camera() {return m_impl->get_camera();}
+Camera& MapData::get_camera() {return m_impl->get_camera();}
 
 Actor MapData::add_actor(std::string actor_template_name, std::string layer_name, std::string actor_name) {
     if(m_impl->is_actor(actor_template_name)) {

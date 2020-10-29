@@ -16,38 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with the RawSalmonEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef CAMERA_REF_HPP_INCLUDED
-#define CAMERA_REF_HPP_INCLUDED
+#ifndef CAMERA_HPP_INCLUDED
+#define CAMERA_HPP_INCLUDED
 
-#include "./actor.hpp"
-#include "./transform.hpp"
+#include "types.hpp"
+#include "transform.hpp"
 
 namespace salmon {
 
-namespace internal{class Camera;}
+// forward declare internal::MapData so it can be a friend
+namespace internal {class MapData;}
 
-class Camera {
-    public:
-        Camera(internal::Camera& impl);
+/**
+ * @brief An interface for a smart rect used for camera purposes
+ */
+class Camera{
 
-        Transform& get_transform();
+friend class internal::MapData;
 
-        /// Make camera always center on supplied actor
-        void bind_actor(Actor actor);
-        /// Stop camera from centering on actor
-        void unbind_actor();
+public:
 
-        /// Bind camera to map borders. It may not scroll over the world edges
-        void bind_map();
-        /// Ubind camera from map borders
-        void unbind_map();
+    Transform& get_transform() {return m_transform;}
+    const Transform& get_transform() const {return m_transform;}
 
-        /// Apply possible actor or map limitations
-        void update();
-
-    private:
-        internal::Camera* m_impl;
+private:
+    Camera(Rect r);
+    Transform m_transform;
 };
-}
+} // namespace salmon
 
-#endif // CAMERA_REF_HPP_INCLUDED
+#endif // CAMERA_HPP_INCLUDED

@@ -25,10 +25,13 @@
 
 #include "util/game_types.hpp"
 
-namespace salmon { namespace internal {
+namespace salmon {
+
+class Camera;
+
+namespace internal {
 
 class Actor;
-class Camera;
 class Layer;
 class MapData;
 class MapLayer;

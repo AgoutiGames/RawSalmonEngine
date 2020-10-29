@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Agouti Games Team (see the AUTHORS file)
+ * Copyright 2017-2020 Agouti Games Team (see the AUTHORS file)
  *
  * This file is part of the RawSalmonEngine.
  *
@@ -18,20 +18,9 @@
  */
 #include "camera.hpp"
 
-#include "map/camera.hpp"
-
 namespace salmon {
 
-Camera::Camera(internal::Camera& impl) : m_impl{&impl} {}
-
-Transform& Camera::get_transform() {return m_impl->get_transform();}
-
-void Camera::bind_actor(Actor actor) {m_impl->bind_actor(actor.m_impl);}
-void Camera::unbind_actor() {m_impl->unbind_actor();}
-
-void Camera::bind_map() {m_impl->bind_map();}
-void Camera::unbind_map() {m_impl->unbind_map();}
-
-void Camera::update() {m_impl->update();}
+Camera::Camera(Rect r) :
+    m_transform{r.x,r.y,r.w,r.h,0,0} {}
 
 } // namespace salmon

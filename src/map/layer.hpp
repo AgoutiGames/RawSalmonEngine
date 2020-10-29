@@ -26,10 +26,13 @@
 
 #include "transform.hpp"
 
-namespace salmon { namespace internal {
+namespace salmon {
+
+class Camera;
+
+namespace internal {
 
 class Actor;
-class Camera;
 class LayerCollection;
 class MapData;
 

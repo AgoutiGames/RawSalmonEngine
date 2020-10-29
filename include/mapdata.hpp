@@ -45,7 +45,7 @@ class MapData {
         /// Returns a vector of references to all actors on all map layers
         std::vector<Actor> get_actors();
         /// Returns reference to the camera controlling rendering frame
-        Camera get_camera();
+        Camera& get_camera();
 
         /**
          * @brief Generate a new actor from a template
