@@ -1,5 +1,5 @@
 # The RawSalmonEngine ![Salmon Logo](/icons/RawSalmonLogo_Ver2_128px.png)
-[![Build Status](https://travis-ci.org/AgoutiGames/RawSalmonEngine.svg?branch=master)](https://travis-ci.org/AgoutiGames/RawSalmonEngine)
+[![Build Status](https://app.travis-ci.com/AgoutiGames/RawSalmonEngine.svg?branch=master)](https://app.travis-ci.com/AgoutiGames/RawSalmonEngine)
 
 A game engine utilising *"[Tiled](http://www.mapeditor.org)" map files*.
 
