@@ -292,7 +292,6 @@ tinyxml2::XMLError Tile::parse_actor_templ(tinyxml2::XMLElement* source) {
 
 /**
  * @brief Returns area of tileset image corresponding to tile
- * @param tsc Required for looking up other tiles
  *
  * For animated tiles the clip is the one of the current animation tile id,
  * instead of recursively calling this function again, get_clip_self is used which
